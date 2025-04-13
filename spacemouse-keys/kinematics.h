@@ -1,20 +1,28 @@
+#ifndef KINEMATICS_h
+#define KINEMATICS_h
 // This is the public header for the kinematics.cpp file
 // It contains all functions which can be called from the main application
+
+#include "sensitivity.h"
 
 int modifierFunction(int x);
 
 void readAllFromJoystick(int *rawReads);
 
-void FilterAnalogReadOuts(int* centered);
+void FilterAnalogReadOuts(int *centered);
 
-void calculateKinematic(int* centered, int16_t* velocity);
+#ifdef EEPROM_CALIBRATION
+void calculateKinematic(int *centered, int16_t *velocity, sensitivities_t *sensitivities, uint8_t modFunc, uint8_t inversions);
+#else
+void calculateKinematic(int *centered, int16_t *velocity);
+#endif
 
 void switchXY(int16_t *velocity);
 void switchYZ(int16_t *velocity);
 void exclusiveMode(int16_t *velocity);
 
 // The following constants are here for more readable access to the arrays. You don't need to change this values!
-// Axes in centered or rawValues array
+// When using a joystick: Axes in centered or rawValues array
 #define AX 0
 #define AY 1
 #define BX 2
@@ -43,3 +51,5 @@ void exclusiveMode(int16_t *velocity);
 #define ROTX 3
 #define ROTY 4
 #define ROTZ 5
+
+#endif

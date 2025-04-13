@@ -101,7 +101,6 @@ void debugOutput4(int16_t *velocity, uint8_t *keyOut)
     }
 }
 
-// TODO - Rewrite debuOutput4 to new format!!
 #ifdef EEPROM_CALIBRATION // JB - Prints the current sensitivy settings on the same line.
 /// @brief Report translation and rotation values if enabled.
 /// @param velocity pointer to velocity array
@@ -113,9 +112,8 @@ void debugOutput4(int16_t *velocity, uint8_t *keyOut, sensitivities_t *sensitivi
     {
         for (int i = 0; i < 6; i++)
         {
-            Serial.print(velNames[i]);
-            Serial.print(velocity[i]);
-            Serial.print(", ");
+            sprintf(debugOutputBuffer, "%2.2s: %4d ", velNames[i], velocity[i]);
+            Serial.print(debugOutputBuffer);
         }
         for (int i = 0; i < NUMKEYS; i++)
         {
@@ -128,6 +126,8 @@ void debugOutput4(int16_t *velocity, uint8_t *keyOut, sensitivities_t *sensitivi
             Serial.print(":");
             Serial.print(keyOut[i]);
         }
+        // REVIEW - What is the 'DEBUG_LINE_END'?
+        Serial.print(DEBUG_LINE_END);
         Serial.print(F(" || "));
         printSensitivity(sensitivities, false);
         Serial.println("");

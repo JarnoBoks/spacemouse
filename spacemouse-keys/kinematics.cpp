@@ -10,14 +10,43 @@
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
 
 #include "kinematics.h"
+
+// Include hardware specific settings:
+#ifdef HALLEFFECT
+#include "hw_halleffect/hardware.h"
+#else
+#include "hw_joysticks/hardware.h"
+#endif
+
 #include "calibration.h"
 
-/// @brief Function to modify the input value according to different mathematic modes. Choose the mathematical function in config.h as modFunc
-/// @param x input between -350 and +350
-/// @return output between -350 and +350
-int modifierFunction(int x)
-{
-    // making sure function input never exedes range of -350 to 350
+// Setup arrays for reading the analog pins of the Arduino, see config.h
+
+/// @brief  Array containing ADC pin configuration for the sensors.
+int pinList[8] = PINLIST;
+
+/// @brief  Array containing inversion parameters for the raw sensor readings.
+int invertList[8] = INVERTLIST;
+
+// Setup the arrays for min and max values of the joystick/sensors, see config.h
+
+/// @brief Array containing the minimum values of the sensors.
+int minVals[8] = MINVALS;
+
+/// @brief Array containing the maximum values of the sensors.
+int maxVals[8] = MAXVALS;
+
+// Please do not change this anymore. Use independent sensitivity multiplier.
+#define TOTALSENSITIVITY 350
+
+/**
+ *  @brief Function to modify the input value according to different mathematic modes. Choose the mathematical function in config.h as modFunc.A0
+ *
+ *  @param x input between -350 and +350
+ *  @return output between -350 and +350
+ */
+int modifierFunction(int x) {
+    // making sure function input never exeeds range of -350 to 350
     x = constrain(x, -350, 350);
     double result;
 #if (MODFUNC == 1)
@@ -40,58 +69,43 @@ int modifierFunction(int x)
 
     // make sure values between-350 and 350 are allowed
     result = constrain(result, -350, 350);
+
     // converting doubles to int again
     return (int)round(result);
 }
 
-// define an array for reading the analog pins of the joysticks, see config.h
-int pinList[8] = PINLIST;
-int invertList[8] = INVERTLIST;
-
-/// @brief Function to read and store analogue voltages for each joystick axis.
-/// @param rawReads pointer to 8 analog values
-void readAllFromJoystick(int *rawReads)
-{
-    for (int i = 0; i < 8; i++)
-    {
-        if (invertList[i] == 1)
-        {
+/**
+ *  @brief Function to read and store analogue voltages for each sensor/joystick axis.
+ *  The function reads the pins that are setup in config.h and inverts the reading if necessary.
+ *
+ *  @param rawReads pointer to the array that will contain the read analog values
+ */
+void readAllFromSensors(int *rawReads) {
+    for (int i = 0; i < 8; i++) {
+        if (invertList[i] == 1) {
             // invert the reading
             rawReads[i] = 1023 - analogRead(pinList[i]);
-        }
-        else
-        {
+        } else {
             rawReads[i] = analogRead(pinList[i]);
         }
     }
 }
 
-// set the min and maxvals from the config.h into real variables
-int minVals[8] = MINVALS;
-int maxVals[8] = MAXVALS;
-// Please do not change this anymore. Use indipendent sensitivity multiplier.
-#define TOTALSENSITIVITY 350
+/**
+ *  @brief Takes the centered joystick/sensor values, applies a deadzone and maps the values to +/- 350.
+ *  @param centered pointer to array with 8 centered analog values
+ */
+void FilterAnalogReadOuts(int *centered) {
 
-/// @brief Takes the centered joystick values, applies a deadzone and maps the values to +/- 350.
-/// @param centered pointer to array with 8 centered analog values
-void FilterAnalogReadOuts(int *centered)
-{
     // Filter movement values. Set to zero if movement is below deadzone threshold.
-    for (int i = 0; i < 8; i++)
-    {
-        if (centered[i] < DEADZONE && centered[i] > -DEADZONE)
-        {
+    for (int i = 0; i < 8; i++) {
+        if (centered[i] < DEADZONE && centered[i] > -DEADZONE) {
             centered[i] = 0;
-        }
-        else
-        {
-            if (centered[i] < 0)
-            { // if the value is smaller 0 ...
+        } else {
+            if (centered[i] < 0) { // if the value is smaller 0 ...
                 // ... map the value from the [min,-DEADZONE] to [-350,0]
                 centered[i] = map(centered[i], minVals[i], -DEADZONE, -TOTALSENSITIVITY, 0);
-            }
-            else
-            { // if the value is > 0 ...
+            } else { // if the value is > 0 ...
                 // ... map the values from the [DEADZONE,max] to [0,+350]
                 centered[i] = map(centered[i], DEADZONE, maxVals[i], 0, TOTALSENSITIVITY);
             }
@@ -100,130 +114,52 @@ void FilterAnalogReadOuts(int *centered)
 }
 
 /**
- * When using Hall Effect sensors the reading of the sensors has to be translated
- * to the joystick values
-
-
- *     7   6              Y+
- *       |                .
- *  8    |    3           .
- *    ---+---        X-...Z+...X+
- *  9    |    2           .
- *       |                .
- *     0   1              Y-
- *
- *
- *
- * Movement table (expected)
- *
- * Movement     Plane           AX  AY  BX  BY  CX  CY  DX  DY  ||  H0  H1  H2  H3  H6  H7  H8  H9
- * West         Horizontal      0   +   0   0   0   -   0   0   ||  0   0   +   +   0   0   -   -
- * East         Horizontal      0   -   0   0   0   +   0   0   ||  0   0   -   -   0   0   +   +
- * North        Horizontal      0   0   0   -   0   0   0   +   ||  +   +   0   0   -   -   0   0
- * South        Horizontal      0   0   0   +   0   0   0   -   ||  -   -   0   0   +   +   0   0
- * Top          Vertical        -   0   -   0   -   0   -   0   ||  +   +   +   +   +   +   +   +               (all magnets further away)
- * Bottom       Vertical        +   0   +   0   +   0   +   0   ||  -   -   -   -   -   -   -   -               (all magnets closer by)
- * Rotx-fw      Vertical        -   0   0   0   +   0   0   0   ||  +   +   0   0   -   -   0   0
- * Rotx-bw      Vertical        +   0   0   0   -   0   0   0   ||  -   -   0   0   +   +   0   0
- * Roty-left    Vertical        0   0   +   0   0   0   -   0   ||  0   0   +   +   0   0   -   -
- * Roty-right   Vertical        0   0   -   0   0   0   +   0   ||  0   0   -   -   0   0   +   +
- * Rotz-clock   Horizontal      -   0   -   0   -   0   -   0   ||  +   -   +   -   +   -   +   -
- * Rotz-cclock  Horizontal      +   0   +   0   +   0   +   0   ||  -   +   -   +   -   +   -   +
- *
+ *  @brief Calculate the kinematic of the three axis from the eight sensors
+ *  @param centered pointer to the array containing the eight centered values from the axis of the 4 joysticks or the 8 Hall Effect sensors
+ *  @param velocity pointer to the result array that will contain the translational and rotational motions
  */
+void calculateKinematic(int *centered, int16_t *velocity) {
 
-void _calculateKinematicSensors(int* centered, int16_t* velocity)
-{
-
-#ifndef HALLEFFECT
-    // calculate sensors transX
-    velocity[TRANSX] = (-centered[CY] + centered[AY]);
-
-    // calculate sensors transY
-    velocity[TRANSY] = (-centered[BY] + centered[DY]);
-
-    // calculate sensors transZ
-    velocity[TRANSZ] = -centered[AX] - centered[BX] - centered[CX] - centered[DX];
-
-    // rotX
-    velocity[ROTX] = (-centered[CX] + centered[AX]);
-
-    // rotY
-    velocity[ROTY] = (-centered[BX] + centered[DX]);
-
-    // rotZ
-    velocity[ROTZ] = (centered[AY] + centered[BY] + centered[CY] + centered[DY]);
-#else
-    // calculate sensors transX
-    velocity[TRANSX] = (centered[HES1] - centered[HES0] + centered[HES6] - centered[HES7]) / 2;
-
-    // calculate sensors transY
-    velocity[TRANSY] = (centered[HES2] - centered[HES3] + centered[HES9] - centered[HES8]) / 2;
-
-    // calculate sensors transZ
-    velocity[TRANSZ] = (centered[HES0] + centered[HES1] + centered[HES2] + centered[HES3] + centered[HES6] + centered[HES7] + centered[HES8] + centered[HES9]) / 4;
-
-    // rotX
-    velocity[ROTX] = (centered[HES0] + centered[HES1] - centered[HES6] - centered[HES7]) / 2;
-
-    // rotY
-    velocity[ROTY] = (centered[HES8] + centered[HES9] - centered[HES2] - centered[HES3]) / 2;
-
-    // rotZ
-    velocity[ROTZ] = (centered[HES0] + centered[HES2] + centered[HES6] + centered[HES8] - centered[HES1] - centered[HES3] - centered[HES7] - centered[HES9]) / 4;
-#endif
-}
-
-/// @brief Calculate the kinematic of the three axis from the eight joysticks
-/// @param centered eight values from the four joysticks
-/// @param velocity resulting translational and rotational motions
-void calculateKinematic(int *centered, int16_t *velocity)
-{
-    // Get raw kinematics from sensors
+    // Retrieve raw kinematics from sensors (joystick or hall effect)
     _calculateKinematicSensors(centered, velocity);
 
-    // transX
+    // transX - Apply sensitivity & recalculate with modifier function.
     velocity[TRANSX] = velocity[TRANSX] / ((float)TRANSX_SENSITIVITY);
     velocity[TRANSX] = modifierFunction(velocity[TRANSX]); // recalculate with modifier function
 
-    // transY
+    // transY - Apply sensitivity & recalculate with modifier function.
     velocity[TRANSY] = velocity[TRANSY] / ((float)TRANSY_SENSITIVITY);
     velocity[TRANSY] = modifierFunction(velocity[TRANSY]); // recalculate with modifier function
 
-    if (velocity[TRANSZ] < 0)
-    {
+    // transZ
+    // REVIEW - Check if this will be OK for the HallE and Joystick version, while the negative & positive moment is inverted in the RAW ADC values!!
+    if (velocity[TRANSZ] < 0) {
         velocity[TRANSZ] = modifierFunction(velocity[TRANSZ] / ((float)NEG_TRANSZ_SENSITIVITY)); // recalculate with modifier function
-        if (abs(velocity[TRANSZ]) < GATE_NEG_TRANSZ)
-        {
+        if (abs(velocity[TRANSZ]) < GATE_NEG_TRANSZ) {
             velocity[TRANSZ] = 0;
         }
-    }
-    else
-    {                                                                                                // pulling the knob upwards is much heavier... smaller factor
+    } else {                                                                                         // pulling the knob upwards is much heavier... smaller factor
         velocity[TRANSZ] = constrain(velocity[TRANSZ] / ((float)POS_TRANSZ_SENSITIVITY), -350, 350); // no modifier function, just constrain linear!
     }
 
-    // rotX
+    // rotX - Apply sensitivity, recalculate with modifier function and apply gate
     velocity[ROTX] = velocity[ROTX] / ((float)ROTX_SENSITIVITY);
     velocity[ROTX] = modifierFunction(velocity[ROTX]); // recalculate with modifier function
-    if (abs(velocity[ROTX]) < GATE_ROTX)
-    {
+    if (abs(velocity[ROTX]) < GATE_ROTX) {
         velocity[ROTX] = 0;
     }
 
-    // rotY
+    // rotY - Apply sensitivity, recalculate with modifier function and apply gate
     velocity[ROTY] = velocity[ROTY] / ((float)ROTY_SENSITIVITY);
     velocity[ROTY] = modifierFunction(velocity[ROTY]); // recalculate with modifier function
-    if (abs(velocity[ROTY]) < GATE_ROTY)
-    {
+    if (abs(velocity[ROTY]) < GATE_ROTY) {
         velocity[ROTY] = 0;
     }
 
-    // rotZ
+    // rotY - Apply sensitivity, recalculate with modifier function and apply gate
     velocity[ROTZ] = velocity[ROTZ] / ((float)ROTZ_SENSITIVITY);
     velocity[ROTZ] = modifierFunction(velocity[ROTZ]); // recalculate with modifier function
-    if (abs(velocity[ROTZ]) < GATE_ROTZ)
-    {
+    if (abs(velocity[ROTZ]) < GATE_ROTZ) {
         velocity[ROTZ] = 0;
     }
 
@@ -248,10 +184,12 @@ void calculateKinematic(int *centered, int16_t *velocity)
 #endif
 } // end calculateKinematic
 
-/// @brief Switch position of X and Y values
-/// @param velocity pointer to velocity array
-void switchXY(int16_t *velocity)
-{
+/**
+ *  @brief Switch position of X and Y values
+ *
+ *  @param velocity pointer to velocity array
+ */
+void switchXY(int16_t *velocity) {
     int16_t tmp = 0;
     tmp = velocity[TRANSX];
     velocity[TRANSX] = velocity[TRANSY];
@@ -262,10 +200,12 @@ void switchXY(int16_t *velocity)
     velocity[ROTY] = tmp;
 }
 
-/// @brief Switch position of Y and Z values
-/// @param velocity pointer to velocity array
-void switchYZ(int16_t *velocity)
-{
+/**
+ *  @brief Switch position of Y and Z values
+ *
+ *  @param velocity pointer to velocity array
+ */
+void switchYZ(int16_t *velocity) {
     int16_t tmp = 0;
     tmp = velocity[TRANSY];
     velocity[TRANSY] = velocity[TRANSZ];
@@ -276,21 +216,21 @@ void switchYZ(int16_t *velocity)
     velocity[ROTZ] = tmp;
 }
 
-/// @brief Check if translation or rotation is dominant and set the other values to zero to allow exclusively rotation or translation
-// to avoid issues with classics joysticks
-/// @param velocity pointer to velocity array
-void exclusiveMode(int16_t *velocity)
-{
+/**
+ *  @brief  Check if translation or rotation is dominant and set the other values to zero to allow exclusively rotation or translation
+ *          to avoid issues with classics joysticks.
+ *
+ *  @param velocity pointer to velocity array
+ */
+void exclusiveMode(int16_t *velocity) {
     uint16_t totalRot = abs(velocity[ROTX]) + abs(velocity[ROTY]) + abs(velocity[ROTZ]);
     uint16_t totalTrans = abs(velocity[TRANSX]) + abs(velocity[TRANSY]) + abs(velocity[TRANSZ]);
-    if (totalRot > totalTrans)
-    {
+
+    if (totalRot > totalTrans) {
         velocity[TRANSX] = 0;
         velocity[TRANSY] = 0;
         velocity[TRANSZ] = 0;
-    }
-    else
-    {
+    } else {
         velocity[ROTX] = 0;
         velocity[ROTY] = 0;
         velocity[ROTZ] = 0;

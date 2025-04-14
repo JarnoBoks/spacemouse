@@ -60,193 +60,175 @@ int16_t velocity[6];
 
 int tmpInput; // store the value, the user might input over the serial
 
-void setup()
-{
+void setup() {
 // setup the keys e.g. to internal pull-ups
 #if NUMKEYS > 0
-  setupKeys();
+    setupKeys();
 #endif
 
-  // Begin Seral for debugging
-  Serial.begin(250000);
-  delay(100);
-  Serial.setTimeout(2); // the serial interface will look for new debug values and it will only wait 2ms
-  // Read idle/centre positions for joysticks.
+    // Begin Seral for debugging
+    Serial.begin(250000);
+    delay(100);
+    Serial.setTimeout(2); // the serial interface will look for new debug values and it will only wait 2ms
+                          // Read idle/centre positions for joysticks.
 
 #ifdef HALLEFFECT
-    // Set the ADC referencevoltage to 5V if debug=1, 2.56V otherwise.
+                          // Set the ADC referencevoltage to 5V if debug=1, 2.56V otherwise.
     // It is important the reference Voltage is set before the Zeroing of the
     // sensors is executed.
     setAnalogReferenceVoltage();
 #endif
 
-  // zero the joystick position 500 times (takes approx. 480 ms)
-  // during setup() we are not interested in the debug output: debugFlag = false
-  busyZeroing(centerPoints, 500, false);
+    // zero the joystick position 500 times (takes approx. 480 ms)
+    // during setup() we are not interested in the debug output: debugFlag = false
+    busyZeroing(centerPoints, 500, false);
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
-  initEncoderWheel();
+    initEncoderWheel();
 #endif
 #ifdef LEDpin
 #ifdef LEDRING
-  initLEDring();
+    initLEDring();
 #else
-  // configure LED output for simple LED
-  pinMode(LEDpin, OUTPUT);
+    // configure LED output for simple LED
+    pinMode(LEDpin, OUTPUT);
 #endif
 #endif
 }
 
-void loop()
-{
-  // check if the user entered a debug mode via serial interface
-  if (Serial.available())
-  {
-    tmpInput = Serial.parseInt(); // Read from serial interface, if a new debug value has been sent. Serial timeout has been set in setup()
-    if (tmpInput != 0)
-    {
-      debug = tmpInput;
-      if (tmpInput == -1)
-      {
-        Serial.println(F("Please enter the debug mode now or while the script is reporting."));
-      }
+void loop() {
+    // check if the user entered a debug mode via serial interface
+    if (Serial.available()) {
+        tmpInput = Serial.parseInt(); // Read from serial interface, if a new debug value has been sent. Serial timeout has been set in setup()
+        if (tmpInput != 0) {
+            debug = tmpInput;
+            if (tmpInput == -1) {
+                Serial.println(F("Please enter the debug mode now or while the script is reporting."));
+            }
 #ifdef HALLEFFECT
-                // Debug is updated check if the ADC referencevoltage has to be changed.
-                setAnalogReferenceVoltage();
+            // Debug is updated check if the ADC referencevoltage has to be changed.
+            setAnalogReferenceVoltage();
 #endif
+        }
     }
-  }
 
-  // Joystick values are read. 0-1023
-  readAllFromJoystick(rawReads);
+    // Joystick values are read. 0-1023
+    readAllFromSensors(rawReads);
 
 #if NUMKEYS > 0
-  // LivingTheDream added reading of key presses
-  readAllFromKeys(keyVals);
+    // LivingTheDream added reading of key presses
+    readAllFromKeys(keyVals);
 #endif
-  // Report back 0-1023 raw ADC 10-bit values if enabled
-  if (debug == 1)
-  {
-    debugOutput1(rawReads, keyVals);
-  }
+    // Report back 0-1023 raw ADC 10-bit values if enabled
+    if (debug == 1) {
+        debugOutput1(rawReads, keyVals);
+    }
 
-  if (debug == 11)
-  {
-    // calibrate the joystick
-    // As this is called in the debug=11, we do more iterations.
-    busyZeroing(centerPoints, 2000, true);
-    debug = -1; // this only done once
-  }
+    if (debug == 11) {
+        // calibrate the joystick
+        // As this is called in the debug=11, we do more iterations.
+        busyZeroing(centerPoints, 2000, true);
+        debug = -1; // this only done once
+    }
 
-  // Subtract centre position from measured position to determine movement.
-  for (int i = 0; i < 8; i++)
-  {
-    centered[i] = rawReads[i] - centerPoints[i];
-  }
+    // Subtract centre position from measured position to determine movement.
+    for (int i = 0; i < 8; i++) {
+        centered[i] = rawReads[i] - centerPoints[i];
+    }
 
-  if (debug == 20)
-  {
-    calcMinMax(centered); // debug=20 to calibrate MinMax values
-  }
+    if (debug == 20) {
+        calcMinMax(centered); // debug=20 to calibrate MinMax values
+    }
 
-  // Report centered joystick values if enabled. Values should be approx -500 to +500, jitter around 0 at idle
-  if (debug == 2)
-  {
-    debugOutput2(centered);
-  }
+    // Report centered joystick values if enabled. Values should be approx -500 to +500, jitter around 0 at idle
+    if (debug == 2) {
+        debugOutput2(centered);
+    }
 
-  FilterAnalogReadOuts(centered);
+    FilterAnalogReadOuts(centered);
 
-  // Report centered joystick values. Filtered for deadzone. Approx -350 to +350, locked to zero at idle
-  if (debug == 3)
-  {
-    debugOutput2(centered);
-  }
+    // Report centered joystick values. Filtered for deadzone. Approx -350 to +350, locked to zero at idle
+    if (debug == 3) {
+        debugOutput2(centered);
+    }
 
-  calculateKinematic(centered, velocity);
+    calculateKinematic(centered, velocity);
 
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
-  // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities
-  calcEncoderWheel(velocity, debug);
+    // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities
+    calcEncoderWheel(velocity, debug);
 #endif
 
 #if NUMKEYS > 0
-  evalKeys(keyVals, keyOut, keyState);
+    evalKeys(keyVals, keyOut, keyState);
 #endif
 
-#if ROTARY_KEYS > 0 
- // The encoder wheel shall be treated as a key
-  calcEncoderAsKey(keyState, debug);
+#if ROTARY_KEYS > 0
+    // The encoder wheel shall be treated as a key
+    calcEncoderAsKey(keyState, debug);
 #endif
 
-  if (debug == 4)
-  {
-    debugOutput4(velocity, keyOut);
-    // Report translation and rotation values if enabled.
-  }
-  if (debug == 5)
-  {
-    debugOutput5(centered, velocity);
-  }
+    if (debug == 4) {
+        debugOutput4(velocity, keyOut);
+        // Report translation and rotation values if enabled.
+    }
+    if (debug == 5) {
+        debugOutput5(centered, velocity);
+    }
 
-  // if the kill-key feature is enabled, rotations or translations are killed=set to zero
+    // if the kill-key feature is enabled, rotations or translations are killed=set to zero
 #if (NUMKILLKEYS == 2)
-  if (keyVals[KILLROT] == LOW)
-  {
-    // check for the raw keyVal and not keyOut, because keyOut is only 1 for a single iteration. keyVals has inverse Logic due to pull-ups
-    // kill rotation
-    velocity[ROTX] = 0;
-    velocity[ROTY] = 0;
-    velocity[ROTZ] = 0;
-  }
-  if (keyVals[KILLTRANS] == LOW)
-  {
-    // kill translation
-    velocity[TRANSX] = 0;
-    velocity[TRANSY] = 0;
-    velocity[TRANSZ] = 0;
-  }
+    if (keyVals[KILLROT] == LOW) {
+        // check for the raw keyVal and not keyOut, because keyOut is only 1 for a single iteration. keyVals has inverse Logic due to pull-ups
+        // kill rotation
+        velocity[ROTX] = 0;
+        velocity[ROTY] = 0;
+        velocity[ROTZ] = 0;
+    }
+    if (keyVals[KILLTRANS] == LOW) {
+        // kill translation
+        velocity[TRANSX] = 0;
+        velocity[TRANSY] = 0;
+        velocity[TRANSZ] = 0;
+    }
 #endif
 
-  // report velocity and keys after possible kill-key feature
-  if (debug == 6)
-  {
-    debugOutput4(velocity, keyOut);
-  }
+    // report velocity and keys after possible kill-key feature
+    if (debug == 6) {
+        debugOutput4(velocity, keyOut);
+    }
 
 #if SWITCHYZ > 0
-  switchYZ(velocity);
+    switchYZ(velocity);
 #endif
 
 #ifdef EXCLUSIVEMODE
-  // exclusive mode
-  // rotation OR translation, but never both at the same time
-  // to avoid issues with classics joysticks
-  exclusiveMode(velocity);
+    // exclusive mode
+    // rotation OR translation, but never both at the same time
+    // to avoid issues with classics joysticks
+    exclusiveMode(velocity);
 #endif
 
-  // report velocity and keys after Switch or ExclusiveMode
-  if (debug == 61)
-  {
-    debugOutput4(velocity, keyOut);
-  }
+    // report velocity and keys after Switch or ExclusiveMode
+    if (debug == 61) {
+        debugOutput4(velocity, keyOut);
+    }
 
-  // get the values to the USB HID driver to send if necessary
-  SpaceMouseHID.send_command(velocity[ROTX], velocity[ROTY], velocity[ROTZ], velocity[TRANSX], velocity[TRANSY], velocity[TRANSZ], keyState, debug);
+    // get the values to the USB HID driver to send if necessary
+    SpaceMouseHID.send_command(velocity[ROTX], velocity[ROTY], velocity[ROTZ], velocity[TRANSX], velocity[TRANSY], velocity[TRANSZ], keyState, debug);
 
-  if (debug == 7)
-  {
-    // update and report the at what frequency the loop is running
-    updateFrequencyReport();
-  }
+    if (debug == 7) {
+        // update and report the at what frequency the loop is running
+        updateFrequencyReport();
+    }
 
 #ifdef LEDpin
 #ifdef LEDRING
-  processLED(velocity, SpaceMouseHID.updateLEDState());
+    processLED(velocity, SpaceMouseHID.updateLEDState());
 #else
-  lightSimpleLED(SpaceMouseHID.updateLEDState());
-  // Check for the LED state by calling updateLEDState.
-  // This empties the USB input buffer and checks for the corresponding report.
+    lightSimpleLED(SpaceMouseHID.updateLEDState());
+    // Check for the LED state by calling updateLEDState.
+    // This empties the USB input buffer and checks for the corresponding report.
 #endif
 #endif
 
@@ -255,25 +237,22 @@ void loop()
 #ifdef LEDpin
   /// @brief Turn on or off a simple led. The pin is defined by LEDpin in config.h. If the LED needs to be inverted, define LEDinvert in config.h
 /// @param light turn on or off
-void lightSimpleLED(boolean light)
-{
+void lightSimpleLED(boolean light) {
 // Check for the LED state by calling updateLEDState.
 // This empties the USB input buffer and checks for the corresponding report.
 #ifdef LEDinvert
-  // Swap the LED logic, if necessary
-  if (light)
+    // Swap the LED logic, if necessary
+    if (light)
 #else
-  if (!light)
+    if (!light)
 #endif
-  {
-    // true -> LED on -> pull kathode down
-    digitalWrite(LEDpin, LOW); // turn the LED o
-  }
-  else
-  {
-    // false -> LED off -> pull kathode up
-    digitalWrite(LEDpin, HIGH); // turn the LED
-  }
+    {
+        // true -> LED on -> pull kathode down
+        digitalWrite(LEDpin, LOW); // turn the LED o
+    } else {
+        // false -> LED off -> pull kathode up
+        digitalWrite(LEDpin, HIGH); // turn the LED
+    }
 }
 #endif
 
@@ -281,16 +260,12 @@ void lightSimpleLED(boolean light)
 /**
  * @brief Set the analog reference to 5V for debug 1 and to 2.56V otherwise
  */
-void setAnalogReferenceVoltage()
-{
-    if (debug == 1)
-    {
+void setAnalogReferenceVoltage() {
+    if (debug == 1) {
         // Set the reference voltage for the AD Convertor to 5V only for the first calibration step (pinout/inversion calibration).
         analogReference(DEFAULT);
         Serial.println(F("Setting analog reference to 5V."));
-    }
-    else
-    {
+    } else {
         // Set the reference voltage for the AD Convertor to 2.56V in order to get larger sensitivity.
         analogReference(INTERNAL);
         Serial.println(F("Setting analog reference to 2.56V."));
@@ -301,9 +276,8 @@ void setAnalogReferenceVoltage()
     // nature of this function.
     delay(100);
     int tempReads[8];
-    for (int i = 0; i <= 8; i++)
-    {
-        readAllFromJoystick(tempReads);
+    for (int i = 0; i <= 8; i++) {
+        readAllFromSensors(tempReads);
     }
 }
 #endif

@@ -4,12 +4,13 @@
 // Please open config_sample.h, adjust your settings and save it as config.h
 #include "config.h"
 
-#include "hardware.h" // External definitions for this file
+#include "hardware_joystick.h" // External definitions for this file
 
 #include "kinematics.h" // Definition of the velocity array positions
 
 #include "../adc.h" // Definition of readAllFromSensors
 
+#ifndef HALLEFFECT
 /**
  * TODO
  */
@@ -50,3 +51,5 @@ void setAnalogReferenceVoltage(int debug) {
         readAllFromSensors(tempReads);
     }
 }
+
+#endif // ifndef HALLEFFECT

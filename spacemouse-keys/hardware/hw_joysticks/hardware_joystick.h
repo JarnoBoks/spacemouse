@@ -16,4 +16,7 @@ void _calculateKinematicSensors(int *centered, int16_t *velocity);
 #define DX 6
 #define DY 7
 
+#define MINMAX_MINWARNING 250
+#define MINMAX_MAXWARNING 250
+
 #endif

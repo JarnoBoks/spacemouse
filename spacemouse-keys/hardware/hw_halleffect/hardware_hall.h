@@ -16,4 +16,10 @@ void _calculateKinematicSensors(int *centered, int16_t *velocity);
 #define HES8 6
 #define HES9 7
 
+// The Hall effect sensors aren't centered arount zero, due to the nature of the hardware.
+// In my version of the Spacemouse, the values vary between -425 and 285, the centerpoint is thus around -70
+// The MIN and MAX warning levels have to be shifted accordingly.
+#define MINMAX_MINWARNING (100 - centerPoint)
+#define MINMAX_MAXWARNING (100 + centerPoint)
+
 #endif // HARDWARE_HALL_h

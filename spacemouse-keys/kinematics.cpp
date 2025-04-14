@@ -13,9 +13,9 @@
 
 // Include hardware specific settings:
 #ifdef HALLEFFECT
-#include "hardware/hw_halleffect/hardware.h"
+#include "hardware/hw_halleffect/hardware_hall.h"
 #else
-#include "hardware/hw_joysticks/hardware.h"
+#include "hardware/hw_joysticks/hardware_joystick.h"
 #endif
 
 #include "calibration.h"

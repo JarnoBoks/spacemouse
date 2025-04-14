@@ -15,6 +15,7 @@ class SpaceMouseHW_ {
 public:
     SpaceMouseHW_();
 
+    bool busyZeroing(uint16_t numIterations, boolean debugFlag);
     void readAllFromSensors();
     virtual void setAnalogReferenceVoltage(int debug);
     virtual void _calculateKinematicSensors(int16_t *velocity);
@@ -45,8 +46,11 @@ private:
 
     void _printValue(const char *axisname, int value);
 
+    ///@brief Store the zero position of the joysticks
+    int centerPoints[NUM_SENSORS];
+
 protected:
-    /// TODO @brief  Array containing centered sensor readings.
+    /// @brief Stores the values from the joysticks after zeroing and mapping
     int centered[NUM_SENSORS] = {0, 0, 0, 0, 0, 0, 0, 0};
 };
 

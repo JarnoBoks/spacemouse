@@ -72,3 +72,10 @@ void SpaceMouseHW_Hall_::printCentered() {
         _printCentered(_axisNames[i], i);
     }
 }
+
+bool SpaceMouseHW_Hall_::busyZeroing(uint16_t numIterations, boolean debugFlag) {
+    if (debugFlag == true) {
+        Serial.println(F("Zeroing HALL Sensors..."));
+    }
+    return SpaceMouseHW_::busyZeroing(numIterations, debugFlag);
+}

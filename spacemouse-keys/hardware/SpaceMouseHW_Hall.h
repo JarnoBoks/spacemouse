@@ -42,6 +42,9 @@ enum Sensors {
 class SpaceMouseHW_Hall_ : public SpaceMouseHW_ {
 public:
     SpaceMouseHW_Hall_();
+
+    bool busyZeroing(uint16_t numIterations, boolean debugFlag);
+
     void setAnalogReferenceVoltage(int debug);
     void _calculateKinematicSensors(int16_t *velocity);
 

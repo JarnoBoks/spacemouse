@@ -63,3 +63,10 @@ void SpaceMouseHW_Joystick_::printCentered() {
         _printCentered(_axisNames[i], i);
     }
 }
+
+bool SpaceMouseHW_Joystick_::busyZeroing(uint16_t numIterations, boolean debugFlag) {
+    if (debugFlag == true) {
+        Serial.println(F("Zeroing Joysticks..."));
+    }
+    return SpaceMouseHW_::busyZeroing(numIterations, debugFlag);
+}

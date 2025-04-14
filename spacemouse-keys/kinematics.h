@@ -52,4 +52,4 @@ void exclusiveMode(int16_t *velocity);
 #define ROTY 4
 #define ROTZ 5
 
-#endif
+#endif // KINEMATICS_h

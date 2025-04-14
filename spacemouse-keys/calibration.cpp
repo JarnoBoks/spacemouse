@@ -63,12 +63,20 @@ void printKeys(uint8_t *keyVals) {
 }
 
 #ifndef HALLEFFECT
+/// Array for the axisnames
 char const *axisNames[] = {"AX:", "AY:", "BX:", "BY:", "CX:", "CY:", "DX:", "DY:"}; // 8
 #else
 char const *axisNames[] = {"HES0:", "HES1:", "HES2:", "HES3:", "HES6:", "HES7:", "HES8:", "HES9:"}; // 8
 #endif
+
+/// Array for the velocity names.
 char const *velNames[] = {"TX:", "TY:", "TZ:", "RX:", "RY:", "RZ:"}; // 6
 
+/**
+ * @brief Prints the raw ADC 10-bit values, if the output is due (every x miliseconds)
+ * @param rawReads  pointer to the int array where the raw ADC values are stored
+ * @param keyVals   pointer to the int array where the raw key readings are stored (no debouncing)
+ */
 void debugOutput1(int *rawReads, int *keyVals) {
     if (isDebugOutputDue()) {
         // Report back 0-1023 raw ADC 10-bit values if enabled

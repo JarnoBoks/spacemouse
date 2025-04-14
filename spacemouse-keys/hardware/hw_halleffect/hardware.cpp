@@ -42,7 +42,9 @@
 
 #include "hardware.h" // External definitions for this file
 
-#include "kinematics.h" // Definition of the velocity array
+#include "kinematics.h" // Definition of the velocity array positions
+
+#include "../adc.h" // Definition of readAllFromSensors
 
 /**
  * TODO
@@ -66,4 +68,29 @@ void _calculateKinematicSensors(int *centered, int16_t *velocity) {
 
     // rotZ
     velocity[ROTZ] = (centered[HES0] + centered[HES2] + centered[HES6] + centered[HES8] - centered[HES1] - centered[HES3] - centered[HES7] - centered[HES9]) / 4;
+}
+
+/**
+ * @brief Set the analog reference voltage to 5V for debug 1 and to 2.56V otherwise
+ * @param debug The current debug level of the spacemouse.
+ */
+void setAnalogReferenceVoltage(int debug) {
+    if (debug == 1) {
+        // Set the reference voltage for the AD Convertor to 5V only for the first calibration step (pinout/inversion calibration).
+        analogReference(DEFAULT);
+        Serial.println(F("Setting analog reference to 5V."));
+    } else {
+        // Set the reference voltage for the AD Convertor to 2.56V in order to get larger sensitivity.
+        analogReference(INTERNAL);
+        Serial.println(F("Setting analog reference to 2.56V."));
+    }
+
+    // The first measurements after changing the reference voltage can be wrong. So take 100ms to let the voltage stabilize and
+    // take some measurements afterwards just to be sure. Performancewise this shouldn't be a problem due to the debug/setup
+    // nature of this function.
+    delay(100);
+    int tempReads[8];
+    for (int i = 0; i <= 8; i++) {
+        readAllFromSensors(tempReads);
+    }
 }

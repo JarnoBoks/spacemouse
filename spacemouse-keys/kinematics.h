@@ -3,7 +3,8 @@
 
 int modifierFunction(int x);
 
-void readAllFromSensors(int *rawReads);
+// REVIEW - Moved to ADC.h
+// void readAllFromSensors(int *rawReads);
 
 void FilterAnalogReadOuts(int *centered);
 

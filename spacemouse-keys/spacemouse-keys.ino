@@ -20,6 +20,8 @@
 #include "spaceKeys.h"
 // header for HID emulation of the spacemouse
 #include "SpaceMouseHID.h"
+// header for ADC reading of the spacemouse
+#include "hardware/adc.h"
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
 // if an encoder wheel is used
@@ -66,19 +68,19 @@ void setup() {
     setupKeys();
 #endif
 
-    // Begin Seral for debugging
+    // Begin Serial for debugging or calibration
     Serial.begin(250000);
     delay(100);
-    Serial.setTimeout(2); // the serial interface will look for new debug values and it will only wait 2ms
-                          // Read idle/centre positions for joysticks.
+    Serial.setTimeout(2); // The serial interface will look for new debug values and it will only wait 2ms
 
 #ifdef HALLEFFECT
-                          // Set the ADC referencevoltage to 5V if debug=1, 2.56V otherwise.
+    // Set the ADC referencevoltage to 5V if debug=1, 2.56V otherwise.
     // It is important the reference Voltage is set before the Zeroing of the
     // sensors is executed.
-    setAnalogReferenceVoltage();
+    setAnalogReferenceVoltage(debug);
 #endif
 
+    // Read idle/centre positions for joysticks.
     // zero the joystick position 500 times (takes approx. 480 ms)
     // during setup() we are not interested in the debug output: debugFlag = false
     busyZeroing(centerPoints, 500, false);
@@ -97,7 +99,8 @@ void setup() {
 }
 
 void loop() {
-    // check if the user entered a debug mode via serial interface
+
+    // Check if the user entered a debug mode via serial interface
     if (Serial.available()) {
         tmpInput = Serial.parseInt(); // Read from serial interface, if a new debug value has been sent. Serial timeout has been set in setup()
         if (tmpInput != 0) {
@@ -105,14 +108,13 @@ void loop() {
             if (tmpInput == -1) {
                 Serial.println(F("Please enter the debug mode now or while the script is reporting."));
             }
-#ifdef HALLEFFECT
+
             // Debug is updated check if the ADC referencevoltage has to be changed.
-            setAnalogReferenceVoltage();
-#endif
+            setAnalogReferenceVoltage(debug);
         }
     }
 
-    // Joystick values are read. 0-1023
+    // RAW Sensor values are read. 0-1023
     readAllFromSensors(rawReads);
 
 #if NUMKEYS > 0
@@ -252,32 +254,6 @@ void lightSimpleLED(boolean light) {
     } else {
         // false -> LED off -> pull kathode up
         digitalWrite(LEDpin, HIGH); // turn the LED
-    }
-}
-#endif
-
-#ifdef HALLEFFECT
-/**
- * @brief Set the analog reference to 5V for debug 1 and to 2.56V otherwise
- */
-void setAnalogReferenceVoltage() {
-    if (debug == 1) {
-        // Set the reference voltage for the AD Convertor to 5V only for the first calibration step (pinout/inversion calibration).
-        analogReference(DEFAULT);
-        Serial.println(F("Setting analog reference to 5V."));
-    } else {
-        // Set the reference voltage for the AD Convertor to 2.56V in order to get larger sensitivity.
-        analogReference(INTERNAL);
-        Serial.println(F("Setting analog reference to 2.56V."));
-    }
-
-    // The first measurements after changing the reference voltage can be wrong. So take 100ms to let the voltage stabilize and
-    // take some measurements afterwards just to be sure. Performancewise this shouldn't be a problem due to the debug/setup
-    // nature of this function.
-    delay(100);
-    int tempReads[8];
-    for (int i = 0; i <= 8; i++) {
-        readAllFromSensors(tempReads);
     }
 }
 #endif

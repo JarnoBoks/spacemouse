@@ -5,9 +5,19 @@
 
 #include "hardware/SpaceMouseHW.h"
 
+#include "sensitivity.h"
+
 int modifierFunction(int x);
 
+void readAllFromJoystick(int *rawReads);
+
+void FilterAnalogReadOuts(int *centered);
+
+#ifdef EEPROM_CALIBRATION
+void calculateKinematic(int *centered, int16_t *velocity, sensitivities_t *sensitivities, uint8_t modFunc, uint8_t inversions);
+#else
 void calculateKinematic(SpaceMouseHW_ &SMHW, int16_t *velocity);
+#endif
 
 void switchXY(int16_t *velocity);
 void switchYZ(int16_t *velocity);
@@ -21,4 +31,5 @@ void exclusiveMode(int16_t *velocity);
 #define ROTX 3
 #define ROTY 4
 #define ROTZ 5
+
 #endif // KINEMATICS_h

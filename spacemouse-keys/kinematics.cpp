@@ -9,19 +9,18 @@
 #include <math.h>
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
 
-#include "kinematics.h"
 #include "calibration.h"
+#include "kinematics.h"
+#ifdef EEPROM_CALIBRATION
+#include "sensitivity.h"
+#endif
 
-// Setup the arrays for min and max values of the joystick/sensors, see config.h
-
-/**
- *  @brief Function to modify the input value according to different mathematic modes. Choose the mathematical function in config.h as modFunc.A0
- *
- *  @param x input between -350 and +350
- *  @return output between -350 and +350
- */
+#ifndef EEPROM_CALIBRATION
+/// @brief Function to modify the input value according to different mathematic modes. Choose the mathematical function in config.h as modFunc
+/// @param x input between -350 and +350
+/// @return output between -350 and +350
 int modifierFunction(int x) {
-    // making sure function input never exeeds range of -350 to 350
+    // making sure function input never exedes range of -350 to 350
     x = constrain(x, -350, 350);
     double result;
 #if (MODFUNC == 1)
@@ -48,6 +47,46 @@ int modifierFunction(int x) {
     // converting doubles to int again
     return (int)round(result);
 }
+#else
+/**
+ * @brief Function to modify the input value according to different mathematic modes. Choose the mathematical function in config.h as modFunc
+ * @param x input between -350 and +350
+ * @param modFunc The modifier function to use
+ * @return output between -350 and +350
+ */
+int _modifierFunction(int x, uint8_t modFunc) {
+    // making sure function input never exceeds range of -350 to 350
+    x = constrain(x, -350, 350);
+    double result;
+
+    switch (modFunc) {
+    case 1:
+        // using squared function y = x^2*sign(x)
+        result = 350 * pow(x / 350.0, 2) * sign(x); // sign putting out -1 or 1 depending on sign of value. (Is needed because x^2 will always be positive)
+        break;
+    case 2:
+        // using tan function: tan(x)
+        result = 350 * tan(x / 350.0);
+        break;
+    case 3:
+        // using squared tan function: tan(x^2*sign(x))
+        result = 350 * tan(pow(x / 350.0, 2) * sign(x)); // sign putting out -1 or 1 depending on sign of value. (Is needed because x^2 will always be positive)
+        break;
+    case 4:
+        // using cubed tan function: tan(x^3)
+        result = 350 * tan(pow(x / 350.0, 3));
+        break;
+    default:
+        result = x;
+    }
+
+    // make sure values between-350 and 350 are allowed
+    result = constrain(result, -350, 350);
+
+    // converting doubles to int again
+    return (int)round(result);
+}
+#endif
 
 /**
  *  @brief Calculate the kinematic of the three axis from the eight sensors
@@ -98,6 +137,7 @@ void calculateKinematic(SpaceMouseHW_ &SMHW, int16_t *velocity) {
         velocity[ROTZ] = 0;
     }
 
+#ifndef EEPROM_CALIBRATION
 // Invert directions if needed
 #if INVX > 0
     velocity[TRANSX] = velocity[TRANSX] * -1;
@@ -116,6 +156,20 @@ void calculateKinematic(SpaceMouseHW_ &SMHW, int16_t *velocity) {
 #endif
 #if INVRZ > 0
     velocity[ROTZ] = velocity[ROTZ] * -1;
+#endif
+#else
+    if (GET_INVERSION(inversions, AX_INVX))
+        velocity[TRANSX] *= -1;
+    if (GET_INVERSION(inversions, AX_INVY))
+        velocity[TRANSY] *= -1;
+    if (GET_INVERSION(inversions, AX_INVZ))
+        velocity[TRANSZ] *= -1;
+    if (GET_INVERSION(inversions, AX_INVRX))
+        velocity[ROTX] *= -1;
+    if (GET_INVERSION(inversions, AX_INVRY))
+        velocity[ROTY] *= -1;
+    if (GET_INVERSION(inversions, AX_INVRZ))
+        velocity[ROTZ] *= -1;
 #endif
 } // end calculateKinematic
 

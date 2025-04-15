@@ -25,6 +25,19 @@
 #include "hardware/SpaceMouseHW_Hall.h"
 #include "hardware/SpaceMouseHW_Joystick.h"
 
+#ifdef EEPROM_CALIBRATION
+#include "sensitivity.h"
+
+// Global defined (and usable everywhere in the software)
+sensitivities_t mySensitivities;
+
+// Stores the current configured modulation function, initialised by the global defined variable.
+uint8_t modFunc = MODFUNC;
+
+// Stores the current configured inversions, initialised by the global defined variable.
+uint8_t inversions = DEFAULT_INVERSION;
+#endif
+
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
 // if an encoder wheel is used
 #include "encoderWheel.h"
@@ -34,6 +47,7 @@
 void lightSimpleLED(boolean light);
 #endif
 #ifdef LEDRING
+#include "Arduino.h"
 #include "ledring.h"
 #include "Arduino.h"
 #endif
@@ -52,6 +66,7 @@ int keyVals[NUMKEYS];
 
 // key event, after debouncing. It is 1 only for a single sample
 uint8_t keyOut[NUMKEYS];
+
 // state of the key, which stays 1 as long as the key is pressed
 uint8_t keyState[NUMKEYS];
 
@@ -59,7 +74,7 @@ uint8_t keyState[NUMKEYS];
 // int16_t to match what the HID protocol expects.
 int16_t velocity[6];
 
-int tmpInput; // store the value, the user might input over the serial
+long tmpInput; // store the value, the user might input over the serial
 
 void setup() {
 // setup the keys e.g. to internal pull-ups
@@ -80,6 +95,17 @@ void setup() {
     // during setup() we are not interested in the debug output: debugFlag = false
     SMHW.BusyZeroing(500, false);
 
+#ifdef EEPROM_CALIBRATION
+    // Read sensitivity configuration from EEPROM (or set default values)
+    readSensitivitiesEEPROM(&mySensitivities);
+
+    // Read modfunc from the EEPROM (or set default value)
+    modFunc = readModfunc();
+
+    // Read inversions from the EEPROM (or set default value)
+    inversions = readInversions();
+#endif
+
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
     initEncoderWheel();
 #endif
@@ -94,28 +120,70 @@ void setup() {
 }
 
 void loop() {
-
-    // Check if the user entered a debug mode via serial interface
+    // check if the user entered a debug mode via serial interface
     if (Serial.available()) {
         tmpInput = Serial.parseInt(); // Read from serial interface, if a new debug value has been sent. Serial timeout has been set in setup()
         if (tmpInput != 0) {
-            debug = tmpInput;
-            if (tmpInput == -1) {
-                Serial.println(F("Please enter the debug mode now or while the script is reporting."));
+
+#ifdef EEPROM_CALIBRATION
+            if (tmpInput == 2222) {
+                printSensitivity(&mySensitivities, true);
             }
 
-            // Debug is updated check if the ADC referencevoltage has to be changed.
-            SMHW.SetAnalogReferenceVoltage(debug);
+            if (tmpInput >= 2000000 && tmpInput < 3000000) {
+                // User input wants to update sensitvity
+                if (updateSensitivity(&mySensitivities, tmpInput) > 0) {
+                    printSensitivity(&mySensitivities, true);
+                }
+            }
+
+            if (tmpInput == 10) {
+                printModfunc(modFunc, true);
+            }
+
+            if (tmpInput >= 3000000 && tmpInput < 4000000) {
+                // User input wants to update modfunc
+                modFunc = updateModfunc(tmpInput);
+            }
+
+            if (tmpInput == 4444) {
+                printInversions(inversions, true);
+            }
+
+            if (tmpInput >= 4000000 && tmpInput < 5000000) {
+                // User input wants to update axis inversion
+                inversions = updateInversions(tmpInput);
+            }
+
+            if (validCalibrationOption(tmpInput)) {
+#endif
+                debug = tmpInput;
+                if (tmpInput == -1) {
+                    Serial.println(F("Please enter the debug mode now or while the script is reporting."));
+                }
+                // Debug is updated check if the ADC referencevoltage has to be changed.
+                SMHW.SetAnalogReferenceVoltage(debug);
+#ifdef EEPROM_CALIBRATION
+            }
+#endif
         }
     }
 
+    // Joystick values are read. 0-1023
+    readAllFromJoystick(rawReads);
     // RAW Sensor values are read. 0-1023
     SMHW.ReadAllFromSensors();
 
 #if NUMKEYS > 0
     // LivingTheDream added reading of key presses
     readAllFromKeys(keyVals);
+    // LivingTheDream added reading of key presses
+    readAllFromKeys(keyVals);
 #endif
+    // Report back 0-1023 raw ADC 10-bit values if enabled
+    if (debug == 1) {
+        debugOutput1(rawReads, keyVals);
+    }
     // Report back 0-1023 raw ADC 10-bit values if enabled
     if (debug == 1) {
         debugOutput1(SMHW, keyVals);
@@ -125,10 +193,24 @@ void loop() {
     if (debug == 11) {
         // calibrate the joystick
         // As this is called in the debug=11, we do more iterations.
+        busyZeroing(centerPoints, 2000, true);
+        debug = -1; // this only done once
+    }
+    if (debug == 11) {
+        // calibrate the joystick
+        // As this is called in the debug=11, we do more iterations.
         SMHW.BusyZeroing(2000, true);
         debug = -1; // this only done once
     }
 
+    // Subtract centre position from measured position to determine movement.
+    for (int i = 0; i < 8; i++) {
+        centered[i] = rawReads[i] - centerPoints[i];
+    }
+
+    if (debug == 20) {
+        calcMinMax(centered); // debug=20 to calibrate MinMax values
+    }
     SMHW.CenterSensors();
 
     if (debug == 20) {
@@ -137,18 +219,31 @@ void loop() {
 
     // Report centered joystick values if enabled. Values should be approx -500 to +500, jitter around 0 at idle
     if (debug == 2) {
+        debugOutput2(centered);
+    }
+    // Report centered joystick values if enabled. Values should be approx -500 to +500, jitter around 0 at idle
+    if (debug == 2) {
         // debugOutput2(centered);
         debugOutput2(SMHW);
     }
 
+    FilterAnalogReadOuts(centered);
     SMHW.FilterAnalogReadOuts();
 
+    // Report centered joystick values. Filtered for deadzone. Approx -350 to +350, locked to zero at idle
+    if (debug == 3) {
+        debugOutput2(centered);
+    }
     // Report centered joystick values. Filtered for deadzone. Approx -350 to +350, locked to zero at idle
     if (debug == 3) {
         debugOutput2(SMHW);
     }
 
+#ifndef EEPROM_CALIBRATION
     calculateKinematic(SMHW, velocity);
+#else
+    calculateKinematic(centered, velocity, &mySensitivities, modFunc, inversions);
+#endif
 
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
     // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities
@@ -163,11 +258,15 @@ void loop() {
     // The encoder wheel shall be treated as a key
     calcEncoderAsKey(keyState, debug);
 #endif
-
     if (debug == 4) {
-        debugOutput4(velocity, keyOut);
         // Report translation and rotation values if enabled.
+#ifndef EEPROM_CALIBRATION
+        debugOutput4(velocity, keyOut);
+#else
+        debugOutput4(velocity, keyOut, &mySensitivities);
+#endif
     }
+
     if (debug == 5) {
         debugOutput5(SMHW, velocity);
     }
@@ -192,6 +291,14 @@ void loop() {
     // report velocity and keys after possible kill-key feature
     if (debug == 6) {
         debugOutput4(velocity, keyOut);
+    }
+    // report velocity and keys after possible kill-key feature
+    if (debug == 6) {
+#ifndef EEPROM_CALIBRATION
+        debugOutput4(velocity, keyOut);
+#else
+        debugOutput4(velocity, keyOut, &mySensitivities);
+#endif
     }
 
 #if SWITCHYZ > 0
@@ -248,6 +355,32 @@ void lightSimpleLED(boolean light) {
     } else {
         // false -> LED off -> pull kathode up
         digitalWrite(LEDpin, HIGH); // turn the LED
+    }
+}
+#endif
+
+#ifdef HALLEFFECT
+/**
+ * @brief Set the analog reference to 5V for debug 1 and to 2.56V otherwise
+ */
+void setAnalogReferenceVoltage() {
+    if (debug == 1) {
+        // Set the reference voltage for the AD Convertor to 5V only for the first calibration step (pinout/inversion calibration).
+        analogReference(DEFAULT);
+        Serial.println(F("Setting analog reference to 5V."));
+    } else {
+        // Set the reference voltage for the AD Convertor to 2.56V in order to get larger sensitivity.
+        analogReference(INTERNAL);
+        Serial.println(F("Setting analog reference to 2.56V."));
+    }
+
+    // The first measurements after changing the reference voltage can be wrong. So take 100ms to let the voltage stabilize and
+    // take some measurements afterwards just to be sure. Performancewise this shouldn't be a problem due to the debug/setup
+    // nature of this function.
+    delay(100);
+    int tempReads[8];
+    for (int i = 0; i <= 8; i++) {
+        readAllFromJoystick(tempReads);
     }
 }
 #endif

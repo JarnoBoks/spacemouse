@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "SpaceMouseHW.h"
 #include "config.h"
-#include "calibration.h" // printArray
+// REMOVE - #include "calibration.h" // printArray
 
 #define MINMAXDURATION 15  // The duration of the min-max calibration in seconds
 #define DEADZONEWARNING 10 // A deadzone above the following value will be warned // TODO - Use the configured level for this
@@ -10,8 +10,8 @@
  * Constructor / Destructor
  */
 
-SpaceMouseHW_::SpaceMouseHW_(const int warnCpntMax, const int warnCpntMin, const int warnMMMax, const int warnMMMin)
-    : _pinList PINLIST, _invertList INVERTLIST, _maxVals MAXVALS, _minVals MINVALS,
+SpaceMouseHW_::SpaceMouseHW_(const int warnCpntMax, const int warnCpntMin, const int warnMMMax, const int warnMMMin, const char *axs[])
+    : _axisNames{axs}, _pinList PINLIST, _invertList INVERTLIST, _maxVals MAXVALS, _minVals MINVALS,
       _warningCenterpointMin(warnCpntMin),
       _warningCenterpointMax(warnCpntMax),
       _warningMinMaxMinimum(warnMMMin),
@@ -19,6 +19,7 @@ SpaceMouseHW_::SpaceMouseHW_(const int warnCpntMax, const int warnCpntMin, const
 
 SpaceMouseHW_::~SpaceMouseHW_() {}
 
+#if 0
 // Virtual functions: have to be implemented/overidden by the derived hardware classes.
 void SpaceMouseHW_::SetAnalogReferenceVoltage(int debug) {
     // No function in the Base class. Implementation in the derived hardware classes
@@ -26,6 +27,7 @@ void SpaceMouseHW_::SetAnalogReferenceVoltage(int debug) {
 void SpaceMouseHW_::CalculateKinematicSensors(int16_t *velocity) {
     // No function in the Base class. Implementation in the derived hardware classes
 }
+#endif
 
 bool SpaceMouseHW_::BusyZeroing(uint16_t numIterations, boolean debugFlag) {
     // Set up the zeroing datastructure, while initialising the constants.
@@ -36,11 +38,8 @@ bool SpaceMouseHW_::BusyZeroing(uint16_t numIterations, boolean debugFlag) {
     // If in debugmode, call the print function of our parent and output the measured values per sensor.
     // The function will print an intro and outro too.
     if (debugFlag) {
-        const char *axisNames[NUM_SENSORS];
-        getAxisDescriptions(axisNames);
-
         for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-            _printZeroedValue(&params, axisNames[i], i);
+            _printZeroedValue(&params, _axisNames[i], i);
         }
     }
 
@@ -84,9 +83,9 @@ void SpaceMouseHW_::CalcMinMax() {
         }
     } else if (_minMaxCalcState == 2) {
         Serial.print(F("#define MINVALS "));
-        printArray(_minVals, 8);
+        _printArray(_minVals, NUM_SENSORS);
         Serial.print(F("#define MAXVALS "));
-        printArray(_maxVals, 8);
+        _printArray(_maxVals, NUM_SENSORS);
 
         // Calculate and print the working for each sensor (added for the HALL sensors, but this will function for the joysticks too)
         int workingRanges[NUM_SENSORS];
@@ -98,21 +97,17 @@ void SpaceMouseHW_::CalcMinMax() {
             min = (abs(_minVals[i]) > min) ? abs(_minVals[i]) : min;
         }
         Serial.print(F("Ranges are: "));
-        printArray(workingRanges, NUM_SENSORS);
+        _printArray(workingRanges, NUM_SENSORS);
         int centerRange = (max + (min * -1)) / 2;
         Serial.print(F("Center: "));
         Serial.println(centerRange);
-
-        // Retrieve the axisNames from the Derived class
-        const char *axisNames[NUM_SENSORS];
-        getAxisDescriptions(axisNames);
 
         for (uint8_t i = 0; i < NUM_SENSORS; i++) {
             if (abs(_minVals[i]) < _warningMinMaxMinimum) {
                 Serial.print(F("Warning: minValue["));
                 Serial.print(i);
                 Serial.print("] ");
-                Serial.print(axisNames[i]);
+                Serial.print(_axisNames[i]);
                 Serial.print(F(" is small: "));
                 Serial.println(_minVals[i]);
             }
@@ -120,7 +115,7 @@ void SpaceMouseHW_::CalcMinMax() {
                 Serial.print(F("Warning: maxValue["));
                 Serial.print(i);
                 Serial.print("] ");
-                Serial.print(axisNames[i]);
+                Serial.print(_axisNames[i]);
                 Serial.print(F(" is small: "));
                 Serial.println(_maxVals[i]);
             }
@@ -150,11 +145,6 @@ void SpaceMouseHW_::FilterAnalogReadOuts() {
             }
         }
     }
-}
-
-// Virtual protected functions
-void SpaceMouseHW_::getAxisDescriptions(const char **axisnames) {
-    // No function in the Base class. Implementation in the derived hardware classes
 }
 
 /**
@@ -296,6 +286,22 @@ void SpaceMouseHW_::_printZeroedValue(zeroing_t *params, const char *axisname, i
 }
 
 /**
+ *  @brief Prints an array to the Serial, in order to copy the output again to C-Code. Example output: {-519, -521, -512, -2, -519, -482, -508, -1}
+ *  @param arr array to print
+ *  @param size size of the array
+ */
+void SpaceMouseHW_::_printArray(int arr[], int size) {
+    Serial.print("{");
+    for (int i = 0; i < size; i++) {
+        Serial.print(arr[i]);
+        if (i < size - 1) {
+            Serial.print(", ");
+        }
+    }
+    Serial.println("}");
+}
+
+/**
  * @brief Output the axisname and the value to the serial interface.
  * @param axisname
  * @param val
@@ -303,28 +309,20 @@ void SpaceMouseHW_::_printZeroedValue(zeroing_t *params, const char *axisname, i
 void SpaceMouseHW_::_printValue(const char *axisname, int val) {
     char debugOutputBuffer[20];
 
-    sprintf(debugOutputBuffer, "%2.2s: %4d ", axisname, val);
+    sprintf(debugOutputBuffer, "%4.4s:%4d, ", axisname, val);
     Serial.print(debugOutputBuffer);
 }
 
 void SpaceMouseHW_::PrintRawReads() {
-    // Retrieve the axisNames from the Derived class
-    const char *axisNames[NUM_SENSORS];
-    getAxisDescriptions(axisNames);
-
     // Report back 0-1023 raw ADC 10-bit values if enabled
     for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-        _printValue(axisNames[i], _rawReads[i]);
+        _printValue(_axisNames[i], _rawReads[i]);
     }
 }
 
 void SpaceMouseHW_::PrintCentered() {
-    // Retrieve the axisNames from the Derived class
-    const char *axisNames[NUM_SENSORS];
-    getAxisDescriptions(axisNames);
-
     // Report back 0-1023 raw ADC 10-bit values if enabled
     for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-        _printValue(axisNames[i], centered[i]);
+        _printValue(_axisNames[i], centered[i]);
     }
 }

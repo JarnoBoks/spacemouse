@@ -8,7 +8,7 @@ Follow this file from top to bottom to calibrate your space mouse.
 You can find some pictures for the calibration process here:
 https://github.com/AndunHH/spacemouse/wiki/Ergonomouse-Build#calibration
 
-Debugging Instructions 
+Debugging Instructions
 =========================
 To activate one of the following debugging modes, you can either:
 - Change STARTDEBUG here in the code and compile again or
@@ -35,7 +35,7 @@ Debug Modes:
 8:  Report the bits and bytes send as button codes
 9:  Report details about the encoder wheel, if ROTARY_AXIS > 0 or ROTARY_KEYS>0
 */
-#define STARTDEBUG 0  // Can also be set over the serial interface, while the program is running!
+#define STARTDEBUG 0 // Can also be set over the serial interface, while the program is running!
 
 /* First Calibration: Joystick axis pin assignment
 ==============================================
@@ -53,11 +53,11 @@ Each joysticks has
 - a vertical axis from top to bottom = X
 (This definition of X and Y may not correspond to the print on your joysticks... We will find out which signal is X and Y now.)
 
-1. Try to write down the two axis of every joystick with the corresponding pin numbers you chose. 
+1. Try to write down the two axis of every joystick with the corresponding pin numbers you chose.
 (A4 and A5 are not used in the example by TeachingTech).
 2. Compile the script, type 1 into the serial interface and hit enter to enable debug output 1.
 3. At the joystick in front of you (A), move the joystick from the top -> down to bottom (X) and observe the debug output:
-  3.a) AX goes from 0 (=joystick at the top) to 1023 (joystick at bottom) -> Everything is correct.  
+  3.a) AX goes from 0 (=joystick at the top) to 1023 (joystick at bottom) -> Everything is correct.
   3.b) AX goes from 1023 to 0 -> You need to invert AX, see INVERTLIST below.
   3.c) Another output is showing movement: Swap the pins in the PINLIST. Probably you have to swap the first and second element, as AX and AY may be swapped.
 
@@ -71,24 +71,23 @@ If you have the joystick TeachingTech recommended:
 
 // AX, AY, BX, BY, CX, CY, DX, DY
 #define PINLIST \
-  { A1, A0, A3, A2, A7, A6, A9, A8 }
+    {A1, A0, A3, A2, A7, A6, A9, A8}
 // Check the correct wiring with the debug output=1
 
-// Set to 1 to invert one joystick axis. 
+// Set to 1 to invert one joystick axis.
 // Usually all _X values shall be inverted or none of them.
 // Usually all _Y values shall be inverted or none of them.
 #define INVERTLIST \
-  { 0, 0,  0,  0,  0,  0,  0,  0}
+    {0, 0, 0, 0, 0, 0, 0, 0}
 // AX, AY, BX, BY, CX, CY, DX, DY
 
- 
 /* Second calibration: Tune Deadzone
 ====================================
 Deadzone to filter out unintended movements. Increase if the mouse has small movements when it should be idle or the mouse is too sensitive to subtle movements.
 Semi-automatic: Set debug = 11. Don't touch the mouse and observe the automatic output.
-Manual: Set debug = 2. Don't touch the mouse but observe the values. They should be nearly to zero. Every value around zero which is noise or should be neglected afterwards is in the following deadzone. 
+Manual: Set debug = 2. Don't touch the mouse but observe the values. They should be nearly to zero. Every value around zero which is noise or should be neglected afterwards is in the following deadzone.
 */
-#define DEADZONE 3  // Recommended to have this as small as possible to allow full range of motion.
+#define DEADZONE 3 // Recommended to have this as small as possible to allow full range of motion.
 
 /* Third calibration: Getting MIN and MAX values
 ================================================
@@ -131,8 +130,8 @@ Recommended calibration procedure for min/max ADC levels
 
 Insert measured Values like this: {AX,AY,BX,BY,CX,CY,DX,DY}.
 */
-#define MINVALS { -512, -512, -512, -512, -512, -512, -512, -512 }
-#define MAXVALS { +512, +512, +512, +512, +512, +512, +512, +512 }
+#define MINVALS {-512, -512, -512, -512, -512, -512, -512, -512}
+#define MAXVALS {+512, +512, +512, +512, +512, +512, +512, +512}
 
 /* Fourth calibration: Sensitivity
 ==================================
@@ -147,17 +146,17 @@ Recommended calibration procedure for sensitivity
 4. Repeat steps 3 for TY, TZ, RX, RY, RZ
 5. Verification: Move the Joystick in funny ways. All you should get for either TX,TX,TZ,RX,RY,RZ should be approximately between -350 to 350.
 6. You have finished sensitivity calibration. You can now test your Spacemouse with your favorite program (e.g. Cad software, Slicer)
-7. Aftermath: You notice the movements are hard to control. Try using Modification Functions 
+7. Aftermath: You notice the movements are hard to control. Try using Modification Functions
 [Suggestion: ModFunc level 3]
 */
 #define TRANSX_SENSITIVITY 2
 #define TRANSY_SENSITIVITY 2
 #define POS_TRANSZ_SENSITIVITY 0.5
-#define NEG_TRANSZ_SENSITIVITY 5  // I want low sensitivity for down, therefore a high value.
-#define GATE_NEG_TRANSZ 15        // gate value, which negative z movements will be ignored (like an additional deadzone for -z).
-#define GATE_ROTX 15              // Value under which rotX values will be forced to zero
-#define GATE_ROTY 15              // Value under which roty values will be forced to zero
-#define GATE_ROTZ 15              // Value under which rotz values will be forced to zero
+#define NEG_TRANSZ_SENSITIVITY 5 // I want low sensitivity for down, therefore a high value.
+#define GATE_NEG_TRANSZ 15       // gate value, which negative z movements will be ignored (like an additional deadzone for -z).
+#define GATE_ROTX 15             // Value under which rotX values will be forced to zero
+#define GATE_ROTY 15             // Value under which roty values will be forced to zero
+#define GATE_ROTZ 15             // Value under which rotz values will be forced to zero
 
 #define ROTX_SENSITIVITY 1.5
 #define ROTY_SENSITIVITY 1.5
@@ -185,23 +184,23 @@ Recommendation after tuning: MODFUNC 3
 Modify the direction of translation/rotation depending on the CAD program you are using on your PC.
 This should be done, when you are done with the pin assignment!
 
-If all defines are set to 0 the resulting X, Y and Z axis correspond to the pictures shown in the README.md. 
+If all defines are set to 0 the resulting X, Y and Z axis correspond to the pictures shown in the README.md.
 The suggestion in the comments for "3Dc" are often needed on windows PCs with 3dconnexion driver to get expected behavior.
 */
 
-#define INVX 0   // pan left/right  // 3Dc: 0
-#define INVY 1   // pan up/down     // 3Dc: 1
-#define INVZ 1   // zoom in/out     // 3Dc: 1
-#define INVRX 0  // Rotate around X axis (tilt front/back)  // 3Dc: 0
-#define INVRY 1  // Rotate around Y axis (tilt left/right)  // 3Dc: 1
-#define INVRZ 1  // Rotate around Z axis (twist left/right) // 3Dc: 1
+#define INVX 0  // pan left/right  // 3Dc: 0
+#define INVY 1  // pan up/down     // 3Dc: 1
+#define INVZ 1  // zoom in/out     // 3Dc: 1
+#define INVRX 0 // Rotate around X axis (tilt front/back)  // 3Dc: 0
+#define INVRY 1 // Rotate around Y axis (tilt left/right)  // 3Dc: 1
+#define INVRZ 1 // Rotate around Z axis (twist left/right) // 3Dc: 1
 
-//Switch Zoom direction with Up/Down Movement
-#define SWITCHYZ 0  // change to 1 to switch Y and Z axis
+// Switch Zoom direction with Up/Down Movement
+#define SWITCHYZ 0 // change to 1 to switch Y and Z axis
 
-/* Key Support 
+/* Key Support
 ===============
-If you attached keys to your Spacemouse, configure them here. 
+If you attached keys to your Spacemouse, configure them here.
 You can use the keys to report them via USB HID to the PC (either classically pressed or emulated with an encoder) or as kill-keys (described below).
 
 How many classic keys are there in total? (0=no keys, feature disabled)
@@ -211,7 +210,7 @@ How many classic keys are there in total? (0=no keys, feature disabled)
 // Define the PINS for the classic keys on the Arduino
 // The first pins from KEYLIST may be reported via HID
 #define KEYLIST \
-  { 15, 14, 16, 10 }
+    {15, 14, 16, 10}
 
 /* Report KEYS over USB HID to the PC
  ----------------------------------
@@ -221,25 +220,25 @@ How many keys reported? Classical + ROTARY_KEYS in total.
 
 // In order to define which key is assigned to which button, the following list must be entered in the BUTTONLIST below
 
-#define SM_MENU     0 // Key "Menu"
-#define SM_FIT      1 // Key "Fit"
-#define SM_T        2 // Key "Top"
-#define SM_R        4 // Key "Right"
-#define SM_F        5 // Key "Front"
-#define SM_RCW      8 // Key "Roll 90°CW"
-#define SM_1        12 // Key "1" 
-#define SM_2        13 // Key "2" 
-#define SM_3        14 // Key "3" 
-#define SM_4        15 // Key "4"
-#define SM_ESC      22 // Key "ESC"
-#define SM_ALT      23 // Key "ALT"
-#define SM_SHFT     24 // Key "SHIFT"
-#define SM_CTRL     25 // Key "CTRL"
-#define SM_ROT      26 // Key "Rotate" 
+#define SM_MENU 0  // Key "Menu"
+#define SM_FIT 1   // Key "Fit"
+#define SM_T 2     // Key "Top"
+#define SM_R 4     // Key "Right"
+#define SM_F 5     // Key "Front"
+#define SM_RCW 8   // Key "Roll 90°CW"
+#define SM_1 12    // Key "1"
+#define SM_2 13    // Key "2"
+#define SM_3 14    // Key "3"
+#define SM_4 15    // Key "4"
+#define SM_ESC 22  // Key "ESC"
+#define SM_ALT 23  // Key "ALT"
+#define SM_SHFT 24 // Key "SHIFT"
+#define SM_CTRL 25 // Key "CTRL"
+#define SM_ROT 26  // Key "Rotate"
 
 // BUTTONLIST must have at least as many elements as NUMHIDKEYS
 // The keys from KEYLIST or ROTARY_KEYS are assigned to buttons here:
-#define BUTTONLIST { SM_FIT, SM_T, SM_R, SM_RCW }
+#define BUTTONLIST {SM_FIT, SM_T, SM_R, SM_RCW}
 
 /* Exclusive mode
 =================
@@ -304,7 +303,7 @@ How many kill keys are there? (disabled: 0; enabled: 2)
 #endif
 
 // time in ms which is needed to allow a new button press
-#define DEBOUNCE_KEYS_MS 200  
+#define DEBOUNCE_KEYS_MS 200
 
 /* Encoder Wheel
 ================
@@ -334,11 +333,11 @@ Axis to replace with encoder
 Small number = short duration of zooming <-> Big Number = longer duration of zooming
 Compare this number with the update frequency of the script, reported by debug=7: If ECHOES = frequency: the zoom is faded for 1 second.
 */
-#define ECHOES 200      
+#define ECHOES 200
 
 /* Strength of the simulated pull
 Recommended range: 0 - 350
-  Reason for max=350: The HID Interface reports logical max as +350, see hidInterface.h 
+  Reason for max=350: The HID Interface reports logical max as +350, see hidInterface.h
 Recommended strength = 200
 */
 #define SIMSTRENGTH 200
@@ -357,8 +356,7 @@ ROTARY_KEYS 1 = enabled, 0 = disabled
 // duration of simulated key
 #define ROTARY_KEY_STRENGTH 19
 
-
-/* LED support 
+/* LED support
 ===============
 You can attach:
 a) a simple LED to the mouse. LED shall be connected to 5V and the controller port.
@@ -367,7 +365,7 @@ b) a fancy LED strip, like the nanopixel. Check the FASTLED library for supporte
 Which pin shall be used as LED? This pin is used either as a digital pin (a) or as the data pin (b).
 Change from "//define" to "#define" to activate the LED feature.
 */
-//#define LEDpin 5
+// #define LEDpin 5
 
 /* Simple LED
 -------------
@@ -375,36 +373,34 @@ Change from "//define" to "#define" to activate the LED feature.
 */
 // #define LEDinvert
 
-/* LED strip with data pin 
+/* LED strip with data pin
 ---------------------------
-The connected LED is not just a stupid LED, but an intelligent one, like a neopixel controlled by FASTLED library. If set, the LEDRING gives the number of LEDs on the ring. 
+The connected LED is not just a stupid LED, but an intelligent one, like a neopixel controlled by FASTLED library. If set, the LEDRING gives the number of LEDs on the ring.
 */
 
-//#define LEDRING 24 
-// The LEDpin is used as a data pin
+// #define LEDRING 24
+//  The LEDpin is used as a data pin
 
 // The LEDs light up, if a certain movement is reached:
 #define VelocityDeadzoneForLED 15
- 
+
 // About how many LEDs must the ring by turned to align?
 #define LEDclockOffset 0
 
 // how often shall the LEDs be updated
 #define LEDUPDATERATE_MS 150
 
-
 /* Advanced debug output settings
 =================================
 The following settings allow customization of debug output behavior */
 
-// Generate a debug line only every DEBUGDELAY ms 
+// Generate a debug line only every DEBUGDELAY ms
 #define DEBUGDELAY 100
 
 // The standard behavior "\r" for the debug output is, that the values are always written into the same line to get a clean output. Easy readable for the human.
 #define DEBUG_LINE_END "\r"
 // If you need to report some debug outputs to trace errors, you can change the debug output to "\r\n" to get a newline with each debug output. (old behavior)
-//define DEBUG_LINE_END "\r\n"
-
+// #define DEBUG_LINE_END "\r\n"
 
 /* Advanced USB HID settings
 ============================
@@ -412,7 +408,7 @@ The following settings are advanced and don't need to changed for normal windows
 */
 
 // Definition, how many bits are used in the HID report to encode the keys
- #define HIDMAXBUTTONS 32 // must be multiple of 8!
+#define HIDMAXBUTTONS 32 // must be multiple of 8!
 
 /* ADV_HID_REL and ADV_HID_JIGGLE change how the values are reported over HID protocol, see hidInterface.cpp and .h
 
@@ -422,7 +418,7 @@ For linux / spacenavd user: Suggestions to enable #define ADV_HID_JIGGLE
 
 Translation and rotation values are either declared as absolute or relative values in the hid descriptor in hidInterface.h.
 
-Relative declaration (may be activated by ADV_HID_REL) 
+Relative declaration (may be activated by ADV_HID_REL)
 -------------------------------------------------------
 With linux and spacenavd: If the space mouse didn't return to absolutely zero in one axis this axis will still report movement, when another direction is pushed, because only the changed values are emitted as events by the linux kernel.
 
@@ -430,9 +426,9 @@ Despite that, values events are emitted with every report send, even if they did
 
 Absolute declaration (default)
 ------------------------------
-Every value is always reporting the absolute position. 
+Every value is always reporting the absolute position.
 This means, in contrast to relative, an axis that is left alone is reported again as zero.
-On the other hand, events are only emitted, if at least some value changes. 
+On the other hand, events are only emitted, if at least some value changes.
 This is not always the case, when the space mouse is held still at a non-zero position.
 Solution: Jiggling (may be activated by ADV_HID_JIGGLE)
 Every non-zero value is reported as it is and +1 in the next report, repeating with +0 in the next iteration and +1 in the next...
@@ -440,7 +436,7 @@ This little extra noise is called "jiggling" and ensures that a value declared a
 */
 
 // Switch declaration of values to relative, if the following symbol is defined:
-// #define ADV_HID_REL 
+// #define ADV_HID_REL
 
 // Add Jiggling to the value reported, if the following symbol is defined:
 // #define ADV_HID_JIGGLE

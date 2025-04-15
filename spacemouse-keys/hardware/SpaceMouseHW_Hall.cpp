@@ -3,11 +3,13 @@
 #include "config.h"
 #include "kinematics.h" // Definition of the velocity array positions (TRANSzz/ROTXzz)
 
+static const char *Hall_axisNames[8] = HALL_AXIS_NAMES;
+
 /**
  * Constructor / Destructor
  */
 SpaceMouseHW_Hall_::SpaceMouseHW_Hall_()
-    : SpaceMouseHW_(HALL_WARN_CENTERPOINT_MIN, HALL_WARN_CENTERPOINT_MAX, HALL_WARN_MINMAX_MIN, HALL_WARN_MINMAX_MAX) {}
+    : SpaceMouseHW_(HALL_WARN_CENTERPOINT_MIN, HALL_WARN_CENTERPOINT_MAX, HALL_WARN_MINMAX_MIN, HALL_WARN_MINMAX_MAX, Hall_axisNames) {}
 
 SpaceMouseHW_Hall_::~SpaceMouseHW_Hall_() {}
 
@@ -67,12 +69,4 @@ bool SpaceMouseHW_Hall_::BusyZeroing(uint16_t numIterations, boolean debugFlag) 
     }
 
     return SpaceMouseHW_::BusyZeroing(numIterations, debugFlag);
-}
-
-/**
- * @brief Allow Base class to access the Axis names of the Derived classes
- * @param axisnames
- */
-void SpaceMouseHW_Hall_::getAxisDescriptions(const char **axisnames) {
-    axisnames = _axisNames;
 }

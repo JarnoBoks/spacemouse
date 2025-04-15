@@ -36,11 +36,8 @@ public:
 
     bool BusyZeroing(uint16_t numIterations, boolean debugFlag);
 
-    void SetAnalogReferenceVoltage(int debug);
-    void CalculateKinematicSensors(int16_t *velocity);
-
-private:
-    char const *_axisNames[NUM_SENSORS] = JOYSTICK_AXIS_NAMES; // 8
+    void SetAnalogReferenceVoltage(int debug) override;
+    void CalculateKinematicSensors(int16_t *velocity) override;
 };
 
 #endif // SPACEMOUSEHWJOYSTICK_h

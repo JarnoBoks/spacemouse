@@ -419,7 +419,7 @@ The following settings allow customization of debug output behavior */
 // The standard behavior "\r" for the debug output is, that the values are always written into the same line to get a clean output. Easy readable for the human.
 #define DEBUG_LINE_END "\r"
 // If you need to report some debug outputs to trace errors, you can change the debug output to "\r\n" to get a newline with each debug output. (old behavior)
-// define DEBUG_LINE_END "\r\n"
+// #define DEBUG_LINE_END "\r\n"
 
 /* Advanced USB HID settings
 ============================

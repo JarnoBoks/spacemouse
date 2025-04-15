@@ -3,11 +3,13 @@
 #include "config.h"
 #include "kinematics.h" // Definition of the velocity array positions (TRANSzz/ROTXzz)
 
+static const char *Joystick_axisNames[8] = JOYSTICK_AXIS_NAMES;
+
 /**
  * Constructor/Destructor
  */
 SpaceMouseHW_Joystick_::SpaceMouseHW_Joystick_()
-    : SpaceMouseHW_(JOYSTICK_WARN_CENTERPOINT_MIN, JOYSTICK_WARN_CENTERPOINT_MAX, JOYSTICK_WARN_MINMAX_MIN, JOYSTICK_WARN_MINMAX_MAX) {
+    : SpaceMouseHW_(JOYSTICK_WARN_CENTERPOINT_MIN, JOYSTICK_WARN_CENTERPOINT_MAX, JOYSTICK_WARN_MINMAX_MIN, JOYSTICK_WARN_MINMAX_MAX, Joystick_axisNames) {
 }
 
 SpaceMouseHW_Joystick_::~SpaceMouseHW_Joystick_() {}

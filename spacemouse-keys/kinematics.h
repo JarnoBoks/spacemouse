@@ -7,13 +7,6 @@
 
 int modifierFunction(int x);
 
-// REMOVE - Moved to Sensorhardware
-// void readAllFromSensors(int *rawReads);
-
-// REMOVE - Moved to Sensorhardware
-// void FilterAnalogReadOuts(int *centered);
-
-// REMOVE - void calculateKinematic(int *centered, int16_t *velocity);
 void calculateKinematic(SpaceMouseHW_ &SMHW, int16_t *velocity);
 
 void switchXY(int16_t *velocity);

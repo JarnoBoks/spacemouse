@@ -4,15 +4,17 @@
 #include "kinematics.h" // Definition of the velocity array positions (TRANSzz/ROTXzz)
 
 /**
- * Constructor
+ * Constructor / Destructor
  */
-SpaceMouseHW_Hall_::SpaceMouseHW_Hall_() {
-}
+SpaceMouseHW_Hall_::SpaceMouseHW_Hall_()
+    : SpaceMouseHW_(HALL_WARN_CENTERPOINT_MIN, HALL_WARN_CENTERPOINT_MAX, HALL_WARN_MINMAX_MIN, HALL_WARN_MINMAX_MAX) {}
+
+SpaceMouseHW_Hall_::~SpaceMouseHW_Hall_() {}
 
 /**
  * TODO
  */
-void SpaceMouseHW_Hall_::_calculateKinematicSensors(int16_t *velocity) {
+void SpaceMouseHW_Hall_::CalculateKinematicSensors(int16_t *velocity) {
 
     // calculate sensors transX
     velocity[TRANSX] = (centered[HES1] - centered[HES0] + centered[HES6] - centered[HES7]) / 2;
@@ -37,7 +39,7 @@ void SpaceMouseHW_Hall_::_calculateKinematicSensors(int16_t *velocity) {
  * @brief Set the analog reference voltage to 5V for debug 1 and to 2.56V otherwise
  * @param debug The current debug level of the spacemouse.
  */
-void SpaceMouseHW_Hall_::setAnalogReferenceVoltage(int debug) {
+void SpaceMouseHW_Hall_::SetAnalogReferenceVoltage(int debug) {
     if (debug == 1) {
         // Set the reference voltage for the AD Convertor to 5V only for the first calibration step (pinout/inversion calibration).
         analogReference(DEFAULT);
@@ -54,28 +56,23 @@ void SpaceMouseHW_Hall_::setAnalogReferenceVoltage(int debug) {
     delay(100);
 
     // Read all sensors 8 times
-    for (int i = 0; i <= 8; i++) {
-        readAllFromSensors();
+    for (uint8_t i = 0; i <= 8; i++) {
+        ReadAllFromSensors();
     }
 }
 
-void SpaceMouseHW_Hall_::printRawReads() {
-    // Report back 0-1023 raw ADC 10-bit values if enabled
-    for (int i = 0; i < NUM_SENSORS; i++) {
-        _printRawRead(_axisNames[i], i);
-    }
-}
-
-void SpaceMouseHW_Hall_::printCentered() {
-    // Report back 0-1023 raw ADC 10-bit values if enabled
-    for (int i = 0; i < NUM_SENSORS; i++) {
-        _printCentered(_axisNames[i], i);
-    }
-}
-
-bool SpaceMouseHW_Hall_::busyZeroing(uint16_t numIterations, boolean debugFlag) {
-    if (debugFlag == true) {
+bool SpaceMouseHW_Hall_::BusyZeroing(uint16_t numIterations, boolean debugFlag) {
+    if (debugFlag) {
         Serial.println(F("Zeroing HALL Sensors..."));
     }
-    return SpaceMouseHW_::busyZeroing(numIterations, debugFlag);
+
+    return SpaceMouseHW_::BusyZeroing(numIterations, debugFlag);
+}
+
+/**
+ * @brief Allow Base class to access the Axis names of the Derived classes
+ * @param axisnames
+ */
+void SpaceMouseHW_Hall_::getAxisDescriptions(const char **axisnames) {
+    axisnames = _axisNames;
 }

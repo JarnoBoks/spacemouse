@@ -4,26 +4,19 @@
 #include <Arduino.h>
 #include "SpaceMouseHW.h"
 
-// The following constants are here for more readable access to the arrays. You don't need to change this values!
-// When using HallE sensors in centered or rawValues array
-/* REMOVE
-#define HES0 0
-#define HES1 1
-#define HES2 2
-#define HES3 3
-#define HES6 4
-#define HES7 5
-#define HES8 6
-#define HES9 7
-*/
-
+// Values for the calibration warning levels. These values will be stored in the Base class members.
 // The Hall effect sensors aren't centered arount zero, due to the nature of the hardware.
 // In my version of the Spacemouse, the values vary between -425 and 285, the centerpoint is thus around -70
 // The MIN and MAX warning levels have to be shifted accordingly.
-#define MINMAX_MINWARNING (100 - centerPoint)
-#define MINMAX_MAXWARNING (100 + centerPoint)
+#define HALL_WARN_CENTERPOINT_MIN 592 // Warning level for the minimal centerpoint value (centerpoint below this value throws a warning)
+#define HALL_WARN_CENTERPOINT_MAX 848 // Warning level for the maximum centerpoint value (centerpoint above this value throws a warning)
+#define HALL_WARN_MINMAX_MIN 300      // Warning level for the minimum value (absolute minimum below this value throws a warning)
+#define HALL_WARN_MINMAX_MAX 170      // Warning level for the maximum value (absolute maximum below this value throws a warning)
+#define HALL_AXIS_NAMES {"HES0:", "HES1:", "HES2:", "HES3:", "HES6:", "HES7:", "HES8:", "HES9:"}
 
-enum Sensors {
+// The following constants are here for more readable access to the arrays. You don't need to change this values!
+// When using HallE sensors in centered or rawValues array
+enum Hall_Sensors {
     HES0 = 0,
     HES1,
     HES2,
@@ -42,18 +35,17 @@ enum Sensors {
 class SpaceMouseHW_Hall_ : public SpaceMouseHW_ {
 public:
     SpaceMouseHW_Hall_();
+    ~SpaceMouseHW_Hall_();
 
-    bool busyZeroing(uint16_t numIterations, boolean debugFlag);
+    bool BusyZeroing(uint16_t numIterations, boolean debugFlag);
 
-    void setAnalogReferenceVoltage(int debug);
-    void _calculateKinematicSensors(int16_t *velocity);
-
-    // Functions for writing stored data to the serial interface
-    void printRawReads();
-    void printCentered();
+    void SetAnalogReferenceVoltage(int debug);
+    void CalculateKinematicSensors(int16_t *velocity);
 
 private:
-    char const *_axisNames[NUM_SENSORS] = {"HES0:", "HES1:", "HES2:", "HES3:", "HES6:", "HES7:", "HES8:", "HES9:"}; // 8
+    void getAxisDescriptions(const char **axisnames);
+
+    const char *_axisNames[NUM_SENSORS] = HALL_AXIS_NAMES; // 8
 };
 
 #endif // SPACEMOUSEHWHALL_h

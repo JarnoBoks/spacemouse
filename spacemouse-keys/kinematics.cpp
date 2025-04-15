@@ -10,27 +10,20 @@
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
 
 #include "kinematics.h"
-
-// Include hardware specific settings:
-#ifdef HALLEFFECT
-#include "hardware/hw_halleffect/hardware_hall.h"
-#else
-#include "hardware/hw_joysticks/hardware_joystick.h"
-#endif
-
 #include "calibration.h"
 
 // Setup the arrays for min and max values of the joystick/sensors, see config.h
 
 /// @brief Array containing the minimum values of the sensors.
-int minVals[8] = MINVALS;
+// REMOVE - int minVals[8] = MINVALS;
 
 /// @brief Array containing the maximum values of the sensors.
-int maxVals[8] = MAXVALS;
+// REMOVE - int maxVals[8] = MAXVALS;
 
+#if 0 // REMOVE - Moved to hardware
 // Please do not change this anymore. Use independent sensitivity multiplier.
-// REVIEW - Should this value be used at the other occurances of '350'?
 #define TOTALSENSITIVITY 350
+#endif
 
 /**
  *  @brief Function to modify the input value according to different mathematic modes. Choose the mathematical function in config.h as modFunc.A0
@@ -67,6 +60,7 @@ int modifierFunction(int x) {
     return (int)round(result);
 }
 
+#if 0 // REMOVE - moved to Hardware
 /**
  *  @brief Takes the centered joystick/sensor values, applies a deadzone and maps the values to +/- 350.
  *  @param centered pointer to array with 8 centered analog values
@@ -88,16 +82,17 @@ void FilterAnalogReadOuts(int *centered) {
         }
     }
 }
+#endif
 
 /**
  *  @brief Calculate the kinematic of the three axis from the eight sensors
  *  @param centered pointer to the array containing the eight centered values from the axis of the 4 joysticks or the 8 Hall Effect sensors
  *  @param velocity pointer to the result array that will contain the translational and rotational motions
  */
-void calculateKinematic(int *centered, int16_t *velocity) {
-
+void calculateKinematic(SpaceMouseHW_ &SMHW, int16_t *velocity) {
     // Retrieve raw kinematics from sensors (joystick or hall effect)
-    _calculateKinematicSensors(centered, velocity);
+    // REMOVE - void calculateKinematic(int *centered, int16_t *velocity) {
+    SMHW.CalculateKinematicSensors(velocity);
 
     // transX - Apply sensitivity & recalculate with modifier function.
     velocity[TRANSX] = velocity[TRANSX] / ((float)TRANSX_SENSITIVITY);

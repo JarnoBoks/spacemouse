@@ -4,15 +4,18 @@
 #include "kinematics.h" // Definition of the velocity array positions (TRANSzz/ROTXzz)
 
 /**
- * Constructor
+ * Constructor/Destructor
  */
-SpaceMouseHW_Joystick_::SpaceMouseHW_Joystick_() {
+SpaceMouseHW_Joystick_::SpaceMouseHW_Joystick_()
+    : SpaceMouseHW_(JOYSTICK_WARN_CENTERPOINT_MIN, JOYSTICK_WARN_CENTERPOINT_MAX, JOYSTICK_WARN_MINMAX_MIN, JOYSTICK_WARN_MINMAX_MAX) {
 }
+
+SpaceMouseHW_Joystick_::~SpaceMouseHW_Joystick_() {}
 
 /**
  * TODO
  */
-void SpaceMouseHW_Joystick_::_calculateKinematicSensors(int16_t *velocity) {
+void SpaceMouseHW_Joystick_::CalculateKinematicSensors(int16_t *velocity) {
 
     // calculate sensors transX
     velocity[TRANSX] = (-centered[CY] + centered[AY]);
@@ -37,7 +40,7 @@ void SpaceMouseHW_Joystick_::_calculateKinematicSensors(int16_t *velocity) {
  * @brief Set the analog reference voltage to 5V for debug 1 and to 2.56V otherwise
  * @param debug The current debug level of the spacemouse.
  */
-void SpaceMouseHW_Joystick_::setAnalogReferenceVoltage(int debug) {
+void SpaceMouseHW_Joystick_::SetAnalogReferenceVoltage(int debug) {
     analogReference(DEFAULT);
     Serial.println(F("Setting analog reference to 5V."));
 
@@ -45,28 +48,15 @@ void SpaceMouseHW_Joystick_::setAnalogReferenceVoltage(int debug) {
     // take some measurements afterwards just to be sure. Performancewise this shouldn't be a problem due to the debug/setup
     // nature of this function.
     delay(100);
-    for (int i = 0; i <= 8; i++) {
-        readAllFromSensors();
+    for (uint8_t i = 0; i <= 8; i++) {
+        ReadAllFromSensors();
     }
 }
 
-void SpaceMouseHW_Joystick_::printRawReads() {
-    // Report back 0-1023 raw ADC 10-bit values if enabled
-    for (int i = 0; i < NUM_SENSORS; i++) {
-        _printRawRead(_axisNames[i], i);
-    }
-}
-
-void SpaceMouseHW_Joystick_::printCentered() {
-    // Report back 0-1023 raw ADC 10-bit values if enabled
-    for (int i = 0; i < NUM_SENSORS; i++) {
-        _printCentered(_axisNames[i], i);
-    }
-}
-
-bool SpaceMouseHW_Joystick_::busyZeroing(uint16_t numIterations, boolean debugFlag) {
-    if (debugFlag == true) {
+bool SpaceMouseHW_Joystick_::BusyZeroing(uint16_t numIterations, boolean debugFlag) {
+    if (debugFlag) {
         Serial.println(F("Zeroing Joysticks..."));
     }
-    return SpaceMouseHW_::busyZeroing(numIterations, debugFlag);
+
+    return SpaceMouseHW_::BusyZeroing(numIterations, debugFlag);
 }

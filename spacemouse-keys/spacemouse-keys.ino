@@ -20,8 +20,10 @@
 #include "spaceKeys.h"
 // header for HID emulation of the spacemouse
 #include "SpaceMouseHID.h"
-// header for ADC reading of the spacemouse
-#include "hardware/adc.h"
+
+// TODO -
+#include "hardware/SpaceMouseHW_Hall.h"
+#include "hardware/SpaceMouseHW_Joystick.h"
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
 // if an encoder wheel is used
@@ -36,17 +38,24 @@ void lightSimpleLED(boolean light);
 #include "Arduino.h"
 #endif
 
+#ifdef HALLEFFECT
+SpaceMouseHW_ SMHW = SpaceMouseHW_Hall_();
+#else
+SpaceMouseHW_ SMHW = SpaceMouseHW_Joystick_();
+#endif
+
 // the debug mode can be set during runtime via the serial interface. See config.h for a description of the different debug modes.
 int debug = STARTDEBUG;
 
-// stores the raw analog values from the joysticks
-int rawReads[8];
+// REVIEW - Removal
+//  stores the raw analog values from the joysticks
+// REMOVE -  rawReads[8];
 
 // Centerpoints store the zero position of the joysticks
-int centerPoints[8];
+// REMOVE -  centerPoints[8];
 
 // stores the values from the joysticks after zeroing and mapping
-int centered[8];
+// REMOVE -  centered[8];
 
 // store raw value of the keys, without debouncing
 int keyVals[NUMKEYS];
@@ -73,17 +82,14 @@ void setup() {
     delay(100);
     Serial.setTimeout(2); // The serial interface will look for new debug values and it will only wait 2ms
 
-#ifdef HALLEFFECT
-    // Set the ADC referencevoltage to 5V if debug=1, 2.56V otherwise.
-    // It is important the reference Voltage is set before the Zeroing of the
-    // sensors is executed.
-    setAnalogReferenceVoltage(debug);
-#endif
+    // Set the analog reference voltage according to the hardware.
+    SMHW.SetAnalogReferenceVoltage(debug);
 
     // Read idle/centre positions for joysticks.
     // zero the joystick position 500 times (takes approx. 480 ms)
     // during setup() we are not interested in the debug output: debugFlag = false
-    busyZeroing(centerPoints, 500, false);
+    // REMOVE - busyZeroing(centerPoints, 500, false);
+    SMHW.BusyZeroing(500, false);
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
     initEncoderWheel();
@@ -110,12 +116,14 @@ void loop() {
             }
 
             // Debug is updated check if the ADC referencevoltage has to be changed.
-            setAnalogReferenceVoltage(debug);
+            // REMOVE -setAnalogReferenceVoltage(debug);
+            SMHW.SetAnalogReferenceVoltage(debug);
         }
     }
 
     // RAW Sensor values are read. 0-1023
-    readAllFromSensors(rawReads);
+    // REMOVE - readAllFromSensors(rawReads);
+    SMHW.ReadAllFromSensors();
 
 #if NUMKEYS > 0
     // LivingTheDream added reading of key presses
@@ -123,38 +131,48 @@ void loop() {
 #endif
     // Report back 0-1023 raw ADC 10-bit values if enabled
     if (debug == 1) {
-        debugOutput1(rawReads, keyVals);
+        // REMOVE debugOutput1(rawReads, keyVals);
+        debugOutput1(SMHW, keyVals);
     }
 
     if (debug == 11) {
         // calibrate the joystick
         // As this is called in the debug=11, we do more iterations.
-        busyZeroing(centerPoints, 2000, true);
+        // REMOVE - busyZeroing(centerPoints, 2000, true);
+        SMHW.BusyZeroing(2000, true);
         debug = -1; // this only done once
     }
 
+    // REMOVE - Moved to Hardware classed
+#if 0
     // Subtract centre position from measured position to determine movement.
     for (int i = 0; i < 8; i++) {
         centered[i] = rawReads[i] - centerPoints[i];
     }
+#endif
+    SMHW.CenterSensors();
 
     if (debug == 20) {
-        calcMinMax(centered); // debug=20 to calibrate MinMax values
+        // REMOVE - calcMinMax(centered); // debug=20 to calibrate MinMax values
+        SMHW.CalcMinMax();
     }
 
     // Report centered joystick values if enabled. Values should be approx -500 to +500, jitter around 0 at idle
     if (debug == 2) {
-        debugOutput2(centered);
+        // debugOutput2(centered);
+        debugOutput2(SMHW);
     }
 
-    FilterAnalogReadOuts(centered);
+    // REMOVE - FilterAnalogReadOuts(centered);
+    SMHW.FilterAnalogReadOuts();
 
     // Report centered joystick values. Filtered for deadzone. Approx -350 to +350, locked to zero at idle
     if (debug == 3) {
-        debugOutput2(centered);
+        debugOutput2(SMHW);
     }
 
-    calculateKinematic(centered, velocity);
+    // REMOVE - calculateKinematic(centered, velocity);
+    calculateKinematic(SMHW, velocity);
 
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
     // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities
@@ -175,7 +193,8 @@ void loop() {
         // Report translation and rotation values if enabled.
     }
     if (debug == 5) {
-        debugOutput5(centered, velocity);
+        // REMOVE - debugOutput5(centered, velocity);
+        debugOutput5(SMHW, velocity);
     }
 
     // if the kill-key feature is enabled, rotations or translations are killed=set to zero

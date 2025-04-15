@@ -4,14 +4,7 @@
 #include "calibration.h"
 #include "kinematics.h"
 #include "config.h"
-#include "hardware/adc.h"
-
-// Include hardware specific settings:
-#ifdef HALLEFFECT
-#include "hardware/hw_halleffect/hardware_hall.h"
-#else
-#include "hardware/hw_joysticks/hardware_joystick.h"
-#endif
+#include "hardware/SpaceMouseHW.h"
 
 /// @brief Hold characters to plot them
 char debugOutputBuffer[20];
@@ -32,21 +25,26 @@ void printArray(int arr[], int size) {
     Serial.println("}");
 }
 
+#if 0 // moved to SpacemouseHW_
 #ifndef HALLEFFECT
 char const *axisNames[] = {"AX:", "AY:", "BX:", "BY:", "CX:", "CY:", "DX:", "DY:"}; // 8
 #else
 char const *axisNames[] = {"HES0:", "HES1:", "HES2:", "HES3:", "HES6:", "HES7:", "HES8:", "HES9:"}; // 8
 #endif
+#endif
 
 char const *velNames[] = {"TX:", "TY:", "TZ:", "RX:", "RY:", "RZ:"}; // 6
 
-void debugOutput1(int *rawReads, int *keyVals) {
+void debugOutput1(const SpaceMouseHW_ &SMHW, int *keyVals) {
+    // REMOVE -     void debugOutput1(int *rawReads, int *keyVals) {
     if (isDebugOutputDue()) {
         // Report back 0-1023 raw ADC 10-bit values if enabled
+#if 0
         for (int i = 0; i < 8; i++) {
-            sprintf(debugOutputBuffer, "%2.2s: %4d ", axisNames[i], rawReads[i]);
+            // FIXME            sprintf(debugOutputBuffer, "%2.2s: %4d ", axisNames[i], rawReads[i]);
             Serial.print(debugOutputBuffer);
         }
+#endif
         for (int i = 0; i < NUMKEYS; i++) {
             Serial.print("K");
             Serial.print(i);
@@ -58,13 +56,17 @@ void debugOutput1(int *rawReads, int *keyVals) {
     }
 }
 
-void debugOutput2(int *centered) {
+void debugOutput2(SpaceMouseHW_ &SMHW) {
+    // REMOVE void debugOutput2(int *centered) {
     if (isDebugOutputDue()) {
-        // this routine creates the output for the former debug = 2 and debug = 3
+        SMHW.PrintCentered();
+#if 0 // REMOVE
+      // this routine creates the output for the former debug = 2 and debug = 3
         for (int i = 0; i < 8; i++) {
-            sprintf(debugOutputBuffer, "%2.2s: %4d ", axisNames[i], centered[i]);
+            // FIXME            sprintf(debugOutputBuffer, "%2.2s: %4d ", axisNames[i], centered[i]);
             Serial.print(debugOutputBuffer);
         }
+#endif
         Serial.print(DEBUG_LINE_END);
     }
 }
@@ -93,12 +95,17 @@ void debugOutput4(int16_t *velocity, uint8_t *keyOut) {
 /// @brief Report single axis and resulting velocities info side by side for direct reference. Very useful if you need to alter which inputs are used in the arithmetic above.
 /// @param centered pointer to arrays of 8 axis
 /// @param velocity pointer to array of 6 velocities
-void debugOutput5(int *centered, int16_t *velocity) {
+
+void debugOutput5(SpaceMouseHW_ &SMHW, int16_t *velocity) {
+    // REMOVE - void debugOutput5(int *centered, int16_t *velocity) {
     if (isDebugOutputDue()) {
+        SMHW.PrintCentered();
+#if 0
         for (int i = 0; i < 8; i++) {
-            sprintf(debugOutputBuffer, "%2.2s: %4d ", axisNames[i], centered[i]);
+            // FIXME            sprintf(debugOutputBuffer, "%2.2s: %4d ", axisNames[i], centered[i]);
             Serial.print(debugOutputBuffer);
         }
+#endif
         Serial.print(" || ");
         for (int i = 0; i < 6; i++) {
             sprintf(debugOutputBuffer, "%2.2s: %4d ", velNames[i], velocity[i]);
@@ -108,6 +115,7 @@ void debugOutput5(int *centered, int16_t *velocity) {
     }
 }
 
+#if 0 // Moved to SpaceMouseHW
 // Variables and function to get the min and maximum value of the centered values
 int minMaxCalcState = 0; // little state machine -> setup in 0 -> measure in 1 -> output in 2 ->  end in 3
 int minValue[8];         // Array to store the minimum values
@@ -185,6 +193,7 @@ void calcMinMax(int *centered) {
         minMaxCalcState = 3; // no further reporting
     }
 }
+#endif // moved to SpaceMouse
 
 /// @brief Check, if a new debug output shall be generated. This is used in order to generate a debug line only every DEBUGDELAY ms, see config.h
 /// @return true, if debug message is due
@@ -215,6 +224,7 @@ void updateFrequencyReport() {
     }
 }
 
+#if 0 // Moved to SpaceMouseHW
 /// @brief Calibrate (=zero) the space mouse. The function is blocking other functions of the spacemouse during zeroing.
 /// @param centerPoints
 /// @param numIterations How many readings are taken to calculate the mean. Suggestion: 500 iterations, they take approx. 480ms.
@@ -323,3 +333,4 @@ bool busyZeroing(int *centerPoints, uint16_t numIterations, boolean debugFlag) {
     }
     return noWarningsOccured;
 }
+#endif // Moved to SpaceMouseHW

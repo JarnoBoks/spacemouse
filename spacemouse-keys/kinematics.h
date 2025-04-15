@@ -1,14 +1,20 @@
+#ifndef KINEMATICS_h
+#define KINEMATICS_h
 // This is the public header for the kinematics.cpp file
 // It contains all functions which can be called from the main application
 
+#include "hardware/SpaceMouseHW.h"
+
 int modifierFunction(int x);
 
-// REVIEW - Moved to ADC.h
+// REMOVE - Moved to Sensorhardware
 // void readAllFromSensors(int *rawReads);
 
-void FilterAnalogReadOuts(int *centered);
+// REMOVE - Moved to Sensorhardware
+// void FilterAnalogReadOuts(int *centered);
 
-void calculateKinematic(int *centered, int16_t *velocity);
+// REMOVE - void calculateKinematic(int *centered, int16_t *velocity);
+void calculateKinematic(SpaceMouseHW_ &SMHW, int16_t *velocity);
 
 void switchXY(int16_t *velocity);
 void switchYZ(int16_t *velocity);
@@ -22,3 +28,4 @@ void exclusiveMode(int16_t *velocity);
 #define ROTX 3
 #define ROTY 4
 #define ROTZ 5
+#endif // KINEMATICS_h

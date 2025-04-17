@@ -4,6 +4,7 @@
 
 // One good starting point is the work and video by TeachingTech: https://www.printables.com/de/model/864950-open-source-spacemouse-space-mushroom-remix
 // Then follow along on github, how we reached this state of the source code.
+#include <Arduino.h>
 
 // The user specific settings, like pin mappings or special configuration variables and sensitivities are stored in config.h.
 // Please open config_sample.h, adjust your settings and save it as config.h
@@ -21,22 +22,24 @@
 // header for HID emulation of the spacemouse
 #include "SpaceMouseHID.h"
 
-// TODO -
+// header file for the EEPROM storage
+#include "eepromStorage.h"
+
+// header files for the hardware abstraction layers
 #include "hardware/SpaceMouseHW_Hall.h"
 #include "hardware/SpaceMouseHW_Joystick.h"
 
-#ifdef EEPROM_CALIBRATION
-#include "sensitivity.h"
-
-// Global defined (and usable everywhere in the software)
-sensitivities_t mySensitivities;
-
-// Stores the current configured modulation function, initialised by the global defined variable.
-uint8_t modFunc = MODFUNC;
-
-// Stores the current configured inversions, initialised by the global defined variable.
-uint8_t inversions = DEFAULT_INVERSION;
+// Initialize the hardware abstraction layer
+// The hardware abstraction layer is used to read the values from the hardware
+#ifdef HALLEFFECT
+SpaceMouseHW_Hall_ Mouse_Hardware = SpaceMouseHW_Hall_();
+#else
+SpaceMouseHW_Joystick Mouse_Hardware = SpaceMouseHW_Joystick_();
 #endif
+
+// Initialize the Kinematics object
+// The Kinematics object is used to calculate the kinematics of the mouse
+Kinematics Mouse_Kinematics = Kinematics();
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
 // if an encoder wheel is used
@@ -46,16 +49,9 @@ uint8_t inversions = DEFAULT_INVERSION;
 #ifdef LEDpin
 void lightSimpleLED(boolean light);
 #endif
-#ifdef LEDRING
-#include "Arduino.h"
-#include "ledring.h"
-#include "Arduino.h"
-#endif
 
-#ifdef HALLEFFECT
-SpaceMouseHW_Hall_ SMHW = SpaceMouseHW_Hall_();
-#else
-SpaceMouseHW_Joystick SMHW = SpaceMouseHW_Joystick_();
+#ifdef LEDRING
+#include "ledring.h"
 #endif
 
 // the debug mode can be set during runtime via the serial interface. See config.h for a description of the different debug modes.
@@ -70,10 +66,6 @@ uint8_t keyOut[NUMKEYS];
 // state of the key, which stays 1 as long as the key is pressed
 uint8_t keyState[NUMKEYS];
 
-// Resulting calculated velocities / movements
-// int16_t to match what the HID protocol expects.
-int16_t velocity[6];
-
 long tmpInput; // store the value, the user might input over the serial
 
 void setup() {
@@ -87,24 +79,16 @@ void setup() {
     delay(100);
     Serial.setTimeout(2); // The serial interface will look for new debug values and it will only wait 2ms
 
+    // Clear the EEPROM if the stored version number is not equal to the version number defined in the file eepromStorage.h
+    _clearEEPROM();
+
     // Set the analog reference voltage according to the hardware.
-    SMHW.SetAnalogReferenceVoltage(debug);
+    Mouse_Hardware.SetAnalogReferenceVoltage(debug);
 
     // Read idle/centre positions for joysticks.
     // zero the joystick position 500 times (takes approx. 480 ms)
     // during setup() we are not interested in the debug output: debugFlag = false
-    SMHW.BusyZeroing(500, false);
-
-#ifdef EEPROM_CALIBRATION
-    // Read sensitivity configuration from EEPROM (or set default values)
-    readSensitivitiesEEPROM(&mySensitivities);
-
-    // Read modfunc from the EEPROM (or set default value)
-    modFunc = readModfunc();
-
-    // Read inversions from the EEPROM (or set default value)
-    inversions = readInversions();
-#endif
+    Mouse_Hardware.BusyZeroing(500, false);
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
     initEncoderWheel();
@@ -122,128 +106,125 @@ void setup() {
 void loop() {
     // check if the user entered a debug mode via serial interface
     if (Serial.available()) {
+        // Read the input command from the serial interface
+        // The command format is: <char> <int> <int>
+        // Example: A 100 200
+        // The first character is the command, followed by two integer parameters
+        // The command and parameters are separated by spaces
+        // The command can be any character, but the parameters must be integers
+
+        debugInput(debug, Mouse_Kinematics, Mouse_Hardware);
+
+#if 0
         tmpInput = Serial.parseInt(); // Read from serial interface, if a new debug value has been sent. Serial timeout has been set in setup()
         if (tmpInput != 0) {
 
-#ifdef EEPROM_CALIBRATION
             if (tmpInput == 2222) {
-                printSensitivity(&mySensitivities, true);
+                Mouse_Kinematics.PrintSensitivities(true);
             }
 
-            if (tmpInput >= 2000000 && tmpInput < 3000000) {
-                // User input wants to update sensitvity
-                if (updateSensitivity(&mySensitivities, tmpInput) > 0) {
-                    printSensitivity(&mySensitivities, true);
-                }
+            /// The sensitivities can be updated with the command 2<dd><xxxx> (<dd> the sensitivity item to update - 2digit, <xxxx> the new value - 2.2 digit) - see config.h
+// The inversions can be updated with the commands 400000x -405000x
+#define SENSITIVITY_CMDRANGE_START 2000000L
+#define SENSITIVITY_CMDRANGE_END 3000000L
+#define SENSITIVITY_CMD_DIVIDER 10000L
+            if (tmpInput >= SENSITIVITY_CMDRANGE_START && tmpInput < SENSITIVITY_CMDRANGE_END) {
+                // Get the command
+                // fe. input 4030001, cmd = (input/10000) = 403, minus (4000000L / 10000L) = 400 => 3
+                uint16_t cmd_base = (tmpInput / SENSITIVITY_CMD_DIVIDER);
+                uint8_t cmd = cmd_base - (SENSITIVITY_CMDRANGE_START / SENSITIVITY_CMD_DIVIDER);
+
+                // Get integer value (last digit) and check if this is 0 or 1
+                uint8_t value = tmpInput - (cmd_base * SENSITIVITY_CMD_DIVIDER);
+
+                Mouse_Kinematics.SetSensitivities(cmd, value);
             }
 
             if (tmpInput == 10) {
-                printModfunc(modFunc, true);
+                Mouse_Kinematics.PrintModulationFunction(true);
             }
 
-            if (tmpInput >= 3000000 && tmpInput < 4000000) {
+/// The Kinematics modulation function can be updated with the command 300000x.
+#define MODFUNC_CMDRANGE_START 3000000L
+#define MODFUNC_CMDRANGE_END 3000010L
+            if (tmpInput >= MODFUNC_CMDRANGE_START && tmpInput < MODFUNC_CMDRANGE_END) {
                 // User input wants to update modfunc
-                modFunc = updateModfunc(tmpInput);
+                uint8_t requestedModfunc = (uint8_t)(tmpInput - MODFUNC_CMDRANGE_START);
+                Mouse_Kinematics.SetModulationFunction(requestedModfunc);
             }
 
             if (tmpInput == 4444) {
-                printInversions(inversions, true);
+                Mouse_Kinematics.PrintTransRotInversions(true);
             }
 
-            if (tmpInput >= 4000000 && tmpInput < 5000000) {
+// The inversions can be updated with the commands 400000x -405000x
+#define INVERSION_CMDRANGE_START 4000000L
+#define INVERSION_CMDRANGE_END 5000000L
+#define INVERSION_CMD_DIVIDER 10000L
+            if (tmpInput >= INVERSION_CMDRANGE_START && tmpInput < INVERSION_CMDRANGE_END) {
+                // Get the command
+                // fe. input 4030001, cmd = (input/10000) = 403, minus (4000000L / 10000L) = 400 => 3
+                uint16_t cmd_base = (tmpInput / INVERSION_CMD_DIVIDER);
+                uint8_t cmd = cmd_base - (INVERSION_CMDRANGE_START / INVERSION_CMD_DIVIDER);
+
+                // Get integer value (last digit) and check if this is 0 or 1
+                uint8_t value = tmpInput - (cmd_base * INVERSION_CMD_DIVIDER);
+
                 // User input wants to update axis inversion
-                inversions = updateInversions(tmpInput);
+                Mouse_Kinematics.SetTransRotInversions(cmd, value);
             }
 
             if (validCalibrationOption(tmpInput)) {
-#endif
                 debug = tmpInput;
                 if (tmpInput == -1) {
                     Serial.println(F("Please enter the debug mode now or while the script is reporting."));
                 }
                 // Debug is updated check if the ADC referencevoltage has to be changed.
-                SMHW.SetAnalogReferenceVoltage(debug);
-#ifdef EEPROM_CALIBRATION
+                Mouse_Hardware.SetAnalogReferenceVoltage(debug);
             }
-#endif
         }
+#endif
     }
 
-    // Joystick values are read. 0-1023
-    readAllFromJoystick(rawReads);
     // RAW Sensor values are read. 0-1023
-    SMHW.ReadAllFromSensors();
+    Mouse_Hardware.ReadAllFromSensors();
 
 #if NUMKEYS > 0
     // LivingTheDream added reading of key presses
     readAllFromKeys(keyVals);
-    // LivingTheDream added reading of key presses
-    readAllFromKeys(keyVals);
 #endif
     // Report back 0-1023 raw ADC 10-bit values if enabled
     if (debug == 1) {
-        debugOutput1(rawReads, keyVals);
-    }
-    // Report back 0-1023 raw ADC 10-bit values if enabled
-    if (debug == 1) {
-        debugOutput1(SMHW, keyVals);
-        // SMHW.PrintRawReads();
+        debugOutput1(Mouse_Hardware, keyVals);
+        // Mouse_Hardware.PrintRawReads();
     }
 
     if (debug == 11) {
-        // calibrate the joystick
+        // Calibrate the spacemouse
         // As this is called in the debug=11, we do more iterations.
-        busyZeroing(centerPoints, 2000, true);
-        debug = -1; // this only done once
-    }
-    if (debug == 11) {
-        // calibrate the joystick
-        // As this is called in the debug=11, we do more iterations.
-        SMHW.BusyZeroing(2000, true);
+        Mouse_Hardware.BusyZeroing(2000, true);
         debug = -1; // this only done once
     }
 
-    // Subtract centre position from measured position to determine movement.
-    for (int i = 0; i < 8; i++) {
-        centered[i] = rawReads[i] - centerPoints[i];
-    }
+    Mouse_Hardware.CenterSensors();
 
     if (debug == 20) {
-        calcMinMax(centered); // debug=20 to calibrate MinMax values
-    }
-    SMHW.CenterSensors();
-
-    if (debug == 20) {
-        SMHW.CalcMinMax();
+        Mouse_Hardware.CalcMinMax();
     }
 
-    // Report centered joystick values if enabled. Values should be approx -500 to +500, jitter around 0 at idle
-    if (debug == 2) {
-        debugOutput2(centered);
-    }
-    // Report centered joystick values if enabled. Values should be approx -500 to +500, jitter around 0 at idle
+    // Report centered joystick/knob values if enabled. Values should be approx -500 to +500, jitter around 0 at idle
     if (debug == 2) {
         // debugOutput2(centered);
-        debugOutput2(SMHW);
+        debugOutput2(Mouse_Hardware);
     }
 
-    FilterAnalogReadOuts(centered);
-    SMHW.FilterAnalogReadOuts();
+    Mouse_Hardware.FilterAnalogReadOuts();
 
-    // Report centered joystick values. Filtered for deadzone. Approx -350 to +350, locked to zero at idle
     if (debug == 3) {
-        debugOutput2(centered);
-    }
-    // Report centered joystick values. Filtered for deadzone. Approx -350 to +350, locked to zero at idle
-    if (debug == 3) {
-        debugOutput2(SMHW);
+        debugOutput2(Mouse_Hardware);
     }
 
-#ifndef EEPROM_CALIBRATION
-    calculateKinematic(SMHW, velocity);
-#else
-    calculateKinematic(centered, velocity, &mySensitivities, modFunc, inversions);
-#endif
+    Mouse_Kinematics.CalculcateKinematic(Mouse_Hardware);
 
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
     // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities
@@ -260,15 +241,11 @@ void loop() {
 #endif
     if (debug == 4) {
         // Report translation and rotation values if enabled.
-#ifndef EEPROM_CALIBRATION
-        debugOutput4(velocity, keyOut);
-#else
-        debugOutput4(velocity, keyOut, &mySensitivities);
-#endif
+        debugOutput4(Mouse_Kinematics, keyOut);
     }
 
     if (debug == 5) {
-        debugOutput5(SMHW, velocity);
+        debugOutput5(Mouse_Hardware, Mouse_Kinematics);
     }
 
     // if the kill-key feature is enabled, rotations or translations are killed=set to zero
@@ -290,35 +267,34 @@ void loop() {
 
     // report velocity and keys after possible kill-key feature
     if (debug == 6) {
-        debugOutput4(velocity, keyOut);
-    }
-    // report velocity and keys after possible kill-key feature
-    if (debug == 6) {
-#ifndef EEPROM_CALIBRATION
-        debugOutput4(velocity, keyOut);
-#else
-        debugOutput4(velocity, keyOut, &mySensitivities);
-#endif
+        debugOutput4(Mouse_Kinematics, keyOut);
     }
 
 #if SWITCHYZ > 0
-    switchYZ(velocity);
+    Mouse_Kinematics.SwitchYZ();
 #endif
 
 #ifdef EXCLUSIVEMODE
     // exclusive mode
     // rotation OR translation, but never both at the same time
     // to avoid issues with classics joysticks
-    exclusiveMode(velocity);
+    Mouse_Kinematics.ExclusiveMode();
 #endif
 
     // report velocity and keys after Switch or ExclusiveMode
     if (debug == 61) {
-        debugOutput4(velocity, keyOut);
+        debugOutput4(Mouse_Kinematics, keyOut);
     }
 
     // get the values to the USB HID driver to send if necessary
-    SpaceMouseHID.send_command(velocity[ROTX], velocity[ROTY], velocity[ROTZ], velocity[TRANSX], velocity[TRANSY], velocity[TRANSZ], keyState, debug);
+    SpaceMouseHID.send_command(Mouse_Kinematics.GetVelocity(rotX),
+                               Mouse_Kinematics.GetVelocity(rotY),
+                               Mouse_Kinematics.GetVelocity(rotZ),
+                               Mouse_Kinematics.GetVelocity(transX),
+                               Mouse_Kinematics.GetVelocity(transY),
+                               Mouse_Kinematics.GetVelocity(transZ),
+                               keyState,
+                               debug);
 
     if (debug == 7) {
         // update and report the at what frequency the loop is running
@@ -355,32 +331,6 @@ void lightSimpleLED(boolean light) {
     } else {
         // false -> LED off -> pull kathode up
         digitalWrite(LEDpin, HIGH); // turn the LED
-    }
-}
-#endif
-
-#ifdef HALLEFFECT
-/**
- * @brief Set the analog reference to 5V for debug 1 and to 2.56V otherwise
- */
-void setAnalogReferenceVoltage() {
-    if (debug == 1) {
-        // Set the reference voltage for the AD Convertor to 5V only for the first calibration step (pinout/inversion calibration).
-        analogReference(DEFAULT);
-        Serial.println(F("Setting analog reference to 5V."));
-    } else {
-        // Set the reference voltage for the AD Convertor to 2.56V in order to get larger sensitivity.
-        analogReference(INTERNAL);
-        Serial.println(F("Setting analog reference to 2.56V."));
-    }
-
-    // The first measurements after changing the reference voltage can be wrong. So take 100ms to let the voltage stabilize and
-    // take some measurements afterwards just to be sure. Performancewise this shouldn't be a problem due to the debug/setup
-    // nature of this function.
-    delay(100);
-    int tempReads[8];
-    for (int i = 0; i <= 8; i++) {
-        readAllFromJoystick(tempReads);
     }
 }
 #endif

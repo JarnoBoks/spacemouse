@@ -17,25 +17,25 @@ SpaceMouseHW_Joystick_::~SpaceMouseHW_Joystick_() {}
 /**
  * TODO
  */
-void SpaceMouseHW_Joystick_::CalculateKinematicSensors(int16_t *velocity) {
+void SpaceMouseHW_Joystick_::CalculateKinematicSensors(int16_t *velocities) {
 
     // calculate sensors transX
-    velocity[TRANSX] = (-centered[CY] + centered[AY]);
+    velocities[transX] = (-centered[CY] + centered[AY]);
 
     // calculate sensors transY
-    velocity[TRANSY] = (-centered[BY] + centered[DY]);
+    velocities[transY] = (-centered[BY] + centered[DY]);
 
     // calculate sensors transZ
-    velocity[TRANSZ] = -centered[AX] - centered[BX] - centered[CX] - centered[DX];
+    velocities[transZ] = -centered[AX] - centered[BX] - centered[CX] - centered[DX];
 
     // rotX
-    velocity[ROTX] = (-centered[CX] + centered[AX]);
+    velocities[rotX] = (-centered[CX] + centered[AX]);
 
     // rotY
-    velocity[ROTY] = (-centered[BX] + centered[DX]);
+    velocities[rotY] = (-centered[BX] + centered[DX]);
 
     // rotZ
-    velocity[ROTZ] = (centered[AY] + centered[BY] + centered[CY] + centered[DY]);
+    velocities[rotZ] = (centered[AY] + centered[BY] + centered[CY] + centered[DY]);
 }
 
 /**

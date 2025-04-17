@@ -37,7 +37,7 @@ public:
     bool BusyZeroing(uint16_t numIterations, boolean debugFlag);
 
     void SetAnalogReferenceVoltage(int debug) override;
-    void CalculateKinematicSensors(int16_t *velocity) override;
+    void CalculateKinematicSensors(int16_t *velocities) override;
 };
 
 #endif // SPACEMOUSEHWJOYSTICK_h

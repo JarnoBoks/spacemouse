@@ -16,25 +16,25 @@ SpaceMouseHW_Hall_::~SpaceMouseHW_Hall_() {}
 /**
  * TODO
  */
-void SpaceMouseHW_Hall_::CalculateKinematicSensors(int16_t *velocity) {
+void SpaceMouseHW_Hall_::CalculateKinematicSensors(int16_t *velocities) {
 
     // calculate sensors transX
-    velocity[TRANSX] = (centered[HES1] - centered[HES0] + centered[HES6] - centered[HES7]) / 2;
+    velocities[transX] = (centered[HES1] - centered[HES0] + centered[HES6] - centered[HES7]) / 2;
 
     // calculate sensors transY
-    velocity[TRANSY] = (centered[HES2] - centered[HES3] + centered[HES9] - centered[HES8]) / 2;
+    velocities[transY] = (centered[HES2] - centered[HES3] + centered[HES9] - centered[HES8]) / 2;
 
     // calculate sensors transZ
-    velocity[TRANSZ] = (centered[HES0] + centered[HES1] + centered[HES2] + centered[HES3] + centered[HES6] + centered[HES7] + centered[HES8] + centered[HES9]) / 4;
+    velocities[transZ] = (centered[HES0] + centered[HES1] + centered[HES2] + centered[HES3] + centered[HES6] + centered[HES7] + centered[HES8] + centered[HES9]) / 4;
 
     // rotX
-    velocity[ROTX] = (centered[HES0] + centered[HES1] - centered[HES6] - centered[HES7]) / 2;
+    velocities[rotX] = (centered[HES0] + centered[HES1] - centered[HES6] - centered[HES7]) / 2;
 
     // rotY
-    velocity[ROTY] = (centered[HES8] + centered[HES9] - centered[HES2] - centered[HES3]) / 2;
+    velocities[rotY] = (centered[HES8] + centered[HES9] - centered[HES2] - centered[HES3]) / 2;
 
     // rotZ
-    velocity[ROTZ] = (centered[HES0] + centered[HES2] + centered[HES6] + centered[HES8] - centered[HES1] - centered[HES3] - centered[HES7] - centered[HES9]) / 4;
+    velocities[rotZ] = (centered[HES0] + centered[HES2] + centered[HES6] + centered[HES8] - centered[HES1] - centered[HES3] - centered[HES7] - centered[HES9]) / 4;
 }
 
 /**

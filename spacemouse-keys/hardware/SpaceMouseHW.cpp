@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include "SpaceMouseHW.h"
 #include "config.h"
-// REMOVE - #include "calibration.h" // printArray
 
 #define MINMAXDURATION 15  // The duration of the min-max calibration in seconds
 #define DEADZONEWARNING 10 // A deadzone above the following value will be warned // TODO - Use the configured level for this
@@ -18,16 +17,6 @@ SpaceMouseHW_::SpaceMouseHW_(const int warnCpntMax, const int warnCpntMin, const
       _warningMinMaxMaximum(warnMMMax) {}
 
 SpaceMouseHW_::~SpaceMouseHW_() {}
-
-#if 0
-// Virtual functions: have to be implemented/overidden by the derived hardware classes.
-void SpaceMouseHW_::SetAnalogReferenceVoltage(int debug) {
-    // No function in the Base class. Implementation in the derived hardware classes
-}
-void SpaceMouseHW_::CalculateKinematicSensors(int16_t *velocity) {
-    // No function in the Base class. Implementation in the derived hardware classes
-}
-#endif
 
 bool SpaceMouseHW_::BusyZeroing(uint16_t numIterations, boolean debugFlag) {
     // Set up the zeroing datastructure, while initialising the constants.
@@ -298,7 +287,9 @@ void SpaceMouseHW_::_printArray(int arr[], int size) {
             Serial.print(", ");
         }
     }
-    Serial.println("}");
+    Serial.print("}");
+
+    Serial.print(DEBUG_LINE_END);
 }
 
 /**
@@ -321,7 +312,7 @@ void SpaceMouseHW_::PrintRawReads() {
 }
 
 void SpaceMouseHW_::PrintCentered() {
-    // Report back 0-1023 raw ADC 10-bit values if enabled
+    // Report back values for sensor axis after centering and mapping
     for (uint8_t i = 0; i < NUM_SENSORS; i++) {
         _printValue(_axisNames[i], centered[i]);
     }

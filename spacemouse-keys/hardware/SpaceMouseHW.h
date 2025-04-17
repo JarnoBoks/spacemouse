@@ -39,7 +39,7 @@ public:
 
     // --- Implemented by Derived Hardware Classes
     virtual void SetAnalogReferenceVoltage(int debug) = 0;
-    virtual void CalculateKinematicSensors(int16_t *velocity) = 0;
+    virtual void CalculateKinematicSensors(int16_t *velocities) = 0;
 
     // --- Overriden by Derived Hardware Classes
     virtual bool BusyZeroing(uint16_t numIterations, boolean debugFlag);

@@ -4,17 +4,13 @@
 #include "calibration.h"
 #include "kinematics.h"
 #include "config.h"
-#ifdef EEPROM_CALIBRATION
-#include "sensitivity.h"
-#include "EEPROM.h"
-#include "eepromStorage.h"
-#endif #include "hardware/SpaceMouseHW.h"
+#include "hardware/SpaceMouseHW.h"
 
 /// @brief Hold characters to plot them
 char debugOutputBuffer[20];
 
 /**
- * @brief Prints the current status of the key
+ * @brief Prints the current status of the key to the serial interface
  */
 void _printKey(int i, int keyval) {
     Serial.print("K");
@@ -48,331 +44,291 @@ void printKeys(uint8_t *keyVals) {
     }
 }
 
-/// Array for the velocity names.
-char const *velNames[] = {"TX:", "TY:", "TZ:", "RX:", "RY:", "RZ:"}; // 6
-
 /**
  * @brief Prints the raw ADC 10-bit values, if the output is due (every x miliseconds)
  * @param rawReads  pointer to the int array where the raw ADC values are stored
  * @param keyVals   pointer to the int array where the raw key readings are stored (no debouncing)
  */
-void debugOutput1(int *rawReads, int *keyVals) {
-    void debugOutput1(SpaceMouseHW_ & SMHW, int *keyVals) {
-        if (isDebugOutputDue()) {
-            SMHW.PrintRawReads();
-            // Report back 0-1023 raw ADC 10-bit values if enabled
-            printKeys(keyVals);
-            Serial.print(DEBUG_LINE_END);
+void debugOutput1(SpaceMouseHW_ &SMHW, int *keyVals) {
+    if (isDebugOutputDue()) {
+        SMHW.PrintRawReads();
+        // Report back 0-1023 raw ADC 10-bit values if enabled
+        printKeys(keyVals);
+        Serial.print(DEBUG_LINE_END);
+    }
+}
+
+void debugOutput2(SpaceMouseHW_ &SMHW) {
+    if (isDebugOutputDue()) {
+        SMHW.PrintCentered();
+        Serial.print(DEBUG_LINE_END);
+    }
+}
+
+/**
+ * @brief Report translation & rotation values, configured sensititivity parameters and status of the mouse buttons.
+ * @param SMKIN Pointer to the Kinematics object containing the current translation & rotation values aswell as the sensitivity configuration.
+ * @param keyOut Pointer to the array containing the status of the mousebuttons
+ */
+void debugOutput4(Kinematics &SMKIN, uint8_t *keyOut) {
+    SMKIN.PrintVelocities();
+    printKeys(keyOut);
+    Serial.print(F(" || "));
+    SMKIN.PrintSensitivities();
+    Serial.print(DEBUG_LINE_END);
+}
+
+/**
+ * @brief Report single axis and  translation & rotation values side by side for direct reference. Very useful if you need to alter which inputs are used in the arithmetic above.
+ *
+ * @param SMHW Pointer to the Hardware object for the eight axis
+ * @param SMKIN Pointer to the Kinematics object for the six resulting translation & rotation values.
+ */
+void debugOutput5(SpaceMouseHW_ &SMHW, Kinematics &SMKIN) {
+    if (isDebugOutputDue()) {
+        SMHW.PrintCentered();
+        Serial.print(" || ");
+        SMKIN.PrintVelocities();
+        Serial.print(DEBUG_LINE_END);
+    }
+}
+
+/// @brief Check, if a new debug output shall be generated. This is used in order to generate a debug line only every DEBUGDELAY ms, see config.h
+/// @return true, if debug message is due
+bool isDebugOutputDue() {
+    static unsigned long lastDebugOutput = 0; // time from millis(), when the last debug output was given
+
+    if (millis() - lastDebugOutput > DEBUGDELAY) {
+        lastDebugOutput = millis();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+uint16_t iterationsPerSecond = 0;      // count the iterations within one second
+unsigned long lastFrequencyUpdate = 0; // time from millis(), when the last frequency was calculated
+
+/// @brief update and report the function to learn at what frequency the loop is running
+void updateFrequencyReport() {
+    // increase iterations counter
+    iterationsPerSecond++;
+    if (millis() - lastFrequencyUpdate > 1000) { // if one second has past: report frequency
+        Serial.print("Frequency: ");
+        Serial.print(iterationsPerSecond);
+        Serial.println(" Hz");
+        lastFrequencyUpdate = millis(); // reset timer
+        iterationsPerSecond = 0;        // reset iteration counter
+    }
+}
+
+/**
+ * @brief
+ *
+ * @param dbg
+ * @param SMKIN
+ * @param SMHW
+
+ */
+
+#define CF(x) ((const __FlashStringHelper *)x)
+/// @brief Command list for the serial interface. The commands are stored in program memory to save RAM space.
+/// @details The commands are stored in program memory to save RAM space. The commands are compared with the input string using strcmp_P.
+static const char CMD_DEBUG[] PROGMEM = "DEBUG";
+static const char CMD_INVERT[] PROGMEM = "INVERT";
+static const char CMD_MODFUNC[] PROGMEM = "MODFUNC";
+static const char CMD_SENS[] PROGMEM = "SENS";
+static const char CMD_HELP[] PROGMEM = "HELP";
+static const char RESP_UNKNOWN_CMD[] PROGMEM = "Unknown command. Type HELP for a list of commands.";
+static const char RESP_HELP[] PROGMEM = "Commands: DEBUG, INVERT, MODFUNC, SENS, HELP";
+
+static const char TX[] PROGMEM = "TX";
+static const char TY[] PROGMEM = "TY";
+static const char TZ[] PROGMEM = "TZ";
+static const char RX[] PROGMEM = "RX";
+static const char RY[] PROGMEM = "RY";
+static const char RZ[] PROGMEM = "RZ";
+static const char GTX[] PROGMEM = "GTX";
+static const char GTY[] PROGMEM = "GTY";
+static const char GTZ[] PROGMEM = "GTZ";
+static const char GRX[] PROGMEM = "GRX";
+static const char GRY[] PROGMEM = "GRY";
+static const char GRZ[] PROGMEM = "GRZ";
+static const char MTX[] PROGMEM = "MTX";
+static const char MTY[] PROGMEM = "MTY";
+static const char MTZ[] PROGMEM = "MTZ";
+static const char MRX[] PROGMEM = "MRX";
+static const char MRY[] PROGMEM = "MRY";
+static const char MRZ[] PROGMEM = "MRZ";
+// INVERT: 0 = TX, 1 = TY, 2 = TZ, 3 = RX, 4 = RY, 5 = RZ
+// MODFUNC: 0 = TX, 1 = TY, 2 = TZ, 3 = RX, 4 = RY, 5 = RZ
+
+void debugInput(int &dbg, Kinematics &SMKIN, SpaceMouseHW_ &SMHW) {
+    char inputBuffer[32]; // Buffer to store the input command
+    int bytesRead = 0;
+
+    // Read the input into the buffer until a newline character or buffer limit
+    while (Serial.available() > 0 && bytesRead < sizeof(inputBuffer) - 1) {
+        char c = Serial.read();
+        if (c == '\n') {
+            break; // Stop reading at newline
         }
-        char const *velNames[] = {"TX:", "TY:", "TZ:", "RX:", "RY:", "RZ:"}; // 6
+        inputBuffer[bytesRead++] = c;
+    }
+    inputBuffer[bytesRead] = '\0'; // Null-terminate the string
 
-        void debugOutput1(SpaceMouseHW_ & SMHW, int *keyVals) {
-            if (isDebugOutputDue()) {
-                SMHW.PrintRawReads();
-                // Report back 0-1023 raw ADC 10-bit values if enabled
-                for (int i = 0; i < NUMKEYS; i++) {
-                    Serial.print("K");
-                    Serial.print(i);
-                    Serial.print(":");
-                    Serial.print(keyVals[i]);
-                    Serial.print(", ");
-                }
-                Serial.print(DEBUG_LINE_END);
-            }
+    if (bytesRead > 0) {
+        char word1[9] = ""; // Buffer for the first word (8 characters + null terminator)
+        char word2[9] = ""; // Buffer for the second word (optional) (8 characters + null terminator)
+        float value = 0.0;  // Float value
+
+        // Try parsing two words and a float
+        int parsedItems = sscanf(inputBuffer, "%8s %8s %f", word1, word2, &value);
+
+        if (parsedItems == 3) {
+            // Input contains two words and a float
+            Serial.println(F("Parsed input:"));
+            Serial.print(CF("Command: "));
+            Serial.println(word1);
+            Serial.print(F("Item: "));
+            Serial.println(word2);
+            Serial.print(F("Value: "));
+            Serial.println(value, 6); // Print float with 6 decimal places
+
+            // Handle the input
+            handleTwoWordsAndFloat(word1, word2, value, SMKIN);
+        } else if (parsedItems == 2) {
+            // Input contains one word and a float
+            Serial.println(F("Parsed input:"));
+            Serial.print(F("Command: "));
+            Serial.println(word1);
+            Serial.print(F("Value: "));
+            Serial.println(value, 6); // Print float with 6 decimal places
+
+            // Handle the input
+            handleOneWordAndFloat(word1, value);
+        } else {
+            Serial.println(F("Invalid input format. Use: <word> <word> <float> or <word> <float>"));
         }
+    }
+}
 
-        void debugOutput2(SpaceMouseHW_ & SMHW) {
-            if (isDebugOutputDue()) {
-                SMHW.PrintCentered();
-                Serial.print(DEBUG_LINE_END);
-            }
+bool checkForAxis(const char *word, velocityAxis_t &axis, bool &isGT, bool &isMF) {
+    // Check if the word matches any of the defined axis names
+    // and set the axis variable accordingly
+    if (strcmp_P(word, TX) == 0) {
+        axis = transX;
+    } else if (strcmp_P(word, TY) == 0) {
+        axis = transY;
+    } else if (strcmp_P(word, TZ) == 0) {
+        axis = transZ;
+    } else if (strcmp_P(word, RX) == 0) {
+        axis = rotX;
+    } else if (strcmp_P(word, RY) == 0) {
+        axis = rotY;
+    } else if (strcmp_P(word, RZ) == 0) {
+        axis = rotZ;
+    } else if (strcmp_P(word, GTX) == 0) {
+        axis = transX;
+        isGT = true;
+    } else if (strcmp_P(word, GTY) == 0) {
+        axis = transY;
+        isGT = true;
+    } else if (strcmp_P(word, GTZ) == 0) {
+        axis = transZ;
+        isGT = true;
+    } else if (strcmp_P(word, GRX) == 0) {
+        axis = rotX;
+        isGT = true;
+    } else if (strcmp_P(word, GRY) == 0) {
+        axis = rotY;
+        isGT = true;
+    } else if (strcmp_P(word, GRZ) == 0) {
+        axis = rotZ;
+        isGT = true;
+    } else if (strcasecmp_P(word, MTX) == 0) {
+        axis = transX;
+        isMF = true;
+    } else if (strcasecmp_P(word, MTY) == 0) {
+        axis = transY;
+        isMF = true;
+    } else if (strcasecmp_P(word, MTZ) == 0) {
+        axis = transZ;
+        isMF = true;
+    } else if (strcasecmp_P(word, MRX) == 0) {
+        axis = rotX;
+        isMF = true;
+    } else if (strcasecmp_P(word, MRY) == 0) {
+        axis = rotY;
+        isMF = true;
+    } else if (strcasecmp_P(word, MRZ) == 0) {
+        axis = rotZ;
+        isMF = true;
+    } else {
+
+        Serial.println(F("Unknown axis."));
+        return false; // Invalid axis
+    }
+
+    // If we reach here, the axis is valid
+    return true;
+}
+
+void checkForPositiveNegative(const char *word, int8_t &value) {
+    // Check if the third or the fourth character is a '+' or '-' sign
+    // and set the value accordingly
+    if (word[2] == '+' || word[2] == '-') {
+        value = (word[2] == '+') ? 1 : -1; // Positive or negative
+    } else if (word[3] == '+' || word[3] == '-') {
+        value = (word[3] == '+') ? 1 : -1; // Positive or negative
+    }
+}
+
+void handleTwoWordsAndFloat(const char *cmd, const char *item, float value, Kinematics &SMKIN) {
+    // Example handling for two words and a float
+    // This function can parse the commands "SENS" and "INVERT" with a float value and perform the corresponding actions.
+    // For example, you can set the sensitivity or inversion for a specific axis.
+    // The first word is the command, the second word is the axis, and the float value is the parameter.
+
+    velocityAxis_t axis;
+    bool isGT = false; // Flag to indicate if the item is a gate item (GTX, GTY, GTZ, GRX, GRY, GRZ)
+    bool isMF = false; // Flag to indicate if the item is a ModFunc item (MTX, MTY, MTZ, MRX, MRY, MRZ)
+    if (checkForAxis(item, axis, isGT, isMF)) {
+        // Check if the command is for inversion or sensitivity function
+        if (strcmp_P(cmd, CMD_SENS) == 0) {
+            // Set sensitivity function for the specified axis
+            Serial.print(F("Setting sensitivity for "));
+            Serial.print(item);
+            Serial.print(F(" to: "));
+            Serial.println(value);
+
+            int8_t pos_neg = 0;                      // Default to 0 (no positive/negative command)
+            checkForPositiveNegative(item, pos_neg); // Check for '+' or '-' in the word2
+
+            SMKIN.SetSensitivities(axis, isGT, isMF, pos_neg, value); // Set the sensitivity for the specified axis
+
+        } else if (strcmp_P(item, CMD_INVERT) == 0 && !isGT && !isMF) {
+            // Set inversion for the specified axis
+            Serial.print(F("Setting inversion for "));
+            Serial.print(cmd);
+            Serial.print(F(" to: "));
+            Serial.println(value);
+
+            SMKIN.SetTransRotInversions(axis, (uint8_t)value);
+        } else {
+            Serial.println(CF(RESP_UNKNOWN_CMD));
         }
+    } else {
+        Serial.println(F("Unknown second parameter."));
+    }
+}
 
-        /// @brief Report translation and rotation values if enabled.
-        /// @param velocity pointer to velocity array
-        /// @param keyOut pointer to keyOut array
-        void debugOutput4(int16_t *velocity, uint8_t *keyOut) {
-            //
-            if (isDebugOutputDue()) {
-                for (int i = 0; i < 6; i++) {
-                    sprintf(debugOutputBuffer, "%2.2s: %4d ", velNames[i], velocity[i]);
-                    Serial.print(debugOutputBuffer);
-                }
-
-                printKeys(keyOut);
-                Serial.print(DEBUG_LINE_END);
-            }
-        }
-
-#ifdef EEPROM_CALIBRATION
-
-        /**
-         *
-         * @brief Report translation & rotation values, and configured sensititivity parameters.
-         * @param velocity pointer to velocity array
-         * @param keyOut pointer to keyOut array
-         * @param sensitivities pointer to the sensitivities array
-         */
-        void debugOutput4(int16_t *velocity, uint8_t *keyOut, sensitivities_t *sensitivities) {
-            //
-            if (isDebugOutputDue()) {
-                for (int i = 0; i < 6; i++) {
-                    sprintf(debugOutputBuffer, "%2.2s: %4d ", velNames[i], velocity[i]);
-                    Serial.print(debugOutputBuffer);
-                }
-                printKeys(keyOut);
-                Serial.print(F(" || "));
-                printSensitivity(sensitivities, false);
-                Serial.print(DEBUG_LINE_END);
-            }
-        }
-#endif
-
-        /// @brief Report single axis and resulting velocities info side by side for direct reference. Very useful if you need to alter which inputs are used in the arithmetic above.
-        /// @param centered pointer to arrays of 8 axis
-        /// @param velocity pointer to array of 6 velocities
-
-        void debugOutput5(SpaceMouseHW_ & SMHW, int16_t *velocity) {
-            if (isDebugOutputDue()) {
-                SMHW.PrintCentered();
-                Serial.print(" || ");
-                for (int i = 0; i < 6; i++) {
-                    sprintf(debugOutputBuffer, "%2.2s: %4d ", velNames[i], velocity[i]);
-                    Serial.print(debugOutputBuffer);
-                }
-                Serial.print(DEBUG_LINE_END);
-            }
-        }
-
-        // Variables and function to get the min and maximum value of the centered values
-        int minMaxCalcState = 0; // little state machine -> setup in 0 -> measure in 1 -> output in 2 ->  end in 3
-        int minValue[8];         // Array to store the minimum values
-        int maxValue[8];         // Array to store the maximum values
-        unsigned long startTime; // Start time for the measurement
-
-        /// @brief This function records the minimum and maximum movement of the joysticks: After initialization, move the mouse for 15s and see the printed output. Replug/reset the mouse, to enable the semi-automatic calibration for a second time.
-        /// @param centered pointer to the array with the centered joystick values
-        void calcMinMax(int *centered) {
-            if (minMaxCalcState == 0) {
-                delay(2000);
-                // Initialize the arrays
-                for (int i = 0; i < 8; i++) {
-                    minValue[i] = 1023; // Set the min value to the maximum possible value
-                    maxValue[i] = 0;    // Set the max value to the minimum possible value
-                }
-                startTime = millis(); // Record the current time
-                minMaxCalcState = 1;  // next State: measure!
-                Serial.println(F("Please start moving the spacemouse around for 15 sec!"));
-            } else if (minMaxCalcState == 1) {
-                if (millis() - startTime < 15000) {
-                    for (int i = 0; i < 8; i++) {
-                        // Update the minimum and maximum values
-                        if (centered[i] < minValue[i]) {
-                            minValue[i] = centered[i];
-                        }
-                        if (centered[i] > maxValue[i]) {
-                            maxValue[i] = centered[i];
-                        }
-                    }
-                } else {
-                    // 15s are over. go to next state and report via console
-                    Serial.println(F("\n\nStop moving the spacemouse. These are the result. Copy them in config.h"));
-                    minMaxCalcState = 2;
-                }
-            } else if (minMaxCalcState == 2) {
-                Serial.print(F("#define MINVALS "));
-                printArray(minValue, 8);
-                Serial.print(F("#define MAXVALS "));
-                printArray(maxValue, 8);
-                for (int i = 0; i < 8; i++) {
-                    if (abs(minValue[i]) < 250) {
-                        Serial.print(F("Warning: minValue["));
-                        Serial.print(i);
-                        Serial.print("] ");
-                        Serial.print(axisNames[i]);
-                        Serial.print(F(" is small: "));
-                        Serial.println(minValue[i]);
-                    }
-                    if (abs(maxValue[i]) < 250) {
-                        Serial.print(F("Warning: maxValue["));
-                        Serial.print(i);
-                        Serial.print("] ");
-                        Serial.print(axisNames[i]);
-                        Serial.print(F(" is small: "));
-                        Serial.println(maxValue[i]);
-                    }
-                }
-                minMaxCalcState = 3; // no further reporting
-            }
-        }
-
-        /// @brief Check, if a new debug output shall be generated. This is used in order to generate a debug line only every DEBUGDELAY ms, see config.h
-        /// @return true, if debug message is due
-        bool isDebugOutputDue() {
-            static unsigned long lastDebugOutput = 0; // time from millis(), when the last debug output was given
-
-            if (millis() - lastDebugOutput > DEBUGDELAY) {
-                lastDebugOutput = millis();
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        uint16_t iterationsPerSecond = 0;      // count the iterations within one second
-        unsigned long lastFrequencyUpdate = 0; // time from millis(), when the last frequency was calculated
-
-        /// @brief update and report the function to learn at what frequency the loop is running
-        void updateFrequencyReport() {
-            // increase iterations counter
-            iterationsPerSecond++;
-            if (millis() - lastFrequencyUpdate > 1000) { // if one second has past: report frequency
-                Serial.print("Frequency: ");
-                Serial.print(iterationsPerSecond);
-                Serial.println(" Hz");
-                lastFrequencyUpdate = millis(); // reset timer
-                iterationsPerSecond = 0;        // reset iteration counter
-            }
-        }
-
-#ifdef EEPROM_CALIBRATION
-        /**
-         * @brief   Checks if the value is a valid calibration option.
-         */
-        bool validCalibrationOption(int value) {
-            int calibrationOptions[NUM_CALIBRATION_OPTIONS] = CALIBRATION_OPTIONS;
-            for (uint8_t i = 0; i < NUM_CALIBRATION_OPTIONS; i++) {
-                if (value == calibrationOptions[i]) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        uint8_t _readByte(int address, int defValue) {
-            uint8_t value;
-            // Read value from the EEPROM, the values are stored as float.
-            EEPROM.get(address, value);
-
-            // We assume that if one of the values isn't set, the entire struct isn't set.
-            if (value == 0xFF || FORCE_EEPROM_INIT) {
-                EEPROM.put(address, defValue);
-                value = defValue;
-            }
-
-            return value;
-        }
-
-        uint8_t readModfunc() {
-            return _readByte(EEPROM_ADDRESS_MODFUNC, MODFUNC);
-        }
-
-        /**
-         * Modfunc commands send through the Serial Monitor should be in the format
-         *
-         *   3 00000 x              where x is the new modfunc value
-         *
-         */
-
-#define MODFUNC_CMD_OFFSET 3000000L
-        uint8_t updateModfunc(long input) {
-            uint8_t value = (uint8_t)(input - MODFUNC_CMD_OFFSET);
-            if (value < 0 || value > 4) {
-                // We have developed four modifier functions
-                Serial.println(F("Invalid modfunc"));
-                value = readModfunc();
-            } else {
-
-                // Write the value to the Serial Monitor for user feedback.
-                Serial.print(F("Updated modifier function as: "));
-                Serial.println(value);
-
-                // Store the sensitivity in the EEPROM. EEPROM.put() uses EEPROM.update and thus only writes data if the data has changed.
-                EEPROM.put(EEPROM_ADDRESS_MODFUNC, value);
-            }
-
-            return value;
-        }
-
-        void printModfunc(uint8_t modfunc, bool introtext) {
-            if (introtext) {
-                Serial.println(F("Current modfunc: "));
-            }
-
-            Serial.print(modfunc);
-
-            if (introtext) {
-                Serial.println();
-            }
-        }
-
-#define INVERSION_CMD_OFFSET 10000L // Value consists of 4 digits
-        uint8_t updateInversions(long input) {
-            uint8_t ret = readInversions();
-
-            // Get the command, divide by ITEMPOS removes the value from the input.
-            // (fe. input 2010150, cmd = (input/1000) = 201)
-            uint16_t cmd = (input / INVERSION_CMD_OFFSET);
-
-            // Get interger value (last digit) and check if this is 0 or 1
-            long value = input - (cmd * INVERSION_CMD_OFFSET);
-
-            // Check if the value and the command are within our boundaries.
-            if (value < 0 || value > 1 || cmd < 400 || cmd > 405) {
-                // We have developed four modifier functions
-                Serial.println(F("Invalid inversion"));
-            } else {
-
-                Serial.print(F("Updating inversion to "));
-                Serial.println(value);
-
-                if (value) {
-                    // Set the commanded bit
-                    ret |= (1u << (cmd - 400));
-                } else {
-                    // Unset the commamded bit
-                    ret &= ~(1u << (cmd - 400));
-                }
-
-                // Store the value in the EEPROM. EEPROM.put() uses EEPROM.update and thus only writes data if the data has changed.
-                EEPROM.put(EEPROM_ADDRESS_INVERSIONS, ret);
-                printInversions(ret, true);
-            }
-
-            return ret;
-        }
-
-        uint8_t readInversions() {
-
-            uint8_t defValue = DEFAULT_INVERSION;
-
-            // Read values from the EEPROM
-            return _readByte(EEPROM_ADDRESS_INVERSIONS, defValue);
-        }
-
-#define PRINT_INVERSION(y) Serial.print(GET_INVERSION(inversions, y))
-        void printInversions(uint8_t inversions, bool introtext) {
-            if (introtext) {
-                Serial.println(F("Current inversions: "));
-            }
-
-            Serial.print(F("{ INVX: "));
-            PRINT_INVERSION(AX_INVX);
-            Serial.print(F(", INVY: "));
-            PRINT_INVERSION(AX_INVY);
-            Serial.print(F(", INVZ: "));
-            PRINT_INVERSION(AX_INVZ);
-            Serial.print(F(", INVRX: "));
-            PRINT_INVERSION(AX_INVRX);
-            Serial.print(F(", INVRY: "));
-            PRINT_INVERSION(AX_INVRY);
-            Serial.print(F(", INVRZ: "));
-            PRINT_INVERSION(AX_INVRZ);
-            Serial.print(F(" }"));
-
-            if (introtext) {
-                Serial.println();
-            }
-        }
-
-#endif
+void handleOneWordAndFloat(const char *word, float value) {
+    // Example handling for one word and a float
+    if (strcmp(word, "DEBUG") == 0) {
+        Serial.print("Setting debug level to: ");
+        Serial.println(value);
+    } else {
+        Serial.println(CF("Unknown command"));
+    }
+}

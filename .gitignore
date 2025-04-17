@@ -3,6 +3,7 @@ config*.h
 .pio
 .vscode
 .idea
+test*.*
 
 //this file should be included:
 !config_sample*.h

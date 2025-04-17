@@ -2,191 +2,117 @@
 
 // The user specific settings, like pin mappings or special configuration variables and sensitivities are stored in config.h.
 // Please open config_sample.h, adjust your settings and save it as config.h
-#include "config.h"
+
 #include <Arduino.h>
+#include "config.h"        // Include the config file for the hardware and the kinematics
+#include "kinematics.h"    // Our header file for the kinematics
+#include "eepromStorage.h" // Include the EEPROM address map
+#include "text.h"          // Include the text file for the debug output
 
-// Include math operators for doing better calculation algorithms. Arduino math is a standard library already included.
-#include <math.h>
-#define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
-
-#include "calibration.h"
-#include "kinematics.h"
-#ifdef EEPROM_CALIBRATION
-#include "sensitivity.h"
+#ifdef HALLEFFECT
+#include "hardware/SpaceMouseHW_Hall.h"
+#else
+#include "hardware/SpaceMouseHW_Joystick.h"
 #endif
 
-#ifndef EEPROM_CALIBRATION
-/// @brief Function to modify the input value according to different mathematic modes. Choose the mathematical function in config.h as modFunc
-/// @param x input between -350 and +350
-/// @return output between -350 and +350
-int modifierFunction(int x) {
-    // making sure function input never exedes range of -350 to 350
-    x = constrain(x, -350, 350);
-    double result;
-#if (MODFUNC == 1)
-    // using squared function y = x^2*sign(x)
-    result = 350 * pow(x / 350.0, 2) * sign(x); // sign putting out -1 or 1 depending on sign of value. (Is needed because x^2 will always be positive)
-#elif (MODFUNC == 2)
-    // using tan function: tan(x)
-    result = 350 * tan(x / 350.0);
-#elif (MODFUNC == 3)
-    // using squared tan function: tan(x^2*sign(x))
-    result = 350 * tan(pow(x / 350.0, 2) * sign(x)); // sign putting out -1 or 1 depending on sign of value. (Is needed because x^2 will always be positive)
-#elif (MODFUNC == 4)
-    // using cubed tan function: tan(x^3)
-    result = 350 * tan(pow(x / 350.0, 3));
-#else
-    // MODFUNC == 0 or others...
-    // no modification
-    result = x;
-#endif
-
-    // make sure values between-350 and 350 are allowed
-    result = constrain(result, -350, 350);
-
-    // converting doubles to int again
-    return (int)round(result);
-}
-#else
 /**
- * @brief Function to modify the input value according to different mathematic modes. Choose the mathematical function in config.h as modFunc
- * @param x input between -350 and +350
- * @param modFunc The modifier function to use
- * @return output between -350 and +350
+ * @brief Constructor for Kinematics class.
+ * @details Create the object & technically initialise members.Load the configuration data from the EEPROM.
+ *
+ * @param firstrun If this is the first run, we need to set the default values for the velocities. The defaults are configured in
+ *                 hardware/SpaceMouseHW_(Hall/Joystick).h. If it is not the first run, we need to load the configuration from the EEPROM.
  */
-int _modifierFunction(int x, uint8_t modFunc) {
-    // making sure function input never exceeds range of -350 to 350
-    x = constrain(x, -350, 350);
-    double result;
-
-    switch (modFunc) {
-    case 1:
-        // using squared function y = x^2*sign(x)
-        result = 350 * pow(x / 350.0, 2) * sign(x); // sign putting out -1 or 1 depending on sign of value. (Is needed because x^2 will always be positive)
-        break;
-    case 2:
-        // using tan function: tan(x)
-        result = 350 * tan(x / 350.0);
-        break;
-    case 3:
-        // using squared tan function: tan(x^2*sign(x))
-        result = 350 * tan(pow(x / 350.0, 2) * sign(x)); // sign putting out -1 or 1 depending on sign of value. (Is needed because x^2 will always be positive)
-        break;
-    case 4:
-        // using cubed tan function: tan(x^3)
-        result = 350 * tan(pow(x / 350.0, 3));
-        break;
-    default:
-        result = x;
+#define NO_INVERT 1
+#define INVERT -1
+#define NO_GATE 0
+#define SQUARED_TAN 3
+#define LINEAR 0
+Kinematics::Kinematics(SpaceMouseHW_ &Mouse_Hardware, bool firstrun) : _SMHW(&Mouse_Hardware) {
+    // Initialize velocities
+    for (uint8_t idx = transX; idx != enumAxis_t::LENGTH; idx++) {
+        _velocities[idx] = 0;
     }
 
-    // make sure values between-350 and 350 are allowed
-    result = constrain(result, -350, 350);
-
-    // converting doubles to int again
-    return (int)round(result);
+    // Read modFunc from EEPROM, use the default configured value if the byte is not set.
+    // eeModFunc >> _modFunc;
+    if (firstrun) {
+        // If this is the first run, we need to set the default values for the velocities.
+        // The default values are defined in config.h and are used if the EEPROM is not set yet.
+        _AxesConfigurations[transX] = new MotionAxisConfig("TX", EEPROM_ADDRESS_CFG_TX, VelocityConfig_t(DEF_SENS_TRANSX, NO_GATE, SQUARED_TAN, DEF_INVERT_TX));
+        _AxesConfigurations[transY] = new MotionAxisConfig("TY", EEPROM_ADDRESS_CFG_TY, VelocityConfig_t(DEF_SENS_TRANSY, NO_GATE, SQUARED_TAN, DEF_INVERT_TY));
+        _AxesConfigurations[transZ] = new MotionAxisConfig("TZ", EEPROM_ADDRESS_CFG_TZ, VelocityConfig_t(DEF_SENS_POSITIVE_TRANSZ, DEF_SENS_NEGATIVE_TRANSZ, NO_GATE, DEF_GATE_NEG_TRANSZ, LINEAR, SQUARED_TAN, DEF_INVERT_TZ));
+        _AxesConfigurations[rotX] = new MotionAxisConfig("RX", EEPROM_ADDRESS_CFG_RX, VelocityConfig_t(DEF_SENS_ROTX, DEF_GATE_ROTX, SQUARED_TAN, DEF_INVERT_RX));
+        _AxesConfigurations[rotY] = new MotionAxisConfig("RY", EEPROM_ADDRESS_CFG_RY, VelocityConfig_t(DEF_SENS_ROTY, DEF_GATE_ROTY, SQUARED_TAN, DEF_INVERT_RY));
+        _AxesConfigurations[rotZ] = new MotionAxisConfig("RZ", EEPROM_ADDRESS_CFG_RZ, VelocityConfig_t(DEF_SENS_ROTZ, DEF_GATE_ROTZ, SQUARED_TAN, DEF_INVERT_RZ));
+    } else {
+        _AxesConfigurations[transX] = new MotionAxisConfig("TX", EEPROM_ADDRESS_CFG_TX);
+        _AxesConfigurations[transY] = new MotionAxisConfig("TY", EEPROM_ADDRESS_CFG_TY);
+        _AxesConfigurations[transZ] = new MotionAxisConfig("TZ", EEPROM_ADDRESS_CFG_TZ);
+        _AxesConfigurations[rotX] = new MotionAxisConfig("RX", EEPROM_ADDRESS_CFG_RX);
+        _AxesConfigurations[rotY] = new MotionAxisConfig("RY", EEPROM_ADDRESS_CFG_RY);
+        _AxesConfigurations[rotZ] = new MotionAxisConfig("RZ", EEPROM_ADDRESS_CFG_RZ);
+    }
 }
+
+/**
+ * @brief Destructor for Kinematics class.
+ * @details Destroy the object and free the memory allocated for the MotionAxisConfig objects.
+ *          The destructor is called when the object is destroyed.
+ */
+Kinematics::~Kinematics() {
+#ifdef ARDUINO_ARCH_ESP32
+    // Destroy the MotionAxisConfig objects to free memory.
+    for (uint8_t idx = transX; idx != enumAxis_t::LENGTH; idx++) {
+        delete _AxisConfigurations[idx];
+    }
 #endif
+};
 
 /**
  *  @brief Calculate the kinematic of the three axis from the eight sensors
  *  @param centered pointer to the array containing the eight centered values from the axis of the 4 joysticks or the 8 Hall Effect sensors
  *  @param velocity pointer to the result array that will contain the translational and rotational motions
  */
-void calculateKinematic(SpaceMouseHW_ &SMHW, int16_t *velocity) {
-    // Retrieve raw kinematics from sensors (joystick or hall effect)
-    SMHW.CalculateKinematicSensors(velocity);
+void Kinematics::CalculcateKinematic() {
 
-    // transX - Apply sensitivity & recalculate with modifier function.
-    velocity[TRANSX] = velocity[TRANSX] / ((float)TRANSX_SENSITIVITY);
-    velocity[TRANSX] = modifierFunction(velocity[TRANSX]); // recalculate with modifier function
+    // Get raw kinematics from the hardwarwe sensors. The raw kinematics are calculated in the hardware class (due to the hardware specific implementation).
+    int16_t rawSensorVelocities[enumAxis_t::LENGTH];
+    _SMHW->CalculateKinematicSensors(rawSensorVelocities);
 
-    // transY - Apply sensitivity & recalculate with modifier function.
-    velocity[TRANSY] = velocity[TRANSY] / ((float)TRANSY_SENSITIVITY);
-    velocity[TRANSY] = modifierFunction(velocity[TRANSY]); // recalculate with modifier function
-
-    // transZ
-    // REVIEW - Check if this will be OK for the HallE and Joystick version, while the negative & positive moment is inverted in the RAW ADC values!!
-    if (velocity[TRANSZ] < 0) {
-        velocity[TRANSZ] = modifierFunction(velocity[TRANSZ] / ((float)NEG_TRANSZ_SENSITIVITY)); // recalculate with modifier function
-        if (abs(velocity[TRANSZ]) < GATE_NEG_TRANSZ) {
-            velocity[TRANSZ] = 0;
-        }
-    } else {                                                                                         // pulling the knob upwards is much heavier... smaller factor
-        velocity[TRANSZ] = constrain(velocity[TRANSZ] / ((float)POS_TRANSZ_SENSITIVITY), -350, 350); // no modifier function, just constrain linear!
+    for (uint8_t axs = 0; axs != enumAxis_t::LENGTH; axs++) {
+        _AxesConfigurations[axs]->CalculcateVelocity(rawSensorVelocities[axs]);
+        _velocities[axs] = _AxesConfigurations[axs]->GetVelocity(); // FIXME - We have a local storage of velocities for now
     }
+}
 
-    // rotX - Apply sensitivity, recalculate with modifier function and apply gate
-    velocity[ROTX] = velocity[ROTX] / ((float)ROTX_SENSITIVITY);
-    velocity[ROTX] = modifierFunction(velocity[ROTX]); // recalculate with modifier function
-    if (abs(velocity[ROTX]) < GATE_ROTX) {
-        velocity[ROTX] = 0;
+void Kinematics::PrintVelocities() {
+    for (int i = 0; i < enumAxis_t::LENGTH; i++) {
+        _AxesConfigurations[i]->PrintVelocity();
     }
+}
 
-    // rotY - Apply sensitivity, recalculate with modifier function and apply gate
-    velocity[ROTY] = velocity[ROTY] / ((float)ROTY_SENSITIVITY);
-    velocity[ROTY] = modifierFunction(velocity[ROTY]); // recalculate with modifier function
-    if (abs(velocity[ROTY]) < GATE_ROTY) {
-        velocity[ROTY] = 0;
-    }
+int16_t Kinematics::GetVelocity(enumAxis_t axis) {
+    return _AxesConfigurations[axis]->GetVelocity();
+}
 
-    // rotY - Apply sensitivity, recalculate with modifier function and apply gate
-    velocity[ROTZ] = velocity[ROTZ] / ((float)ROTZ_SENSITIVITY);
-    velocity[ROTZ] = modifierFunction(velocity[ROTZ]); // recalculate with modifier function
-    if (abs(velocity[ROTZ]) < GATE_ROTZ) {
-        velocity[ROTZ] = 0;
-    }
-
-#ifndef EEPROM_CALIBRATION
-// Invert directions if needed
-#if INVX > 0
-    velocity[TRANSX] = velocity[TRANSX] * -1;
-#endif
-#if INVY > 0
-    velocity[TRANSY] = velocity[TRANSY] * -1;
-#endif
-#if INVZ > 0
-    velocity[TRANSZ] = velocity[TRANSZ] * -1;
-#endif
-#if INVRX > 0
-    velocity[ROTX] = velocity[ROTX] * -1;
-#endif
-#if INVRY > 0
-    velocity[ROTY] = velocity[ROTY] * -1;
-#endif
-#if INVRZ > 0
-    velocity[ROTZ] = velocity[ROTZ] * -1;
-#endif
-#else
-    if (GET_INVERSION(inversions, AX_INVX))
-        velocity[TRANSX] *= -1;
-    if (GET_INVERSION(inversions, AX_INVY))
-        velocity[TRANSY] *= -1;
-    if (GET_INVERSION(inversions, AX_INVZ))
-        velocity[TRANSZ] *= -1;
-    if (GET_INVERSION(inversions, AX_INVRX))
-        velocity[ROTX] *= -1;
-    if (GET_INVERSION(inversions, AX_INVRY))
-        velocity[ROTY] *= -1;
-    if (GET_INVERSION(inversions, AX_INVRZ))
-        velocity[ROTZ] *= -1;
-#endif
-} // end calculateKinematic
+void Kinematics::SetVelocity(enumAxis_t axis, int16_t velocity) {
+    _AxesConfigurations[axis]->SetVelocity(velocity);
+}
 
 /**
  *  @brief Switch position of X and Y values
  *
  *  @param velocity pointer to velocity array
  */
-void switchXY(int16_t *velocity) {
+void Kinematics::SwitchXY() {
     int16_t tmp = 0;
-    tmp = velocity[TRANSX];
-    velocity[TRANSX] = velocity[TRANSY];
-    velocity[TRANSY] = tmp;
+    tmp = _velocities[transX];
+    _velocities[transX] = _velocities[transY];
+    _velocities[transY] = tmp;
 
-    tmp = velocity[ROTX];
-    velocity[ROTX] = velocity[ROTY];
-    velocity[ROTY] = tmp;
+    tmp = _velocities[rotX];
+    _velocities[rotX] = _velocities[rotY];
+    _velocities[rotY] = tmp;
 }
 
 /**
@@ -194,34 +120,104 @@ void switchXY(int16_t *velocity) {
  *
  *  @param velocity pointer to velocity array
  */
-void switchYZ(int16_t *velocity) {
+void Kinematics::SwitchYZ() {
     int16_t tmp = 0;
-    tmp = velocity[TRANSY];
-    velocity[TRANSY] = velocity[TRANSZ];
-    velocity[TRANSZ] = tmp;
+    tmp = _velocities[transY];
+    _velocities[transY] = _velocities[transZ];
+    _velocities[transZ] = tmp;
 
-    tmp = velocity[ROTY];
-    velocity[ROTY] = velocity[ROTZ];
-    velocity[ROTZ] = tmp;
+    tmp = _velocities[rotY];
+    _velocities[rotY] = _velocities[rotZ];
+    _velocities[rotZ] = tmp;
 }
 
 /**
  *  @brief  Check if translation or rotation is dominant and set the other values to zero to allow exclusively rotation or translation
  *          to avoid issues with classics joysticks.
- *
- *  @param velocity pointer to velocity array
  */
-void exclusiveMode(int16_t *velocity) {
-    uint16_t totalRot = abs(velocity[ROTX]) + abs(velocity[ROTY]) + abs(velocity[ROTZ]);
-    uint16_t totalTrans = abs(velocity[TRANSX]) + abs(velocity[TRANSY]) + abs(velocity[TRANSZ]);
+void Kinematics::ExclusiveMode() {
+    uint16_t totalRot = abs(_velocities[rotX]) + abs(_velocities[rotY]) + abs(_velocities[rotZ]);
+    uint16_t totalTrans = abs(_velocities[transX]) + abs(_velocities[transY]) + abs(_velocities[transZ]);
 
     if (totalRot > totalTrans) {
-        velocity[TRANSX] = 0;
-        velocity[TRANSY] = 0;
-        velocity[TRANSZ] = 0;
+        _velocities[transX] = 0;
+        _velocities[transY] = 0;
+        _velocities[transZ] = 0;
     } else {
-        velocity[ROTX] = 0;
-        velocity[ROTY] = 0;
-        velocity[ROTZ] = 0;
+        _velocities[rotX] = 0;
+        _velocities[rotY] = 0;
+        _velocities[rotZ] = 0;
     }
+}
+
+/**
+ * @brief Update the configuration for the specified axis.
+ * @param axisName The name of the axis (TX,TY,TZ,RX,RY,RZ) to set the configuration for.
+ * @param isGT True if value configures a gate , false otherwise.
+ * @param isMF True if value configures a modulation function, false otherwise.
+ * @param isInversion True if the value configures an inversion, false otherwise.
+ * @param pos_neg   1 configures the value for a positive direction,
+ *                 -1 configures the value for a negative direction,
+ *                  0 configures the value for both directions.
+ * @param value The configuration value.
+ *
+ * @return 1 if the configuration was updated successfully, -1 if the axis name is invalid.
+ */
+int8_t Kinematics::UpdateAxisConfig(const char *axisName, boolean isGT, boolean isMF, boolean isInversion, int8_t pos_neg, float value) { // Set the sensitivity for the specified axis
+
+    // Loop over the axis names and check if the axis name is valid.
+    // If the axis name is valid, update the configuration for the specified axis.
+    enumAxis_t axis = enumAxis_t::LENGTH;
+    for (uint8_t i = 0; i < enumAxis_t::LENGTH; i++) {
+        if (_AxesConfigurations[i]->UpdateConfig(axisName, isGT, isMF, isInversion, pos_neg, value)) {
+            return 1;
+        }
+    };
+
+    if (axis == enumAxis_t::LENGTH) {
+        Serial.println(CF(Error_InvalidAxisName));
+        return -1;
+    }
+
+    return 0; // Success
+}
+
+boolean Kinematics::GetAxisInvert(enumAxis_t axis) {
+    // Check if the axis is valid and return the inversion for the specified axis.
+    if (axis < enumAxis_t::LENGTH) {
+        return (_AxesConfigurations[axis]->GetInvert() == 1);
+    } else {
+        Serial.println(CF(Error_InvalidAxisName));
+        return false;
+    }
+}
+
+/**
+ * @brief Output the configuration of all axis to the Serial Monitor.
+ */
+void Kinematics::PrintAxisConfigurations() {
+    Serial.println(F("Axis configurations: (IFxx: [Normal: 1, Invert: -1])"));
+
+    for (uint8_t i = 0; i < enumAxis_t::LENGTH; i++) {
+        // Print the sensitivity values for each velocity axis
+        _AxesConfigurations[i]->PrintConfig();
+        Serial.print(DEBUG_LINE_END);
+    }
+}
+
+/**
+ * @brief Calculate which velocity is the main action. What is the strongest movement?
+ * @return index with the biggest velocity. returns -1 if all in deadzone
+ */
+enumAxis_t Kinematics::GetMainVelocity() {
+    int8_t mainVelocity = -1;
+    int16_t velMax = 0;
+    for (int i = 0; i < enumAxis_t::LENGTH; i++) {
+        // bigger than deadzone and bigger than before?
+        if ((abs(_velocities[i]) > velMax) && (abs(_velocities[i]) > VELOCITY_DEADZONE_FOR_LED)) {
+            velMax = abs(_velocities[i]);
+            mainVelocity = i;
+        }
+    }
+    return static_cast<enumAxis_t>(mainVelocity);
 }

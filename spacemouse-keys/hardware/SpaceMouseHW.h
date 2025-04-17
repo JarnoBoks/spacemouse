@@ -15,8 +15,31 @@ struct zeroing_t {
     int16_t deadZone[NUM_SENSORS]; // TODO
     int16_t maxDeadZone;           // TODO
 
-    uint16_t count; // Track the number of iterations during the zeroing proces
+    unsigned int count; // Track the number of iterations during the zeroing proces
 };
+
+#if 0
+// Struct to hold the default values for the hardware. These values are used to set the sensitivity and gate values for each axis
+// These values are used to store all default values for the hardware in one struct, to make it easier to pass them around.
+// The default values are stored in the EEPROM.
+struct HWDefaults_t {
+    float s_transX;
+    float s_transY;
+    float s_transZ_positive;
+    float s_transZ_negative;
+    float s_rotX;
+    float s_rotY;
+    float s_rotZ;
+    int8_t g_transZ_negative;
+    int8_t g_rotX;
+    int8_t g_rotY;
+    int8_t g_rotZ;
+
+    HWDefaults_t() = default; // Default constructor
+    HWDefaults_t(float sTX, float sTY, float sTZp, int8_t sTZn, int8_t sRX, int8_t sRY, int8_t sRZ, int8_t gTZn, int8_t gRX, int8_t gRY, int8_t gRZ)
+        : s_transX(sTX), s_transY(sTY), s_transZ_positive(sTZp), g_transZ_negative(sTZn), s_rotX(sRX), s_rotY(sRY), s_rotZ(sRZ), g_rotX(gRX), g_rotY(gRY), g_rotZ(gRZ) {}
+};
+#endif
 
 /**
  * @brief Class to abstract from used hardware
@@ -26,23 +49,29 @@ struct zeroing_t {
 class SpaceMouseHW_ {
 public:
     // --- Constructors/Destructors
-    SpaceMouseHW_(const int warnCpntMax, const int warnCpntMin, const int warnMMMax, const int warnMMMin, const char *axs[]);
+    SpaceMouseHW_(const int warnCpntMin, const int warnCpntMax, const int warnMMMin, const int warnMMMax, const int warnMMRange, const char *axs[]);
     ~SpaceMouseHW_();
 
     void ReadAllFromSensors();
     void CenterSensors();
     void FilterAnalogReadOuts();
 
-    void CalcMinMax();
+    void CalibrateMinMax();
+    void ProcessCalcMinMax();
+
     virtual void PrintRawReads();
     virtual void PrintCentered();
+    void PrintDeadzone();
 
     // --- Implemented by Derived Hardware Classes
     virtual void SetAnalogReferenceVoltage(int debug) = 0;
-    virtual void CalculateKinematicSensors(int16_t *velocity) = 0;
+    virtual void CalculateKinematicSensors(int16_t *velocities) = 0;
 
     // --- Overriden by Derived Hardware Classes
-    virtual bool BusyZeroing(uint16_t numIterations, boolean debugFlag);
+    virtual bool BusyZeroing(uint16_t numIterations, boolean serialOutput);
+
+    // --- Serial interface input functions
+    int8_t SetDeadzone(uint8_t requestedDeadzone);
 
 protected:
     /// @brief Stores the values from the sensors after zeroing and mapping.
@@ -73,6 +102,10 @@ private:
     /// @brief  Array containing (inverted) raw sensor readings.
     int _rawReads[NUM_SENSORS] = {0, 0, 0, 0, 0, 0, 0, 0};
 
+    /// @brief Value that is used to determine the deadzone of the spacemouse.
+    ///        If a centered sensor reading is smaller than the deadzone, the reading is neglected and set to zero.
+    uint8_t _deadzone = 0;
+
     /// @brief  Arrays containing the configured min- and max values of the spacemouse.
     ///         On startup these values are set to the value in config.h, but can be changed during
     ///         the min/max calibration.
@@ -80,7 +113,7 @@ private:
     int _minVals[NUM_SENSORS];
 
     /// @brief Contains the state of the statemachine servicing the minmax calibration.
-    uint8_t _minMaxCalcState = 0;
+    uint8_t _minMaxCalcState = 3;
 
     /// @brief Used for tracking the starttime of the calibration procedure (used for Zeroing & minmaxCalibration)
     unsigned int long _startMillis = 0;
@@ -90,6 +123,7 @@ private:
     const int _warningCenterpointMax; // Warning level for the maximum centerpoint value (centerpoint above this value throws a warning)
     const int _warningMinMaxMinimum;  // Warning level for the minimum value (absolute minimum below this value throws a warning)
     const int _warningMinMaxMaximum;  // Warning level for the maximum value (absolute maximum below this value throws a warning)
+    const int _warningMinMaxRange;    // Warning level for the minmax range calculation value (range below this value throws a warning)
 };
 
 #endif // SPACEMOUSEHW_h

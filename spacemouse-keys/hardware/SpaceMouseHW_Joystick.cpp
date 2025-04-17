@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include "SpaceMouseHW_Joystick.h"
+#include "eepromStorage.h"
+#include "text.h"
 #include "config.h"
 #include "kinematics.h" // Definition of the velocity array positions (TRANSzz/ROTXzz)
 
@@ -9,7 +11,7 @@ static const char *Joystick_axisNames[8] = JOYSTICK_AXIS_NAMES;
  * Constructor/Destructor
  */
 SpaceMouseHW_Joystick_::SpaceMouseHW_Joystick_()
-    : SpaceMouseHW_(JOYSTICK_WARN_CENTERPOINT_MIN, JOYSTICK_WARN_CENTERPOINT_MAX, JOYSTICK_WARN_MINMAX_MIN, JOYSTICK_WARN_MINMAX_MAX, Joystick_axisNames) {
+    : SpaceMouseHW_(JOYSTICK_WARN_CENTERPOINT_MIN, JOYSTICK_WARN_CENTERPOINT_MAX, JOYSTICK_WARN_MINMAX_MIN, JOYSTICK_WARN_MINMAX_MAX, JOYSTICK_WARN_MINMAX_RANGE, Joystick_axisNames) {
 }
 
 SpaceMouseHW_Joystick_::~SpaceMouseHW_Joystick_() {}
@@ -17,25 +19,25 @@ SpaceMouseHW_Joystick_::~SpaceMouseHW_Joystick_() {}
 /**
  * TODO
  */
-void SpaceMouseHW_Joystick_::CalculateKinematicSensors(int16_t *velocity) {
+void SpaceMouseHW_Joystick_::CalculateKinematicSensors(int16_t *velocities) {
 
     // calculate sensors transX
-    velocity[TRANSX] = (-centered[CY] + centered[AY]);
+    velocities[transX] = (-centered[CY] + centered[AY]);
 
     // calculate sensors transY
-    velocity[TRANSY] = (-centered[BY] + centered[DY]);
+    velocities[transY] = (-centered[BY] + centered[DY]);
 
     // calculate sensors transZ
-    velocity[TRANSZ] = -centered[AX] - centered[BX] - centered[CX] - centered[DX];
+    velocities[transZ] = -centered[AX] - centered[BX] - centered[CX] - centered[DX];
 
     // rotX
-    velocity[ROTX] = (-centered[CX] + centered[AX]);
+    velocities[rotX] = (-centered[CX] + centered[AX]);
 
     // rotY
-    velocity[ROTY] = (-centered[BX] + centered[DX]);
+    velocities[rotY] = (-centered[BX] + centered[DX]);
 
     // rotZ
-    velocity[ROTZ] = (centered[AY] + centered[BY] + centered[CY] + centered[DY]);
+    velocities[rotZ] = (centered[AY] + centered[BY] + centered[CY] + centered[DY]);
 }
 
 /**
@@ -44,7 +46,9 @@ void SpaceMouseHW_Joystick_::CalculateKinematicSensors(int16_t *velocity) {
  */
 void SpaceMouseHW_Joystick_::SetAnalogReferenceVoltage(int debug) {
     analogReference(DEFAULT);
-    Serial.println(F("Setting analog reference to 5V."));
+    Serial.print(CF(Info_AnalogVoltage));
+    Serial.println(F("5V."));
+    // Serial.println(F("Setting analog reference to 5V."));
 
     // The first measurements after changing the reference voltage can be wrong. So take 100ms to let the voltage stabilize and
     // take some measurements afterwards just to be sure. Performancewise this shouldn't be a problem due to the debug/setup
@@ -55,10 +59,10 @@ void SpaceMouseHW_Joystick_::SetAnalogReferenceVoltage(int debug) {
     }
 }
 
-bool SpaceMouseHW_Joystick_::BusyZeroing(uint16_t numIterations, boolean debugFlag) {
-    if (debugFlag) {
+bool SpaceMouseHW_Joystick_::BusyZeroing(uint16_t numIterations, boolean serialOutput) {
+    if (serialOutput) {
         Serial.println(F("Zeroing Joysticks..."));
     }
 
-    return SpaceMouseHW_::BusyZeroing(numIterations, debugFlag);
+    return SpaceMouseHW_::BusyZeroing(numIterations, serialOutput);
 }

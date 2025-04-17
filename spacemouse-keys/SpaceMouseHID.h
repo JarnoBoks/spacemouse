@@ -18,10 +18,11 @@ This code is based on https://forum.arduino.cc/t/solved-unable-to-receive-hid-re
 #include "PluggableUSB.h"
 #include "HID.h"
 
-#define SPACEMOUSE_D_HIDREPORT(length)                                     \
-    {                                                                      \
-        9, 0x21, 0x11, 0x01, 0, 1, 0x22, lowByte(length), highByte(length) \
-    }
+#include "spaceKeys.h" //NOTE - Added JB
+
+#define SPACEMOUSE_D_HIDREPORT(length) \
+    {                                  \
+        9, 0x21, 0x11, 0x01, 0, 1, 0x22, lowByte(length), highByte(length)}
 typedef struct
 {
     InterfaceDescriptor hid;
@@ -98,7 +99,7 @@ static const uint8_t SpaceMouseReportDescriptor[] PROGMEM = {
     0x75, 0x07,          //     Report Size (7)
     0x91, 0x03,          //     Output (Const,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
     0xC0,                //   End Collection
-    0xc0              // END_COLLECTION
+    0xc0                 // END_COLLECTION
 };
 
 #define USBControllerInterface pluggedInterface
@@ -111,8 +112,7 @@ static const uint8_t SpaceMouseReportDescriptor[] PROGMEM = {
 #define HIDUPDATERATE_MS 8
 
 // State machine to track, which report to send next
-enum SpaceMouseHIDStates
-{
+enum SpaceMouseHIDStates {
     ST_INIT,      // init variables
     ST_START,     // start to check if something is to be sent
     ST_SENDTRANS, // send translations
@@ -120,8 +120,7 @@ enum SpaceMouseHIDStates
     ST_SENDKEYS   // send keys
 };
 
-class SpaceMouseHID_ : public PluggableUSBModule
-{
+class SpaceMouseHID_ : public PluggableUSBModule {
 public:
     SpaceMouseHID_();
     int write(const uint8_t *buffer, size_t size);
@@ -130,7 +129,8 @@ public:
     void printAllReports();
     bool updateLEDState();
     bool getLEDState();
-    bool send_command(int16_t rx, int16_t ry, int16_t rz, int16_t x, int16_t y, int16_t z, uint8_t *keys, int debug);
+    // NOTE bool send_command(int16_t rx, int16_t ry, int16_t rz, int16_t x, int16_t y, int16_t z, uint8_t *keys, int debug);
+    bool send_command(int16_t rx, int16_t ry, int16_t rz, int16_t x, int16_t y, int16_t z, SpaceKeys *SMKeys, int debug);
 
 private:
     bool IsNewHidReportDue(unsigned long now);
@@ -140,7 +140,7 @@ private:
 #if (NUMKEYS > 0)
     // Array with the bitnumbers, which should assign keys to buttons
     uint8_t bitNumber[NUMHIDKEYS] = BUTTONLIST;
-    void prepareKeyBytes(uint8_t *keys, uint8_t *keyData, int debug);
+    void prepareKeyBytes(SpaceKeys *SMKeys, uint8_t *keyData, int debug);
 #endif
     uint8_t countTransZeros = 0; // count how many times, the zero data has been sent
     uint8_t countRotZeros = 0;
@@ -151,7 +151,7 @@ private:
 
 protected:
     uint8_t endpointTypes[2];
-    uint8_t protocol; 
+    uint8_t protocol;
     uint8_t idle;
 
     int getInterface(uint8_t *interfaceNumber);

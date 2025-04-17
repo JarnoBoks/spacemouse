@@ -24,23 +24,22 @@ int32_t delta = 0;       // Tracks encoder increments when turned
 int zoomIterator = ECHOES; // Counter for echoing the delta through a number of loops for a smoother zoom animation
 float simpull;             // calculated velocity of the encoder wheel
 
-void initEncoderWheel()
-{
+void initEncoderWheel() {
     // Read initial value from encoder
     newEncoderValue = myEncoder.read();
 }
 
-/// @brief Calculate the encoder wheel and update the result in the velocity array
-/// @param velocity Array with the velocity, which gets updated at position ROTARY_AXIS-1
-/// @param debug Generate a debug output if debug=9
-void calcEncoderWheel(int16_t *velocity, int debug)
-{
+/**
+ * @brief Calculate the encoder wheel and update the result in the velocity array
+ * @param velocity Array with the velocity, which gets updated at position ROTARY_AXIS-1
+ * @param debug Generate a debug output if debug=9
+ */
+void calcEncoderWheel(Kinematics &SMKIN, int debug) {
     static int factor = 100; //
-    // read encoder
+    // Read encoder and check if it changed
     newEncoderValue = myEncoder.read();
-    if (newEncoderValue != previousEncoderValue)
-    {
-        // position changed, how much?
+    if (newEncoderValue != previousEncoderValue) {
+        // The position of the encoder changed, how much did it change?
         delta = newEncoderValue - previousEncoderValue;
         previousEncoderValue = newEncoderValue;
         zoomIterator = 0;
@@ -48,24 +47,21 @@ void calcEncoderWheel(int16_t *velocity, int debug)
 
     // Distribute encoder delta through the echoes in the loop and based on simulated axis chosen by the user
     // Faded intensity for echoing the encoder reading.
-    if (zoomIterator < ECHOES)
-    {
+    if (zoomIterator < ECHOES) {
         factor = 100 - ((zoomIterator * 100) / ECHOES); // factor shall be percent: between 0 and 100
         simpull = (factor * SIMSTRENGTH) / 100 * delta;
         zoomIterator++; // iterate
-        // add the velocity of the encoder wheel to one of the 6 axis
-        // the ROTARY_AXIS definition is one above the array definition used for the velocity array (see calibration.h)
+
+        // Add the velocity of the encoder wheel to one of the 6 axis
+        // The ROTARY_AXIS definition is one above the array definition used for the velocity array (see calibration.h)
         // Therefore ROTARY_AXIS-1 is used to change the velocity value
-        velocity[ROTARY_AXIS - 1] = velocity[ROTARY_AXIS - 1] + simpull;
-    }
-    else
-    {
+        SMKIN.SetVelocity((enumAxis_t)(ROTARY_AXIS - 1), SMKIN.GetVelocity((enumAxis_t)(ROTARY_AXIS - 1)) + simpull);
+    } else {
         // fading has ended
         simpull = 0;
     }
 
-    if (debug == 9)
-    {
+    if (debug == 9) {
         // create debug output
         Serial.print("Enc Val: ");
         Serial.print(newEncoderValue);
@@ -79,19 +75,15 @@ void calcEncoderWheel(int16_t *velocity, int debug)
 /// @brief Read out the encoder and treat as keystroke
 /// @param keyState overwrite some keys with encoder movement
 /// @param debug Generate a debug output if debug=9
-
-void calcEncoderAsKey(uint8_t keyState[NUMKEYS], int debug)
-{
+void calcEncoderAsKey(SpaceKeys *SMKEYS, int debug) {
     // read encoder
     newEncoderValue = myEncoder.read();
-    if (newEncoderValue != previousEncoderValue)
-    {
+    if (newEncoderValue != previousEncoderValue) {
         // If the position changed, add this to delta. As long as delta != 0, report the key as pressed
-        delta = (newEncoderValue - previousEncoderValue)*ROTARY_KEY_STRENGTH + delta;
+        delta = (newEncoderValue - previousEncoderValue) * ROTARY_KEY_STRENGTH + delta;
         previousEncoderValue = newEncoderValue;
-        
-        if (debug == 9)
-        {
+
+        if (debug == 9) {
             // create debug output
             Serial.print("Enc Val: ");
             Serial.println(newEncoderValue);
@@ -100,18 +92,16 @@ void calcEncoderAsKey(uint8_t keyState[NUMKEYS], int debug)
 
     if (delta > 0) {
         // press the button for some small time
-        keyState[ROTARY_KEY_IDX_A] = 1;
+        SMKEYS->SetKeyState(ROTARY_KEY_IDX_A, 1);
         delta--;
-    }
-    else if (delta < 0) {
+    } else if (delta < 0) {
         // press the button for some small time
-        keyState[ROTARY_KEY_IDX_B] = 1;
+        SMKEYS->SetKeyState(ROTARY_KEY_IDX_B, 1);
         delta++;
-    }
-    else
-    {
-        keyState[ROTARY_KEY_IDX_A] = 0;
-        keyState[ROTARY_KEY_IDX_B] = 0;
+    } else {
+        // no movement, reset the key state
+        SMKEYS->SetKeyState(ROTARY_KEY_IDX_A, 0);
+        SMKEYS->SetKeyState(ROTARY_KEY_IDX_B, 0);
     }
 }
 #endif // whole file is only implemented #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0

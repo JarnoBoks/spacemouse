@@ -4,6 +4,7 @@
 
 // One good starting point is the work and video by TeachingTech: https://www.printables.com/de/model/864950-open-source-spacemouse-space-mushroom-remix
 // Then follow along on github, how we reached this state of the source code.
+#include <Arduino.h>
 
 // The user specific settings, like pin mappings or special configuration variables and sensitivities are stored in config.h.
 // Please open config_sample.h, adjust your settings and save it as config.h
@@ -20,23 +21,25 @@
 #include "spaceKeys.h"
 // header for HID emulation of the spacemouse
 #include "SpaceMouseHID.h"
+// header file for the EEPROM storage
+#include "eepromStorage.h"
 
-// TODO -
+// Check if the EEPROM is initialized. If not, save the default values to the EEPROM.
+bool firstRun = isFirstRun();
+
+// Initialize the hardware abstraction layer
+// The hardware abstraction layer is used to read the values from the hardware
+#ifdef HALLEFFECT
 #include "hardware/SpaceMouseHW_Hall.h"
+SpaceMouseHW_Hall_ Mouse_Hardware = SpaceMouseHW_Hall_();
+#else
 #include "hardware/SpaceMouseHW_Joystick.h"
-
-#ifdef EEPROM_CALIBRATION
-#include "sensitivity.h"
-
-// Global defined (and usable everywhere in the software)
-sensitivities_t mySensitivities;
-
-// Stores the current configured modulation function, initialised by the global defined variable.
-uint8_t modFunc = MODFUNC;
-
-// Stores the current configured inversions, initialised by the global defined variable.
-uint8_t inversions = DEFAULT_INVERSION;
+SpaceMouseHW_Joystick Mouse_Hardware = SpaceMouseHW_Joystick_();
 #endif
+
+// Initialize the Kinematics object
+// The Kinematics object is used to calculate the kinematics of the mouse
+Kinematics Mouse_Kinematics = Kinematics(Mouse_Hardware, firstRun);
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
 // if an encoder wheel is used
@@ -46,40 +49,28 @@ uint8_t inversions = DEFAULT_INVERSION;
 #ifdef LEDpin
 void lightSimpleLED(boolean light);
 #endif
+
 #ifdef LEDRING
-#include "Arduino.h"
 #include "ledring.h"
-#include "Arduino.h"
+LedRing *Mouse_LEDRing;
 #endif
 
-#ifdef HALLEFFECT
-SpaceMouseHW_Hall_ SMHW = SpaceMouseHW_Hall_();
-#else
-SpaceMouseHW_Joystick SMHW = SpaceMouseHW_Joystick_();
+// Initialize Calibration object - the calibration object knows of the hardware and the kinematics
+// The calibration object is used to calibrate the hardware and the kinematics
+Calibration Mouse_Calibration = Calibration(Mouse_Kinematics, Mouse_Hardware);
+
+// FIXME - Remove the #If brackets. The pointer to SMKEYS has to be set in the constructor of the calibration class, otherwise several debug functions will explode if NUMKEYS=0
+#if NUMKEYS > 0
+SpaceKeys *Keys;
 #endif
-
-// the debug mode can be set during runtime via the serial interface. See config.h for a description of the different debug modes.
-int debug = STARTDEBUG;
-
-// store raw value of the keys, without debouncing
-int keyVals[NUMKEYS];
-
-// key event, after debouncing. It is 1 only for a single sample
-uint8_t keyOut[NUMKEYS];
-
-// state of the key, which stays 1 as long as the key is pressed
-uint8_t keyState[NUMKEYS];
-
-// Resulting calculated velocities / movements
-// int16_t to match what the HID protocol expects.
-int16_t velocity[6];
-
-long tmpInput; // store the value, the user might input over the serial
 
 void setup() {
-// setup the keys e.g. to internal pull-ups
 #if NUMKEYS > 0
-    setupKeys();
+    // Instantiate the keys object and setup the keys to internal pull-ups
+    Keys = new SpaceKeys();
+
+    // Notify the calibration object about the keys object (necessary for debug output)
+    Mouse_Calibration.SetKeysObject(*Keys);
 #endif
 
     // Begin Serial for debugging or calibration
@@ -88,30 +79,23 @@ void setup() {
     Serial.setTimeout(2); // The serial interface will look for new debug values and it will only wait 2ms
 
     // Set the analog reference voltage according to the hardware.
-    SMHW.SetAnalogReferenceVoltage(debug);
+    Mouse_Hardware.SetAnalogReferenceVoltage(Mouse_Calibration.GetDebug());
+
+    // Check if this is the first run of the program. If so, set the default values for the sensitivities and store them in the EEPROM.
 
     // Read idle/centre positions for joysticks.
     // zero the joystick position 500 times (takes approx. 480 ms)
     // during setup() we are not interested in the debug output: debugFlag = false
-    SMHW.BusyZeroing(500, false);
-
-#ifdef EEPROM_CALIBRATION
-    // Read sensitivity configuration from EEPROM (or set default values)
-    readSensitivitiesEEPROM(&mySensitivities);
-
-    // Read modfunc from the EEPROM (or set default value)
-    modFunc = readModfunc();
-
-    // Read inversions from the EEPROM (or set default value)
-    inversions = readInversions();
-#endif
+    Mouse_Hardware.BusyZeroing(500, false);
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
     initEncoderWheel();
 #endif
 #ifdef LEDpin
 #ifdef LEDRING
-    initLEDring();
+    // Initialize the LED ring object
+    Mouse_LEDRing = new LedRing(Mouse_Kinematics);
+    // Initialize the LED ring with the number of LEDs and the pin number
 #else
     // configure LED output for simple LED
     pinMode(LEDpin, OUTPUT);
@@ -122,154 +106,61 @@ void setup() {
 void loop() {
     // check if the user entered a debug mode via serial interface
     if (Serial.available()) {
-        tmpInput = Serial.parseInt(); // Read from serial interface, if a new debug value has been sent. Serial timeout has been set in setup()
-        if (tmpInput != 0) {
-
-#ifdef EEPROM_CALIBRATION
-            if (tmpInput == 2222) {
-                printSensitivity(&mySensitivities, true);
-            }
-
-            if (tmpInput >= 2000000 && tmpInput < 3000000) {
-                // User input wants to update sensitvity
-                if (updateSensitivity(&mySensitivities, tmpInput) > 0) {
-                    printSensitivity(&mySensitivities, true);
-                }
-            }
-
-            if (tmpInput == 10) {
-                printModfunc(modFunc, true);
-            }
-
-            if (tmpInput >= 3000000 && tmpInput < 4000000) {
-                // User input wants to update modfunc
-                modFunc = updateModfunc(tmpInput);
-            }
-
-            if (tmpInput == 4444) {
-                printInversions(inversions, true);
-            }
-
-            if (tmpInput >= 4000000 && tmpInput < 5000000) {
-                // User input wants to update axis inversion
-                inversions = updateInversions(tmpInput);
-            }
-
-            if (validCalibrationOption(tmpInput)) {
-#endif
-                debug = tmpInput;
-                if (tmpInput == -1) {
-                    Serial.println(F("Please enter the debug mode now or while the script is reporting."));
-                }
-                // Debug is updated check if the ADC referencevoltage has to be changed.
-                SMHW.SetAnalogReferenceVoltage(debug);
-#ifdef EEPROM_CALIBRATION
-            }
-#endif
-        }
+        // Read the input command from the serial interface
+        Mouse_Calibration.DebugInput();
     }
 
-    // Joystick values are read. 0-1023
-    readAllFromJoystick(rawReads);
-    // RAW Sensor values are read. 0-1023
-    SMHW.ReadAllFromSensors();
+    // RAW Sensor values are read from the hardware. 0-1023
+    Mouse_Hardware.ReadAllFromSensors();
 
 #if NUMKEYS > 0
     // LivingTheDream added reading of key presses
-    readAllFromKeys(keyVals);
-    // LivingTheDream added reading of key presses
-    readAllFromKeys(keyVals);
+    Keys->ReadAllFromKeys();
 #endif
     // Report back 0-1023 raw ADC 10-bit values if enabled
-    if (debug == 1) {
-        debugOutput1(rawReads, keyVals);
-    }
-    // Report back 0-1023 raw ADC 10-bit values if enabled
-    if (debug == 1) {
-        debugOutput1(SMHW, keyVals);
-        // SMHW.PrintRawReads();
-    }
+    Mouse_Calibration.DebugOutputRawInverted();
 
-    if (debug == 11) {
-        // calibrate the joystick
-        // As this is called in the debug=11, we do more iterations.
-        busyZeroing(centerPoints, 2000, true);
-        debug = -1; // this only done once
-    }
-    if (debug == 11) {
-        // calibrate the joystick
-        // As this is called in the debug=11, we do more iterations.
-        SMHW.BusyZeroing(2000, true);
-        debug = -1; // this only done once
-    }
+    // Center the read joystick/knob rawValues.
+    // The centered values are the difference between the raw values and the centerpoint values, ie. the idle position.
+    // F.e. if the center position is 500 and the read value is 400, the centered value will be -100.
+    Mouse_Hardware.CenterSensors();
 
-    // Subtract centre position from measured position to determine movement.
-    for (int i = 0; i < 8; i++) {
-        centered[i] = rawReads[i] - centerPoints[i];
-    }
+    // After centering the joystick/knob values, calibration of the min/max values can be executed.
+    // The minmax calibration takes ~15 seconds and needs the loop() to continue running.
+    // When the calibration is started, the processCalcMinMax() function is called to registere the min and max values of the sensors.
+    Mouse_Hardware.ProcessCalcMinMax();
 
-    if (debug == 20) {
-        calcMinMax(centered); // debug=20 to calibrate MinMax values
-    }
-    SMHW.CenterSensors();
+    // Report centered joystick/knob values if enabled. Values should be approx -500 to +500, jitter around 0 when the knob is in idle position.
+    Mouse_Calibration.DebugOutputCentered();
 
-    if (debug == 20) {
-        SMHW.CalcMinMax();
-    }
+    // The centered values are filtered for deadzone and mapped to the velocity range of -350 to +350.
+    // The deadzone is the value that is used to filter out small movements of the joystick/knob.
+    // The mapping is done to the velocity range of -350 to +350, which is the range of the HID interface
+    Mouse_Hardware.FilterAnalogReadOuts();
 
-    // Report centered joystick values if enabled. Values should be approx -500 to +500, jitter around 0 at idle
-    if (debug == 2) {
-        debugOutput2(centered);
-    }
-    // Report centered joystick values if enabled. Values should be approx -500 to +500, jitter around 0 at idle
-    if (debug == 2) {
-        // debugOutput2(centered);
-        debugOutput2(SMHW);
-    }
+    Mouse_Calibration.DebugOutputDeadzonedMapped();
 
-    FilterAnalogReadOuts(centered);
-    SMHW.FilterAnalogReadOuts();
-
-    // Report centered joystick values. Filtered for deadzone. Approx -350 to +350, locked to zero at idle
-    if (debug == 3) {
-        debugOutput2(centered);
-    }
-    // Report centered joystick values. Filtered for deadzone. Approx -350 to +350, locked to zero at idle
-    if (debug == 3) {
-        debugOutput2(SMHW);
-    }
-
-#ifndef EEPROM_CALIBRATION
-    calculateKinematic(SMHW, velocity);
-#else
-    calculateKinematic(centered, velocity, &mySensitivities, modFunc, inversions);
-#endif
+    // The mouse hardware is ready know and the kinematics can be calculated.
+    // The kinematics are calculated based on the filtered values from the hardware.
+    // The kinematics are the velocities of the mouse in the x, y and z direction and the rotation around the x, y and z axis.
+    Mouse_Kinematics.CalculcateKinematic();
 
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
     // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities
-    calcEncoderWheel(velocity, debug);
+    calcEncoderWheel(Mouse_Kinematics, Mouse_Calibration.GetDebug());
 #endif
 
 #if NUMKEYS > 0
-    evalKeys(keyVals, keyOut, keyState);
+    Keys->evalKeys();
 #endif
 
 #if ROTARY_KEYS > 0
     // The encoder wheel shall be treated as a key
-    calcEncoderAsKey(keyState, debug);
+    calcEncoderAsKey(Keys, Mouse_Calibration.GetDebug());
 #endif
-    if (debug == 4) {
-        // Report translation and rotation values if enabled.
-#ifndef EEPROM_CALIBRATION
-        debugOutput4(velocity, keyOut);
-#else
-        debugOutput4(velocity, keyOut, &mySensitivities);
-#endif
-    }
 
-    if (debug == 5) {
-        debugOutput5(SMHW, velocity);
-    }
+    Mouse_Calibration.DebugOutput4();
+    Mouse_Calibration.DebugOutput5();
 
     // if the kill-key feature is enabled, rotations or translations are killed=set to zero
 #if (NUMKILLKEYS == 2)
@@ -289,45 +180,40 @@ void loop() {
 #endif
 
     // report velocity and keys after possible kill-key feature
-    if (debug == 6) {
-        debugOutput4(velocity, keyOut);
-    }
-    // report velocity and keys after possible kill-key feature
-    if (debug == 6) {
-#ifndef EEPROM_CALIBRATION
-        debugOutput4(velocity, keyOut);
-#else
-        debugOutput4(velocity, keyOut, &mySensitivities);
-#endif
-    }
+    Mouse_Calibration.DebugOutput6();
 
 #if SWITCHYZ > 0
-    switchYZ(velocity);
+    Mouse_Kinematics.SwitchYZ();
 #endif
 
 #ifdef EXCLUSIVEMODE
     // exclusive mode
     // rotation OR translation, but never both at the same time
     // to avoid issues with classics joysticks
-    exclusiveMode(velocity);
+    Mouse_Kinematics.ExclusiveMode();
 #endif
 
     // report velocity and keys after Switch or ExclusiveMode
-    if (debug == 61) {
-        debugOutput4(velocity, keyOut);
-    }
+    Mouse_Calibration.DebugOutput61();
 
     // get the values to the USB HID driver to send if necessary
-    SpaceMouseHID.send_command(velocity[ROTX], velocity[ROTY], velocity[ROTZ], velocity[TRANSX], velocity[TRANSY], velocity[TRANSZ], keyState, debug);
+    SpaceMouseHID.send_command(Mouse_Kinematics.GetVelocity(rotX),
+                               Mouse_Kinematics.GetVelocity(rotY),
+                               Mouse_Kinematics.GetVelocity(rotZ),
+                               Mouse_Kinematics.GetVelocity(transX),
+                               Mouse_Kinematics.GetVelocity(transY),
+                               Mouse_Kinematics.GetVelocity(transZ),
+                               Keys,
+                               Mouse_Calibration.GetDebug());
 
-    if (debug == 7) {
+    if (Mouse_Calibration.GetDebug() == 7) {
         // update and report the at what frequency the loop is running
-        updateFrequencyReport();
+        Mouse_Calibration.UpdateFrequencyReport();
     }
 
 #ifdef LEDpin
 #ifdef LEDRING
-    processLED(velocity, SpaceMouseHID.updateLEDState());
+    Mouse_LEDRing->ProcessLED(SpaceMouseHID.updateLEDState());
 #else
     lightSimpleLED(SpaceMouseHID.updateLEDState());
     // Check for the LED state by calling updateLEDState.
@@ -338,7 +224,7 @@ void loop() {
 } // end loop()
 
 #ifdef LEDpin
-  /// @brief Turn on or off a simple led. The pin is defined by LEDpin in config.h. If the LED needs to be inverted, define LEDinvert in config.h
+/// @brief Turn on or off a simple led. The pin is defined by LEDpin in config.h. If the LED needs to be inverted, define LEDinvert in config.h
 /// @param light turn on or off
 void lightSimpleLED(boolean light) {
 // Check for the LED state by calling updateLEDState.
@@ -355,32 +241,6 @@ void lightSimpleLED(boolean light) {
     } else {
         // false -> LED off -> pull kathode up
         digitalWrite(LEDpin, HIGH); // turn the LED
-    }
-}
-#endif
-
-#ifdef HALLEFFECT
-/**
- * @brief Set the analog reference to 5V for debug 1 and to 2.56V otherwise
- */
-void setAnalogReferenceVoltage() {
-    if (debug == 1) {
-        // Set the reference voltage for the AD Convertor to 5V only for the first calibration step (pinout/inversion calibration).
-        analogReference(DEFAULT);
-        Serial.println(F("Setting analog reference to 5V."));
-    } else {
-        // Set the reference voltage for the AD Convertor to 2.56V in order to get larger sensitivity.
-        analogReference(INTERNAL);
-        Serial.println(F("Setting analog reference to 2.56V."));
-    }
-
-    // The first measurements after changing the reference voltage can be wrong. So take 100ms to let the voltage stabilize and
-    // take some measurements afterwards just to be sure. Performancewise this shouldn't be a problem due to the debug/setup
-    // nature of this function.
-    delay(100);
-    int tempReads[8];
-    for (int i = 0; i <= 8; i++) {
-        readAllFromJoystick(tempReads);
     }
 }
 #endif

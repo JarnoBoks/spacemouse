@@ -1,35 +1,60 @@
 #ifndef KINEMATICS_h
 #define KINEMATICS_h
+
 // This is the public header for the kinematics.cpp file
 // It contains all functions which can be called from the main application
 
 #include "hardware/SpaceMouseHW.h"
+#include "MotionAxisConfig.h" // Include the MotionAxisConfig class for velocity configuration
 
-#include "sensitivity.h"
+/**
+ * @brief Enumeration for the axes used in kinematics calculations
+ */
+enum enumAxis_t {
+    transX = 0,
+    transY,
+    transZ,
+    rotX,
+    rotY,
+    rotZ,
+    LENGTH,
+};
 
-int modifierFunction(int x);
+class Kinematics {
+public:
+    Kinematics(SpaceMouseHW_ &Mouse_Hardware, bool firstrun); // Constructor for Kinematics class
+    ~Kinematics();
 
-void readAllFromJoystick(int *rawReads);
+    void CalculcateKinematic();
+    void SwitchXY();
+    void SwitchYZ();
+    void ExclusiveMode();
 
-void FilterAnalogReadOuts(int *centered);
+    int16_t GetVelocity(enumAxis_t axis);
+    void SetVelocity(enumAxis_t axis, int16_t velocity);
 
-#ifdef EEPROM_CALIBRATION
-void calculateKinematic(int *centered, int16_t *velocity, sensitivities_t *sensitivities, uint8_t modFunc, uint8_t inversions);
-#else
-void calculateKinematic(SpaceMouseHW_ &SMHW, int16_t *velocity);
-#endif
+    enumAxis_t GetMainVelocity();
 
-void switchXY(int16_t *velocity);
-void switchYZ(int16_t *velocity);
+    void PrintAxisConfigurations();
+    void PrintVelocities();
 
-void exclusiveMode(int16_t *velocity);
+    int8_t UpdateAxisConfig(const char *axisName, boolean isGT, boolean isMF, boolean isInversion, int8_t pos_neg, float value); // Set the sensitivity for the specified axis
+    boolean GetAxisInvert(enumAxis_t axis);                                                                                      // Get the inversion for the specified axis
 
-// Define position in velocity array.
-#define TRANSX 0
-#define TRANSY 1
-#define TRANSZ 2
-#define ROTX 3
-#define ROTY 4
-#define ROTZ 5
+private:
+    SpaceMouseHW_ *_SMHW = nullptr; // Pointer to the SpaceMouse hardware object
+
+    /**
+     * @brief Contains the configuration for each axis.
+     * The configuration is stored in the EEPROM and can be updated via the serial interface.
+     */
+    MotionAxisConfig *_AxesConfigurations[enumAxis_t::LENGTH];
+
+    /**
+     * @brief Contains the velocity for each axis.
+     * The velocity is calculated based on the current position and the sensitivity.
+     */
+    int16_t _velocities[enumAxis_t::LENGTH];
+};
 
 #endif // KINEMATICS_h

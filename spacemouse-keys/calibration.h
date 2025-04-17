@@ -1,56 +1,64 @@
 #ifndef CALIBRATION_h
 #define CALIBRATION_h
-// Header for calibration specific functions and variables
+
+// Header file for calibration specific functions and variables
 #include "hardware/SpaceMouseHW.h"
+#include "kinematics.h"
+#include "spaceKeys.h"
+
+enum DebugLevel_t : uint8_t {
+    _STARTDEBUG = 0, // Start with debug level 0
+    DEBUG0 = 0,      // Debug level 0 - no debug output
+    DEBUG1 = 1,      // Debug level 1 - print raw sensor values
+    DEBUG2 = 2,      // Debug level 2 - print velocities and keys
+    DEBUG3 = 3,      // Debug level 3 - print velocities and keys with sensitivity
+    DEBUG4 = 4,      // Debug level 4 - print velocities and keys with sensitivity and modulation function
+    DEBUG5 = 5,      // Debug level 5 - print velocities and keys with sensitivity and modulation function and inversion
+    DEBUG6 = 6,      // Debug level 6 - print velocities and keys with sensitivity and modulation function and inversion and gate values
+    DEBUG7 = 7,      // Debug level 7 - print loop frequency
+};
 
 // Called from main routine
-// SECTION EEPROM_CALIBRATION
-#include "sensitivity.h"
+class Calibration {
+public:
+    Calibration() = default;                                                              // Constructor
+    Calibration(Kinematics &SMKIN, SpaceMouseHW_ &SMHW) : _SMKIN(&SMKIN), _SMHW(&SMHW) {} // Constructor with parameters
+    ~Calibration() = default;                                                             // Destructor
 
-// Definition of the calibration options that a user can enter in the Serial Monitor.
-#define CALIBRATION_OPTIONS {1, 11, 20, 2, 3, 4, 5, 6, 61, 7, 8, 9, 10, 0, -1}
-#define NUM_CALIBRATION_OPTIONS 15
-bool validCalibrationOption(int value);
+    void SetKeysObject(SpaceKeys &SMKEYS) { _SMKEYS = &SMKEYS; } // Set the SpaceKeys object
 
-// !SECTION EEPROM_CALIBRATION
+    void DebugInput();
 
-void debugOutput1(SpaceMouseHW_ &SMHW, int *keyVals);
-void debugOutput2(SpaceMouseHW_ &SMHW);
+    void DebugOutputRawInverted();
+    void DebugOutputCentered();
+    void DebugOutputDeadzonedMapped();
+    void DebugOutput4();
+    void DebugOutput5();
+    void DebugOutput6();
+    void DebugOutput61();
+    void UpdateFrequencyReport();
 
-#ifdef EEPROM_CALIBRATION
-void debugOutput4(int16_t *velocity, uint8_t *keyOut, sensitivities_t *sensitivities);
-#else
-void debugOutput4(int16_t *velocity, uint8_t *keyOut);
-#endif
+    DebugLevel_t GetDebug() { return _debug; } // Get the current debug level
+private:
+    Kinematics *_SMKIN = nullptr;   // Pointer to the Kinematics object
+    SpaceMouseHW_ *_SMHW = nullptr; // Pointer to the SpaceMouse Hardware object
+    SpaceKeys *_SMKEYS = nullptr;   // Pointer to the SpaceKeys object
 
-void debugOutput5(SpaceMouseHW_ &SMHW, int16_t *velocity);
+    DebugLevel_t _debug = _STARTDEBUG; // Current debug level
 
-bool isDebugOutputDue();
-void updateFrequencyReport();
+    bool _isDebugOutputDue();
+    void _debugOutput_VelocitiesKeys();
 
-bool busyZeroing(int *centerPoints, uint16_t numIterations, boolean debugFlag);
+    uint16_t _iterationsPerSecond = 0;      // Count the iterations within one second
+    unsigned long _lastFrequencyUpdate = 0; // Time from millis(), when the last frequency was calculated
 
-// SECTION EEPROM_CALIBRATION
-uint8_t updateModfunc(long input);
-uint8_t readModfunc();
-void printModfunc(uint8_t modfunc, bool introtext);
+    int8_t _handleOneWord(const char *word);
+    int8_t _handleTwoWords(const char *word1, const char *word2);
+    int8_t _handleThreeWords(const char *word1, const char *word2, const char *word3);
 
-// Positions of inversions in the byte
-#define AX_INVX 0
-#define AX_INVY 1
-#define AX_INVZ 2
-#define AX_INVRX 3
-#define AX_INVRY 4
-#define AX_INVRZ 5
-
-// Get inversion is called with the inversions byte and the axis
-#define GET_INVERSION(x, y) ((x >> y) & 1)
-#define DEFAULT_INVERSION (DEF_INVRZ << AX_INVRZ) + (DEF_INVRY << AX_INVRY) + (DEF_INVRX << AX_INVRX) + (DEF_INVZ << AX_INVZ) + (DEF_INVY << AX_INVY) + (DEF_INVX << AX_INVX)
-
-uint8_t updateInversions(long input);
-uint8_t readInversions();
-void printInversions(uint8_t inversions, bool introtext);
-
-// !SECTION EEPROM_CALIBRATION
+    int8_t _handleOneWord(char *words[]);
+    int8_t _handleTwoWords(char *words[]);
+    int8_t _handleThreeWords(char *words[]);
+};
 
 #endif // CALIBRATION_h

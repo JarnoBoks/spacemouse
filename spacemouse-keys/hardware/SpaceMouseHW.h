@@ -73,6 +73,7 @@ public:
     void PrintDeadzone();
 
     virtual void SetAnalogReferenceVoltage(int debug) = 0;
+
     virtual void CalculateKinematicSensors(int16_t *velocities) = 0;
 
     // --- Overriden by Derived Hardware Classes
@@ -80,6 +81,7 @@ public:
 
     // --- Serial interface input functions
     int8_t SetDeadzone(uint8_t requestedDeadzone);
+    void UpdateMinMax(const char *cmd, float value);
 
 protected:
     /// @brief Stores the values from the sensors after zeroing and mapping.

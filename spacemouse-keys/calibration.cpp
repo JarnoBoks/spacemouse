@@ -183,7 +183,8 @@ void Calibration::DebugInput() {
 
 /**
  * @brief Handle one word commands.
- * @param word
+ * @details The first word is the command and there are no parameters.
+ * @param words[] Array of words received from the serial monitor.
  * @return
  */
 int8_t Calibration::_handleOneWord(char *words[]) {
@@ -237,11 +238,9 @@ int8_t Calibration::_handleOneWord(char *words[]) {
 /**
  * @brief Handle two words commands.
  * @details The first word is the command and the second word is the parameter.
- * @param word1
- * @param word2
+ * @param words[] Array of words received from the serial monitor.
  * @return
  */
-
 int8_t Calibration::_handleTwoWords(char *words[]) {
     // int8_t Calibration::_handleTwoWords(const char *word1, const char *word2) {
     int8_t ret = 0;
@@ -298,9 +297,7 @@ int8_t Calibration::_handleTwoWords(char *words[]) {
 /**
  * @brief Handle three words commands.
  * @details The first word is the command, the second word is the axis+sensitivity, and the third word is the value.
- * @param word1
- * @param word2
- * @param word3
+ * @param words[] Array of words received from the serial monitor.
  * @return
  */
 int8_t Calibration::_handleThreeWords(char *words[]) {
@@ -371,14 +368,14 @@ int8_t Calibration::_handleThreeWords(char *words[]) {
         Serial.print(words[1]);
         Serial.print(F(" -> "));
         Serial.println(value);
+
         _SMKIN->UpdateAxisConfig(axisName, isGT, isMF, isINV, pos_neg, value); // Call the function to set the sensitivity
         _SMKIN->PrintAxisConfigurations();                                     // Print the sensitivities after setting them
-    } else if (strcmp_P(words[0], CMD_MODFUNC) == 0) {
-#if 0
-        // Handle the modulation function command
-        Serial.print(F("Setting modulation function for axis: "));
-        Serial.println(words[1]);
-#endif
+    } else if (strcmp_P(words[0], CMD_MINMAX) == 0) {
+        // We should have an axisname, a sign indicating min or max and a value in the third word.
+        _SMHW->UpdateMinMax(words[1], value); // Call the function to set the min/max values
+        _SMHW->PrintMinMax();                 // Print the min/max values after setting them
+
     } else {
         return -1; // Unknown command
     }

@@ -206,6 +206,26 @@ void SpaceMouseHW_::CenterSensors() {
     }
 }
 
+void SpaceMouseHW_::UpdateMinMax(const char *cmd, float value) {
+    // The command should contain a string starting with a sign +/- indicating if
+    // we update the min or max value. The remainder of the string should contain the axis name.
+
+    // REVIEW - Changed to use strcmp for better readability and performance.
+    for (uint8_t i = 0; i < NUM_SENSORS; i++) {
+        if (strcmp(cmd + 1, _axisNames[i]) == 0) { // Changed to strcmp for review
+            // If the command matches the axis name, update the min or max value accordingly.
+            if (cmd[0] == '+') {
+                _maxVals[i] = value;
+                EEPROM.put(EEPROM_ADDRESS_MAXVALS + (i * sizeof(int)), _maxVals[i]); // Store the max value in the EEPROM
+            } else if (cmd[0] == '-') {
+                _minVals[i] = value;
+                EEPROM.put(EEPROM_ADDRESS_MINVALS + (i * sizeof(int)), _minVals[i]); // Store the min value in the EEPROM
+            }
+            return; // Exit the function after a matching axis name
+        }
+    }
+}
+
 /**
  * @brief Write the deadzone value to the EEPROM and set the private data member _deadzone.
  *        The deadzone value is used to filter out small movements of the joystick/knob.

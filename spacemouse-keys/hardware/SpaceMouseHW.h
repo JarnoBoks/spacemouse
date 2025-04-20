@@ -76,11 +76,10 @@ public:
 
     virtual void CalculateKinematicSensors(int16_t *velocities) = 0;
 
-    // --- Overriden by Derived Hardware Classes
     virtual bool BusyZeroing(uint16_t numIterations, boolean serialOutput);
 
     // --- Serial interface input functions
-    int8_t SetDeadzone(uint8_t requestedDeadzone);
+    int8_t UpdateDeadzone(uint8_t value);
     void UpdateMinMax(const char *cmd, float value);
 
 protected:

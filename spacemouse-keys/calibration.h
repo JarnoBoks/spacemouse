@@ -16,6 +16,9 @@ enum DebugLevel_t : uint8_t {
     DEBUG5 = 5,      // Debug level 5 - print velocities and keys with sensitivity and modulation function and inversion
     DEBUG6 = 6,      // Debug level 6 - print velocities and keys with sensitivity and modulation function and inversion and gate values
     DEBUG7 = 7,      // Debug level 7 - print loop frequency
+    DEBUG8 = 8,      // Debug level 8 - print loop frequency and key state
+    DEBUG9 = 9,      // Debug level 9 - print loop frequency and key state with sensitivity
+    DEBUG10 = 10,
 };
 
 // Called from main routine

@@ -9,7 +9,6 @@
 
 /**
  * @brief Prints the raw (optionally inverted) ADC 10-bit values and the status of the raw key readings (without debouncing), if the output is due (every x miliseconds)
- * @param keyVals   pointer to the int array where the raw key readings are stored (no debouncing)
  */
 void Calibration::DebugOutputRawInverted() {
     if (_debug == 1 && _isDebugOutputDue()) {
@@ -40,8 +39,6 @@ void Calibration::DebugOutputDeadzonedMapped() {
 
 /**
  * @brief Report translation & rotation values, configured sensititivity parameters and status of the mouse buttons.
- * @param SMKIN Pointer to the Kinematics object containing the current translation & rotation values aswell as the sensitivity configuration.
- * @param keyOut Pointer to the array containing the status of the mousebuttons
  */
 void Calibration::DebugOutput4() {
     if (_debug == 4)
@@ -50,7 +47,6 @@ void Calibration::DebugOutput4() {
 
 /**
  * @brief Report single axis and  translation & rotation values side by side for direct reference. Very useful if you need to alter which inputs are used in the arithmetic above.
- *
  */
 void Calibration::DebugOutput5() {
     if (_debug == 5 && _isDebugOutputDue()) {
@@ -80,8 +76,10 @@ void Calibration::_debugOutput_VelocitiesKeys() {
 }
 
 /**
- * @brief Check, if a new debug output shall be generated. This is used in order to generate a debug line only every DEBUGDELAY ms, see config.h
- * @return true, if debug output is due
+ * @brief Indicate if a new debug output should be printed.
+ *         Used to generate a debug line only every DEBUGDELAY ms, see config.h
+ * @retval true if debug output is due
+ * @retval false if debug output is not due
  */
 bool Calibration::_isDebugOutputDue() {
     static unsigned long lastDebugOutput = 0; // time from millis(), when the last debug output was given
@@ -281,7 +279,7 @@ int8_t Calibration::_handleTwoWords(char *words[]) {
     } else if (strcmp_P(words[0], CMD_DEADZONE) == 0) {
         Serial.print(F("Deadzone -> "));
         Serial.println(value);
-        _SMHW->SetDeadzone(value); // Call the function to set the deadzone
+        _SMHW->UpdateDeadzone(value); // Call the function to set the deadzone
         // --------------- DEADZONE x ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_MINMAX) == 0) {
         // Call the function to start the min/max calibration and store the values in EEPROM if value is 1, otherwise do not store the values in EEPROM

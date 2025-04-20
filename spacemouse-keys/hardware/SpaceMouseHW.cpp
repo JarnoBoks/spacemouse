@@ -41,8 +41,19 @@ SpaceMouseHW_::SpaceMouseHW_(const int warnCpntMin, const int warnCpntMax, const
     }
 }
 
+/**
+ * @brief Destructor for the SpaceMouseHW_ class.
+ */
 SpaceMouseHW_::~SpaceMouseHW_() {}
 
+/**
+ * @brief Measure the idle position of the spacemouse and store the results internally for future usage.
+ * @param numIterations The number of iterations to take for the zeroing process. The more iterations, the more accurate the result.
+ * @param serialOutput Flag to indicate if the results should be printed to the serial monitor.
+ * @return the result of the zeroing process.
+ * @retval true if no warnings occurred during the zeroing process.
+ * @retval false if warnings occurred during the zeroing process.
+ */
 bool SpaceMouseHW_::BusyZeroing(uint16_t numIterations, boolean serialOutput) {
     // Set up the zeroing datastructure, while initialising the constants.
     zeroing_t params;
@@ -64,7 +75,7 @@ bool SpaceMouseHW_::BusyZeroing(uint16_t numIterations, boolean serialOutput) {
  * @brief Starts the calibration process for the min and max values of the sensors.
  * @details The function will print the min and max values for each sensor to the serial monitor.
  * If the storeResults flag is set to true, the min and max values will be stored in EEPROM.
- * @param storeResults Flag to indicate if the results should be stored in EEPROM.
+ * @param storeResults Flag to indicate if the results should be stored in EEPROM or only printed to the serial monitor.
  */
 void SpaceMouseHW_::CalibrateMinMax(boolean storeResults) {
     _storeCalibrationResults = storeResults; // Set the flag to store the results in EEPROM
@@ -229,13 +240,13 @@ void SpaceMouseHW_::UpdateMinMax(const char *cmd, float value) {
 /**
  * @brief Write the deadzone value to the EEPROM and set the private data member _deadzone.
  *        The deadzone value is used to filter out small movements of the joystick/knob.
- * @param requestedDeadzone The deadzone value to be set, entered through the serial interface . The value is between 0 and 127.
+ * @param value The deadzone value to be set, entered through the serial interface . The value is between 0 and 127.
  * @return 0 if the deadzone value is set successfully, -1 if the value is out of range.
  */
-int8_t SpaceMouseHW_::SetDeadzone(uint8_t requestedDeadzone) {
+int8_t SpaceMouseHW_::UpdateDeadzone(uint8_t value) {
 
     // Update the internal deadzone value
-    _deadzone = requestedDeadzone;
+    _deadzone = value;
 
     // Store the value in the EEPROM. EEPROM.put() uses EEPROM.update and thus only writes data if the data has changed.
     EEPROM.put(EEPROM_ADDRESS_DEADZONE, _deadzone); // Store the value in the EEPROM.

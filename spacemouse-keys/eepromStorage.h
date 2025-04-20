@@ -37,10 +37,6 @@ constexpr int EEPROM_ADDRESS_CFG_RZ_END = EEPROM_ADDRESS_CFG_RZ + sizeof(Velocit
 constexpr int EEPROM_ADDRESS_DEADZONE = EEPROM_ADDRESS_CFG_RZ_END;                     // Start address for the deadzone
 constexpr int EEPROM_ADDRESS_DEADZONE_END = EEPROM_ADDRESS_DEADZONE + sizeof(uint8_t); // End address for the deadzone function
 
-#if 0
- _clearEEPROM(); // Clear the EEPROM
-uint8_t _readByte(int address, int defValue);
-#endif
-
 bool isFirstRun(); // Check if the EEPROM is initialized
-#endif             // EEPROMSTORAGE_h
+
+#endif // EEPROMSTORAGE_h

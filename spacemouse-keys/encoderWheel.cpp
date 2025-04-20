@@ -62,13 +62,12 @@ void calcEncoderWheel(Kinematics &SMKIN, int debug) {
     }
 
     if (debug == 9) {
-        // create debug output
-        Serial.print("Enc Val: ");
+        Serial.print(F("Enc val: "));
         Serial.print(newEncoderValue);
-        Serial.print(", factor: ");
+        Serial.print(F(", factor: "));
         Serial.print(factor);
-        Serial.print(", simpull: ");
-        Serial.println(simpull);
+        Serial.print(F(", simpull: "));
+        Serial.print(simpull);
     }
 }
 

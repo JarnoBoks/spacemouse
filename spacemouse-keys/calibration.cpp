@@ -7,9 +7,6 @@
 #include "config.h"
 #include "hardware/SpaceMouseHW.h"
 
-/// @brief Hold characters to plot them
-char debugOutputBuffer[20];
-
 /**
  * @brief Prints the raw (optionally inverted) ADC 10-bit values and the status of the raw key readings (without debouncing), if the output is due (every x miliseconds)
  * @param keyVals   pointer to the int array where the raw key readings are stored (no debouncing)
@@ -105,22 +102,12 @@ void Calibration::UpdateFrequencyReport() {
     // increase iterations counter
     _iterationsPerSecond++;
     if (millis() - _lastFrequencyUpdate > 1000) { // if one second has past: report frequency
-        Serial.print("Frequency: ");
+        Serial.print("Freq: ");
         Serial.print(_iterationsPerSecond);
         Serial.println(" Hz");
         _lastFrequencyUpdate = millis(); // reset timer
         _iterationsPerSecond = 0;        // reset iteration counter
     }
-}
-
-int8_t handle(char *words[]) {
-    Serial.println(words[0]);
-    Serial.println(words[1]);
-
-    if (strcmp_P(words[0], CMD_DEBUG) == 0) {
-        Serial.println(F("Debug command received"));
-    }
-    return 0;
 }
 
 /**
@@ -202,13 +189,8 @@ void Calibration::DebugInput() {
 int8_t Calibration::_handleOneWord(char *words[]) {
     int8_t ret = 0;
 
-    // --------------- HELP ----------------------------------------------------
-    if (strcmp_P(words[0], CMD_HELP) == 0) {
-        // Show help information
-        Serial.println(CF(RESP_HELP));
-
-        // --------------- SHOW ----------------------------------------------------
-    } else if (strcmp_P(words[0], CMD_SHOW) == 0) {
+    // --------------- SHOW ----------------------------------------------------
+    if (strcmp_P(words[0], CMD_SHOW) == 0) {
         // Show all stored calibration values
         _SMKIN->PrintAxisConfigurations();
 #if 0

@@ -3,6 +3,7 @@
 #include "eepromStorage.h"
 #include "SpaceMouseHW.h"
 #include "config.h"
+#include "text.h"
 
 #define MINMAXDURATION 15  // The duration of the min-max calibration in seconds
 #define DEADZONEWARNING 10 // A deadzone above the following value will be warned // TODO - Use the configured level for this
@@ -25,7 +26,6 @@ SpaceMouseHW_::SpaceMouseHW_(const int warnCpntMin, const int warnCpntMax, const
 
     // Read Deadzone from EEPROM, use the default (configured) value if the byte is not set.
     EEPROM.get(EEPROM_ADDRESS_DEADZONE, _deadzone);
-    // eeHW_Deadzone >> _deadzone;
 }
 
 SpaceMouseHW_::~SpaceMouseHW_() {}
@@ -56,6 +56,12 @@ void SpaceMouseHW_::CalibrateMinMax() {
  *  @brief This function records the minimum and maximum movement of the joysticks/knob.
  *  After initialization, move the mouse for 15s and see the printed output.
  *  Replug/reset the mouse, to enable the semi-automatic calibration for a second time.
+ *
+ * @details The function will print the min and max values for each sensor to the serial monitor.
+ * The min and max values are used to calculate the working range for each sensor.
+ * The working range is the difference between the min and max values.
+ * The function will also print a warning if the min or max values are below a certain threshold.
+ * The threshold values are defined in the config.h file.
  */
 void SpaceMouseHW_::ProcessCalcMinMax() {
     if (_minMaxCalcState == 0) {
@@ -67,7 +73,7 @@ void SpaceMouseHW_::ProcessCalcMinMax() {
         }
         _startMillis = millis(); // Record the current time
         _minMaxCalcState = 1;    // next State: measure!
-        Serial.print(F("Start moving the spacemouse around for "));
+        Serial.print(F("Move the spacemouse for "));
         Serial.print(MINMAXDURATION);
         Serial.println(F(" sec."));
 
@@ -84,7 +90,7 @@ void SpaceMouseHW_::ProcessCalcMinMax() {
             }
         } else {
             // 15s are over. Go to the next state and report via console.
-            Serial.println(F("\n\nStop moving the spacemouse. These are the results. Copy them in config.h"));
+            Serial.println(F("\n\nFinished. Copy results to config.h: "));
             _minMaxCalcState = 2;
         }
     } else if (_minMaxCalcState == 2) {
@@ -93,7 +99,7 @@ void SpaceMouseHW_::ProcessCalcMinMax() {
         Serial.print(F("#define MAXVALS "));
         _printArray(_maxVals, NUM_SENSORS);
 
-        // Calculate and print the working for each sensor (added for the HALL sensors, but this will function for the joysticks too)
+        // Calculate and print the working range for each sensor (JB: added for the HALL sensors, but this will function for the joysticks too)
         int workingRanges[NUM_SENSORS];
         int max = 0;
         int min = 0;
@@ -109,23 +115,23 @@ void SpaceMouseHW_::ProcessCalcMinMax() {
         Serial.println(centerRange);
 
         for (uint8_t i = 0; i < NUM_SENSORS; i++) {
+            bool isWarning = false;
+
             if (abs(_minVals[i]) < _warningMinMaxMinimum) {
-                Serial.print(F("Warning: minValue "));
-                Serial.print(_axisNames[i]);
-                Serial.print(F(" is small: "));
-                Serial.println(_minVals[i]);
+                Serial.print(F("Min "));
+                isWarning = true;
             }
             if (abs(_maxVals[i]) < _warningMinMaxMaximum) {
-                Serial.print(F("Warning: maxValue "));
-                Serial.print(_axisNames[i]);
-                Serial.print(F(" is small: "));
-                Serial.println(_maxVals[i]);
+                Serial.print(F("Max "));
+                isWarning = true;
             }
             if (workingRanges[i] < _warningMinMaxRange) {
-                Serial.print(F("Warning: Range "));
+                Serial.print(F("Range "));
+                isWarning = true;
+            }
+            if (isWarning) {
                 Serial.print(_axisNames[i]);
                 Serial.print(F(" is small: "));
-                Serial.println(workingRanges[i]);
             }
         }
         _minMaxCalcState = 3; // no further reporting
@@ -172,18 +178,27 @@ void SpaceMouseHW_::FilterAnalogReadOuts() {
 void SpaceMouseHW_::ReadAllFromSensors() {
 
     for (int i = 0; i < NUM_SENSORS; i++) {
+        _rawReads[i] = analogRead(_pinList[i]); // Reset the raw reading for each sensor
+
+        if (_invertList[i] == 1) {
+            _rawReads[i] = 1023 - _rawReads[i];
+        }
+
+#if 0 // Compiled size optimization
         if (_invertList[i] == 1) {
             // invert the reading
             _rawReads[i] = 1023 - analogRead(_pinList[i]);
         } else {
             _rawReads[i] = analogRead(_pinList[i]);
         }
+#endif
     }
 }
 
 /**
  * @brief Subtract center position of the joystick/knob from the measured position to determine movement.
  */
+// TODO - this function could be integrated into the ReadAllFromSensors function to save some space.
 void SpaceMouseHW_::CenterSensors() {
     for (uint8_t i = 0; i < NUM_SENSORS; i++) {
         centered[i] = _rawReads[i] - _centerPoints[i];
@@ -197,11 +212,12 @@ void SpaceMouseHW_::CenterSensors() {
  * @return 0 if the deadzone value is set successfully, -1 if the value is out of range.
  */
 int8_t SpaceMouseHW_::SetDeadzone(uint8_t requestedDeadzone) {
-    _deadzone = requestedDeadzone; // Set the deadzone value
+
+    // Update the internal deadzone value
+    _deadzone = requestedDeadzone;
 
     // Store the value in the EEPROM. EEPROM.put() uses EEPROM.update and thus only writes data if the data has changed.
     EEPROM.put(EEPROM_ADDRESS_DEADZONE, _deadzone); // Store the value in the EEPROM.
-    // eeHW_Deadzone << _deadzone; // Store the value in the EEPROM.
 
     return 0; // Success
 }
@@ -217,7 +233,7 @@ void SpaceMouseHW_::PrintDeadzone() {
 }
 
 /**
- *  @brief Calibrate (=zero) the space mouse. The function is blocking other functions of the spacemouse during zeroing.
+ *  @brief Calibrate (=zero) the space mouse idle position. The function is blocking other functions of the spacemouse during zeroing.
  *
  *  @param numIterations How many readings are taken to calculate the mean. Suggestion: 500 iterations, they take approx. 480ms.
  *  @param debugFlag With debugFlag = true, a suggestion for the dead zone is given on the serial interface to save to the config.h
@@ -228,7 +244,7 @@ bool SpaceMouseHW_::_busyZeroing(zeroing_t *params, uint16_t numIterations) {
 
     bool noWarningsOccurred = true;
 
-    // Initialize the zeroing parameters in the structure.
+    // Initialize the zeroing parameters in the data structure.
     for (int i = 0; i < NUM_SENSORS; i++) {
         params->minValue[i] = 1023; // Set the min value to the maximum possible value
         params->maxValue[i] = 0;    // Set the max value to the minimum possible value
@@ -293,32 +309,45 @@ void SpaceMouseHW_::_printZeroedValue(zeroing_t *params, const char *axisname, i
         Serial.println(F("####  Min  - Mean - Max  -> Dead Zone"));
     }
 
-    char OutputBuffer[48]; // Buffer to hold the formatted output
     // Print the axis name and the values to the serial interface
-    sprintf(OutputBuffer, "%4.4s  %4.4d - %4.4d - %4.4d -> %d", axisname, params->minValue[i], _centerPoints[i], params->maxValue[i], params->deadZone[i]);
-    Serial.print(OutputBuffer);
+    // Using a formatted string: %4.4s  %4.4d - %4.4d - %4.4d -> %d
+    Serial.print(axisname);
+    alignValue(params->minValue[i]);
+    Serial.print(params->minValue[i]);
+    Serial.print(F(" - "));
+    alignValue(_centerPoints[i]);
+    Serial.print(_centerPoints[i]);
+    Serial.print(F(" - "));
+    alignValue(params->maxValue[i]);
+    Serial.print(params->maxValue[i]);
+    Serial.print(F(" -> "));
+    alignValue(params->deadZone[i]);
+    Serial.print(params->deadZone[i]);
 
     // Warn if the centrePoint is outside the normal deadzone (ie. the readings vary too much)
     if (params->deadZone[i] > DEADZONEWARNING) {
-        Serial.print(F(" Attention! Did axis move?"));
+        Serial.print(F(" !! Did axis move?"));
     }
 
     // Warn if the centerpoint is outside the normal centerpoint range (ie. the joystick is physically not centered)
     if (_centerPoints[i] < _warningCenterpointMin || _centerPoints[i] > _warningCenterpointMax) {
-        Serial.print(F("  !Attention! Is axis/sensor in idle position?"));
+        Serial.print(F("  !! Is axis in idle position?"));
     }
     Serial.println("");
 
     // Write the closure if processing the last sensor
     if (i == (NUM_SENSORS - 1)) {
 
-        Serial.println(F("Using mean as zero position..."));
+        Serial.println(F("Using mean as zero."));
 
-        sprintf_P(OutputBuffer, PSTR("Suggestion for calibration: 'DEADZONE %d'\n"), params->maxDeadZone);
-        Serial.print(OutputBuffer);
+        Serial.print(F("Calibration suggestion: 'DEADZONE '"));
+        Serial.println(params->maxDeadZone);
 
-        sprintf_P(OutputBuffer, PSTR("Idling took %d ms for %d iterations.\n"), (int)(millis() - _startMillis), params->count);
-        Serial.print(OutputBuffer);
+        Serial.print(F("("));
+        Serial.print((int)(millis() - _startMillis));
+        Serial.print(F(" ms / "));
+        Serial.print(params->count);
+        Serial.print(F(" iterations)"));
     }
 }
 
@@ -346,10 +375,13 @@ void SpaceMouseHW_::_printArray(int arr[], int size) {
  * @param val
  */
 void SpaceMouseHW_::_printValue(const char *axisname, int val) {
-    char debugOutputBuffer[20];
-
-    sprintf_P(debugOutputBuffer, PSTR("%4.4s:%4d, "), axisname, val);
-    Serial.print(debugOutputBuffer);
+    Serial.print(axisname);
+    if (val < 1000) {
+        Serial.print(F(":0"));
+    } else {
+        Serial.print(F(":"));
+    }
+    Serial.print(val);
 }
 
 void SpaceMouseHW_::PrintRawReads() {

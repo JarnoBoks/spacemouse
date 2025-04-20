@@ -2,6 +2,7 @@
 #include <EEPROM.h>
 #include "MotionAxisConfig.h"
 #include "eepromStorage.h" // Include the EEPROM address map
+#include "text.h"          // Include the text library for printing text to the serial monitor
 
 // Include math operators for doing better calculation algorithms. Arduino math is a standard library already included.
 #include <math.h>
@@ -102,9 +103,11 @@ void MotionAxisConfig::SetVelocity(int16_t value) {
  *          The output format is: "TX: 0346" or "TY: -0125"
  */
 void MotionAxisConfig::PrintVelocity() {
-    char debugOutputBuffer[20];
-    sprintf_P(debugOutputBuffer, PSTR("%2.2s: %4d "), _name, _value);
-    Serial.print(debugOutputBuffer);
+    Serial.print(_name);   // Print the axis name (e.g. TX, TY, TZ, RX, RY, RZ)
+    Serial.print(F(": ")); // Add a space between the axis name and the value
+    alignValue(_value);    // Align the value to the right with spaces
+    Serial.print(_value);  // Print the velocity value (value is never wider than 4 positions)
+    Serial.print(F(" "));  // Add a space after the value
 }
 
 #if 0
@@ -183,10 +186,27 @@ int8_t MotionAxisConfig::GetInvert() {
     return _config.invert;
 }
 
-static const char FMT_NOCOMMA[] PROGMEM = "%s%2.2s%s: ";
-static const char FMT_COMMA[] PROGMEM = ", %s%2.2s%s: ";
+#define FMT_NOCOMMA false
+#define FMT_COMMA true
 #define NO_PREFIX ""
 #define NO_SIGN ""
+#define TWO_DECIMALS 2
+#define ONE_DECIMAL 1
+#define NO_DECIMALS 0
+
+void _helper_PrintItem(const boolean printComma, const char *prefix, const char *name, const char *sign) {
+    if (printComma) {
+        Serial.print(F(", ")); // Add a comma if needed
+    }
+    if (prefix[0] != '\0') {
+        Serial.print(prefix); // Print the prefix (G, M, IF, " ")
+    }
+    Serial.print(name); // Add the axis name
+    if (sign[0] != '\0') {
+        Serial.print(sign); // Add the sign
+    }
+    Serial.print(F(": ")); // Add a space between the prefix and the value
+}
 
 /**
  * @brief Helper function to print the configuration values.
@@ -196,31 +216,25 @@ static const char FMT_COMMA[] PROGMEM = ", %s%2.2s%s: ";
  * @param prefix The prefix to use in the output (ie. none, G, M, IF).
  * @param precision The number of decimal places to print.
  */
-void MotionAxisConfig::_helper_PrintConfig(const float posval, const float negval, const char *format, const char *prefix, uint8_t precision) {
-    char printBuffer[32];
-
-    // Print the positive value
+void MotionAxisConfig::_helper_PrintConfig(const float posval, const float negval, const boolean printComma, const char *prefix, const uint8_t precision) {
+    //  Print the positive value
     if (posval == negval) {
-        // If the values are equal, we can print the name, without a prefix & without a sign
-        sprintf_P(printBuffer, format, prefix, _name, NO_SIGN);
+        _helper_PrintItem(printComma, prefix, _name, NO_SIGN); // No comma needed
     } else {
         // Otherwise we print the name , without a prefix, but with a "+"
-        sprintf_P(printBuffer, format, prefix, _name, "+");
+        _helper_PrintItem(printComma, prefix, _name, "+"); // No comma needed
     }
-    Serial.print(printBuffer);
     Serial.print(posval, precision);
 
     // If the positive sensititivity is not equal to the negative sensitivity, we have to print the negative sensitivity too.
     if (posval != negval) {
-        sprintf_P(printBuffer, FMT_COMMA, prefix, _name, "-");
-        Serial.print(printBuffer);
+        // Serial.print(printBuffer);
+        _helper_PrintItem(FMT_COMMA, prefix, _name, "-");
+        // Print the negative value
         Serial.print(negval, precision);
     }
 }
 
-#define TWO_DECIMALS 2
-#define ONE_DECIMAL 1
-#define NO_DECIMALS 0
 /**
  * @brief Output the configuration of the axis to the Serial Monitor.
  * @details This function prints the configuration of the axis to the serial port.

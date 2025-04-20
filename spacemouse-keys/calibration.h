@@ -52,10 +52,6 @@ private:
     uint16_t _iterationsPerSecond = 0;      // Count the iterations within one second
     unsigned long _lastFrequencyUpdate = 0; // Time from millis(), when the last frequency was calculated
 
-    int8_t _handleOneWord(const char *word);
-    int8_t _handleTwoWords(const char *word1, const char *word2);
-    int8_t _handleThreeWords(const char *word1, const char *word2, const char *word3);
-
     int8_t _handleOneWord(char *words[]);
     int8_t _handleTwoWords(char *words[]);
     int8_t _handleThreeWords(char *words[]);

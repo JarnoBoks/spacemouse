@@ -7,7 +7,6 @@
 
 // Commands without parameters/values (1 word)
 static const char CMD_IDLE[] PROGMEM = "IDLE";
-static const char CMD_HELP[] PROGMEM = "HELP";
 static const char CMD_SHOW[] PROGMEM = "SHOW";
 static const char CMD_MINMAX[] PROGMEM = "MINMAX";
 
@@ -20,18 +19,16 @@ static const char CMD_DEADZONE[] PROGMEM = "DZ";     // The value we want to set
 static const char CMD_INVERT[] PROGMEM = "INVERT"; // The axis we want to invert. [0..5] ! Boundaries are inclusive, set in kinematics.h
 static const char CMD_SENS[] PROGMEM = "SENS";     // The axis we want to set the sensitivity for. [0..5] ! Boundaries are inclusive, set in kinematics.h
 
-static const char RESP_HELP[] PROGMEM = "Commands: DEBUG, INVERT, MODFUNC, SENS, SHOW, HELP";
-
 static const char Error_CommandUnkown[] PROGMEM = "Unknown command or -format.";
-static const char Error[] PROGMEM = "Error: ";
-static const char Error_EmptyCommand[] PROGMEM = "No command given";
-static const char Error_EmptyParameter[] PROGMEM = "No parameter given for command";
-static const char Error_ParameterNoNumber[] PROGMEM = "The parameter isn't a number (integer)";
-static const char Error_ParameterNoFloat[] PROGMEM = "The parameter isn't a valid number (float)";
-static const char Error_EmptyValue[] PROGMEM = "No value given";
+static const char Error[] PROGMEM = "Err: ";
+static const char Error_EmptyCommand[] PROGMEM = "No command";
+static const char Error_EmptyParameter[] PROGMEM = "No parameter";
+static const char Error_ParameterNoNumber[] PROGMEM = "Invalid integer";
+static const char Error_ParameterNoFloat[] PROGMEM = "Invalid float";
+static const char Error_EmptyValue[] PROGMEM = "No value";
 
 // Hardware specific error messages
-static const char Info_AnalogVoltage[] PROGMEM = "Setting analog reference voltage to ";
+static const char Info_AnalogVoltage[] PROGMEM = "VREF -> ";
 
 // Sensitivities:
 static const char Error_InvalidAxisName[] PROGMEM = "Invalid Axisname.";
@@ -41,6 +38,8 @@ static const char Error_InvalidAxisName[] PROGMEM = "Invalid Axisname.";
 bool isWordEmpty(const char *str, const char *errorMsg);
 bool convertWordNumber(const char *str, long *n, const char *errorMsg);
 bool convertWordFloat(const char *str, float *const &f, const char *errorMsg);
+
+void alignValue(int value);
 
 #endif // TEXT_H
        // vim: set ts=4 sw=4 et:

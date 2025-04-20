@@ -196,7 +196,7 @@ boolean Kinematics::GetAxisInvert(enumAxis_t axis) {
  * @brief Output the configuration of all axis to the Serial Monitor.
  */
 void Kinematics::PrintAxisConfigurations() {
-    Serial.println(F("Axis configurations: (IFxx: [Normal: 1, Invert: -1])"));
+    Serial.println(F("Axis configurations: (IFxx: [Normal: 1, Invert: -1])")); // 68 bytes
 
     for (uint8_t i = 0; i < enumAxis_t::LENGTH; i++) {
         // Print the sensitivity values for each velocity axis

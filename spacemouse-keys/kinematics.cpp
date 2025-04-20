@@ -11,7 +11,7 @@
 
 #ifdef HALLEFFECT
 #include "hardware/SpaceMouseHW_Hall.h"
-#else
+#else // SM_HARDWARE == JOYSTICK
 #include "hardware/SpaceMouseHW_Joystick.h"
 #endif
 

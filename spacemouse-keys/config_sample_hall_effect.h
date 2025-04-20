@@ -2,46 +2,103 @@
 #define CONFIG_h
 
 /* The user specific settings, like pin mappings or special configuration variables and sensitivities are stored in config.h.
-   This file is meant for the << HALL-EFFECT SPACEMOUSE >>
    Please adjust your settings and save it as --> config.h <-- !
 */
 
 /* Calibration instructions
-============================
-Follow this file from top to bottom to calibrate your space mouse.
-You can find some pictures for the calibration process here:
-https://github.com/AndunHH/spacemouse/wiki/Ergonomouse-Build#calibration
+===========================
 
-Debugging Instructions
+| Follow this file from top to bottom to calibrate your space mouse.          |
+| You can find some pictures for the calibration process here:                |
+| https://github.com/AndunHH/spacemouse/wiki/Ergonomouse-Build#calibration    |
+
+General
+========
+The spacemouse is calibrated through the serial monitor (preferred) or through the configuration parameters
+in this file. To view the current calibrated values of the spacemouse, you can use the command "SHOW" in the
+serial monitor.
+
+In normal operation, the values from config.h are used only for initialization/default values. If the spacemouse
+is initialized updating values in config.h WILL NOT BE APPLIED without changing the version number too.
+
+Important: If the version number is changed, all stored calibration parameters will be replaced with the
+           values from config.h
+*/
+
+/// Change the version number to force the spacemouse to use the values from config.h
+/// @warning Changing the version number will reset all stored calibration parameters in the EEPROM.
+#define SM_VERSION 3
+
+/* Debugging Instructions
 =========================
 To activate one of the following debugging modes, you can either:
-- Change STARTDEBUG here in the code and compile again or
-- Compile and upload your program. Change to the serial monitor and type the number and hit enter to select the debug mode.
+- Change STARTDEBUG here in config.h and compile & upload again, or
+- Compile and upload your program. Change to the serial monitor and type
+   DEBUG x  where x is the number of the debug mode and hit ENTER to select the debug mode.
 
 Debug Modes:
 ------------
--1: Debugging off. Set to this once everything is working.
-0:  Nothing...
+-1:  Debugging off. Set to this once everything is working.
 
-1:  Output raw joystick values. 0-1023 raw ADC 10-bit values
-11: Calibrate / Zero the Spacemouse and get a dead-zone suggestion (This is also done on every startup in the setup())
+ 0:  Nothing...
 
-2:  Output centered joystick values. Values should be approximately -500 to +500, jitter around 0 at idle.
-20: semi-automatic min-max calibration. (Replug/reset the mouse, to enable the semi-automatic calibration for a second time.)
+ 1:  Report raw sensor values.
+     The values are inverted if configured in the INVERTLIST. This is the first step to calibrate the spacemouse.
+     You can check if the sensors are wired correctly and if they are working.
 
-3:  Output centered joystick values. Filtered for deadzone. Approximately -350 to +350, locked to zero at idle, modified with a function.
+     Joystick:    The values should be approximately 0-1023.
+     Hall Effect: The values should be approximately 0-1023.   //TODO - check if this is correct for the HES sensors
 
-4:  Output translation and rotation values. Approximately -350 to +350 depending on the parameter.
-5:  Output debug 4 and 5 side by side for direct cause and effect reference.
-6:  Report velocity and keys after possible kill-key feature
-61: Report velocity and keys after kill-switch or ExclusiveMode
-7:  Report the frequency of the loop() -> how often is the loop() called in one second?
-8:  Report the bits and bytes send as button codes
-9:  Report details about the encoder wheel, if ROTARY_AXIS > 0 or ROTARY_KEYS>0
+     // TODO - Show idlePostions for each sensor. The values should be approximately 0-1023.
+
+ 2:  Report centered values.
+     When the space mouse is started the knob should be in the idle position. The sensors are read mulitple
+     times and the mean idle value is calculated and stored. The centered values reported in this debug mode are the
+     difference between the raw values and the mean idle value.
+
+     Joystick:    The values should be approximately -500 to +500, jitter around 0 at idle.
+     Hall Effect: The values should be approximately -500 to +500.   //TODO - check if this is correct for the HES sensors
+
+ 3:  Report hardware sensor output.
+     The hardware component of the spacemouse ignores unintended movements on the sensors and will normalize the values
+     to a predefined range. Default the output range is -350 to +350. The amount of movement that is ignored can
+     be configured with the deadzone.
+
+     Joystick:    The values should be approximately -350 to +350, small movements are ignored.
+     Hall Effect: The values should be approximately -350 to +350, small movements are ignored.   //TODO - check if this is correct for the HES sensors
+
+ 4:  Report translation & rotation values and status of the keys.
+     The translation (TX, TY, TZ) and rotation (RX, RY, RZ) values are calculated from the hardware output.
+     See kinematics.h for the details of the calculation. The parameters for the calculation can be configured (see further below).
+
+     Output:      Approximately -350 to +350 depending on the parameter.
+
+ 5:  Report centered values (2nd debug) and translation & rotation values and keystatus (4th debug) side by side for direct reference.
+     This is very useful if you need to alter which inputs are used in the arithmetic above.
+     The values are reported in the same format as in debug mode 4.
+
+ 6:  Report centered values (2nd debug) and translation & rotation values and keystatus (4th debug) after applying
+     the kill-key functionality. (If configured).
+
+ 61: Report centered values (2nd debug) and translation & rotation values and keystatus (4th debug) after applying
+     the kill-switch and the exclusive mode. (If configured).
+
+ 7:  Report the frequency of the loop().
+     This is useful to check if the loop() is running fast enough. The frequency is calculated by counting the number
+     of iterations in one second. The frequency is reported in Hz.
+
+ 8:  Report the bits and bytes send as button codes
+
+ 9:  Report details about the encoder wheel, if ROTARY_AXIS > 0 or ROTARY_KEYS>0
 */
-#define STARTDEBUG 0 // Can also be set over the serial interface, while the program is running!
 
-// Hardware uses HallEffect sensors instead of joystick sensors
+/// The debug level that is used when the program is started. This can be changed in the serial monitor.
+/// @note Use DEBUG x to change the debug level in the serial monitor.
+#define STARTDEBUG 0
+
+/// The hardware that is used for the spacemouse. This is used to select the correct hardware library.
+/// Can only be changed in the config.h file.
+/// @note Valid values are "#define HALLEFFECT" or "#define JOYSTICK"
 #define HALLEFFECT
 
 /* First Calibration: Hall effect sensors pin assignment
@@ -95,7 +152,8 @@ If you have mounted the magnets upside-down, the values will be inverted.
 
 /* Second calibration: Tune Deadzone
 ====================================
-Deadzone to filter out unintended movements. Increase if the mouse has small movements when it should be idle or the mouse is too sensitive to subtle movements.
+Deadzone to filter out unintended movements. Increase if the space mouse has small movements when it should be idle or
+the mouse is too sensitive to subtle movements.
 
 Semi-automatic: Set debug = 11. Don't touch the mouse and observe the automatic output.
 Manual:         Set debug = 2.  Don't touch the mouse but observe the values. They should be nearly to zero.
@@ -237,7 +295,7 @@ How many classic keys are there in total? (0=no keys, feature disabled)
 
 // Define the PINS for the classic keys on the Arduino
 // The first pins from KEYLIST may be reported via HID
-#define KEYLIST \
+#define KEY_PINLIST \
     {0, 1, 2}
 
 /* Report KEYS over USB HID to the PC
@@ -409,7 +467,7 @@ The connected LED is not just a stupid LED, but an intelligent one, like a neopi
 //  The LEDpin is used as a data pin
 
 // The LEDs light up, if a certain movement is reached:
-#define VelocityDeadzoneForLED 15
+#define VELOCITYDEADZONEFORLED 15
 
 // About how many LEDs must the ring by turned to align?
 #define LEDclockOffset 0

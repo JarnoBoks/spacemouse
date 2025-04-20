@@ -46,7 +46,7 @@ void Calibration::DebugOutput4() {
 }
 
 /**
- * @brief Report single axis and  translation & rotation values side by side for direct reference. Very useful if you need to alter which inputs are used in the arithmetic above.
+ * @brief Report single axis and translation & rotation values side by side for direct reference. Very useful if you need to alter which inputs are used in the arithmetic above.
  */
 void Calibration::DebugOutput5() {
     if (_debug == 5 && _isDebugOutputDue()) {

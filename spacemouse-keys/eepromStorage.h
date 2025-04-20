@@ -2,22 +2,24 @@
 #define EEPROMSTORAGE_h
 
 #include <Arduino.h>
-
+#include "config.h" // Include the config file for the hardware and the kinematics
 #include "kinematics.h"
 #include "MotionAxisConfig.h"
 
 /**
  * @brief If the version number defined in the EEPROM is not equal to the version number defined in this file, the EEPROM will be erased and initialized with the default values.
  */
-constexpr uint8_t EEPROM_VERSION = 3; // Version of the EEPROM data structure
 
+/// The version number of the EEPROM datastorage. Can be used to force loading the configuration values set in config.h.
+/// @warning Changing the version number will reset all stored calibration parameters in the EEPROM.
+constexpr uint8_t EEPROM_VERSION = SM_VERSION;
 /**
  * The Arduino Micro has an EEPROM storage that can store 1024bytes (1KB)
  *
  * This configuration file maintains the address table of the stored data. *
  */
-constexpr int EEPROM_ADDRESS_VERSION = 1;                                            // Start address for the version
-constexpr int EEPROM_ADDRESS_VERSION_END = EEPROM_ADDRESS_VERSION + sizeof(uint8_t); // End address for the version
+constexpr int EEPROM_ADDRESS_VERSION = 1;                                            // Start EEPROM address for the Datastorage version
+constexpr int EEPROM_ADDRESS_VERSION_END = EEPROM_ADDRESS_VERSION + sizeof(uint8_t); // End EEPROM address for the Datastorageversion
 
 // ---------- MotionAxisConfig axis configuration ----------
 // Velocity_CONFIG_SIZE is the size of the velocity configuration struct in bytes = 13 bytes (round up to 16 bytes for alignment)

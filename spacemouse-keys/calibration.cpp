@@ -13,7 +13,7 @@
 void Calibration::DebugOutputRawInverted() {
     if (_debug == 1 && _isDebugOutputDue()) {
         _SMHW->PrintRawReads();
-        // Report back 0-1023 raw ADC 10-bit values if enabled
+        Serial.print(F(", "));
         _SMKEYS->PrintKeyVals();
         Serial.print(DEBUG_LINE_END);
     }
@@ -190,21 +190,16 @@ int8_t Calibration::_handleOneWord(char *words[]) {
 
     // --------------- SHOW ----------------------------------------------------
     if (strcmp_P(words[0], CMD_SHOW) == 0) {
-        // Show all stored calibration values
-        _SMKIN->PrintAxisConfigurations();
-#if 0
-        _SMKIN->PrintTransRotInversions(true);
-        _SMKIN->PrintModulationFunction(true);
-#endif
-        Serial.println(F("\nHardware configuration"));
-
+        Serial.println(F("\nHARDWARE CONFIGURATION:"));
         _SMHW->PrintDeadzone();
         _SMHW->PrintMinMax();
 
+        // Show all stored calibration values
+        _SMKIN->PrintAxisConfigurations();
+
         // --------------- IDLE ----------------------------------------------------
-    } else if (strcmp_P(words[0], CMD_IDLE) == 0) {
-        // Calibrate Idle position
-        Serial.println(F("Calibrating Idle"));
+    } else if (strcmp_P(words[0], CMD_DEADZONE) == 0) {
+        // Tune Idle position & suggest deadzone value
         _SMHW->BusyZeroing(2000, true); // Call the function to calibrate the idle position
 
         // --------------- MINMAX ----------------------------------------------------

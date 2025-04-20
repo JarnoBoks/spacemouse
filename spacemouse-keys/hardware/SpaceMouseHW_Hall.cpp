@@ -50,11 +50,11 @@ void SpaceMouseHW_Hall_::SetAnalogReferenceVoltage(int debug) {
     if (debug == 1) {
         // Set the reference voltage for the AD Convertor to 5V only for the first calibration step (pinout/inversion calibration).
         analogReference(DEFAULT);
-        Serial.println(F("5V."));
+        Serial.println(F("5V"));
     } else {
         // Set the reference voltage for the AD Convertor to 2.56V in order to get larger sensitivity.
         analogReference(INTERNAL);
-        Serial.println(F("2.56V."));
+        Serial.println(F("2.56V"));
     }
 
     // The first measurements after changing the reference voltage can be wrong. So take 100ms to let the voltage stabilize and
@@ -63,7 +63,7 @@ void SpaceMouseHW_Hall_::SetAnalogReferenceVoltage(int debug) {
     delay(100);
 
     // Read all sensors 8 times
-    for (uint8_t i = 0; i <= 8; i++) {
+    for (uint8_t i = 0; i < 8; i++) { // Changed from <= to < for correct iteration
         ReadAllFromSensors();
     }
 }

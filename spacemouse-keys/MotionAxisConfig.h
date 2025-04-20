@@ -42,7 +42,7 @@ private:
     // Function to modify the input value according to different mathematic modes. Choose the mathematical function in config.h as modFunc
     void _modifierFunction();
 
-    void _helper_PrintConfig(const float posval, const float negval, const boolean printComma, const char *prefix, const uint8_t precision);
+    void _helper_PrintConfig(const float posval, const float negval, const boolean printcomma, const char *prefix, const uint8_t precision, const int8_t minwidth = -1);
 
     const char *_name;  // The name of the velocity parameter
     int16_t _value = 0; // The value of the velocity

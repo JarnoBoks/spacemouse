@@ -6,14 +6,15 @@
 /// @brief Command list for the serial interface. The commands are stored in program memory to save RAM space.
 
 // Commands without parameters/values (1 word)
-static const char CMD_IDLE[] PROGMEM = "IDLE";
 static const char CMD_SHOW[] PROGMEM = "SHOW";
-static const char CMD_MINMAX[] PROGMEM = "MINMAX";
+static const char CMD_DEADZONE[] PROGMEM = "DEADZONE"; // TODO - With or without value The value we want to set for the deadzone. [0..255] ! Boundaries are inclusive, set in config.h
+// static const char CMD_IDLE[] PROGMEM = "IDLE";     // Calibrate the idle position of the spacemouse
+static const char CMD_MINMAX[] PROGMEM = "MINMAX"; // TODO - With or without value Show the min/max values of the spacemouse
 
 // Command with an integer value (2 words)
-static const char CMD_DEBUG[] PROGMEM = "DEBUG";     // The debug level we want to set. [-1..7]
+static const char CMD_DEBUG[] PROGMEM = "DEBUG";     // The debug level we want to set.
 static const char CMD_MODFUNC[] PROGMEM = "MODFUNC"; // The modulation function we want to set. [0..4] ! Boundaries are inclusive, set in kinematics.h
-static const char CMD_DEADZONE[] PROGMEM = "DZ";     // The value we want to set for the deadzone. [0..255] ! Boundaries are inclusive, set in config.h
+
 // static const char PARAM_MINMAX_AUTO[] PROGMEM = "AUTO"; // The parameter for the minmax command.
 
 // Command with a parameter and a value (3 words)
@@ -40,7 +41,7 @@ bool isWordEmpty(const char *str, const char *errorMsg);
 bool convertWordNumber(const char *str, long *n, const char *errorMsg);
 bool convertWordFloat(const char *str, float *const &f, const char *errorMsg);
 
-void alignValue(int value);
+void alignValue(const int value, const uint8_t width = 4); // Align the value to the right with spaces
 
 #endif // TEXT_H
        // vim: set ts=4 sw=4 et:

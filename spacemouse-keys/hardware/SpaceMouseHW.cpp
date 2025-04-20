@@ -328,7 +328,7 @@ bool SpaceMouseHW_::_busyZeroing(zeroing_t *params, uint16_t numIterations) {
 
 void SpaceMouseHW_::PrintMinMax() {
 
-    Serial.println(F("####    Min |  Max | Range | Warning"));
+    Serial.println(F("        Min |  Max | Range | Warning"));
 
     for (uint8_t i = 0; i < NUM_SENSORS; i++) {
         int workingRange = abs(_minVals[i]) + abs(_maxVals[i]);
@@ -336,15 +336,15 @@ void SpaceMouseHW_::PrintMinMax() {
         // Print the value of the min, max and working range for each sensor
         Serial.print(_axisNames[i]);
         Serial.print(F(":  "));
-        alignValue(_minVals[i]);
+        alignValue(_minVals[i], 4);
         Serial.print(_minVals[i]);
         Serial.print(F(" | "));
-        alignValue(_maxVals[i]);
+        alignValue(_maxVals[i], 4);
         Serial.print(_maxVals[i]);
-        Serial.print(F(" |  "));
-        alignValue(workingRange);
-        Serial.print(workingRange);
         Serial.print(F(" | "));
+        alignValue(workingRange, 4);
+        Serial.print(workingRange);
+        Serial.print(F("  | "));
 
         // Check if the min or max values are below the warning threshold
         bool isWarning = false;
@@ -392,42 +392,45 @@ void SpaceMouseHW_::PrintMinMax() {
 void SpaceMouseHW_::_printZeroedValue(zeroing_t *params, const char *axisname, int i) {
     // Write the header if processing the first sensor
     if (i == 0) {
-        Serial.println(F("####  Min  - Mean - Max  -> Dead Zone"));
+        Serial.println(F("\n#####  Min - Mean -  Max -> Deadzone"));
     }
 
     // Print the axis name and the values to the serial interface
     // Using a formatted string: %4.4s  %4.4d - %4.4d - %4.4d -> %d
     Serial.print(axisname);
-    alignValue(params->minValue[i]);
+    Serial.print(F(": "));
+    alignValue(params->minValue[i], 4);
     Serial.print(params->minValue[i]);
     Serial.print(F(" - "));
-    alignValue(_centerPoints[i]);
+    alignValue(_centerPoints[i], 4);
     Serial.print(_centerPoints[i]);
     Serial.print(F(" - "));
-    alignValue(params->maxValue[i]);
+    alignValue(params->maxValue[i], 4);
     Serial.print(params->maxValue[i]);
     Serial.print(F(" -> "));
-    alignValue(params->deadZone[i]);
+    alignValue(params->deadZone[i], 4);
     Serial.print(params->deadZone[i]);
+    Serial.print(F("   "));
 
     // Warn if the centrePoint is outside the normal deadzone (ie. the readings vary too much)
     if (params->deadZone[i] > DEADZONEWARNING) {
-        Serial.print(F(" !! Did axis move?"));
+        Serial.print(F("!! Did axis move?"));
     }
 
     // Warn if the centerpoint is outside the normal centerpoint range (ie. the joystick is physically not centered)
     if (_centerPoints[i] < _warningCenterpointMin || _centerPoints[i] > _warningCenterpointMax) {
-        Serial.print(F("  !! Is axis in idle position?"));
+        Serial.print(F("!! Is axis in idle position?"));
     }
     Serial.println("");
 
     // Write the closure if processing the last sensor
     if (i == (NUM_SENSORS - 1)) {
 
-        Serial.println(F("Using mean as zero."));
+        Serial.println(F("Using mean as centerpoint."));
 
-        Serial.print(F("Calibration suggestion: 'DEADZONE '"));
-        Serial.println(params->maxDeadZone);
+        Serial.print(F("Calibration suggestion: 'DEADZONE "));
+        Serial.print(params->maxDeadZone);
+        Serial.println(F("'"));
 
         Serial.print(F("("));
         Serial.print((int)(millis() - _startMillis));
@@ -457,29 +460,31 @@ void SpaceMouseHW_::_printArray(int arr[], int size) {
 
 /**
  * @brief Output the axisname and the value to the serial interface.
- * @param axisname
- * @param val
+ * @param index
+ * @param value
+ * @param alignmentWidth
+ * @details The alignmentWidth is used to align the output of the values in the serial monitor.
  */
-void SpaceMouseHW_::_printValue(const char *axisname, int val) {
-    Serial.print(axisname);
-    if (val < 1000) {
-        Serial.print(F(":0"));
-    } else {
-        Serial.print(F(":"));
+void SpaceMouseHW_::_printValue(const uint8_t index, const int value, const uint8_t alignmentWidth) {
+    if (index > 0) {
+        Serial.print(F(", "));
     }
-    Serial.print(val);
+    Serial.print(_axisNames[index]);
+    Serial.print(F(":"));
+    alignValue(value, alignmentWidth);
+    Serial.print(value);
 }
 
 void SpaceMouseHW_::PrintRawReads() {
     // Report back 0-1023 raw ADC 10-bit values if enabled
     for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-        _printValue(_axisNames[i], _rawReads[i]);
+        _printValue(i, _rawReads[i]);
     }
 }
 
 void SpaceMouseHW_::PrintCentered() {
     // Report back values for sensor axis after centering and mapping
     for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-        _printValue(_axisNames[i], centered[i]);
+        _printValue(i, centered[i], 2);
     }
 }

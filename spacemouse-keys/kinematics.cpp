@@ -191,12 +191,33 @@ boolean Kinematics::GetAxisInvert(enumAxis_t axis) {
     }
 }
 
+#if 0
+void _printSeparator(int8_t lspaces, int8_t rspaces) {
+    for (int i = 0; i < lspaces; i++) {
+        Serial.print(F(" "));
+    }
+    Serial.print(F("|"));
+    for (int i = 0; i < rspaces; i++) {
+        Serial.print(F(" "));
+    }
+}
+#endif
 /**
  * @brief Output the configuration of all axis to the Serial Monitor.
  */
 void Kinematics::PrintAxisConfigurations() {
-    Serial.println(F("Axis configurations: (IFxx: [Normal: 1, Invert: -1])")); // 68 bytes
+#if 0
+    _printSeparator(2, 2);
+    Serial.print(F("Sens"));
+    _printSeparator(2, 2);
+    Serial.print(F("Gate"));
+    _printSeparator(2, 2);
+    Serial.print(F("Modfunc"));
+    _printSeparator(2, 2);
+    Serial.println(F("Invert"));
+#endif
 
+    Serial.println(F("\nSensitivity          | Gate               | ModFunc          | Invert"));
     for (uint8_t i = 0; i < enumAxis_t::LENGTH; i++) {
         // Print the sensitivity values for each velocity axis
         _AxesConfigurations[i]->PrintConfig();

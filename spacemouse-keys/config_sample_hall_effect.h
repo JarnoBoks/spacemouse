@@ -32,9 +32,9 @@ Important: If the version number is changed, all stored calibration parameters w
 /* Debugging Instructions
 =========================
 To activate one of the following debugging modes, you can either:
-- Change STARTDEBUG here in config.h and compile & upload again, or
+- Change the STARTDEBUG value below and compile & upload again, or
 - Compile and upload your program. Change to the serial monitor and type
-   DEBUG x  where x is the number of the debug mode and hit ENTER to select the debug mode.
+   DEBUG <value> , using the number of the debug modes as described below and hit <ENTER>.
 
 Debug Modes:
 ------------
@@ -42,17 +42,18 @@ Debug Modes:
 
  0:  Nothing...
 
- 1:  Report raw sensor values.
-     The values are inverted if configured in the INVERTLIST. This is the first step to calibrate the spacemouse.
-     You can check if the sensors are wired correctly and if they are working.
+ 1:  Report raw values for the sensors and the keys.
+     The sensor values are inverted if configured in the INVERTLIST. The key values are the raw readings at the input pins (0 or 1).
+     The key values are not debounced and are not filtered, and due to the active low nature of the keys 1 means the key is not pressed and 0
+     that the key is pressed. The raw output is helpful in calibrating the space mouse. You can check if the sensors are wired correctly and if they are working.
 
      Joystick:    The values should be approximately 0-1023.
      Hall Effect: The values should be approximately 0-1023.   //TODO - check if this is correct for the HES sensors
 
-     // TODO - Show idlePostions for each sensor. The values should be approximately 0-1023.
+     // TODO - Show idlePositions for each sensor. The values should be approximately 0-1023.
 
  2:  Report centered values.
-     When the space mouse is started the knob should be in the idle position. The sensors are read mulitple
+     When the space mouse is started the knob should be in the idle position. The sensors are read multiple
      times and the mean idle value is calculated and stored. The centered values reported in this debug mode are the
      difference between the raw values and the mean idle value.
 
@@ -150,69 +151,107 @@ If you have mounted the magnets upside-down, the values will be inverted.
     {0, 0, 0, 0, 0, 0, 0, 0}
 // HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9
 
-/* Second calibration: Tune Deadzone
-====================================
-Deadzone to filter out unintended movements. Increase if the space mouse has small movements when it should be idle or
-the mouse is too sensitive to subtle movements.
+/* Second calibration: Tune deadzone   (command: DEADZONE | DEADZONE <value>)
+==============================================================================
+The Hardware deadzone is used to filter out unintended movements. Increase the deadzone if the space mouse has small movements when it should be idle or
+when the mouse is too sensitive to subtle movements. On the other hand a small deadzone is recommended to allow full range of motion. There are two ways to calibrate the deadzone:
 
-Semi-automatic: Set debug = 11. Don't touch the mouse and observe the automatic output.
+Semi-automatic: Use the command "DZ" (without a value) in the serial monitor. The command will automatically calculate the deadzone based on the current sensor values.
+                Don't touch the mouse and observe the automatic output and the suggested value for the deadzone. Use the command "DZ <value>" to set the deadzone and store it.
+                Alternatively, you can apply the suggested value to one of the DEADZONE variables below.
+
 Manual:         Set debug = 2.  Don't touch the mouse but observe the values. They should be nearly to zero.
                                 Every value around zero which is noise or should be neglected afterwards is in the following deadzone.
+
+Expected outcome:
+   Joystick:    The joystick is less prone to unintended movements. Deadzone is expected to be around 2-5
+   Hall Effect: The sensor are more sensitive due to magnetic environmental influences. Deadzone is expected to be around 7-15
+
 */
-#define DEADZONE 15 // Recommended to have this as small as possible to allow full range of motion.
+// TODO - These values are not used yet. Have to be implemented in the hardware library.
+#define JOYSTICK_DEFAULT_DEADZONE 3    // !! Adjust this value if you use the joystick sensor version. This is the deadzone for the joystick hardware.
+#define HALLEFFECT_DEFAULT_DEADZONE 10 // !! Adjust this value if you use the HALL sensor version. Only effects the defaults for the Hall Effect hardware
 
-/* Third calibration: Getting MIN and MAX values
-================================================
-Can be done manual (debug = 2) or semi-automatic (debug = 20)
+/* Third calibration: Getting MIN and MAX values   (command: MINMAX | MINMAX <+|-><axisname> <value>)
+=====================================================================================================
+Can be done automatic, semi-automatic or manual
 
-Semi-automatic (debug=20)
-------------------------
-1. Compile the sketch and upload it.
-2. Go to the serial monitor type 20 and hit enter. -> debug is set to 20.
-3. Move the Spacemouse around for 15s to get a min and max value.
-// TODO - minMax are different for the HES sensors
-4. Verify, that the minimums are around -400 to -520 and the maxVals around +400 to +520.
-   (repeat or check again, if you have too small values!)
-5. Copy the output from the console into your config.h below.
+The command "SHOW" will show the current values in the serial monitor.
+The command "MINMAX 1" will store the values in the EEPROM. The command "MINMAX 0" will not store the values in the EEPROM.
 
-Manual min/max calibration (debug = 2)
---------------------------------------
-Recommended calibration procedure for min/max ADC levels
-1. Compile the sketch and upload it. Go to the serial monitor type 2 and hit enter. -> debug is set to 2.
-2. Get a piece of paper and write the following chart:
+Semi-automatic (command: MINMAX)
+--------------------------------
+1. In the Serial monitor type the command "MINMAX" and hit ENTER.
+2. Move the Spacemouse around for 15s to record the minimum and maximum values for each sensor.
+3. Verify if there are any warnings for the Min, Max or Range. Check if your hardware is working correctly and/or retry the calibration.
+   For the joystick sensors, the values should be approximately -400 to +400 and the maxVals around +400 to +400.
+   For the HES sensors, the values should be approximately -400 to -520 and the maxVals around +400 to +520.
+4. When satisfied you can enter the values into the config.h file below or enter them one by one using the manual commands as described below.
+
+Automatic (command: MINMAX 1)
+-----------------------------
+1. In the Serial monitor type the command "MINMAX 1" and hit ENTER.
+2. Move the Spacemouse around for 15s to record the minimum and maximum values for each sensor.
+3. The results are shown and the values are stored in the EEPROM.
+3. Verify if there are any warnings for the Min, Max or Range. Check if your hardware is working correctly and/or retry the calibration.
+   For the joystick sensors, the values should be approximately -400 to +400 and the maxVals around +400 to +400.
+   For the HES sensors, the values should be approximately -400 to -520 and the maxVals around +400 to +520.
+4. When satisfied you can enter the values into the config.h file below or enter them one by one using the manual commands as described below.
+// TODO - Do not store the values if there are too many warnings
+
+Manual min/max calibration (command: DEBUG 2)
+---------------------------------------------
+1. Compile the sketch and upload it. Go to the Serial monitor type the command "DEBUG 2" and hit ENTER.
+2. Get a piece of paper and write downn the following chart:
+
  Chart:
- maxVals      | minVals
--------------------------------
- HES0+:         | HES0-:
- HES1+:         | HES1-:
- HES2+:         | HES2-:
- HES3+:         | HES3-:
- HES6+:         | HES6-:
- HES7+:         | HES7-:
- HES8+:         | HES8-:
- HES9+:         | HES9-:
+      maxVals          |     minVals
+-------------------------------------------------
+| +AX / +HES0:         | -AX / -HES0:           |
+| +AY / +HES1:         | -AX / -HES1:           |
+| +BX / +HES2:         | -BX / -HES2:           |
+| +BY / +HES3:         | -BY / -HES3:           |
+| +CX / +HES6:         | -CX / -HES6:           |
+| +CY / +HES7:         | -CY / -HES7:           |
+| +DX / +HES8:         | -DX / -HES8:           |
+| +DY / +HES9:         | -DY / -HES9:           |
 
-3. (a) Start out with HES0 (positive Values)
-   (b) Start moving the your Spacemouse and try increasing the Value of HES0 till you can't get a higher value out of it.
-   (c) this is your positive maximum value for HES0 so write it down for HES0
-4. Do the same for HES1,HES2,HES3,....HES9
+
+3. (a) Start out with AX+ / HES0+ (positive Values)
+   (b) Start moving the your Spacemouse and try increasing the value of this sesnor till you can't get a higher value out of it.
+   (c) this is your positive maximum value for AX+ / HES0 so write it down for HES0
+4. Do the same for all the other sensors
 5. Do the same for your negative Values to populate the minVals
 6. Write all the positive Values starting from the top into the Array maxValues
 7. Write all the negative Values starting from the top into the Array minValues
-8. You finished calibrating.
+8. You finished calibrating the min and max settings of the hardware.
 
-Auto calibration:
-Command MINMAX               - Calibrate the min and max values of the sensors by moving the spacemouse around for 15s. But not storing the values in the EEPROM.
-Command MINMAX 1             - Calibrate the min and max values of the sensors by moving the spacemouse around for 15s and store the values in the EEPROM.
-Command MINMAX HES0+ <value> - Set the max value for HES0 to <value>.
-Command MINMAX HES0- <value> - Set the min value for HES0 to <value>.
+To store the values for single sensors in the EEPROM, you can use the command "MINMAX <+|-><sensorname> <value>".
+   <+|->        - The sign of the value. + for max, - for min
+   <sensorname> - The name of the sensor. The name of the sensor is the same as in the chart above.
+   <value>      - The value to set for the sensor.
+
+Examples:
+   To set the max value for HES0 to 1000, you can use the command "MINMAX +HES0 1000".
+   To set the min value for DY to -350, you can use the command "MINMAX -HES0 -350".
 
 
+Insert measured Values like this:
 
-Insert measured Values like this: {HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9}
+   Joystick:       { AX, AY, BX, BY, CX, CY, DX, DY}
+   Hall sensors:   { HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9}
 */
-#define MINVALS {-400, -400, -400, -400, -400, -400, -400, -400}
-#define MAXVALS {+175, +175, +175, +175, +175, +175, +175, +175}
+// #define MINVALS  {-400, -400, -400, -400, -400, -400, -400, -400}
+// #define MAXVALS  {+175, +175, +175, +175, +175, +175, +175, +175}
+
+// ------_______------_______------_______------_______------_______------_______------_______------_______------_______------_______------
+
+/**
+ *
+ *    Sensor calibration is finished. The spacemouse is now calibrated to transform the normalized sensor readings to raw translation & rotation values.
+ *    In the next phase of the calibration we can finetune this transformation, by adjusting the sensitivity of the translation and rotation values.
+ *
+ */
 
 /* Fourth calibration: Sensitivity
 ==================================

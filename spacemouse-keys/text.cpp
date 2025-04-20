@@ -51,8 +51,8 @@ bool convertWordFloat(const char *str, float *const &f, const char *errorMsg) {
     return true; // Valid number
 }
 
-void alignValue(int value) {
-    uint8_t spaces = 3;
+void alignValue(const int value, const uint8_t width) {
+    int8_t spaces = width - 1;
     if (value < 0) {
         spaces--; // Remove a space to compensate for the sign
     }
@@ -62,7 +62,7 @@ void alignValue(int value) {
     if (abs(value) > 9) {
         spaces--; // Remove a space to compensatie for the 1st digit
     }
-    for (uint8_t i = 0; i < spaces; i++) {
+    for (int8_t i = 0; i < spaces; i++) {
         Serial.print(F(" ")); // Add spaces to align the output
     }
 }

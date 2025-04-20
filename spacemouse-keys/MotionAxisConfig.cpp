@@ -105,7 +105,7 @@ void MotionAxisConfig::SetVelocity(int16_t value) {
 void MotionAxisConfig::PrintVelocity() {
     Serial.print(_name);   // Print the axis name (e.g. TX, TY, TZ, RX, RY, RZ)
     Serial.print(F(": ")); // Add a space between the axis name and the value
-    alignValue(_value);    // Align the value to the right with spaces
+    alignValue(_value, 4); // Align the value to the right with spaces
     Serial.print(_value);  // Print the velocity value (value is never wider than 4 positions)
     Serial.print(F(" "));  // Add a space after the value
 }
@@ -189,23 +189,30 @@ int8_t MotionAxisConfig::GetInvert() {
 #define FMT_NOCOMMA false
 #define FMT_COMMA true
 #define NO_PREFIX ""
-#define NO_SIGN ""
+#define NO_SIGN " "
 #define TWO_DECIMALS 2
 #define ONE_DECIMAL 1
 #define NO_DECIMALS 0
 
-void _helper_PrintItem(const boolean printComma, const char *prefix, const char *name, const char *sign) {
-    if (printComma) {
-        Serial.print(F(", ")); // Add a comma if needed
-    }
-    if (prefix[0] != '\0') {
-        Serial.print(prefix); // Print the prefix (G, M, IF, " ")
-    }
-    Serial.print(name); // Add the axis name
-    if (sign[0] != '\0') {
-        Serial.print(sign); // Add the sign
-    }
-    Serial.print(F(": ")); // Add a space between the prefix and the value
+/**
+ * @brief
+ * @param separator
+ * @param prefix
+ * @param name
+ * @param sign
+ * @return size_t The number of characters printed.
+ */
+size_t _helper_PrintItem(const char *separator, const char *prefix, const char *name, const char *sign) {
+    //  size_t len = strlen(name); // Get the length of the axis name
+    size_t nc = 0;
+
+    nc += Serial.print(separator); // Print the separator (pipe, comma or space) before the axis name
+    nc += Serial.print(prefix);    // Add the prefix (e.g. G, M, IF) if needed
+    nc += Serial.print(name);      // Add the axis name
+    nc += Serial.print(sign);      // Add the sign
+    nc += Serial.print(F(": "));
+
+    return nc; // Return the number of characters printed
 }
 
 /**
@@ -216,22 +223,33 @@ void _helper_PrintItem(const boolean printComma, const char *prefix, const char 
  * @param prefix The prefix to use in the output (ie. none, G, M, IF).
  * @param precision The number of decimal places to print.
  */
-void MotionAxisConfig::_helper_PrintConfig(const float posval, const float negval, const boolean printComma, const char *prefix, const uint8_t precision) {
+void MotionAxisConfig::_helper_PrintConfig(const float posval, const float negval, const boolean printcomma, const char *prefix, const uint8_t precision, const int8_t minwidth) {
+    size_t nc = 0;                                    // Number of characters printed
+    const char *separator = (printcomma) ? "| " : ""; // Separator for the output
+
     //  Print the positive value
     if (posval == negval) {
-        _helper_PrintItem(printComma, prefix, _name, NO_SIGN); // No comma needed
+        nc += _helper_PrintItem(separator, prefix, _name, NO_SIGN); // No comma needed
     } else {
         // Otherwise we print the name , without a prefix, but with a "+"
-        _helper_PrintItem(printComma, prefix, _name, "+"); // No comma needed
+        nc += _helper_PrintItem(separator, prefix, _name, "+"); // No comma needed
     }
-    Serial.print(posval, precision);
+    nc += Serial.print(posval, precision);
 
     // If the positive sensititivity is not equal to the negative sensitivity, we have to print the negative sensitivity too.
+    // Printing the negative value allways gets preceded by a comma.
     if (posval != negval) {
-        // Serial.print(printBuffer);
-        _helper_PrintItem(FMT_COMMA, prefix, _name, "-");
+        nc += _helper_PrintItem(", ", prefix, _name, "-");
         // Print the negative value
-        Serial.print(negval, precision);
+        nc += Serial.print(negval, precision);
+    }
+
+    // If alignment is needed, add spaces to the output until the minimum width is reached.
+    if (minwidth > 0) {
+        while (nc < (uint8_t)minwidth) {
+            Serial.print(F(" "));
+            nc++;
+        }
     }
 }
 
@@ -240,17 +258,18 @@ void MotionAxisConfig::_helper_PrintConfig(const float posval, const float negva
  * @details This function prints the configuration of the axis to the serial port.
  */
 void MotionAxisConfig::PrintConfig() {
+
     // Print the sensitivity
-    _helper_PrintConfig(_config.pos_sensitivity, _config.neg_sensitivity, FMT_NOCOMMA, NO_PREFIX, TWO_DECIMALS);
+    _helper_PrintConfig(_config.pos_sensitivity, _config.neg_sensitivity, FMT_NOCOMMA, NO_PREFIX, TWO_DECIMALS, 21);
 
     // Print the gate
-    _helper_PrintConfig(_config.pos_gate, _config.neg_gate, FMT_COMMA, "G", NO_DECIMALS);
+    _helper_PrintConfig(_config.pos_gate, _config.neg_gate, FMT_COMMA, "G", NO_DECIMALS, 21);
 
     // Print the modfunc
-    _helper_PrintConfig(_config.pos_modfunc, _config.neg_modfunc, FMT_COMMA, "M", NO_DECIMALS);
+    _helper_PrintConfig(_config.pos_modfunc, _config.neg_modfunc, FMT_COMMA, "M", NO_DECIMALS, 19);
 
     // Print the inversion
-    _helper_PrintConfig(_config.invert, _config.invert, FMT_COMMA, "IF", NO_DECIMALS);
+    _helper_PrintConfig(_config.invert, _config.invert, FMT_COMMA, "I", NO_DECIMALS, -1);
 }
 
 /**

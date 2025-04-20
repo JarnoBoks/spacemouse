@@ -51,8 +51,6 @@ enum class statemachineMinMaxCal_t {
 
 /**
  * @brief Class to abstract from used hardware
- *
- *
  */
 class SpaceMouseHW_ {
 public:
@@ -90,7 +88,7 @@ protected:
 private:
     // -- Output to serial interface
     void _printZeroedValue(zeroing_t *params, const char *axisname, int i);
-    void _printValue(const char *axisname, int value);
+    void _printValue(const uint8_t index, const int value, const uint8_t alignmentWidth = 4);
     void _printArray(int arr[], int size);
 
     // --- Calibrations
@@ -113,6 +111,7 @@ private:
 
     /// @brief Value that is used to determine the deadzone of the spacemouse.
     ///        If a centered sensor reading is smaller than the deadzone, the reading is neglected and set to zero.
+    ///        Value is set in config.h (JOYSTICK_DEFAULT_DEADZONE or HALL_DEFAULT_DEADZONE)
     uint8_t _deadzone = 0;
 
     /// @brief  Arrays containing the configured min- and max values of the spacemouse.

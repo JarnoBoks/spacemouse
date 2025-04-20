@@ -143,6 +143,14 @@ Recommended calibration procedure for min/max ADC levels
 7. Write all the negative Values starting from the top into the Array minValues
 8. You finished calibrating.
 
+Auto calibration:
+Command MINMAX               - Calibrate the min and max values of the sensors by moving the spacemouse around for 15s. But not storing the values in the EEPROM.
+Command MINMAX 1             - Calibrate the min and max values of the sensors by moving the spacemouse around for 15s and store the values in the EEPROM.
+Command MINMAX HES0+ <value> - Set the max value for HES0 to <value>.
+Command MINMAX HES0- <value> - Set the min value for HES0 to <value>.
+
+
+
 Insert measured Values like this: {HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9}
 */
 #define MINVALS {-400, -400, -400, -400, -400, -400, -400, -400}

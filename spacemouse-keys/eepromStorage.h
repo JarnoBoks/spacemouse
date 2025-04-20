@@ -37,6 +37,12 @@ constexpr int EEPROM_ADDRESS_CFG_RZ_END = EEPROM_ADDRESS_CFG_RZ + sizeof(Velocit
 constexpr int EEPROM_ADDRESS_DEADZONE = EEPROM_ADDRESS_CFG_RZ_END;                     // Start address for the deadzone
 constexpr int EEPROM_ADDRESS_DEADZONE_END = EEPROM_ADDRESS_DEADZONE + sizeof(uint8_t); // End address for the deadzone function
 
+constexpr int EEPROM_ADDRESS_MINVALS = EEPROM_ADDRESS_DEADZONE_END;                              // Start address for the _minVals of the sensors.
+constexpr int EEPROM_ADDRESS_MINVALS_END = EEPROM_ADDRESS_MINVALS + (NUM_SENSORS * sizeof(int)); // End address for the _minVals of the sensors.
+
+constexpr int EEPROM_ADDRESS_MAXVALS = EEPROM_ADDRESS_MINVALS_END;                               // Start address for the _maxVals of the sensors.
+constexpr int EEPROM_ADDRESS_MAXVALS_END = EEPROM_ADDRESS_MAXVALS + (NUM_SENSORS * sizeof(int)); // End address for the _maxVals of the sensors.
+
 bool isFirstRun(); // Check if the EEPROM is initialized
 
 #endif // EEPROMSTORAGE_h

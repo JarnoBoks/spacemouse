@@ -197,7 +197,10 @@ int8_t Calibration::_handleOneWord(char *words[]) {
         _SMKIN->PrintTransRotInversions(true);
         _SMKIN->PrintModulationFunction(true);
 #endif
+        Serial.println(F("\nHardware configuration"));
+
         _SMHW->PrintDeadzone();
+        _SMHW->PrintMinMax();
 
         // --------------- IDLE ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_IDLE) == 0) {
@@ -208,8 +211,7 @@ int8_t Calibration::_handleOneWord(char *words[]) {
         // --------------- MINMAX ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_MINMAX) == 0) {
         // Calibrate Idle position
-        Serial.println(F("Calibrating Min & Max"));
-        _SMHW->CalibrateMinMax(); // Call the function to start the min/max calibration
+        _SMHW->CalibrateMinMax(); // Call the function to start the min/max calibration without storing the values in EEPROM
 
         // --------------- SENS ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_SENS) == 0) {
@@ -281,6 +283,10 @@ int8_t Calibration::_handleTwoWords(char *words[]) {
         Serial.print(F("Deadzone -> "));
         Serial.println(value);
         _SMHW->SetDeadzone(value); // Call the function to set the deadzone
+        // --------------- DEADZONE x ----------------------------------------------------
+    } else if (strcmp_P(words[0], CMD_MINMAX) == 0) {
+        // Call the function to start the min/max calibration and store the values in EEPROM if value is 1, otherwise do not store the values in EEPROM
+        _SMHW->CalibrateMinMax((value == 1));
     } else {
         Serial.println(CF(Error_CommandUnkown));
         return -1; // Unknown command

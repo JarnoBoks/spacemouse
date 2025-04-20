@@ -34,7 +34,6 @@ Kinematics::Kinematics(SpaceMouseHW_ &Mouse_Hardware, bool firstrun) : _SMHW(&Mo
     }
 
     // Read modFunc from EEPROM, use the default configured value if the byte is not set.
-    // eeModFunc >> _modFunc;
     if (firstrun) {
         // If this is the first run, we need to set the default values for the velocities.
         // The default values are defined in config.h and are used if the EEPROM is not set yet.

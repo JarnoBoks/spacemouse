@@ -14,6 +14,7 @@ static const char CMD_MINMAX[] PROGMEM = "MINMAX";
 static const char CMD_DEBUG[] PROGMEM = "DEBUG";     // The debug level we want to set. [-1..7]
 static const char CMD_MODFUNC[] PROGMEM = "MODFUNC"; // The modulation function we want to set. [0..4] ! Boundaries are inclusive, set in kinematics.h
 static const char CMD_DEADZONE[] PROGMEM = "DZ";     // The value we want to set for the deadzone. [0..255] ! Boundaries are inclusive, set in config.h
+// static const char PARAM_MINMAX_AUTO[] PROGMEM = "AUTO"; // The parameter for the minmax command.
 
 // Command with a parameter and a value (3 words)
 static const char CMD_INVERT[] PROGMEM = "INVERT"; // The axis we want to invert. [0..5] ! Boundaries are inclusive, set in kinematics.h

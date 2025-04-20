@@ -41,6 +41,14 @@ struct HWDefaults_t {
 };
 #endif
 
+enum class statemachineMinMaxCal_t {
+    START = 0,
+    MEASURING,
+    RESULTS,
+    IDLE,
+    LENGTH // Number of states
+};
+
 /**
  * @brief Class to abstract from used hardware
  *
@@ -56,14 +64,14 @@ public:
     void CenterSensors();
     void FilterAnalogReadOuts();
 
-    void CalibrateMinMax();
+    void CalibrateMinMax(boolean storeResults = false);
     void ProcessCalcMinMax();
 
-    virtual void PrintRawReads();
-    virtual void PrintCentered();
+    void PrintRawReads();
+    void PrintCentered();
+    void PrintMinMax();
     void PrintDeadzone();
 
-    // --- Implemented by Derived Hardware Classes
     virtual void SetAnalogReferenceVoltage(int debug) = 0;
     virtual void CalculateKinematicSensors(int16_t *velocities) = 0;
 
@@ -87,7 +95,7 @@ private:
     // --- Calibrations
     bool _busyZeroing(zeroing_t *params, uint16_t numIterations);
 
-    /// @brief Array containing the names of each Axis.
+    /// @brief Array containing the names of each sensoraxis.
     const char **_axisNames;
 
     /// @brief  Array containing ADC pin configuration for the sensors.
@@ -113,7 +121,8 @@ private:
     int _minVals[NUM_SENSORS];
 
     /// @brief Contains the state of the statemachine servicing the minmax calibration.
-    uint8_t _minMaxCalcState = 3;
+    statemachineMinMaxCal_t _minMaxCalcState = statemachineMinMaxCal_t::IDLE;
+    boolean _storeCalibrationResults = false; // Flag to indicate if the MinMax calibration results will be stored in the EEPROM
 
     /// @brief Used for tracking the starttime of the calibration procedure (used for Zeroing & minmaxCalibration)
     unsigned int long _startMillis = 0;

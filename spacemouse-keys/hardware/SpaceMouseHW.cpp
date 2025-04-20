@@ -24,8 +24,15 @@ SpaceMouseHW_::SpaceMouseHW_(const int warnCpntMin, const int warnCpntMax, const
       _warningMinMaxMaximum(warnMMMax),
       _warningMinMaxRange(warnMMRange) {
 
-    // Read Deadzone from EEPROM, use the default (configured) value if the byte is not set.
-    EEPROM.get(EEPROM_ADDRESS_DEADZONE, _deadzone);
+    bool firstBoot = isFirstRun(); // Check if this is the first run of the program
+    if (!firstBoot) {
+        // Read Deadzone from EEPROM, use the default (configured) value if the byte is not set.
+        EEPROM.get(EEPROM_ADDRESS_DEADZONE, _deadzone);
+
+        // Read min/max values from EEPROM, use the default (configured) values if the bytes are not set.
+        EEPROM.get(EEPROM_ADDRESS_MINVALS, _minVals);
+        EEPROM.get(EEPROM_ADDRESS_MAXVALS, _maxVals);
+    }
 }
 
 SpaceMouseHW_::~SpaceMouseHW_() {}
@@ -47,9 +54,20 @@ bool SpaceMouseHW_::BusyZeroing(uint16_t numIterations, boolean serialOutput) {
     return ret;
 }
 
-void SpaceMouseHW_::CalibrateMinMax() {
-    if (_minMaxCalcState == 3)
-        _minMaxCalcState = 0; // start the calibration process
+/**
+ * @brief Starts the calibration process for the min and max values of the sensors.
+ * @details The function will print the min and max values for each sensor to the serial monitor.
+ * If the storeResults flag is set to true, the min and max values will be stored in EEPROM.
+ * @param storeResults Flag to indicate if the results should be stored in EEPROM.
+ */
+void SpaceMouseHW_::CalibrateMinMax(boolean storeResults) {
+    _storeCalibrationResults = storeResults; // Set the flag to store the results in EEPROM
+
+    // Check if the calibration process is already running. If not, start the calibration process.
+    if (_minMaxCalcState == statemachineMinMaxCal_t::IDLE) {
+        Serial.println(F("Calibrating Min & Max"));
+        _minMaxCalcState = statemachineMinMaxCal_t::START; // start the calibration process
+    }
 }
 
 /**
@@ -64,20 +82,20 @@ void SpaceMouseHW_::CalibrateMinMax() {
  * The threshold values are defined in the config.h file.
  */
 void SpaceMouseHW_::ProcessCalcMinMax() {
-    if (_minMaxCalcState == 0) {
+    if (_minMaxCalcState == statemachineMinMaxCal_t::START) {
         delay(1000);
         // Initialize the arrays
         for (uint8_t i = 0; i < NUM_SENSORS; i++) {
             _minVals[i] = 1023; // Set the min value to the maximum possible value
             _maxVals[i] = 0;    // Set the max value to the minimum possible value
         }
-        _startMillis = millis(); // Record the current time
-        _minMaxCalcState = 1;    // next State: measure!
+        _startMillis = millis();                               // Record the current time
+        _minMaxCalcState = statemachineMinMaxCal_t::MEASURING; // next State: measure!
         Serial.print(F("Move the spacemouse for "));
         Serial.print(MINMAXDURATION);
         Serial.println(F(" sec."));
 
-    } else if (_minMaxCalcState == 1) {
+    } else if (_minMaxCalcState == statemachineMinMaxCal_t::MEASURING) {
         if (millis() - _startMillis < (MINMAXDURATION * 1000)) {
             for (uint8_t i = 0; i < NUM_SENSORS; i++) {
                 // Update the minimum and maximum values
@@ -90,51 +108,28 @@ void SpaceMouseHW_::ProcessCalcMinMax() {
             }
         } else {
             // 15s are over. Go to the next state and report via console.
-            Serial.println(F("\n\nFinished. Copy results to config.h: "));
-            _minMaxCalcState = 2;
+            Serial.println(F("\n\nFinished.\nResults: "));
+            _minMaxCalcState = statemachineMinMaxCal_t::RESULTS; // next State: results
         }
-    } else if (_minMaxCalcState == 2) {
-        Serial.print(F("#define MINVALS "));
-        _printArray(_minVals, NUM_SENSORS);
-        Serial.print(F("#define MAXVALS "));
-        _printArray(_maxVals, NUM_SENSORS);
+    } else if (_minMaxCalcState == statemachineMinMaxCal_t::RESULTS) {
 
-        // Calculate and print the working range for each sensor (JB: added for the HALL sensors, but this will function for the joysticks too)
-        int workingRanges[NUM_SENSORS];
-        int max = 0;
-        int min = 0;
-        for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-            workingRanges[i] = abs(_minVals[i]) + abs(_maxVals[i]);
-            max = (abs(_maxVals[i]) > max) ? abs(_maxVals[i]) : max;
-            min = (abs(_minVals[i]) > min) ? abs(_minVals[i]) : min;
+        PrintMinMax(); // Print the min and max values to the serial monitor
+
+        if (_storeCalibrationResults) {
+            Serial.println(F("Stored values in EEPROM."));
+
+#if 0
+            // Store the min and max values in EEPROM if the storeResults flag is set to true
+            for (uint8_t i = 0; i < NUM_SENSORS; i++) {
+                EEPROM.put(EEPROM_ADDRESS_MINVALS + (i * sizeof(int)), _minVals[i]);
+                EEPROM.put(EEPROM_ADDRESS_MAXVALS + (i * sizeof(int)), _maxVals[i]);
+            }
+#endif
+            EEPROM.put(EEPROM_ADDRESS_MINVALS, _minVals); // Store the min values in the EEPROM
+            EEPROM.put(EEPROM_ADDRESS_MAXVALS, _maxVals); // Store the max values in the EEPROM
         }
-        Serial.print(F("Ranges are: "));
-        _printArray(workingRanges, NUM_SENSORS);
-        int centerRange = (max + (min * -1)) / 2;
-        Serial.print(F("Center: "));
-        Serial.println(centerRange);
 
-        for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-            bool isWarning = false;
-
-            if (abs(_minVals[i]) < _warningMinMaxMinimum) {
-                Serial.print(F("Min "));
-                isWarning = true;
-            }
-            if (abs(_maxVals[i]) < _warningMinMaxMaximum) {
-                Serial.print(F("Max "));
-                isWarning = true;
-            }
-            if (workingRanges[i] < _warningMinMaxRange) {
-                Serial.print(F("Range "));
-                isWarning = true;
-            }
-            if (isWarning) {
-                Serial.print(_axisNames[i]);
-                Serial.print(F(" is small: "));
-            }
-        }
-        _minMaxCalcState = 3; // no further reporting
+        _minMaxCalcState = statemachineMinMaxCal_t::IDLE; // no further reporting
     }
 }
 
@@ -228,7 +223,7 @@ int8_t SpaceMouseHW_::SetDeadzone(uint8_t requestedDeadzone) {
  */
 void SpaceMouseHW_::PrintDeadzone() {
     // Print the deadzone value to the serial interface
-    Serial.println(F("Deadzone:"));
+    Serial.print(F("Deadzone: "));
     Serial.println(_deadzone);
 }
 
@@ -292,6 +287,60 @@ bool SpaceMouseHW_::_busyZeroing(zeroing_t *params, uint16_t numIterations) {
     } // for
 
     return noWarningsOccurred;
+}
+
+void SpaceMouseHW_::PrintMinMax() {
+
+    Serial.println(F("####    Min |  Max | Range | Warning"));
+
+    for (uint8_t i = 0; i < NUM_SENSORS; i++) {
+        int workingRange = abs(_minVals[i]) + abs(_maxVals[i]);
+
+        // Print the value of the min, max and working range for each sensor
+        Serial.print(_axisNames[i]);
+        Serial.print(F(":  "));
+        alignValue(_minVals[i]);
+        Serial.print(_minVals[i]);
+        Serial.print(F(" | "));
+        alignValue(_maxVals[i]);
+        Serial.print(_maxVals[i]);
+        Serial.print(F(" |  "));
+        alignValue(workingRange);
+        Serial.print(workingRange);
+        Serial.print(F(" | "));
+
+        // Check if the min or max values are below the warning threshold
+        bool isWarning = false;
+        bool isFirst = true;
+
+        if (abs(_minVals[i]) < _warningMinMaxMinimum) {
+            Serial.print(F("Min"));
+            isWarning = true;
+            isFirst = false;
+        }
+        if (abs(_maxVals[i]) < _warningMinMaxMaximum) {
+            if (!isFirst) {
+                Serial.print(F(", "));
+            }
+            Serial.print(F("Max"));
+            isWarning = true;
+            isFirst = false;
+        }
+        if (workingRange < _warningMinMaxRange) {
+            if (!isFirst) {
+                Serial.print(F(", "));
+            }
+            Serial.print(F("Range"));
+            isWarning = true;
+        }
+        if (isWarning) {
+            Serial.print(F(" small"));
+        } else {
+            Serial.print(F("ok"));
+        }
+
+        Serial.println();
+    }
 }
 
 /**

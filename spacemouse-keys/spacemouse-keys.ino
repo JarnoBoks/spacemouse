@@ -127,10 +127,12 @@ void loop() {
 
     // After centering the joystick/knob values, calibration of the min/max values can be executed.
     // The minmax calibration takes ~15 seconds and needs the loop() to continue running.
-    // When the calibration is started, the processCalcMinMax() function is called to registere the min and max values of the sensors.
-    Mouse_Hardware.ProcessCalcMinMax();
+    // When the calibration is started, the processCalcMinMax() function is called to register the
+    // min and max values of the sensors.
+    Mouse_Hardware.ProcessCalcMinMax(); // --> Only executed if MIN/MAX calibration is started.
 
-    // Report centered joystick/knob values if enabled. Values should be approx -500 to +500, jitter around 0 when the knob is in idle position.
+    // Report centered joystick/knob values if enabled. Values should be approx -500 to +500,
+    // jitter around 0 when the knob is in idle position.
     Mouse_Calibration.DebugOutputCentered();
 
     // The centered values are filtered for deadzone and mapped to the velocity range of -350 to +350.
@@ -138,9 +140,10 @@ void loop() {
     // The mapping is done to the velocity range of -350 to +350, which is the range of the HID interface
     Mouse_Hardware.FilterAnalogReadOuts();
 
+    // Report output after deadzone filtering and mapping is applied. Values should be approx -350 to +350,
     Mouse_Calibration.DebugOutputDeadzonedMapped();
 
-    // The mouse hardware is ready know and the kinematics can be calculated.
+    // The mouse hardware is finished, and the hardware can be translated to kinematics.
     // The kinematics are calculated based on the filtered values from the hardware.
     // The kinematics are the velocities of the mouse in the x, y and z direction and the rotation around the x, y and z axis.
     Mouse_Kinematics.CalculcateKinematic();
@@ -151,11 +154,13 @@ void loop() {
 #endif
 
 #if NUMKEYS > 0
+    // Check if the keys are pressed and report the status of the keys
+    // The keys are debounced and the status will be reported to the HID interface
     Keys->evalKeys();
 #endif
 
 #if ROTARY_KEYS > 0
-    // The encoder wheel shall be treated as a key
+    // The encoder wheel shall be treated as a key.
     calcEncoderAsKey(Keys, Mouse_Calibration.GetDebug());
 #endif
 
@@ -224,8 +229,10 @@ void loop() {
 } // end loop()
 
 #ifdef LEDpin
-/// @brief Turn on or off a simple led. The pin is defined by LEDpin in config.h. If the LED needs to be inverted, define LEDinvert in config.h
-/// @param light turn on or off
+/**
+ * @brief Turn on or off a simple led. The pin is defined by LEDpin in config.h. If the LED needs to be inverted, define LEDinvert in config.h
+ * @param light Turn led ON(true) or OFF(false)
+ */
 void lightSimpleLED(boolean light) {
 // Check for the LED state by calling updateLEDState.
 // This empties the USB input buffer and checks for the corresponding report.

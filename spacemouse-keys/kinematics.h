@@ -22,7 +22,7 @@ enum enumAxis_t {
 
 class Kinematics {
 public:
-    Kinematics(SpaceMouseHW_ &Mouse_Hardware, bool firstrun); // Constructor for Kinematics class
+    Kinematics(SpaceMouseHW_ &Mouse_Hardware); // Constructor for Kinematics class
     ~Kinematics();
 
     void CalculcateKinematic();

@@ -24,9 +24,6 @@
 // header file for the EEPROM storage
 #include "eepromStorage.h"
 
-// Check if the EEPROM is initialized. If not, save the default values to the EEPROM.
-bool firstRun = isFirstRun();
-
 // Initialize the hardware abstraction layer
 // The hardware abstraction layer is used to read the values from the hardware
 #ifdef HALLEFFECT
@@ -39,7 +36,7 @@ SpaceMouseHW_Joystick Mouse_Hardware = SpaceMouseHW_Joystick_();
 
 // Initialize the Kinematics object
 // The Kinematics object is used to calculate the kinematics of the mouse
-Kinematics Mouse_Kinematics = Kinematics(Mouse_Hardware, firstRun);
+Kinematics Mouse_Kinematics = Kinematics(Mouse_Hardware);
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
 // if an encoder wheel is used

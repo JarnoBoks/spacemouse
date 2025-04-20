@@ -43,6 +43,17 @@ constexpr int EEPROM_ADDRESS_MINVALS_END = EEPROM_ADDRESS_MINVALS + (NUM_SENSORS
 constexpr int EEPROM_ADDRESS_MAXVALS = EEPROM_ADDRESS_MINVALS_END;                               // Start address for the _maxVals of the sensors.
 constexpr int EEPROM_ADDRESS_MAXVALS_END = EEPROM_ADDRESS_MAXVALS + (NUM_SENSORS * sizeof(int)); // End address for the _maxVals of the sensors.
 
-bool isFirstRun(); // Check if the EEPROM is initialized
+/**
+ * @brief EEPROMStorage class for managing the EEPROM storage of the SpaceMouse configuration.
+ * @details This class provides methods to check if the EEPROM is initialized and to read/write data to/from the EEPROM.
+ */
+class EEPROMStorage {
+public:
+    static bool isFirstRun();  // Check if the EEPROM is initialized`
+    static void setupEEPROM(); // Initialize the EEPROM with default values
+private:
+    static boolean _firstrun;    // EEPROM state
+    static boolean _initialized; // EEPROM initialized state
+};
 
 #endif // EEPROMSTORAGE_h

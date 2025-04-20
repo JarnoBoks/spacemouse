@@ -24,14 +24,20 @@ SpaceMouseHW_::SpaceMouseHW_(const int warnCpntMin, const int warnCpntMax, const
       _warningMinMaxMaximum(warnMMMax),
       _warningMinMaxRange(warnMMRange) {
 
-    bool firstBoot = isFirstRun(); // Check if this is the first run of the program
-    if (!firstBoot) {
+    if (!EEPROMStorage::isFirstRun()) {
+        // If we are not in the first run, we can load the configuration from the EEPROM.
+
         // Read Deadzone from EEPROM, use the default (configured) value if the byte is not set.
         EEPROM.get(EEPROM_ADDRESS_DEADZONE, _deadzone);
 
         // Read min/max values from EEPROM, use the default (configured) values if the bytes are not set.
         EEPROM.get(EEPROM_ADDRESS_MINVALS, _minVals);
         EEPROM.get(EEPROM_ADDRESS_MAXVALS, _maxVals);
+    } else {
+        // Write the defaults to the EEPROM if this is the first run of the software.
+        EEPROM.put(EEPROM_ADDRESS_DEADZONE, _deadzone); // Store the deadzone in the EEPROM
+        EEPROM.put(EEPROM_ADDRESS_MINVALS, _minVals);   // Store the min values in the EEPROM
+        EEPROM.put(EEPROM_ADDRESS_MAXVALS, _maxVals);   // Store the max values in the EEPROM
     }
 }
 

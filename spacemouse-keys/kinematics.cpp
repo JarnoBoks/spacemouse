@@ -27,14 +27,14 @@
 #define NO_GATE 0
 #define SQUARED_TAN 3
 #define LINEAR 0
-Kinematics::Kinematics(SpaceMouseHW_ &Mouse_Hardware, bool firstrun) : _SMHW(&Mouse_Hardware) {
+Kinematics::Kinematics(SpaceMouseHW_ &Mouse_Hardware) : _SMHW(&Mouse_Hardware) {
     // Initialize velocities
     for (uint8_t idx = transX; idx != enumAxis_t::LENGTH; idx++) {
         _velocities[idx] = 0;
     }
 
     // Read modFunc from EEPROM, use the default configured value if the byte is not set.
-    if (firstrun) {
+    if (EEPROMStorage::isFirstRun()) {
         // If this is the first run, we need to set the default values for the velocities.
         // The default values are defined in config.h and are used if the EEPROM is not set yet.
         _AxesConfigurations[transX] = new MotionAxisConfig("TX", EEPROM_ADDRESS_CFG_TX, VelocityConfig_t(DEF_SENS_TRANSX, NO_GATE, SQUARED_TAN, DEF_INVERT_TX));

@@ -2,20 +2,18 @@
 #define EEPROMSTORAGE_h
 
 #include <Arduino.h>
-#include "config.h" // Include the config file for the hardware and the kinematics
-#include "kinematics.h"
-#include "MotionAxisConfig.h"
+#include "config.h"     // Include the config file for the hardware and the kinematics
+#include "kinematics.h" // Necessary for "VelocityConfig_t" struct
 
 /**
  * @brief If the version number defined in the EEPROM is not equal to the version number defined in this file, the EEPROM will be erased and initialized with the default values.
  */
-
 /// The version number of the EEPROM datastorage. Can be used to force loading the configuration values set in config.h.
 /// @warning Changing the version number will reset all stored calibration parameters in the EEPROM.
 constexpr uint8_t EEPROM_VERSION = SM_VERSION;
+
 /**
  * The Arduino Micro has an EEPROM storage that can store 1024bytes (1KB)
- *
  * This configuration file maintains the address table of the stored data. *
  */
 constexpr int EEPROM_ADDRESS_VERSION = 1;                                            // Start EEPROM address for the Datastorage version
@@ -61,8 +59,8 @@ public:
     static void setupEEPROM();  // Initialize the EEPROM with default values
     static void printVersion(); // Show the version number of the EEPROM storage
 private:
-    static boolean _firstrun;    // EEPROM state
-    static boolean _initialized; // EEPROM initialized state
+    static boolean _firstrun;  // Indicates if this is the first boot of the space mouse (or space mouse version)
+    static boolean _setupdone; // Indicates if the EEPROM setup is complete and the first run flag has been checked
 };
 
 #endif // EEPROMSTORAGE_h

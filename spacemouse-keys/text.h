@@ -35,6 +35,7 @@ static const char Error_EmptyValue[] PROGMEM = "No value";
 
 // Hardware specific info messages
 static const char Info_AnalogVoltage[] PROGMEM = "VREF -> ";
+static const char Info_Updated[] PROGMEM = "Updated ";
 
 // Sensitivities:
 static const char Error_InvalidAxisName[] PROGMEM = "Invalid Axisname.";

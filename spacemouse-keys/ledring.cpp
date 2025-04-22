@@ -34,7 +34,7 @@ void LedRing::ProcessLED(boolean ledCmd) {
                 // TX pos: 3 o'clock neg: 9 o'clock
                 // light up the _free_ positions
                 // REVIEW - check if this is correctly implemented. I'm in doubt about the inversion. I don't have a leadring so I cannot test it right now.
-                if ((_SMKIN->GetVelocity(transX) > 0) != _SMKIN->GetAxisInvert(transX)) {
+                if ((_SMKIN->GetVelocity(transX) > 0) != _SMKIN->GetAxisInversion(transX)) {
                     _set4LEDsOnClock(9, CRGB::Red);
                 } else {
                     _set4LEDsOnClock(3, CRGB::Red);
@@ -43,7 +43,7 @@ void LedRing::ProcessLED(boolean ledCmd) {
             case transY:
                 _setAllLEDs(CRGB::Yellow);
                 // TY pos: 12 o'clock neg, 6 o'clock
-                if ((_SMKIN->GetVelocity(transY) > 0) != _SMKIN->GetAxisInvert(transY)) {
+                if ((_SMKIN->GetVelocity(transY) > 0) != _SMKIN->GetAxisInversion(transY)) {
                     _set4LEDsOnClock(6, CRGB::Red);
                 } else {
                     _set4LEDsOnClock(12, CRGB::Red);
@@ -51,7 +51,7 @@ void LedRing::ProcessLED(boolean ledCmd) {
                 break;
             case transZ:
                 // TZ pos: all white, neg: all dark blue
-                if ((_SMKIN->GetVelocity(transZ) > 0) != _SMKIN->GetAxisInvert(transZ)) {
+                if ((_SMKIN->GetVelocity(transZ) > 0) != _SMKIN->GetAxisInversion(transZ)) {
                     _setAllLEDs(CRGB::AntiqueWhite);
                     FastLED.setBrightness(50);
                 } else {
@@ -62,7 +62,7 @@ void LedRing::ProcessLED(boolean ledCmd) {
             case rotX:
                 _setAllLEDs(CRGB::SkyBlue);
                 // RX pos: red 6 o'clock, neg red 12 o'clock
-                if ((_SMKIN->GetVelocity(rotX) > 0) != _SMKIN->GetAxisInvert(rotX)) {
+                if ((_SMKIN->GetVelocity(rotX) > 0) != _SMKIN->GetAxisInversion(rotX)) {
                     _set4LEDsOnClock(12, CRGB::Green);
                 } else {
                     _set4LEDsOnClock(6, CRGB::Green);
@@ -71,7 +71,7 @@ void LedRing::ProcessLED(boolean ledCmd) {
             case rotY:
                 _setAllLEDs(CRGB::SkyBlue);
                 // RY pos: red 3 o'clock, neg red 9 o'clock
-                if ((_SMKIN->GetVelocity(rotY) > 0) != _SMKIN->GetAxisInvert(rotY)) {
+                if ((_SMKIN->GetVelocity(rotY) > 0) != _SMKIN->GetAxisInversion(rotY)) {
                     _set4LEDsOnClock(9, CRGB::Green);
                 } else {
                     _set4LEDsOnClock(3, CRGB::Green);
@@ -80,7 +80,7 @@ void LedRing::ProcessLED(boolean ledCmd) {
             case rotZ:
                 _setAllLEDs(CRGB::SkyBlue);
                 // RZ pos: red ring wandering around counterclock wise; neg: clockwise
-                if ((_SMKIN->GetVelocity(rotZ) > 0) != _SMKIN->GetAxisInvert(rotZ)) {
+                if ((_SMKIN->GetVelocity(rotZ) > 0) != _SMKIN->GetAxisInversion(rotZ)) {
                     _rotateColor(false, CRGB::DarkRed);
                 } else {
                     _rotateColor(true, CRGB::DarkRed);

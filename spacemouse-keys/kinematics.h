@@ -26,28 +26,26 @@ public:
     ~Kinematics();
 
     void CalculcateKinematic();
-    void SwitchXY();
     void ProcessSwitchYZ();
     void ProcessExclusiveMode();
 
     int16_t GetVelocity(const enumAxis_t axis);
     void SetVelocity(const enumAxis_t axis, const int16_t velocity);
-
+    void PrintVelocities();
     enumAxis_t GetMainVelocity();
 
-    void setIgnoreArithmetics(const bool ignore); // Ignore the modulation function and inversion for the specified axis
+    void SetIgnoreArithmetics(const bool ignore); // Ignore the modulation function and inversion for the specified axis
 
-    void PrintVelocities();
-
-    int8_t UpdateAxisConfig(const char *axisName, const boolean isGT, const boolean isMF, const boolean isInversion, const int8_t pos_neg, const float value);
-    boolean GetAxisInvert(const enumAxis_t axis);
+    void RestoreDefaultAxisConfigurations();
+    uint8_t UpdateAxisConfiguration(const char *axisName, const boolean isGT, const boolean isMF, const boolean isInversion, const int8_t pos_neg, const float value);
     void PrintAxisConfigurations();
+    boolean GetAxisInversion(const enumAxis_t axis);
 
-    int8_t UpdateSwitchYZ(const bool switchOn);
+    int8_t UpdateSwitchYZ(const bool switchyz_on);
     void PrintSwitchYZ(); // Print the switch YZ configuration
 
-    void UpdateExclusiveMode(const bool exclusiveMode); // Update the exclusive mode configuration
-    void PrintExclusiveMode();                          // Print the exclusive mode configuration
+    void UpdateExclusiveMode(const bool exclusivemode_on); // Update the exclusive mode configuration
+    void PrintExclusiveMode();                             // Print the exclusive mode configuration
 
 private:
     SpaceMouseHW_ *_SMHW = nullptr; // Pointer to the SpaceMouse hardware object

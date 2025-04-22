@@ -1,6 +1,12 @@
 #ifndef DEFAULTSJOYSTICK_H
 #define DEFAULTSJOYSTICK_H
 
+// Default sensorhardware configuration for Hall sensors hardware
+//===============================================================
+#ifndef DEADZONE
+#define DEADZONE 3 // Default deadzone for the Joystick sensors. The value can be overiden in the config.h file.
+#endif
+
 // Default motion configuration for Joystick sensors.
 // =======================================================
 // This file contains the default configuration settings for the Joystick sensors.

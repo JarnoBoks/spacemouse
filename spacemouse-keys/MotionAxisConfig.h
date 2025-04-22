@@ -4,7 +4,6 @@
 #include <Arduino.h>
 #include "config.h"
 
-// TODO - Make invert an uint8_t value.
 struct VelocityConfig_t {
     // Configuration values for each velocity axis
     // These values are used to set the sensitivity and gate values for each axis
@@ -14,7 +13,7 @@ struct VelocityConfig_t {
     int8_t neg_gate;       // 0 = no gate, 1..127 = positive gate, -128..-1 = negative gate
     uint8_t pos_modfunc;   // This is used for the positive modulation function
     uint8_t neg_modfunc;   // This is used for the negative modulation function
-    int8_t invert;         // 0 = no inversion, 1 = inversion
+    uint8_t invert;        // 0 = no inversion, 1 = inversion
 
     VelocityConfig_t() = default; // Default constructor
     VelocityConfig_t(float posSens, float negSens, uint8_t posGate, uint8_t negGate, uint8_t posModfunc, uint8_t negModfunc, int8_t invert)

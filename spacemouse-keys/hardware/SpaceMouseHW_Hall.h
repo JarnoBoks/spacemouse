@@ -4,16 +4,14 @@
 #include <Arduino.h>
 #include "SpaceMouseHW.h"
 
-// Values for the calibration warning levels. These values will be stored in the Base class members.
-// The Hall effect sensors aren't centered arount zero, due to the nature of the hardware.
-// In my version of the Spacemouse, the values vary between -425 and 285, the centerpoint is thus around -70
-// The MIN and MAX warning levels have to be shifted accordingly.
+// Contains setup values for the Hall effect hardware. These values are used for configuration of this controller software.
+// As opposed to default configuration parameters, who are stored in "defaults_hall.h", these values are used for the calibration of the hardware.
 #define HALL_WARN_CENTERPOINT_MIN 600 // Warning level for the minimal centerpoint value (centerpoint below this value throws a warning)
 #define HALL_WARN_CENTERPOINT_MAX 800 // Warning level for the maximum centerpoint value (centerpoint above this value throws a warning)
 #define HALL_WARN_MINMAX_MIN 300      // Warning level for the minimum value (absolute minimum below this value throws a warning)
 #define HALL_WARN_MINMAX_MAX 170      // Warning level for the maximum value (absolute maximum below this value throws a warning)
 #define HALL_WARN_MINMAX_RANGE 600    // Warning level for the minmax range calculation value (range below this value throws a warning)
-#define HALL_AXIS_NAMES {"HES0", "HES1", "HES2", "HES3", "HES6", "HES7", "HES8", "HES9"}
+#define HALL_SENSOR_NAMES {"HES0", "HES1", "HES2", "HES3", "HES6", "HES7", "HES8", "HES9"}
 
 // Default motion configuration for Hall effect hardware
 #include "defaults_hall.h"
@@ -41,9 +39,9 @@ public:
     SpaceMouseHW_Hall_();
     ~SpaceMouseHW_Hall_();
 
-    bool BusyZeroing(uint16_t numIterations, boolean serialOutput);
+    bool BusyZeroing(const unsigned int num_iterations, const bool do_serial_output);
 
-    void SetAnalogReferenceVoltage(int debug) override;
+    void SetAnalogReferenceVoltage(const uint8_t debug) override;
     void CalculateKinematicSensors(int16_t *velocities) override;
 };
 #endif // SPACEMOUSEHWHALL_h

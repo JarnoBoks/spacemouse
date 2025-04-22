@@ -9,7 +9,7 @@
 #include "hardware/SpaceMouseHW.h"
 
 /**
- * @brief Prints the raw (optionally inverted) ADC 10-bit values and the status of the raw key readings (without debouncing), if the output is due (every x miliseconds)
+ * @brief Reports the raw (optionally inverted) ADC 10-bit values and the status of the raw key readings (without debouncing), if the output is due (every x miliseconds)
  */
 void Calibration::DebugOutput1_HW_RawInverted() {
     if (_debug == 1 && _isDebugOutputDue()) {
@@ -21,7 +21,7 @@ void Calibration::DebugOutput1_HW_RawInverted() {
 }
 
 /**
- * @brief Prints the centered values of the sensors and the status of the keys, if the output is due (every x miliseconds)
+ * @brief Reports the centered values of the sensors and the status of the keys, if the output is due (every x miliseconds)
  * @details Centered values are the difference between the raw values and the centerPoint values.
  */
 void Calibration::DebugOutput2_HW_Centered() {
@@ -31,6 +31,10 @@ void Calibration::DebugOutput2_HW_Centered() {
     }
 }
 
+/**
+ * @brief Reports the mapped values of the sensors with deadzone applied, if the output is due (every x miliseconds)
+ * @details Mapped values are the difference between the raw values and the centerPoint values, with deadzone applied.
+ */
 void Calibration::DebugOutput3_HW_DeadzonedMapped() {
     if (_debug == 3 && _isDebugOutputDue()) {
         _SMHW->PrintCentered();
@@ -39,7 +43,7 @@ void Calibration::DebugOutput3_HW_DeadzonedMapped() {
 }
 
 /**
- * @brief Report translation & rotation values. Modifier function and inversion are not applied. Mainly used for calibrating base sensitivity and gate values.
+ * @brief Reports translation & rotation values. Modifier function and inversion are not applied. Mainly used for calibrating base sensitivity and gate values.
  */
 void Calibration::DebugOutput4_KIN_Velocity() {
     if (_debug == 4 && _isDebugOutputDue()) {
@@ -194,12 +198,12 @@ void Calibration::DebugInput() {
  * @brief Handle one word commands.
  * @details The first word is the command and there are no parameters.
  * @param words[] Array of words received from the serial monitor.
- * @return
+ * @return 1 if the command was handled successfully, -1 if the command was unknown.
+ * @retval 1 Success
+ * @retval -1 Command unknown
  */
 int8_t Calibration::_handleOneWord(char *words[]) {
-    int8_t ret = 0;
-    // When we have one word an the word contains a number, assume a debug level change.
-    // TODO - Allow to set the debug level with a number,without the command DEBUG.
+    int8_t ret = 1; // Default return value for success
 
     // --------------- SHOW ----------------------------------------------------
     if (strcmp_P(words[0], CMD_SHOW) == 0) {
@@ -210,7 +214,8 @@ int8_t Calibration::_handleOneWord(char *words[]) {
 
         // Show all stored calibration values
         _SMKIN->PrintAxisConfigurations();
-        _SMKIN->PrintSwitchYZ(); // Print the switch YZ flag
+        _SMKIN->PrintSwitchYZ();      // Print the switch YZ flag
+        _SMKIN->PrintExclusiveMode(); // Print the exclusive mode flag
 
         // --------------- IDLE ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_IDLE) == 0) {
@@ -249,16 +254,20 @@ int8_t Calibration::_handleOneWord(char *words[]) {
  * @brief Handle two words commands.
  * @details The first word is the command and the second word is the parameter.
  * @param words[] Array of words received from the serial monitor.
- * @return
+ * @return The status of the requested command.
+ * @retval 1 Success
+ * @retval -1 Unknown command
+ * @retval -2 No command given
+ * @retval -3 No parameter given
+ * @retval -4 Second parameter is not a number
  */
 int8_t Calibration::_handleTwoWords(char *words[]) {
-    // int8_t Calibration::_handleTwoWords(const char *word1, const char *word2) {
-    int8_t ret = 0;
+    int8_t ret = 1; // Default return value for success
 
     // When we have two words, the first word is the command and the second word is the parameter.
     // We have to check if both words are supplied and if the second word is a number or a string.
     if (isWordEmpty(words[0], Error_EmptyCommand)) {
-        return -1; // No command given
+        return -2; // No command given
     }
 
     if (isWordEmpty(words[1], Error_EmptyParameter)) {
@@ -272,8 +281,6 @@ int8_t Calibration::_handleTwoWords(char *words[]) {
 
     // --------------- DEBUG x ----------------------------------------------------
     if (strcmp_P(words[0], CMD_DEBUG) == 0) {
-        Serial.print(F("Debug level -> "));
-        Serial.println(value);
         _debug = (DebugLevel_t)value; // Set the debug level
 
         // Inform the hardware of the debuglevel update.
@@ -281,31 +288,46 @@ int8_t Calibration::_handleTwoWords(char *words[]) {
 
         // Disable the modifier function & inversion if the debug level is 4 or 5.
         if (_debug == 4) {
-            _SMKIN->setIgnoreArithmetics(false); // Set the ignore modifier function and inversion flag
+            _SMKIN->SetIgnoreArithmetics(false); // Set the ignore modifier function and inversion flag
         } else {
-            _SMKIN->setIgnoreArithmetics(true); // Set the ignore modifier function and inversion flag
+            _SMKIN->SetIgnoreArithmetics(true); // Set the ignore modifier function and inversion flag
         }
 
         // --------------- MODFUNC x ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_MODFUNC) == 0) {
 #if 0
-        Serial.print(F("Modifier -> "));
-        Serial.println(value);
         _SMKIN->SetModulationFunction(value); // Call the function to set the modulation function
 #endif
 
         // --------------- DEADZONE x ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_DEADZONE) == 0) {
-        Serial.print(F("Deadzone -> "));
-        Serial.println(value);
-        _SMHW->UpdateDeadzone(value); // Call the function to set the deadzone
+        _SMHW->UpdateDeadzone(value);   // Call the function to set the deadzone
+        Serial.print(CF(Info_Updated)); // Print message to the serial monitor
+        _SMHW->PrintDeadzone();         // Print the deadzone value
+
         // --------------- MINMAX 1 ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_MINMAX) == 0) {
         // Call the function to start the min/max calibration and store the values in EEPROM if value is 1, otherwise do not store the values in EEPROM
         _SMHW->CalibrateMinMax((value == 1));
+
         // --------------- SWITCHYZ 1|0 ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_SWITCHYZ) == 0) {
-        _SMKIN->UpdateSwitchYZ((value == 1)); // Call the function to set the switch YZ flag
+        _SMKIN->UpdateSwitchYZ((value == 1)); // Call the function to set the switch YZ
+        Serial.print(CF(Info_Updated));       // Print message to the serial monitor
+        _SMKIN->PrintSwitchYZ();              // Print the switch YZ value
+
+        // --------------- SENS 99999 ----------------------------------------------------
+    } else if (strcmp_P(words[0], CMD_SENS) == 0 && value == 99999) {
+        _SMKIN->RestoreDefaultAxisConfigurations(); // Call the function to restore the default axis configurations
+        Serial.print(CF(Info_Updated));             // Print message to the serial monitor
+        _SMKIN->PrintAxisConfigurations();          // Print the axis configurations to the serial monitor
+
+        // --------------- EXCL 1|0 ----------------------------------------------------
+    } else if (strcmp_P(words[0], CMD_EXCLUSIVEMODE) == 0) {
+        _SMKIN->UpdateExclusiveMode((value == 1)); // Call the function to set the exclusive mode flag
+        Serial.print(CF(Info_Updated));            // Print message to the serial monitor
+        _SMKIN->PrintExclusiveMode();              // Print the exclusive mode value
+
     } else {
         Serial.println(CF(Error_CommandUnkown));
         return -1; // Unknown command
@@ -318,24 +340,33 @@ int8_t Calibration::_handleTwoWords(char *words[]) {
  * @brief Handle three words commands.
  * @details The first word is the command, the second word is the axis+sensitivity, and the third word is the value.
  * @param words[] Array of words received from the serial monitor.
- * @return
+ * @return The status of the requested command.
+ * @retval 1 Success
+ * @retval -1 Unknown command
+ * @retval -2 No command given
+ * @retval -3 No parameter given
+ * @retval -4 No value given
+ * @retval -5 Third parameter is not a float
+ *
  */
 int8_t Calibration::_handleThreeWords(char *words[]) {
+    int8_t ret = 1; // Default return value for success
+
     // Handle three words command. The first word is the command, the second word is the axis, and the third word is the value.
     // We have to check if all three words are supplied and if the third word is a float.
     if (isWordEmpty(words[0], Error_EmptyCommand)) {
-        return -1; // No command given
+        return -2; // No command given
     }
     if (isWordEmpty(words[1], Error_EmptyParameter)) {
-        return -2; // No parameter given
+        return -3; // No parameter given
     }
     if (isWordEmpty(words[2], Error_EmptyValue)) {
-        return -3; // No value given
+        return -4; // No value given
     }
 
     float value; // Default value for the third word
     if (!convertWordFloat(words[2], &value, Error_ParameterNoFloat)) {
-        return -4; // Third parameter is not a float
+        return -5; // Third parameter is not a float
     }
 
     // Example handling for three words
@@ -389,8 +420,8 @@ int8_t Calibration::_handleThreeWords(char *words[]) {
         Serial.print(F(" -> "));
         Serial.println(value);
 
-        _SMKIN->UpdateAxisConfig(axisName, isGT, isMF, isINV, pos_neg, value); // Call the function to set the sensitivity
-        _SMKIN->PrintAxisConfigurations();                                     // Print the sensitivities after setting them
+        _SMKIN->UpdateAxisConfiguration(axisName, isGT, isMF, isINV, pos_neg, value); // Call the function to set the sensitivity
+        _SMKIN->PrintAxisConfigurations();                                            // Print the sensitivities after setting them
     } else if (strcmp_P(words[0], CMD_MINMAX) == 0) {
         // We should have an axisname, a sign indicating min or max and a value in the third word.
         _SMHW->UpdateMinMax(words[1], value); // Call the function to set the min/max values
@@ -399,5 +430,5 @@ int8_t Calibration::_handleThreeWords(char *words[]) {
     } else {
         return -1; // Unknown command
     }
-    return 0; // Success
+    return ret; // Success
 }

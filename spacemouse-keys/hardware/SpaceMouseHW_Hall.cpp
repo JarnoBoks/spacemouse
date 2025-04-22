@@ -1,17 +1,22 @@
 #include <Arduino.h>
 #include "SpaceMouseHW_Hall.h"
-#include "eepromStorage.h"
-#include "text.h"
 #include "config.h"
+#include "text.h"
 #include "kinematics.h" // Definition of the velocity array positions (TRANSzz/ROTXzz)
 
-static const char *Hall_axisNames[8] = HALL_AXIS_NAMES;
+static const char *Hall_sensorNames[NUM_SENSORS] = HALL_SENSOR_NAMES;
 
 /**
  * Constructor / Destructor
  */
 SpaceMouseHW_Hall_::SpaceMouseHW_Hall_()
-    : SpaceMouseHW_(HALL_WARN_CENTERPOINT_MIN, HALL_WARN_CENTERPOINT_MAX, HALL_WARN_MINMAX_MIN, HALL_WARN_MINMAX_MAX, HALL_WARN_MINMAX_RANGE, Hall_axisNames) {}
+    : SpaceMouseHW_(DEADZONE,
+                    HALL_WARN_CENTERPOINT_MIN,
+                    HALL_WARN_CENTERPOINT_MAX,
+                    HALL_WARN_MINMAX_MIN,
+                    HALL_WARN_MINMAX_MAX,
+                    HALL_WARN_MINMAX_RANGE,
+                    Hall_sensorNames) {}
 
 SpaceMouseHW_Hall_::~SpaceMouseHW_Hall_() {}
 
@@ -43,7 +48,7 @@ void SpaceMouseHW_Hall_::CalculateKinematicSensors(int16_t *velocities) {
  * @brief Set the analog reference voltage to 5V for debug 1 and to 2.56V otherwise
  * @param debug The current debug level of the spacemouse.
  */
-void SpaceMouseHW_Hall_::SetAnalogReferenceVoltage(int debug) {
+void SpaceMouseHW_Hall_::SetAnalogReferenceVoltage(const uint8_t debug) {
 
     //.print(F("Setting analog reference voltage to "));
     Serial.print(CF(Info_AnalogVoltage));
@@ -68,10 +73,10 @@ void SpaceMouseHW_Hall_::SetAnalogReferenceVoltage(int debug) {
     }
 }
 
-bool SpaceMouseHW_Hall_::BusyZeroing(uint16_t numIterations, boolean serialOutput) {
-    if (serialOutput) {
+bool SpaceMouseHW_Hall_::BusyZeroing(const unsigned int num_iterations, const bool do_serial_output) {
+    if (do_serial_output) {
         Serial.println(F("Zeroing Sensors..."));
     }
 
-    return SpaceMouseHW_::BusyZeroing(numIterations, serialOutput);
+    return SpaceMouseHW_::BusyZeroing(num_iterations, do_serial_output);
 }

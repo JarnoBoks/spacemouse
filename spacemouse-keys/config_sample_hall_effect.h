@@ -50,11 +50,9 @@ Debug Modes:
      Joystick:    The values should be approximately 0-1023.
      Hall Effect: The values should be approximately 0-1023.   //TODO - check if this is correct for the HES sensors
 
-     // TODO - Show idlePositions for each sensor. The values should be approximately 0-1023.
-
  2:  Report centered values.
      When the space mouse is started the knob should be in the idle position. The sensors are read multiple
-     times and the mean idle value is calculated and stored. The centered values reported in this debug mode are the
+     times and the mean idle value is calculated and stored. The values reported in this debug mode are the
      difference between the raw values and the mean idle value.
 
      Joystick:    The values should be approximately -500 to +500, jitter around 0 at idle.
@@ -99,6 +97,52 @@ Debug Modes:
 /// @note Valid values are "#define HALLEFFECT" or "#define JOYSTICK"
 #define HALLEFFECT
 
+#ifdef JOYSTICK // Hardware definition for the joystick version - does not apply to the Hall effect version
+/* First Calibration: Joystick axis pin assignment
+==============================================
+Default Assembly when looking from above on top of the space mouse
+   back    resulting axis (not from the single joystick)
+    C           Y+
+    |           .
+ B--+--D   X-...Z+...X+
+    |           .
+    A           Y-
+  front
+
+Each joysticks has
+- a horizontal axis from left to right = Y
+- a vertical axis from top to bottom = X
+(This definition of X and Y may not correspond to the print on your joysticks... We will find out which signal is X and Y now.)
+
+1. Try to write down the two axis of every joystick with the corresponding pin numbers you chose.
+(A4 and A5 are not used in the example by TeachingTech).
+2. Compile the script, type 1 into the serial interface and hit enter to enable debug output 1.
+3. At the joystick in front of you (A), move the joystick from the top -> down to bottom (X) and observe the debug output:
+  3.a) AX goes from 0 (=joystick at the top) to 1023 (joystick at bottom) -> Everything is correct.
+  3.b) AX goes from 1023 to 0 -> You need to invert AX, see INVERTLIST below.
+  3.c) Another output is showing movement: Swap the pins in the PINLIST. Probably you have to swap the first and second element, as AX and AY may be swapped.
+
+If you have the joystick TeachingTech recommended:
+    The pins labelled X and Y on the joystick are NOT the X and Y needed here, but swapped. First joysticks Y: AX and X: AY.
+
+4. Continue with AY: Move the joystick from left to right and the values shall increase from 0 to 1023 and follow the instructions 3a) to 3c) above.
+
+5. Repeat this with every axis and every joystick until you have a valid PINLIST and maybe an INVERTLIST
+*/
+
+// AX, AY, BX, BY, CX, CY, DX, DY
+#define PINLIST \
+    {A1, A0, A3, A2, A7, A6, A9, A8}
+
+// Set to 1 to invert one joystick axis.
+// Usually all _X values shall be inverted or none of them.
+// Usually all _Y values shall be inverted or none of them.
+#define INVERTLIST \
+    {0, 0, 0, 0, 0, 0, 0, 0}
+// AX, AY, BX, BY, CX, CY, DX, DY
+#endif // JOYSTICK
+
+#ifdef HALLEFFECT // Hardware definition for the Hall effect version - does not apply to the joystick version
 /* First Calibration: Hall effect sensors pin assignment
 ==============================================
 Default assembly when looking from above on top of the space mouse
@@ -147,6 +191,7 @@ If you have mounted the magnets upside-down, the values will be inverted.
 #define INVERTLIST \
     {0, 0, 0, 0, 0, 0, 0, 0}
 // HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9
+#endif
 
 /* Second calibration: Tune deadzone   (command: DEADZONE | DEADZONE <value>)
 ==============================================================================
@@ -165,9 +210,9 @@ Expected outcome:
    Hall Effect: The sensor are more sensitive due to magnetic environmental influences. Deadzone is expected to be around 7-15
 
 */
-// TODO - These values are not used yet. Have to be implemented in the hardware library.
-#define JOYSTICK_DEFAULT_DEADZONE 3    // !! Adjust this value if you use the joystick sensor version. This is the deadzone for the joystick hardware.
-#define HALLEFFECT_DEFAULT_DEADZONE 10 // !! Adjust this value if you use the HALL sensor version. Only effects the defaults for the Hall Effect hardware
+
+// The deadzone default value can be overridden in the config.h file by using the following defines format:
+// #define DEADZONE <value>
 
 /* Third calibration: Getting MIN and MAX values   (command: MINMAX | MINMAX <+|-><axisname> <value>)
 =====================================================================================================
@@ -250,8 +295,8 @@ Insert measured Values like this:
  *
  */
 
-/* Fourth calibration: Base Sensitivity
-==================================
+/* Fourth calibration: Base Sensitivity   (command: SENS | SENS [G}<axisname>[+|-] <value>) | SENS 99999)
+==========================================================================================================
 Use debug mode 4 or use for example your CAD program to verify changes.
 Note: Neither the modifier function nor the inversion are applied in debug mode 4.
 
@@ -284,12 +329,17 @@ To suppress small movements around zero, you can add an additional gate to each 
    SENS G<axisname>[+|-] <value>    (Note the 'G' in front of the axis name)
       <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
       [+|-]        - Optional indication of the direction for which the value will be set. + for positive, - for negative. If not set, the value is set for both directions.
-      <value>      - The sensitivity value to set for the axis. Should be a float (ie 2 should be 2.0)
+      <value>      - The sensitivity value to set for the axis. Should be an integer value.
+
+Use the command "SENS" (without any parameter) to show the current modifier function for all axes.
+
+Use the command "SENS 99999" to restore the default sensitivity, modifier, gate and inversion values for all axes to start
+the sensitivity calibration from scratch.
 */
 
-// All sensitivity defaults can be overiden in the config.h file by usign the following defines format:
+// All sensitivity defaults can be overridden in the config.h file by using the following defines format:
 //
-// #define DEF_SENS_<axisname>_<POS|NEG> <value>   where axisname is TX, TY, TZ, RX, RY, RZ
+// #define DEF_<SENS|GATE>_<axisname>_<POS|NEG> <value>   where axisname is TX, TY, TZ, RX, RY, RZ
 //                                                       value    is a float value for SENS (0.0-10.0)
 //
 //
@@ -299,8 +349,8 @@ To suppress small movements around zero, you can add an additional gate to each 
 
 // >>> Place your default values here. These values will be used if the EEPROM is empty or if the version number (SM_VERSION) is changed.
 
-/* Fifth calibration: Modifier Function
-=======================================
+/* Fifth calibration: Modifier Function      (command: SENS | SENS M<axisname>[+|-] <value>) | SENS 99999)
+==============================================================================================================
 Use debug mode 5 ("DEBUG 5") or use for example your CAD program to verify changes.
 In debug mode 5 the modifier function and the inversion are applied to the translation & rotation values.
 Modify resulting behaviour of Spacemouse outputs to suppress small movements around zero and enforce big movements even more.
@@ -317,21 +367,19 @@ The available modifier functions are:
 
  *) Default for all axes except TZ+ (pulling the knob up) is 3. The default for TZ+ is 0 (linear).
 
-
-Update the modifier function for ALL axes and directions (including TZ+) by sending the command:
-      MODFUNC <x>         <x> One of the modifier function numbers as specified above.   // TODO - Create global MF setter
-
-
-Update the modifier function for a SINGLE axis by sending the command
+Update the modifier function for a single axis by sending the command
 
       SENS M<axisname>[+|-] <value>           (Note the 'M' in front of the axis name)
          <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
          [+|-]        - Optional indication of the direction for which the value will be set. + for positive, - for negative. If not set, the value is set for both directions.
          <value>      - The modifier function to set for the axis (0-4, one of the functions described above).
 
- Use the command "SENS" (without any parameter) to show the current modifier function for all axes.
+Use the command "SENS" (without any parameter) to show the current modifier function for all axes.
 
- Note: See below - after setting up any connected keys / rotary encoders - for further fine-tuning of the translation & rotation values.
+Use the command "SENS 99999" to restore the default sensitivity, modifier, gate and inversion values for all axes to start
+the sensitivity calibration from scratch.
+
+Note: See below - after setting up any connected keys / rotary encoders - for fine-tuning of the translation & rotation values.
 
 */
 
@@ -341,8 +389,8 @@ Update the modifier function for a SINGLE axis by sending the command
 //    #define DEF_MODFUNC <x>
 //
 // Set the default modifier function for a single axis:
-// #define DEF_SENS_<axisname>_<POS|NEG> <value>   where axisname is TX, TY, TZ, RX, RY, RZ
-//                                                       value    is a float value for SENS (0.0-10.0)
+//    #define DEF_SENS_<axisname>_<POS|NEG> <value>   where axisname is TX, TY, TZ, RX, RY, RZ
+//                                                          value    is a float value for SENS (0.0-10.0)
 //
 //
 // Examples:
@@ -351,8 +399,8 @@ Update the modifier function for a SINGLE axis by sending the command
 
 // >>> Place your default values here. These values will be used if the EEPROM is empty or if the version number (SM_VERSION) is changed.
 
-/* Sixth Calibration: Direction
-===============================
+/* Sixth Calibration: Direction           (command: SENS | SENS I<axisname>[+|-] <value>) | SENS 99999)
+========================================================================================================
 Modify the direction of translation/rotation depending on the CAD program you are using on your PC.
 Use debug mode 6 ("DEBUG 6") or use for example your CAD program to verify changes.
 
@@ -367,6 +415,9 @@ Update the inversion for a single axis by sending the command
 
 Use the command "SENS" (without any parameter) to show the current modifier function for all axes.
 
+Use the command "SENS 99999" to restore the default sensitivity, modifier, gate and inversion values for all axes to start
+the sensitivity calibration from scratch.
+
 */
 
 // To set or overwrite the default settings from within config.h, you can use the following settings:
@@ -375,14 +426,16 @@ Use the command "SENS" (without any parameter) to show the current modifier func
 //
 // >>> Place your default values here. These values will be used if the EEPROM is empty or if the version number (SM_VERSION) is changed.
 
-/* Seventh calibration: Axis used for zooming in and out.
-=========================================================
+/* Seventh calibration: Axis used for zooming in and out.   (command: SWITCHYZ | SWITCHYZ <0|1>)
+================================================================================================
 You can change the movement for zooming in and out. Default behaviour for zooming is the translation at the Y axis (ie. zoom in/out by moving the knob north or south.)
 Use debug mode 7 ("DEBUG 7") or use for example your CAD program to verify changes.
 In order to assign the zoom function to the Z axis (ie. pulling the knob up/pushing it down), you can switch the functionality between the translation Y and Z axis:
 
 To switch the Y and Z axis, use the "SWITCHYZ" command from the serial monitor.
    SWITCHYZ <0|1>  - Switch the Y and Z axis. 1 = switchXY, 0 = do not switch (default).
+
+Use the command "SWITCHYZ" (without any parameter) to show the current setting.
 */
 
 // To set or overwrite the default settings from within config.h, you can use the following settings:
@@ -391,8 +444,8 @@ To switch the Y and Z axis, use the "SWITCHYZ" command from the serial monitor.
 //
 // >>> Place your default values here. These values will be used if the EEPROM is empty or if the version number (SM_VERSION) is changed.
 
-/* Eighth calibration - Exclusive mode
-======================================
+/* Eighth calibration - Exclusive mode       (command: EXCL | EXCL <0|1>)
+==========================================================================
 Exclusive mode only permits to send translation OR rotation, but never both at the same time.
 This can solve issues with classic joysticks where you get unwanted translation or rotation at the same time.
 Use Debug mode 7 ("DEBUG 7") or use for example your CAD program to verify changes.
@@ -401,6 +454,8 @@ It chooses to send the one with the biggest absolute value.
 
 The exclusive mode can be enabled by using the command "EXCLUSIVEMODE" in the serial monitor.
    EXCL <0|1> - Enable or disable exclusive mode. 1 = enable, 0 = disable (default).
+
+Use the command "EXCL" (without any parameter) to show the current setting.
 */
 
 // To enable the Exclusive Mode as default from within config.h, you can uncomment the following settings:

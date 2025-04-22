@@ -2,7 +2,6 @@
 #define SPACEMOUSEHW_h
 
 #include <Arduino.h>
-// #include "config.h" // TODO Remove inclusion!
 
 // The number of hardware sensors.
 #define NUM_SENSORS 8
@@ -33,7 +32,13 @@ enum class statemachineMinMaxCal_t : uint8_t {
 class SpaceMouseHW_ {
 public:
     // --- Constructors/Destructors
-    SpaceMouseHW_(const int warnCpntMin, const int warnCpntMax, const int warnMMMin, const int warnMMMax, const int warnMMRange, const char *axs[]);
+    SpaceMouseHW_(const uint8_t deadzone,
+                  const int wrn_cpnt_min,
+                  const int warn_cpnt_max,
+                  const int warn_mm_min,
+                  const int warn_mm_max,
+                  const int warn_mm_range,
+                  const char *sensor_names[]);
     ~SpaceMouseHW_();
 
     void ReadAllFromSensors();
@@ -48,15 +53,14 @@ public:
     void PrintMinMax();
     void PrintDeadzone();
 
-    virtual void SetAnalogReferenceVoltage(int debug) = 0;
+    virtual void SetAnalogReferenceVoltage(const uint8_t debug) = 0;
 
     virtual void CalculateKinematicSensors(int16_t *velocities) = 0;
 
-    virtual bool BusyZeroing(uint16_t numIterations, boolean serialOutput);
+    virtual bool BusyZeroing(const unsigned int num_iterations, const bool do_serial_output);
 
-    // --- Serial interface input functions
-    int8_t UpdateDeadzone(uint8_t value);
-    void UpdateMinMax(const char *cmd, float value);
+    int8_t UpdateDeadzone(const uint8_t value);
+    void UpdateMinMax(const char *cmd, const float value);
 
 protected:
     /// @brief Stores the values from the sensors after zeroing and mapping.
@@ -64,16 +68,14 @@ protected:
     int centered[NUM_SENSORS] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 private:
-    // -- Output to serial interface
     void _printZeroedValue(const zeroing_t *params, const char *axisname, const int i);
-    void _printValue(const uint8_t index, const int value, const uint8_t alignmentWidth = 4);
+    void _printValue(const uint8_t sensor_idx, const int value, const uint8_t value_width = 4);
     void _printArray(int arr[], int size);
 
-    // --- Calibrations
-    bool _busyZeroing(zeroing_t *params, uint16_t numIterations);
+    bool _busyZeroing(zeroing_t *params, const unsigned int num_iterations);
 
-    /// @brief Array containing the names of each sensoraxis.
-    const char **_axisNames;
+    /// @brief Array containing the names of each sensor.
+    const char **_sensorNames;
 
     /// @brief  Array containing ADC pin configuration for the sensors.
     const int _pinList[NUM_SENSORS];
@@ -81,7 +83,7 @@ private:
     /// @brief  Array containing inversion parameters for the raw sensor readings.
     const int _invertList[NUM_SENSORS];
 
-    ///@brief Store the zero position of the joysticks/knop axis. Calculated on startup or on zeroing.
+    ///@brief Store the zero position of the joysticks/knob axis. Calculated on startup or on zeroing.
     int _centerPoints[NUM_SENSORS] = {0, 0, 0, 0, 0, 0, 0, 0};
 
     /// @brief  Array containing (inverted) raw sensor readings.
@@ -105,7 +107,7 @@ private:
     /// @brief Used for tracking the starttime of the calibration procedure (used for Zeroing & minmaxCalibration)
     unsigned int long _startMillis = 0;
 
-    /// @brief Warning levels used in the calibration, and set by the childs on initialization (values are different for hardware types)
+    /// @brief Warning levels used in the calibration, and set by the derived classes on initialization (values are different for hardware types)
     const int _warningCenterpointMin; // Warning level for the minimal centerpoint value (centerpoint below this value throws a warning)
     const int _warningCenterpointMax; // Warning level for the maximum centerpoint value (centerpoint above this value throws a warning)
     const int _warningMinMaxMinimum;  // Warning level for the minimum value (absolute minimum below this value throws a warning)

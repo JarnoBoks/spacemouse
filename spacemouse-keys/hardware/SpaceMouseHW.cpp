@@ -8,21 +8,32 @@
 #define MINMAXDURATION 15  // The duration of the min-max calibration in seconds
 #define DEADZONEWARNING 10 // A deadzone above the following value will be warned // TODO - Use the configured level for this
 
+#define MINVALS {-512, -512, -512, -512, -512, -512, -512, -512} // FIXME - Set defaults for HALL/JOYSTICK
+#define MAXVALS {+512, +512, +512, +512, +512, +512, +512, +512} // FIXME - Set defaults for HALL/JOYSTICK
+
 /**
- * Constructor / Destructor
+ *  Constructor for the SpaceMouseHW_ class.
+ * @details Create the object & technically initialise members.
+ * @param deadzone The deadzone value for the sensors.
+ * @param wrn_cpnt_min The minimum warning level for the centerpoint value.
+ * @param warn_cpnt_max The maximum warning level for the centerpoint value.
+ * @param warn_mm_min The minimum warning level for the min-max value.
+ * @param warn_mm_max The maximum warning level for the min-max value.
+ * @param warn_mm_range The range of the warning level for the min-max value.
+ * @param sensor_names The names of the sensors.
  */
-SpaceMouseHW_::SpaceMouseHW_(const int warnCpntMin, const int warnCpntMax, const int warnMMMin, const int warnMMMax, const int warnMMRange, const char *axs[])
-    // SpaceMouseHW_::SpaceMouseHW_(const int warnCpntMin, const int warnCpntMax, const int warnMMMin, const int warnMMMax, const unsigned int warnMMRange, char *axs[])
-    : _axisNames{axs},
+SpaceMouseHW_::SpaceMouseHW_(const uint8_t deadzone, const int wrn_cpnt_min, const int warn_cpnt_max, const int warn_mm_min, const int warn_mm_max, const int warn_mm_range, const char *sensor_names[])
+    : _sensorNames{sensor_names},
       _pinList PINLIST,
       _invertList INVERTLIST,
+      _deadzone(deadzone),
       _maxVals MAXVALS,
       _minVals MINVALS,
-      _warningCenterpointMin(warnCpntMin),
-      _warningCenterpointMax(warnCpntMax),
-      _warningMinMaxMinimum(warnMMMin),
-      _warningMinMaxMaximum(warnMMMax),
-      _warningMinMaxRange(warnMMRange) {
+      _warningCenterpointMin(wrn_cpnt_min),
+      _warningCenterpointMax(warn_cpnt_max),
+      _warningMinMaxMinimum(warn_mm_min),
+      _warningMinMaxMaximum(warn_mm_max),
+      _warningMinMaxRange(warn_mm_range) {
 
     if (!EEPROMStorage::isFirstRun()) {
         // If we are not in the first run, we can load the configuration from the EEPROM.
@@ -36,8 +47,8 @@ SpaceMouseHW_::SpaceMouseHW_(const int warnCpntMin, const int warnCpntMax, const
     } else {
         // Write the defaults to the EEPROM if this is the first run of the software.
         EEPROM.put(EEPROM_ADDRESS_DEADZONE, _deadzone); // Store the deadzone in the EEPROM
-        EEPROM.put(EEPROM_ADDRESS_MINVALS, _minVals);   // Store the min values in the EEPROM
-        EEPROM.put(EEPROM_ADDRESS_MAXVALS, _maxVals);   // Store the max values in the EEPROM
+        EEPROM.put(EEPROM_ADDRESS_MINVALS, _minVals);   // Store the default min values in the EEPROM
+        EEPROM.put(EEPROM_ADDRESS_MAXVALS, _maxVals);   // Store the default max values in the EEPROM
     }
 }
 
@@ -48,23 +59,23 @@ SpaceMouseHW_::~SpaceMouseHW_() {}
 
 /**
  * @brief Measure the idle position of the spacemouse and store the results internally for future usage.
- * @param numIterations The number of iterations to take for the zeroing process. The more iterations, the more accurate the result.
- * @param serialOutput Flag to indicate if the results should be printed to the serial monitor.
+ * @param num_iterations The number of iterations to take for the zeroing process. The more iterations, the more accurate the result.
+ * @param do_serial_output Flag to indicate if the results should be printed to the serial monitor.
  * @return the result of the zeroing process.
  * @retval true if no warnings occurred during the zeroing process.
  * @retval false if warnings occurred during the zeroing process.
  */
-bool SpaceMouseHW_::BusyZeroing(uint16_t numIterations, boolean serialOutput) {
+bool SpaceMouseHW_::BusyZeroing(const unsigned int num_iterations, const bool do_serial_output) {
     // Set up the zeroing datastructure, while initialising the constants.
     zeroing_t params;
 
-    bool ret = _busyZeroing(&params, numIterations);
+    bool ret = _busyZeroing(&params, num_iterations);
 
     // If in debugmode, call the print function of our parent and output the measured values per sensor.
     // The function will print an intro and outro too.
-    if (serialOutput) {
+    if (do_serial_output) {
         for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-            _printZeroedValue(&params, _axisNames[i], i);
+            _printZeroedValue(&params, _sensorNames[i], i);
         }
     }
 
@@ -217,13 +228,12 @@ void SpaceMouseHW_::CenterSensors() {
     }
 }
 
-void SpaceMouseHW_::UpdateMinMax(const char *cmd, float value) {
+void SpaceMouseHW_::UpdateMinMax(const char *cmd, const float value) {
     // The command should contain a string starting with a sign +/- indicating if
     // we update the min or max value. The remainder of the string should contain the axis name.
 
-    // REVIEW - Changed to use strcmp for better readability and performance.
     for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-        if (strcmp(cmd + 1, _axisNames[i]) == 0) { // Changed to strcmp for review
+        if (strcmp(cmd + 1, _sensorNames[i]) == 0) {
             // If the command matches the axis name, update the min or max value accordingly.
             if (cmd[0] == '+') {
                 _maxVals[i] = value;
@@ -243,7 +253,7 @@ void SpaceMouseHW_::UpdateMinMax(const char *cmd, float value) {
  * @param value The deadzone value to be set, entered through the serial interface . The value is between 0 and 127.
  * @return 0 if the deadzone value is set successfully, -1 if the value is out of range.
  */
-int8_t SpaceMouseHW_::UpdateDeadzone(uint8_t value) {
+int8_t SpaceMouseHW_::UpdateDeadzone(const uint8_t value) {
 
     // Update the internal deadzone value
     _deadzone = value;
@@ -267,12 +277,12 @@ void SpaceMouseHW_::PrintDeadzone() {
 /**
  *  @brief Calibrate (=zero) the space mouse idle position. The function is blocking other functions of the spacemouse during zeroing.
  *
- *  @param numIterations How many readings are taken to calculate the mean. Suggestion: 500 iterations, they take approx. 480ms.
+ *  @param num_iterations How many readings are taken to calculate the mean. Suggestion: 500 iterations, they take approx. 480ms.
  *  @param debugFlag With debugFlag = true, a suggestion for the dead zone is given on the serial interface to save to the config.h
  *
  *  @return returns true, if no warnings occured. Warnings are given if the zero positions are very unlikely, ie if they are out of boundary of our hardware.
  */
-bool SpaceMouseHW_::_busyZeroing(zeroing_t *params, uint16_t numIterations) {
+bool SpaceMouseHW_::_busyZeroing(zeroing_t *params, const unsigned int num_iterations) {
 
     bool noWarningsOccurred = true;
 
@@ -289,7 +299,7 @@ bool SpaceMouseHW_::_busyZeroing(zeroing_t *params, uint16_t numIterations) {
     // Measure the duration of the zeroing process
     _startMillis = millis();
 
-    for (params->c_iterations = 0; params->c_iterations < numIterations; params->c_iterations++) {
+    for (params->c_iterations = 0; params->c_iterations < num_iterations; params->c_iterations++) {
         ReadAllFromSensors();
         for (uint8_t i = 0; i < NUM_SENSORS; i++) {
             // Add to mean
@@ -334,7 +344,7 @@ void SpaceMouseHW_::PrintMinMax() {
         int workingRange = abs(_minVals[i]) + abs(_maxVals[i]);
 
         // Print the value of the min, max and working range for each sensor
-        Serial.print(_axisNames[i]);
+        Serial.print(_sensorNames[i]);
         Serial.print(F(":  "));
         alignValue(_minVals[i], 4);
         Serial.print(_minVals[i]);
@@ -460,31 +470,33 @@ void SpaceMouseHW_::_printArray(int arr[], int size) {
 
 /**
  * @brief Outputs the axisname and the value to the serial interface.
- * @param index
- * @param value
- * @param alignmentWidth
- * @details The alignmentWidth is used to align the output of the values in the serial monitor.
+ * @param sensor_idx    The index of the sensor to be printed, to retrieve the name from the _sensorNames array.
+ * @param value        The value to be printed.
+ * @param value_width The width for the value (for aligning the printed value).
  */
-void SpaceMouseHW_::_printValue(const uint8_t index, const int value, const uint8_t alignmentWidth) {
-    if (index > 0) {
+void SpaceMouseHW_::_printValue(const uint8_t sensor_idx, const int value, const uint8_t value_width) {
+    if (sensor_idx > 0) {
         Serial.print(F(", "));
     }
-    Serial.print(_axisNames[index]);
+    Serial.print(_sensorNames[sensor_idx]);
     Serial.print(F(":"));
-    alignValue(value, alignmentWidth);
+    alignValue(value, value_width);
     Serial.print(value);
 }
 
+/**
+ * @brief Outputs the axisname and the raw analog value to the serial interface.
+ */
 void SpaceMouseHW_::PrintRawReads() {
     // Report back 0-1023 raw ADC 10-bit values if enabled
     for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-        _printValue(i, _rawReads[i]);
+        _printValue(i, _rawReads[i], 4);
     }
 }
 
 void SpaceMouseHW_::PrintCentered() {
     // Report back values for sensor axis after centering and mapping
     for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-        _printValue(i, centered[i], 2);
+        _printValue(i, centered[i], 4);
     }
 }

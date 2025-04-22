@@ -6,13 +6,19 @@
 #include "config.h"
 #include "kinematics.h" // Definition of the velocity array positions (TRANSzz/ROTXzz)
 
-static const char *Joystick_axisNames[8] = JOYSTICK_AXIS_NAMES;
+static const char *Joystick_sensorNames[NUM_SENSORS] = JOYSTICK_SENSOR_NAMES;
 
 /**
  * Constructor/Destructor
  */
 SpaceMouseHW_Joystick_::SpaceMouseHW_Joystick_()
-    : SpaceMouseHW_(JOYSTICK_WARN_CENTERPOINT_MIN, JOYSTICK_WARN_CENTERPOINT_MAX, JOYSTICK_WARN_MINMAX_MIN, JOYSTICK_WARN_MINMAX_MAX, JOYSTICK_WARN_MINMAX_RANGE, Joystick_axisNames) {
+    : SpaceMouseHW_(DEADZONE,
+                    JOYSTICK_WARN_CENTERPOINT_MIN,
+                    JOYSTICK_WARN_CENTERPOINT_MAX,
+                    JOYSTICK_WARN_MINMAX_MIN,
+                    JOYSTICK_WARN_MINMAX_MAX,
+                    JOYSTICK_WARN_MINMAX_RANGE,
+                    Joystick_sensorNames) {
 }
 
 SpaceMouseHW_Joystick_::~SpaceMouseHW_Joystick_() {}
@@ -45,7 +51,7 @@ void SpaceMouseHW_Joystick_::CalculateKinematicSensors(int16_t *velocities) {
  * @brief Set the analog reference voltage to 5V for debug 1 and to 2.56V otherwise
  * @param debug The current debug level of the spacemouse.
  */
-void SpaceMouseHW_Joystick_::SetAnalogReferenceVoltage(int debug) {
+void SpaceMouseHW_Joystick_::SetAnalogReferenceVoltage(const uint8_t debug) {
     analogReference(DEFAULT);
     Serial.print(CF(Info_AnalogVoltage));
     Serial.println(F("5V."));
@@ -60,10 +66,10 @@ void SpaceMouseHW_Joystick_::SetAnalogReferenceVoltage(int debug) {
     }
 }
 
-bool SpaceMouseHW_Joystick_::BusyZeroing(uint16_t numIterations, boolean serialOutput) {
-    if (serialOutput) {
+bool SpaceMouseHW_Joystick_::BusyZeroing(const unsigned int num_iterations, const bool do_serial_output) {
+    if (do_serial_output) {
         Serial.println(F("Zeroing Joysticks..."));
     }
 
-    return SpaceMouseHW_::BusyZeroing(numIterations, serialOutput);
+    return SpaceMouseHW_::BusyZeroing(num_iterations, do_serial_output);
 }

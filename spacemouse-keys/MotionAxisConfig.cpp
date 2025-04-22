@@ -9,7 +9,7 @@
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
 
 /**
- * @brief Constructor for MotionAxisConfig class.
+ * @brief Constructor for MotionAxisConfig class, loads configuration from EEPROM.
  * @details Create the object & technically initialise members.Load the configuration data from the EEPROM.
  * @param Name The base name of the axis (e.g. TX, TY, TZ, RX, RY, RZ)
  * @param EEPROMAddress The address in the EEPROM where the axis configuration is stored
@@ -21,8 +21,7 @@ MotionAxisConfig::MotionAxisConfig(const char *Name, int EEPROMAddress) : _name{
 }
 
 /**
- * @brief Constructor for MotionAxisConfig class with default configuration.
- * @details Create the object & technically initialise members. Update the default configuration data in the EEPROM.
+ * @brief Constructor for MotionAxisConfig class with supplied configuration. Stores configuration in EEPROM.
  * @param Name The base name of the axis (e.g. TX, TY, TZ, RX, RY, RZ)
  * @param EEPROMAddress The address in the EEPROM where the axis configuration is stored
  * @param config The default configuration for the velocity axis
@@ -45,14 +44,14 @@ MotionAxisConfig::~MotionAxisConfig() {
 /**
  * @brief Calculates the velocity based on the current sensor readings.
  * @details This function calculates the velocity based on the current position and the sensitivity.
- *          It applies the sensitivity configured for this axis (&direction).
- *          After that it applies the configured modifier function for this axis, applies any gate for this axis.
- *          Finally it inverts the motion if necessary.
- * @param sensorInput Value that is read from the sensor (e.g. joystick, knob, etc.). The value is centered and the deadzone is applied.
+ *          It applies the sensitivity configured for this axis (& axis direction).
+ *          Followed by applying the configured modifier function for this axis and the configured gate for this axis.
+ *          Finally, it inverts the motion if configured.
+ * @param sensorInput Value that is read from the sensor (e.g. joystick, knob, etc.).
+ *          The value is centered and the deadzone is applied.
  */
 void MotionAxisConfig::CalculcateVelocity(int16_t sensorInput) {
     // Calculate the velocity based on the current position and the sensitivity
-    // This is a placeholder function, the actual implementation will depend on the specific hardware and requirements
     float sens;
     int8_t gate;
 
@@ -66,7 +65,7 @@ void MotionAxisConfig::CalculcateVelocity(int16_t sensorInput) {
         gate = _config.pos_gate;
     }
 
-    // apply the sensitivity for this axis & direction
+    // Apply the sensitivity for this axis & direction
     _value = sensorInput / sens;
 
     // Apply the modifier function for this axis, override the default one if necessary
@@ -94,14 +93,8 @@ void MotionAxisConfig::PrintVelocity() {
     Serial.print(F(" "));  // Add a space after the value
 }
 
-#if 0
-boolean MotionAxisConfig::isAxis(const char *Name) {
-    return (strcmp(Name, _name) == 0);
-}
-#endif
-
 /**
- * @brief Updates the configuration for the specified axis.
+ * @brief Updates the configuration for the specified axis and stores it in the EEPROM.
  * @details The function checks if the axis name matches the current axis.
  * If it does, it updates the specified configuration parameter (gate, modifier function, or sensitivity) based on the provided value and direction.
  * @param axisName The name of the axis to update.
@@ -110,6 +103,7 @@ boolean MotionAxisConfig::isAxis(const char *Name) {
  * @param isInversion Indicates if the inversion setting should be updated.
  * @param pos_neg Indicates the direction for the update (1 for positive, -1 for negative).
  * @param value The new value to set for the specified configuration.
+ *
  * @return Flag indicating success or failure of the update.
  * @retval false Axis name does not match or update failed.
  * @retval true Update was successful.

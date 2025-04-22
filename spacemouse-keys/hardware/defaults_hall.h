@@ -1,6 +1,12 @@
 #ifndef DEFAULTSHALL_H
 #define DEFAULTSHALL_H
 
+// Default sensorhardware configuration for Hall sensors hardware
+//===============================================================
+#ifndef DEADZONE
+#define DEADZONE 10 // Default deadzone for the Hall Effect sensors. The value can be overiden in the config.h file.
+#endif
+
 // Default motion configuration for Hall sensors hardware.
 // =======================================================
 // This file contains the default configuration settings for the Hall Effect sensors.

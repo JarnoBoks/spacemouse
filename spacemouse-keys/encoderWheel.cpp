@@ -61,7 +61,7 @@ void calcEncoderWheel(Kinematics &SMKIN, int debug) {
         simpull = 0;
     }
 
-    if (debug == 9) {
+    if (debug == 10) {
         Serial.print(F("Enc val: "));
         Serial.print(newEncoderValue);
         Serial.print(F(", factor: "));
@@ -82,7 +82,7 @@ void calcEncoderAsKey(SpaceKeys *SMKEYS, int debug) {
         delta = (newEncoderValue - previousEncoderValue) * ROTARY_KEY_STRENGTH + delta;
         previousEncoderValue = newEncoderValue;
 
-        if (debug == 9) {
+        if (debug == 10) {
             // create debug output
             Serial.print("Enc Val: ");
             Serial.println(newEncoderValue);

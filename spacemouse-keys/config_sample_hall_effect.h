@@ -68,37 +68,34 @@ Debug Modes:
      Joystick:    The values should be approximately -350 to +350, small movements are ignored.
      Hall Effect: The values should be approximately -350 to +350, small movements are ignored.   //TODO - check if this is correct for the HES sensors
 
- 4:  Report translation & rotation values and status of the keys.
-     The translation (TX, TY, TZ) and rotation (RX, RY, RZ) values are calculated from the hardware output.
-     See kinematics.h for the details of the calculation. The parameters for the calculation can be configured (see further below).
+ 4:  Report translation & rotation values.
+     The translation (TX, TY, TZ) and rotation (RX, RY, RZ) values are calculated from the hardware output. Modifier function, inversion, YZ switching nor Exclusivemode are
+     applied. See kinematics.h for the details of the calculation. The parameters for the calculation can be configured (see further below).
 
      Output:      Approximately -350 to +350 depending on the parameter.
 
- 5:  Report centered values (2nd debug) and translation & rotation values and keystatus (4th debug) side by side for direct reference.
-     This is very useful if you need to alter which inputs are used in the arithmetic above.
-     The values are reported in the same format as in debug mode 4.
+ 5:  Report centered values (2nd debug) and translation & rotation values side by side for direct reference. Modifier function and inversion are applied. Any configured YZ switching or Exclusivemode is not applied.
 
- 6:  Report centered values (2nd debug) and translation & rotation values and keystatus (4th debug) after applying
-     the kill-key functionality. (If configured).
+ 6:  Report centered values (2nd debug) and translation & rotation values (5th debug) and the key state after applying the kill-key functionality.
 
- 61: Report centered values (2nd debug) and translation & rotation values and keystatus (4th debug) after applying
+ 7: Report centered values (2nd debug) and translation & rotation values and keystatus (4th debug) after applying
      the kill-switch and the exclusive mode. (If configured).
 
- 7:  Report the frequency of the loop().
+ 8:  Report the frequency of the loop().
      This is useful to check if the loop() is running fast enough. The frequency is calculated by counting the number
      of iterations in one second. The frequency is reported in Hz.
 
- 8:  Report the bits and bytes send as button codes
+ 9:  Report the bits and bytes send as button codes
 
- 9:  Report details about the encoder wheel, if ROTARY_AXIS > 0 or ROTARY_KEYS>0
+10:  Report details about the encoder wheel, if ROTARY_AXIS > 0 or ROTARY_KEYS>0
 */
 
-/// The debug level that is used when the program is started. This can be changed in the serial monitor.
-/// @note Use DEBUG x to change the debug level in the serial monitor.
+/// The debug level that is used when the program is started. This can be changed in the Serial monitor.
+/// @note Use the command "DEBUG <value>" to change the debug level from within in the Serial monitor.
 #define STARTDEBUG 0
 
 /// The hardware that is used for the spacemouse. This is used to select the correct hardware library.
-/// Can only be changed in the config.h file.
+/// This setting can only be changed in the config.h file.
 /// @note Valid values are "#define HALLEFFECT" or "#define JOYSTICK"
 #define HALLEFFECT
 
@@ -227,7 +224,7 @@ Manual min/max calibration (command: DEBUG 2)
 8. You finished calibrating the min and max settings of the hardware.
 
 To store the values for single sensors in the EEPROM, you can use the command "MINMAX <+|-><sensorname> <value>".
-   <+|->        - The sign of the value. + for max, - for min
+   <+|->        - Indication of the value to set. + for max, - for min
    <sensorname> - The name of the sensor. The name of the sensor is the same as in the chart above.
    <value>      - The value to set for the sensor.
 
@@ -248,103 +245,231 @@ Insert measured Values like this:
 
 /**
  *
- *    Sensor calibration is finished. The spacemouse is now calibrated to transform the normalized sensor readings to raw translation & rotation values.
- *    In the next phase of the calibration we can finetune this transformation, by adjusting the sensitivity of the translation and rotation values.
+ *    Hardware sensor calibration is finished. The spacemouse is now setup to transform the normalized sensor readings to raw translation & rotation values.
+ *    In the next phase of the calibration we can finetune the translation & rotation, by adjusting the parameters of the sensor to motionaxis.
  *
  */
 
-/* Fourth calibration: Sensitivity
+/* Fourth calibration: Base Sensitivity
 ==================================
 Use debug mode 4 or use for example your CAD program to verify changes.
+Note: Neither the modifier function nor the inversion are applied in debug mode 4.
 
-The sensitivity values are used in a division, thus
-  - Use a fraction to make the axis MORE sensitive. F.e. 0.5 makes the axis twice as sensitive.
-  - Use a value larger than 1 to make it LESS sensitive. F.e. 5 makes the axis five times less sensitive.
-
-Recommended calibration procedure for sensitivity
+Recommended calibration procedure for base sensitivity
 -------------------------------------------------
-1. Make sure modFunc is on level 0, see below. Upload the sketch. Then open serial monitor, type 4 for and hit enter.
-   You will see Values TX, TY, TZ, RX, RY, RZ, the configured keys and the current status of the sensitivity parameters.
+1. Compile the sketch and upload it. Then open the Serial monitor, type "DEBUG 4" and hit enter.
+   You will see Values TX, TY, TZ, RX, RY, RZ and the configured keys. The values are the raw translation & rotation values (ie. the
+   modulation function and inversion are not applied).
 2. Start moving your Spacemouse. You will notice values changing.
-3. Starting with TX try increasing this value as much as possible by moving your Spacemouse around. If you get around 350 thats great.
-   If not change TRANSX_SENSITIVITY. Repeat until it is around 350 for maximum motion.
+3. Starting with TX. Try increasing this value as much as possible by moving your Spacemouse around. If you get around +350 and -350 thats great.
+   If not change SENS_TX_POS/NEG. Repeat until it is around 350 for maximum motion.
 4. Repeat steps 3 for TY, TZ, RX, RY, RZ
 5. Verification: Move the Joystick in funny ways. All you should get for either TX,TX,TZ,RX,RY,RZ should be approximately between -350 to 350.
 6. You have finished sensitivity calibration. You can now test your Spacemouse with your favorite program (e.g. Cad software, Slicer)
 7. Aftermath: You notice the movements are hard to control. Try using Modification Functions [Suggestion: ModFunc level 3]
+
+To store the sensitivity values for a single axis in the EEPROM, you can use the command
+   SENS <axisname>[+|-] <value>
+      <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
+      [+|-]        - Optional indication of the direction for which the value will be set. + for positive, - for negative. If not set, the value is set for both directions.
+      <value>      - The sensitivity value to set for the axis. Should be a float (ie 2 should be 2.0)
+                     Use a fraction to make the axis MORE sensitive. F.e. 0.5 makes the axis twice as sensitive.
+                     Use a value larger than 1 to make it LESS sensitive. F.e. 2.0 makes the axis two times less sensitive.
+
+Examples:
+   To adjust the sensitivity for positive rotation around the x axis to 0.5, you can use the command "SENS +RX 0.5"
+   To adjuist the sensitivity for positive and negative translation in the y direction to 3, you can use the command "SENS TY 3.0"
+
+To suppress small movements around zero, you can add an additional gate to each axis and even each axis direction. Use the command
+   SENS G<axisname>[+|-] <value>    (Note the 'G' in front of the axis name)
+      <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
+      [+|-]        - Optional indication of the direction for which the value will be set. + for positive, - for negative. If not set, the value is set for both directions.
+      <value>      - The sensitivity value to set for the axis. Should be a float (ie 2 should be 2.0)
 */
 
-#define TRANSX_SENSITIVITY 0.80
-#define TRANSY_SENSITIVITY 0.99
-#define POS_TRANSZ_SENSITIVITY 2.5
-#define NEG_TRANSZ_SENSITIVITY 1.5
-#define GATE_NEG_TRANSZ 15 // gate value, which negative z movements will be ignored (like an additional deadzone for -z).
-#define GATE_ROTX 15       // Value under which rotX values will be forced to zero
-#define GATE_ROTY 15       // Value under which roty values will be forced to zero
-#define GATE_ROTZ 15       // Value under which rotz values will be forced to zero
+// All sensitivity defaults can be overiden in the config.h file by usign the following defines format:
+//
+// #define DEF_SENS_<axisname>_<POS|NEG> <value>   where axisname is TX, TY, TZ, RX, RY, RZ
+//                                                       value    is a float value for SENS (0.0-10.0)
+//
+//
+// Examples:
+// #define DEF_SENS_TX_POS 2.0         // will set the default sensitivity for the positive x translation to 2.0
+// #define DEF_GATE_TZ_NEG 15          // will set the default gate for the negative z translation to 15
 
-#define ROTX_SENSITIVITY 1.2
-#define ROTY_SENSITIVITY 1.2
-#define ROTZ_SENSITIVITY 0.90
+// >>> Place your default values here. These values will be used if the EEPROM is empty or if the version number (SM_VERSION) is changed.
 
 /* Fifth calibration: Modifier Function
 =======================================
+Use debug mode 5 ("DEBUG 5") or use for example your CAD program to verify changes.
+In debug mode 5 the modifier function and the inversion are applied to the translation & rotation values.
 Modify resulting behaviour of Spacemouse outputs to suppress small movements around zero and enforce big movements even more.
 
 Check the README.md for more details and a plot of the different functions.
-(This function is applied on the resulting velocities and not on the direct input from the joysticks)
+The modifier function is applied on the resulting translations & rotations and not on the direct input from the joysticks.
 
-This should be at level 0 when starting the calibration!
-0: linear y = x [Standard behaviour: No modification]
-1: squared function y = x^2*sign(x) [altered squared function working in positive and negative direction]
-2: tangent function: y = tan(x) [Results in a linear curve near zero but increases the more you are away from zero]
-3: squared tangent function: y = tan(x^2*sign(X)) [Results in a flatter curve near zero but increases a lot the more you are away from zero]
-4: cubed tangent function: y = tan(x^3) [Results in a very flat curve near zero but increases drastically the more you are away from zero]
+The available modifier functions are:
+ 0: linear y = x [Standard behaviour: No modification]
+ 1: squared function y = x^2*sign(x) [Squared function working in positive and negative direction]
+ 2: tangent function: y = tan(x) [Results in a linear curve near zero but increases the more you are away from zero]
+ 3*: squared tangent function: y = tan(x^2*sign(x)) [Results in a flatter curve near zero but increases a lot the more you are away from zero]
+ 4: cubed tangent function: y = tan(x^3) [Results in a very flat curve near zero but increases drastically the more you are away from zero]
 
-Recommendation after tuning: MODFUNC 3
+ *) Default for all axes except TZ+ (pulling the knob up) is 3. The default for TZ+ is 0 (linear).
+
+
+Update the modifier function for ALL axes and directions (including TZ+) by sending the command:
+      MODFUNC <x>         <x> One of the modifier function numbers as specified above.   // TODO - Create global MF setter
+
+
+Update the modifier function for a SINGLE axis by sending the command
+
+      SENS M<axisname>[+|-] <value>           (Note the 'M' in front of the axis name)
+         <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
+         [+|-]        - Optional indication of the direction for which the value will be set. + for positive, - for negative. If not set, the value is set for both directions.
+         <value>      - The modifier function to set for the axis (0-4, one of the functions described above).
+
+ Use the command "SENS" (without any parameter) to show the current modifier function for all axes.
+
+ Note: See below - after setting up any connected keys / rotary encoders - for further fine-tuning of the translation & rotation values.
+
 */
-#define MODFUNC 0 // Used as default value as long as the data hasn't been saved in the EEPROM
+
+// To set or overwrite the default settings from within config.h, you can use the following settings:
+//
+// Set the default modifier function for all axes except TZ+ :
+//    #define DEF_MODFUNC <x>
+//
+// Set the default modifier function for a single axis:
+// #define DEF_SENS_<axisname>_<POS|NEG> <value>   where axisname is TX, TY, TZ, RX, RY, RZ
+//                                                       value    is a float value for SENS (0.0-10.0)
+//
+//
+// Examples:
+// #define DEF_MODFUNC 3 // will set the default sensitivity for all axes except TZ+ to 3 (Squared tangent function)
+// #define DEF_MODFUNC_TZ_POS 0 // will set the default modifier function for the positive z translation to the linear function (0)
+
+// >>> Place your default values here. These values will be used if the EEPROM is empty or if the version number (SM_VERSION) is changed.
 
 /* Sixth Calibration: Direction
 ===============================
 Modify the direction of translation/rotation depending on the CAD program you are using on your PC.
-This should be done, when you are done with the pin assignment!
+Use debug mode 6 ("DEBUG 6") or use for example your CAD program to verify changes.
 
-If all defines are set to 0 the resulting X, Y and Z axis correspond to the pictures shown in the README.md.
-The suggestion in the comments for "3Dc" are often needed on windows PCs with 3dconnexion driver to get expected behavior.
+If no inversions are set the resulting X, Y and Z axis correspond to the pictures shown in the README.md.
+
+Update the inversion for a single axis by sending the command
+
+      SENS I<axisname>[+|-] <value>           (Note the 'I' in front of the axis name)
+         <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
+         [+|-]        - Optional indication of the value to set. + for positive, - for negative. If not set, the value is set for both directions.
+         <value>      - The inversion value to set for the axis (0 or 1).
+
+Use the command "SENS" (without any parameter) to show the current modifier function for all axes.
+
 */
-#define INVX 1  // pan left/right  // 3Dc: 0
-#define INVY 1  // pan up/down     // 3Dc: 1
-#define INVZ 1  // zoom in/out     // 3Dc: 1
-#define INVRX 1 // Rotate around X axis (tilt front/back)  // 3Dc: 0
-#define INVRY 1 // Rotate around Y axis (tilt left/right)  // 3Dc: 1
-#define INVRZ 1 // Rotate around Z axis (twist left/right) // 3Dc: 1
 
-// Switch Zoom direction with Up/Down Movement
-#define SWITCHYZ 0 // change to 1 to switch Y and Z axis
+// To set or overwrite the default settings from within config.h, you can use the following settings:
+//
+// #define DEF_INVERT_<axisname> <value>   where axisname is TX, TY, TZ, RX, RY, RZ
+//
+// >>> Place your default values here. These values will be used if the EEPROM is empty or if the version number (SM_VERSION) is changed.
 
-/* Key Support
-===============
-If you attached keys to your Spacemouse, configure them here.
-You can use the keys to report them via USB HID to the PC (either classically pressed or emulated with an encoder) or as kill-keys (described below).
+/* Seventh calibration: Axis used for zooming in and out.
+=========================================================
+You can change the movement for zooming in and out. Default behaviour for zooming is the translation at the Y axis (ie. zoom in/out by moving the knob north or south.)
+Use debug mode 7 ("DEBUG 7") or use for example your CAD program to verify changes.
+In order to assign the zoom function to the Z axis (ie. pulling the knob up/pushing it down), you can switch the functionality between the translation Y and Z axis:
 
-How many classic keys are there in total? (0=no keys, feature disabled)
+To switch the Y and Z axis, use the "SWITCHYZ" command from the serial monitor.
+   SWITCHYZ <0|1>  - Switch the Y and Z axis. 1 = switchXY, 0 = do not switch (default).
 */
+
+// To set or overwrite the default settings from within config.h, you can use the following settings:
+//
+// #define SWITCHYZ 0      // 0 = do not switch Y and Z axis (default), 1 = switch Y and Z axis
+//
+// >>> Place your default values here. These values will be used if the EEPROM is empty or if the version number (SM_VERSION) is changed.
+
+/* Eighth calibration - Exclusive mode
+======================================
+Exclusive mode only permits to send translation OR rotation, but never both at the same time.
+This can solve issues with classic joysticks where you get unwanted translation or rotation at the same time.
+Use Debug mode 7 ("DEBUG 7") or use for example your CAD program to verify changes.
+
+It chooses to send the one with the biggest absolute value.
+
+The exclusive mode can be enabled by using the command "EXCLUSIVEMODE" in the serial monitor.
+   EXCL <0|1> - Enable or disable exclusive mode. 1 = enable, 0 = disable (default).
+*/
+
+// To enable the Exclusive Mode as default from within config.h, you can uncomment the following settings:
+//
+// #define EXCLUSIVEMODE
+
+/* Ninth calibration - Finetuning
+==================================
+This section allows for fine-tuning the sensitivity and response of the Spacemouse. Adjust the parameters below to achieve the desired performance.
+
+After finishing the calibration, you can use the command "SHOW" in the serial monitor to see the current values of the parameters. You now can finetune the parameters to your liking.
+Try using the Spacemouse in your favorite CAD program and check the behaviour. Finetune the parameters until you are satisfied with the performance. If you notice that moving the knob
+in a certain direction, but has some (small) movement in the other direction, you can adjust sensitivity for a single axis (or even single axis direction) with the SENS command.
+
+You can also add an additional gate value to the translation and rotation values. This is useful if you want to suppress small spurious movements in a certain direction.
+This additional gate is applied to the translation or rotation axes.
+
+
+*/
+
+/* Key( ie. button) Configuration
+==================================
+If you attached keys to your Spacemouse, configure them in config.h. You cannot configure the keys from within the serial monitor.
+You can use the keys to report them via USB HID to the PC (either classically pressed or emulated with a rotary encoder) or use them as kill-keys to suppress either translation or rotation (described below).
+
+EXAMPLES
+--------
++ Configruation example for NO KEYS
+      NUMKEYS 0                        ( there are zero keys in total )
+      KEY_PINLIST { }                  ( no keys are connected to the Arduino )
+      NUMHIDKEYS 0                     ( No keys are reported to the PC )
+      BUTTONLIST { }                   ( doesn't matter, as there are no keys at all )
+      NUMKILLKEYS 0                    ( No keys for kill-keys )
+      KILLROT 0 and KILLTRANS 0        ( doesn't matter, as there are no keys at all and NUMKILLKEYS 0 )
+
+
++ Configuration example for three usual buttons and no kill-keys
+      NUMKEYS 3                        ( there are three keys in total )
+      KEY_PINLIST {15, 14, 16}         ( the keys which shall be reported to the pc are connected to pin 15, 14 and 16)
+      NUMHIDKEYS 3                     ( The first three keys from the KEY_PINLIST apply for the HID )
+      BUTTONLIST {SM_FIT, SM_T, SM_R}  ( set the functions for the three buttons to "FIT", "T" and "R" )
+      NUMKILLKEYS 0                    ( No keys for kill-keys )
+      KILLROT 0 and KILLTRANS 0        ( doesn't matter, as NUMKILLKEYS 0 )
+
++ Configuration example for two usual buttons and two kill-keys:
+      NUMKEYS 4                        ( there are four keys in total )
+      KEY_PINLIST {15, 14, 16, 10}     ( the normal which shall be reported to the pc are connected to pin 15 and 14, the keys which shall be used to kill translation or rotation are connected to pin 16 and 10 )
+      NUMHIDKEYS 2                     ( Therefore the first two keys from the KEY_PINLIST apply for the HID )
+      BUTTONLIST {SM_3, SM_4}          ( set the functions for the two buttons to "3" and "4" )
+      NUMKILLKEYS 2                    ( two keys are used as kill-keys)
+      KILLROT 2                        ( the first kill key has the third position in the KEY_PINLIST and due to zero-based counting third-1 => KILLROT 2 )
+      KILLTRANS 3                      ( the second kill key has the last position in the KEY_PINLIST with index 3 -> KILLTRANS 3 )
+
+// TODO - Add example for rotary encoder keys
+
+*/
+
+// How many classic keys are there in total ? (0 = no keys, ie.feature disabled)
 #define NUMKEYS 3 // 0
 
 // Define the PINS for the classic keys on the Arduino
-// The first pins from KEYLIST may be reported via HID
-#define KEY_PINLIST \
-    {0, 1, 2}
+// The first pins from KEY_PINLIST may be reported via HID
+#define KEY_PINLIST {0, 1, 2}
 
-/* Report KEYS over USB HID to the PC
- ----------------------------------
-How many keys reported? Classical + ROTARY_KEYS in total.
-*/
+// How many keys are reported to the PC? Classic keys + ROTARY_KEYS in total.
 #define NUMHIDKEYS 3 // 0
 
 // In order to define which key is assigned to which button, the following list must be entered in the BUTTONLIST below
-
+// TODO - It is technical possible to configure the button functionality from the Serial monitor. This is not implemented yet.
 #define SM_MENU 0  // Key "Menu"
 #define SM_FIT 1   // Key "Fit"
 #define SM_T 2     // Key "Top"
@@ -361,65 +486,22 @@ How many keys reported? Classical + ROTARY_KEYS in total.
 #define SM_CTRL 25 // Key "CTRL"
 #define SM_ROT 26  // Key "Rotate"
 
-// BUTTONLIST must have at least as many elements as NUMHIDKEYS
+/* Important: BUTTONLIST must have at least as many elements as specified in NUMHIDKEYS */
 // The keys from KEYLIST or ROTARY_KEYS are assigned to buttons here:
 #define BUTTONLIST {SM_T, SM_R, SM_F}
 
-/* Exclusive mode
-=================
-Exclusive mode only permit to send translation OR rotation, but never both at the same time.
-This can solve issues with classic joysticks where you get unwanted translation or rotation at the same time.
-
-it choose to send the one with the biggest absolute value.
-*/
-#define EXCLUSIVEMODE
-
-/* Kill-Key Feature
---------------------
-Are there buttons to set the translation or rotation to zero?
-How many kill keys are there? (disabled: 0; enabled: 2)
-*/
+// How many kill keys are there? (disabled: 0; enabled: 2)
 #define NUMKILLKEYS 0
-// usually you take the last two buttons from KEYLIST as kill-keys
-// Index of the kill key for rotation
+
+/* Note: Usually you take the last two buttons from KEY_PINLIST as kill-keys */
+// Index of the kill key for rotation (array starts with index 0)
 #define KILLROT 2
-// Index of the kill key for translation
+// Index of the kill key for translation (array starts with index 0)
 #define KILLTRANS 3
-// Note: Technically you can report the kill-keys via HID as "usual" buttons, but that doesn't make much sense...
 
-/*  Example for NO KEYS
- *  There are zero keys in total:  NUMKEYS 0
- *  KEYLIST { }
- *  NUMHIDKEYS 0
- *  BUTTONLIST { }
- *  NUMKILLKEYS 0
- *  KILLROT and KILLTRANS don't matter... KILLROT 0 and KILLTRANS 0
- */
+/* Note: Technically you can report the kill-keys via HID as "usual" buttons, but that doesn't make much sense... */
 
-/*  Example for three usual buttons and no kill-keys
- *  There are three keys in total:  NUMKEYS 3
- *  The keys which shall be reported to the pc are connected to pin 15, 14 and 16
- *  KEYLIST {15, 14, 16}
- *  Therefore, the first three pins from the KEYLIST apply for the HID: NUMHIDKEYS 3
- *  Those three Buttons shall be "FIT", "T" and "R": BUTTONLIST {SM_FIT, SM_T, SM_R}
- *  No keys for kill-keys NUMKILLKEYS 0
- *  KILLROT and KILLTRANS don't matter... KILLROT 0 and KILLTRANS 0
- */
-
-/*
- *  Example for two usual buttons and two kill-keys:
- *  There are four keys in total:  NUMKEYS 4
- *  The keys which shall be reported to the pc are connected to pin 15 and 14
- *  The keys which shall be used to kill translation or rotation are connected to pin 16 and 10
- *  KEYLIST {15, 14, 16, 10}
- *  Therefore, the first two pins from the KEYLIST apply for the HID: NUMHIDKEYS 2
- *  Those two Buttons shall be "3", "4": BUTTONLIST {SM_3, SM_4}
- *  Two keys are used as kill-keys: NUMKILLKEYS 2
- *  The first kill key has the third position in the KEYLIST and due to zero-based counting third-1 => KILLROT 2
- *  The second kill key has the last position in the KEYLIST with index 3 -> KILLTRANS 3
- */
-
-// Some simple tests for the definition of the keys
+/* Some simple tests for the definition of the keys */
 #if (NUMKILLKEYS > NUMKEYS)
 #error "Number of Kill Keys can not be larger than total number of keys"
 #endif
@@ -427,11 +509,11 @@ How many kill keys are there? (disabled: 0; enabled: 2)
 #error "Index of killkeys must be smaller than the total number of keys"
 #endif
 
-// time in ms which is needed to allow a new button press
+// Time in ms which is needed to allow a new button press
 #define DEBOUNCE_KEYS_MS 200
 
-/* Encoder Wheel
-================
+/* Encoder Wheel configuration
+===============================
 You can attach an encoder to the mouse, which acts as an input device for one movement.
 Needs the encoder library by Paul Stoffregen (https://www.pjrc.com/teensy/td_libs_Encoder.html).
 */
@@ -455,24 +537,29 @@ Axis to replace with encoder
 #define ROTARY_AXIS 0
 
 /* To calculate a velocity from the encoder position, the output is faded over so many loop() iterations, as defined in #ECHOES
-Small number = short duration of zooming <-> Big Number = longer duration of zooming
-Compare this number with the update frequency of the script, reported by debug=7: If ECHOES = frequency: the zoom is faded for 1 second.
+   Small number = short duration of zooming <-> Big Number = longer duration of zooming
+   Compare this number with the update frequency of the script, reported by DEBUG 8.
+   If ECHOES = frequency: the zoom is faded for 1 second.
 */
 #define ECHOES 200
 
 /* Strength of the simulated pull
-Recommended range: 0 - 350
-  Reason for max=350: The HID Interface reports logical max as +350, see hidInterface.h
-Recommended strength = 200
+   Recommended range: 0 - 350
+   Reason for max=350: The HID Interface reports logical max as +350, see hidInterface.h
+   Recommended strength = 200
 */
 #define SIMSTRENGTH 200
+// TODO - Rotary axis, echoes and simstrenght can technically be set from the Serial monitor. This is not implemented yet.
 
-/* ROTARY_KEYS
-=============
-Use the encoder and emulate a key stroke by turning the encoder.
+/* ROTARY_KEYS configuration
+============================
+You can use the attached encoder to emulate a key stroke by turning the encoder.
 */
+
+// Should the encoder be used as a key? (0 = no, 1 = yes)
 #define ROTARY_KEYS 0
-// which key from the BUTTONLIST shall be emulated?
+
+/* Which keys/functions as configured in the BUTTONLIST shall be emulated by the encoder? */
 // First direction  (0 = first element from BUTTONLIST, 1 = second element, etc.)
 #define ROTARY_KEY_IDX_A 2
 // counter direction
@@ -480,13 +567,13 @@ Use the encoder and emulate a key stroke by turning the encoder.
 // duration of simulated key
 #define ROTARY_KEY_STRENGTH 19
 
-/* LED support
-===============
+/* LED support configuration
+=============================
 You can attach:
-a) a simple LED to the mouse. LED shall be connected to 5V and the controller port.
-b) a fancy LED strip, like the nanopixel. Check the FASTLED library for supported chips / led strips.
+   a) a simple LED to the mouse. LED shall be connected to 5V and the controller port.
+   b) a fancy LED strip, like the nanopixel. Check the FASTLED library for supported chips / led strips.
 
-Which pin shall be used as LED? This pin is used either as a digital pin (a) or as the data pin (b).
+Which pin shall be used as LED? This pin is used either as a digital pin (for a simple LED) or as the data pin (for a fancy LED strip).
 Change from "//define" to "#define" to activate the LED feature.
 */
 // #define LEDpin 5
@@ -499,23 +586,23 @@ Change from "//define" to "#define" to activate the LED feature.
 
 /* LED strip with data pin
 ---------------------------
-The connected LED is not just a stupid LED, but an intelligent one, like a neopixel controlled by FASTLED library. If set, the LEDRING gives the number of LEDs on the ring.
+The connected LED is not just a simple LED, but an intelligent one, like a neopixel controlled by FASTLED library.
+The LEDpin is used as a data pin. The LEDRING is used to define the number of LEDs on the ring.
 */
 
 // #define LEDRING 24
-//  The LEDpin is used as a data pin
 
 // The LEDs light up, if a certain movement is reached:
 #define VELOCITYDEADZONEFORLED 15
 
-// About how many LEDs must the ring by turned to align?
+// About how many LEDs must the ring be turned to align?
 #define LEDclockOffset 0
 
-// how often shall the LEDs be updated
+// How often shall the LEDs be updated (in ms)
 #define LEDUPDATERATE_MS 150
 
-/* Advanced debug output settings
-=================================
+/* Advanced - Debug output settings
+===================================
 The following settings allow customization of debug output behavior */
 
 // Generate a debug line only every DEBUGDELAY ms
@@ -526,9 +613,9 @@ The following settings allow customization of debug output behavior */
 // If you need to report some debug outputs to trace errors, you can change the debug output to "\r\n" to get a newline with each debug output. (old behavior)
 // #define DEBUG_LINE_END "\r\n"
 
-/* Advanced USB HID settings
-============================
-The following settings are advanced and don't need to changed for normal windows users.
+/* Advanced - USB HID settings
+==============================
+The following settings are advanced and don't need to be changed for normal usage (for Windows users).
 */
 
 // Definition, how many bits are used in the HID report to encode the keys
@@ -536,7 +623,7 @@ The following settings are advanced and don't need to changed for normal windows
 
 /* ADV_HID_REL and ADV_HID_JIGGLE change how the values are reported over HID protocol, see hidInterface.cpp and .h
 
-For windows users: DON'T CHANGE / DON'T ENABLE THIS, if you don't understand what it does.
+For Windows users: DON'T CHANGE / DON'T ENABLE THIS if you don't understand what it does.
 
 For linux / spacenavd user: Suggestions to enable #define ADV_HID_JIGGLE
 

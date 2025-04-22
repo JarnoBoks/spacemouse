@@ -284,12 +284,12 @@ bool SpaceMouseHW_::_busyZeroing(zeroing_t *params, uint16_t numIterations) {
         params->deadZone[i] = 0;
     }
     params->maxDeadZone = 0;
-    params->count = 0;
+    params->c_iterations = 0;
 
     // Measure the duration of the zeroing process
     _startMillis = millis();
 
-    for (params->count = 0; params->count < numIterations; params->count++) {
+    for (params->c_iterations = 0; params->c_iterations < numIterations; params->c_iterations++) {
         ReadAllFromSensors();
         for (uint8_t i = 0; i < NUM_SENSORS; i++) {
             // Add to mean
@@ -307,7 +307,7 @@ bool SpaceMouseHW_::_busyZeroing(zeroing_t *params, uint16_t numIterations) {
     // Calculating average by dividing the mean by the number of iterations
     for (uint8_t i = 0; i < NUM_SENSORS; i++) {
         // Update the centerPoint for each sensor
-        _centerPoints[i] = params->mean[i] / params->count;
+        _centerPoints[i] = params->mean[i] / params->c_iterations;
 
         // TODO - comments
         params->deadZone[i] = params->maxValue[i] - params->minValue[i];
@@ -389,7 +389,7 @@ void SpaceMouseHW_::PrintMinMax() {
  * @param axisname
  * @param i
  */
-void SpaceMouseHW_::_printZeroedValue(zeroing_t *params, const char *axisname, int i) {
+void SpaceMouseHW_::_printZeroedValue(const zeroing_t *params, const char *axisname, const int i) {
     // Write the header if processing the first sensor
     if (i == 0) {
         Serial.println(F("\n#####  Min - Mean -  Max -> Deadzone"));
@@ -435,7 +435,7 @@ void SpaceMouseHW_::_printZeroedValue(zeroing_t *params, const char *axisname, i
         Serial.print(F("("));
         Serial.print((int)(millis() - _startMillis));
         Serial.print(F(" ms / "));
-        Serial.print(params->count);
+        Serial.print(params->c_iterations);
         Serial.print(F(" iterations)"));
     }
 }
@@ -459,7 +459,7 @@ void SpaceMouseHW_::_printArray(int arr[], int size) {
 }
 
 /**
- * @brief Output the axisname and the value to the serial interface.
+ * @brief Outputs the axisname and the value to the serial interface.
  * @param index
  * @param value
  * @param alignmentWidth

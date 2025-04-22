@@ -33,3 +33,14 @@ bool EEPROMStorage::isFirstRun() {
     }
     return _firstrun; // Return the state of the EEPROM
 }
+
+void EEPROMStorage::printVersion() { // Show the version number of the EEPROM storage
+    uint8_t version = 0;
+    EEPROM.get(EEPROM_ADDRESS_VERSION, version);
+
+    Serial.print("EEPROM Version: ");
+    Serial.print(version);
+    Serial.print(" (expected: ");
+    Serial.print(EEPROM_VERSION);
+    Serial.println(")");
+}

@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include "text.h"
+#include "eepromStorage.h"
 #include "calibration.h"
 #include "kinematics.h"
 #include "config.h"
@@ -10,7 +11,7 @@
 /**
  * @brief Prints the raw (optionally inverted) ADC 10-bit values and the status of the raw key readings (without debouncing), if the output is due (every x miliseconds)
  */
-void Calibration::DebugOutputRawInverted() {
+void Calibration::DebugOutput1_HW_RawInverted() {
     if (_debug == 1 && _isDebugOutputDue()) {
         _SMHW->PrintRawReads();
         Serial.print(F(", "));
@@ -23,14 +24,14 @@ void Calibration::DebugOutputRawInverted() {
  * @brief Prints the centered values of the sensors and the status of the keys, if the output is due (every x miliseconds)
  * @details Centered values are the difference between the raw values and the centerPoint values.
  */
-void Calibration::DebugOutputCentered() {
+void Calibration::DebugOutput2_HW_Centered() {
     if (_debug == 2 && _isDebugOutputDue()) {
         _SMHW->PrintCentered();
         Serial.print(DEBUG_LINE_END);
     }
 }
 
-void Calibration::DebugOutputDeadzonedMapped() {
+void Calibration::DebugOutput3_HW_DeadzonedMapped() {
     if (_debug == 3 && _isDebugOutputDue()) {
         _SMHW->PrintCentered();
         Serial.print(DEBUG_LINE_END);
@@ -38,38 +39,45 @@ void Calibration::DebugOutputDeadzonedMapped() {
 }
 
 /**
- * @brief Report translation & rotation values, configured sensititivity parameters and status of the mouse buttons.
+ * @brief Report translation & rotation values. Modifier function and inversion are not applied. Mainly used for calibrating base sensitivity and gate values.
  */
-void Calibration::DebugOutput4() {
-    if (_debug == 4)
-        _debugOutput_VelocitiesKeys();
-}
-
-/**
- * @brief Report single axis and translation & rotation values side by side for direct reference. Very useful if you need to alter which inputs are used in the arithmetic above.
- */
-void Calibration::DebugOutput5() {
-    if (_debug == 5 && _isDebugOutputDue()) {
-        _SMHW->PrintCentered();
-        Serial.print(" || ");
+void Calibration::DebugOutput4_KIN_Velocity() {
+    if (_debug == 4 && _isDebugOutputDue()) {
         _SMKIN->PrintVelocities();
         Serial.print(DEBUG_LINE_END);
     }
 }
 
-void Calibration::DebugOutput6() {
-    if (_debug == 6)
-        _debugOutput_VelocitiesKeys();
-}
-
-void Calibration::DebugOutput61() {
-    if (_debug == 61)
-        _debugOutput_VelocitiesKeys();
-}
-
-void Calibration::_debugOutput_VelocitiesKeys() {
-    if (_isDebugOutputDue()) {
+/**
+ * @brief Reports mapped sensor values with deadzone applied and translation & rotation values side by side for direct reference.
+ *        Useful for calibrating the modifier function.
+ */
+void Calibration::DebugOutput5_HWKIN_CenteredAndVelocity() {
+    if (_debug == 5 && _isDebugOutputDue()) {
+        _SMHW->PrintCentered();
+        helper_printseparator();
         _SMKIN->PrintVelocities();
+        Serial.print(DEBUG_LINE_END);
+    }
+}
+
+void Calibration::DebugOutput6_HWKINKEY_CenteredAndVelocityAndKeystate() {
+    if (_debug == 6 && _isDebugOutputDue()) {
+        _SMHW->PrintCentered();
+        helper_printseparator();
+        _SMKIN->PrintVelocities();
+        helper_printseparator();
+        _SMKEYS->PrintKeyState();
+        Serial.print(DEBUG_LINE_END);
+    }
+}
+
+void Calibration::DebugOutput7_HWKINKEY_CenteredAndVelocityAndKeystate() {
+    if (_debug == 7) {
+        _SMHW->PrintCentered();
+        helper_printseparator();
+        _SMKIN->PrintVelocities();
+        helper_printseparator();
         _SMKEYS->PrintKeyState();
         Serial.print(DEBUG_LINE_END);
     }
@@ -78,8 +86,9 @@ void Calibration::_debugOutput_VelocitiesKeys() {
 /**
  * @brief Indicate if a new debug output should be printed.
  *         Used to generate a debug line only every DEBUGDELAY ms, see config.h
- * @retval true if debug output is due
- * @retval false if debug output is not due
+ * @see config.h
+ * @retval true     debug output is due
+ * @retval false    debug output is not due
  */
 bool Calibration::_isDebugOutputDue() {
     static unsigned long lastDebugOutput = 0; // time from millis(), when the last debug output was given
@@ -96,15 +105,17 @@ bool Calibration::_isDebugOutputDue() {
  * @brief Update the frequency report. This function is called every second to report the frequency of the loop.
  * @details The frequency is calculated by counting the number of iterations in one second and printing it to the serial monitor.
  */
-void Calibration::UpdateFrequencyReport() {
-    // increase iterations counter
-    _iterationsPerSecond++;
-    if (millis() - _lastFrequencyUpdate > 1000) { // if one second has past: report frequency
-        Serial.print("Freq: ");
-        Serial.print(_iterationsPerSecond);
-        Serial.println(" Hz");
-        _lastFrequencyUpdate = millis(); // reset timer
-        _iterationsPerSecond = 0;        // reset iteration counter
+void Calibration::DebugOutput8_UpdateFrequencyReport() {
+    if (_debug == 8) {
+        // increase iterations counter
+        _iterationsPerSecond++;
+        if (millis() - _lastFrequencyUpdate > 1000) { // if one second has past: report frequency
+            Serial.print("Freq: ");
+            Serial.print(_iterationsPerSecond);
+            Serial.println(" Hz");
+            _lastFrequencyUpdate = millis(); // reset timer
+            _iterationsPerSecond = 0;        // reset iteration counter
+        }
     }
 }
 
@@ -187,18 +198,22 @@ void Calibration::DebugInput() {
  */
 int8_t Calibration::_handleOneWord(char *words[]) {
     int8_t ret = 0;
+    // When we have one word an the word contains a number, assume a debug level change.
+    // TODO - Allow to set the debug level with a number,without the command DEBUG.
 
     // --------------- SHOW ----------------------------------------------------
     if (strcmp_P(words[0], CMD_SHOW) == 0) {
+        EEPROMStorage::printVersion(); // Show the version number of the EEPROM storage
         Serial.println(F("\nHARDWARE CONFIGURATION:"));
         _SMHW->PrintDeadzone();
         _SMHW->PrintMinMax();
 
         // Show all stored calibration values
         _SMKIN->PrintAxisConfigurations();
+        _SMKIN->PrintSwitchYZ(); // Print the switch YZ flag
 
         // --------------- IDLE ----------------------------------------------------
-    } else if (strcmp_P(words[0], CMD_DEADZONE) == 0) {
+    } else if (strcmp_P(words[0], CMD_IDLE) == 0) {
         // Tune Idle position & suggest deadzone value
         _SMHW->BusyZeroing(2000, true); // Call the function to calibrate the idle position
 
@@ -214,13 +229,15 @@ int8_t Calibration::_handleOneWord(char *words[]) {
         // --------------- DZ ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_DEADZONE) == 0) {
         _SMHW->PrintDeadzone();
-        // --------------- MODFUNC ----------------------------------------------------
-    } else if (strcmp_P(words[0], CMD_MODFUNC) == 0) {
-#if 0
-        // Sets all axis/modfuncs to the same value.
-        Serial.println(F("Setting all axis/modfuncs to the same value."));
-        _SMKIN->PrintModulationFunction(true);
-#endif
+
+        // --------------- SWITCHYZ ----------------------------------------------------
+    } else if (strcmp_P(words[0], CMD_SWITCHYZ) == 0) {
+        _SMKIN->PrintSwitchYZ();
+
+        // --------------- EXCL ----------------------------------------------------
+    } else if (strcmp_P(words[0], CMD_EXCLUSIVEMODE) == 0) {
+        _SMKIN->PrintExclusiveMode();
+
     } else {
         Serial.println(CF(Error_CommandUnkown));
         ret = -1;
@@ -262,6 +279,13 @@ int8_t Calibration::_handleTwoWords(char *words[]) {
         // Inform the hardware of the debuglevel update.
         _SMHW->SetAnalogReferenceVoltage(_debug);
 
+        // Disable the modifier function & inversion if the debug level is 4 or 5.
+        if (_debug == 4) {
+            _SMKIN->setIgnoreArithmetics(false); // Set the ignore modifier function and inversion flag
+        } else {
+            _SMKIN->setIgnoreArithmetics(true); // Set the ignore modifier function and inversion flag
+        }
+
         // --------------- MODFUNC x ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_MODFUNC) == 0) {
 #if 0
@@ -275,10 +299,13 @@ int8_t Calibration::_handleTwoWords(char *words[]) {
         Serial.print(F("Deadzone -> "));
         Serial.println(value);
         _SMHW->UpdateDeadzone(value); // Call the function to set the deadzone
-        // --------------- DEADZONE x ----------------------------------------------------
+        // --------------- MINMAX 1 ----------------------------------------------------
     } else if (strcmp_P(words[0], CMD_MINMAX) == 0) {
         // Call the function to start the min/max calibration and store the values in EEPROM if value is 1, otherwise do not store the values in EEPROM
         _SMHW->CalibrateMinMax((value == 1));
+        // --------------- SWITCHYZ 1|0 ----------------------------------------------------
+    } else if (strcmp_P(words[0], CMD_SWITCHYZ) == 0) {
+        _SMKIN->UpdateSwitchYZ((value == 1)); // Call the function to set the switch YZ flag
     } else {
         Serial.println(CF(Error_CommandUnkown));
         return -1; // Unknown command

@@ -10,12 +10,12 @@ enum DebugLevel_t : uint8_t {
     _STARTDEBUG = 0, // Start with debug level 0
     DEBUG0 = 0,      // Debug level 0 - no debug output
     DEBUG1 = 1,      // Debug level 1 - print raw sensor values
-    DEBUG2 = 2,      // Debug level 2 - print velocities and keys
-    DEBUG3 = 3,      // Debug level 3 - print velocities and keys with sensitivity
-    DEBUG4 = 4,      // Debug level 4 - print velocities and keys with sensitivity and modulation function
-    DEBUG5 = 5,      // Debug level 5 - print velocities and keys with sensitivity and modulation function and inversion
-    DEBUG6 = 6,      // Debug level 6 - print velocities and keys with sensitivity and modulation function and inversion and gate values
-    DEBUG7 = 7,      // Debug level 7 - print loop frequency
+    DEBUG2 = 2,      // Debug level 2 - print centered sensor values
+    DEBUG3 = 3,      // Debug level 3 - print mapped sensor values with deadzone applied
+    DEBUG4 = 4,      // Debug level 4 - print velocities (sensitivity & gate , no modifier function no inversion) and key states
+    DEBUG5 = 5,      // Debug level 5 - print mapped sensor values with deadzone applied (3), velocities (sensitivity & gate, no modifier function and inversion) and key states
+    DEBUG6 = 6,      // Debug level 6 - // TODO print velocities and keys with sensitivity and modulation function and inversion and gate values
+    DEBUG7 = 7,      // Debug level 7 - // TODO
     DEBUG8 = 8,      // Debug level 8 - print loop frequency and key state
     DEBUG9 = 9,      // Debug level 9 - print loop frequency and key state with sensitivity
     DEBUG10 = 10,
@@ -32,14 +32,14 @@ public:
 
     void DebugInput();
 
-    void DebugOutputRawInverted();
-    void DebugOutputCentered();
-    void DebugOutputDeadzonedMapped();
-    void DebugOutput4();
-    void DebugOutput5();
-    void DebugOutput6();
-    void DebugOutput61();
-    void UpdateFrequencyReport();
+    void DebugOutput1_HW_RawInverted();
+    void DebugOutput2_HW_Centered();
+    void DebugOutput3_HW_DeadzonedMapped();
+    void DebugOutput4_KIN_Velocity();
+    void DebugOutput5_HWKIN_CenteredAndVelocity();
+    void DebugOutput6_HWKINKEY_CenteredAndVelocityAndKeystate();
+    void DebugOutput7_HWKINKEY_CenteredAndVelocityAndKeystate();
+    void DebugOutput8_UpdateFrequencyReport();
 
     DebugLevel_t GetDebug() { return _debug; } // Get the current debug level
 private:
@@ -47,13 +47,11 @@ private:
     SpaceMouseHW_ *_SMHW = nullptr; // Pointer to the SpaceMouse Hardware object
     SpaceKeys *_SMKEYS = nullptr;   // Pointer to the SpaceKeys object
 
-    DebugLevel_t _debug = _STARTDEBUG; // Current debug level
-
-    bool _isDebugOutputDue();
-    void _debugOutput_VelocitiesKeys();
-
+    DebugLevel_t _debug = _STARTDEBUG;      // Current debug level
     uint16_t _iterationsPerSecond = 0;      // Count the iterations within one second
     unsigned long _lastFrequencyUpdate = 0; // Time from millis(), when the last frequency was calculated
+
+    bool _isDebugOutputDue();
 
     int8_t _handleOneWord(char *words[]);
     int8_t _handleTwoWords(char *words[]);

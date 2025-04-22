@@ -4,9 +4,10 @@
 #include <Arduino.h>
 // #include "config.h" // TODO Remove inclusion!
 
+// The number of hardware sensors.
 #define NUM_SENSORS 8
 
-// Type to carry data in the busyZeroing proces between Base & Derived class
+// Type to carry data in the busyZeroing proces between Base & Derived class.
 struct zeroing_t {
     uint32_t mean[NUM_SENSORS]; // Array to count all values during the averaging
     int minValue[NUM_SENSORS];  // Array to store the minimum values
@@ -15,33 +16,10 @@ struct zeroing_t {
     int16_t deadZone[NUM_SENSORS]; // TODO
     int16_t maxDeadZone;           // TODO
 
-    unsigned int count; // Track the number of iterations during the zeroing proces
+    unsigned int c_iterations; // Track the number of iterations during the zeroing proces
 };
 
-#if 0
-// Struct to hold the default values for the hardware. These values are used to set the sensitivity and gate values for each axis
-// These values are used to store all default values for the hardware in one struct, to make it easier to pass them around.
-// The default values are stored in the EEPROM.
-struct HWDefaults_t {
-    float s_transX;
-    float s_transY;
-    float s_transZ_positive;
-    float s_transZ_negative;
-    float s_rotX;
-    float s_rotY;
-    float s_rotZ;
-    int8_t g_transZ_negative;
-    int8_t g_rotX;
-    int8_t g_rotY;
-    int8_t g_rotZ;
-
-    HWDefaults_t() = default; // Default constructor
-    HWDefaults_t(float sTX, float sTY, float sTZp, int8_t sTZn, int8_t sRX, int8_t sRY, int8_t sRZ, int8_t gTZn, int8_t gRX, int8_t gRY, int8_t gRZ)
-        : s_transX(sTX), s_transY(sTY), s_transZ_positive(sTZp), g_transZ_negative(sTZn), s_rotX(sRX), s_rotY(sRY), s_rotZ(sRZ), g_rotX(gRX), g_rotY(gRY), g_rotZ(gRZ) {}
-};
-#endif
-
-enum class statemachineMinMaxCal_t {
+enum class statemachineMinMaxCal_t : uint8_t {
     START = 0,
     MEASURING,
     RESULTS,
@@ -87,7 +65,7 @@ protected:
 
 private:
     // -- Output to serial interface
-    void _printZeroedValue(zeroing_t *params, const char *axisname, int i);
+    void _printZeroedValue(const zeroing_t *params, const char *axisname, const int i);
     void _printValue(const uint8_t index, const int value, const uint8_t alignmentWidth = 4);
     void _printArray(int arr[], int size);
 

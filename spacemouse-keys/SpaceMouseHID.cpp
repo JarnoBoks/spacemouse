@@ -336,7 +336,7 @@ void SpaceMouseHID_::prepareKeyBytes(SpaceKeys *SMKeys, uint8_t *keyData, int de
             // byte no.: bitNumber[i] / 8
             // bit no.:  bitNumber[i] modulo 8
             keyData[(bitNumber[i] / 8)] = (1 << (bitNumber[i] % 8));
-            if (debug == 8) {
+            if (debug == 9) {
                 // debug the key board outputs
                 Serial.print("bitnumber: ");
                 Serial.print(bitNumber[i]);

@@ -7,12 +7,26 @@
 #include "config.h"        // Include the config file for the hardware and the kinematics
 #include "kinematics.h"    // Our header file for the kinematics
 #include "eepromStorage.h" // Include the EEPROM address map
-#include "text.h"          // Include the text file for the debug output
+#include <EEPROM.h>
+#include "text.h" // Include the text file for the debug output
 
 #ifdef HALLEFFECT
 #include "hardware/SpaceMouseHW_Hall.h"
-#else // SM_HARDWARE == JOYSTICK
+#else
 #include "hardware/SpaceMouseHW_Joystick.h"
+#endif
+
+// Default value for the switch YZ configuration - do not switch the YZ axis. The default can be overiden in the config.h file.
+// The default value is used (and stored) if the EEPROM is not set yet.
+#ifndef SWITCHYZ
+#define SWITCHYZ 0 // Switch Zoom direction with Up/Down Movement
+#endif
+
+// Preprocessor directive to check if the exclusive mode is enabled. Necessary to keep the legacy config.h definitions working.
+#ifdef EXCLUSIVEMODE
+#define EXCLUSIVESETTING 1
+#else
+#define EXCLUSIVESETTING 0
 #endif
 
 /**
@@ -22,34 +36,32 @@
  * @param firstrun If this is the first run, we need to set the default values for the velocities. The defaults are configured in
  *                 hardware/SpaceMouseHW_(Hall/Joystick).h. If it is not the first run, we need to load the configuration from the EEPROM.
  */
-#define NO_INVERT 1
-#define INVERT -1
+#if 0
+#define NO_INVERT 0
+#define INVERT 1
 #define NO_GATE 0
 #define SQUARED_TAN 3
 #define LINEAR 0
+#endif
+
 Kinematics::Kinematics(SpaceMouseHW_ &Mouse_Hardware) : _SMHW(&Mouse_Hardware) {
     // Initialize velocities
     for (uint8_t idx = transX; idx != enumAxis_t::LENGTH; idx++) {
         _velocities[idx] = 0;
     }
 
-    // Read modFunc from EEPROM, use the default configured value if the byte is not set.
+    // Read default configurations from EEPROM, use the default configured value if the byte is not set.
     if (EEPROMStorage::isFirstRun()) {
         // If this is the first run, we need to set the default values for the velocities.
         // The default values are defined in config.h and are used if the EEPROM is not set yet.
-        _AxesConfigurations[transX] = new MotionAxisConfig("TX", EEPROM_ADDRESS_CFG_TX, VelocityConfig_t(DEF_SENS_TRANSX, NO_GATE, SQUARED_TAN, DEF_INVERT_TX));
-        _AxesConfigurations[transY] = new MotionAxisConfig("TY", EEPROM_ADDRESS_CFG_TY, VelocityConfig_t(DEF_SENS_TRANSY, NO_GATE, SQUARED_TAN, DEF_INVERT_TY));
-        _AxesConfigurations[transZ] = new MotionAxisConfig("TZ", EEPROM_ADDRESS_CFG_TZ, VelocityConfig_t(DEF_SENS_POSITIVE_TRANSZ, DEF_SENS_NEGATIVE_TRANSZ, NO_GATE, DEF_GATE_NEG_TRANSZ, LINEAR, SQUARED_TAN, DEF_INVERT_TZ));
-        _AxesConfigurations[rotX] = new MotionAxisConfig("RX", EEPROM_ADDRESS_CFG_RX, VelocityConfig_t(DEF_SENS_ROTX, DEF_GATE_ROTX, SQUARED_TAN, DEF_INVERT_RX));
-        _AxesConfigurations[rotY] = new MotionAxisConfig("RY", EEPROM_ADDRESS_CFG_RY, VelocityConfig_t(DEF_SENS_ROTY, DEF_GATE_ROTY, SQUARED_TAN, DEF_INVERT_RY));
-        _AxesConfigurations[rotZ] = new MotionAxisConfig("RZ", EEPROM_ADDRESS_CFG_RZ, VelocityConfig_t(DEF_SENS_ROTZ, DEF_GATE_ROTZ, SQUARED_TAN, DEF_INVERT_RZ));
+        _setDefaultAxisConfigurations();                        // Set the default axis configurations
+        EEPROM.put(EEPROM_ADDRESS_SWITCHYZ, SWITCHYZ);          // Store the switchYZ value in the EEPROM
+        EEPROM.put(EEPROM_ADDRESS_EXCLUSIVE, EXCLUSIVESETTING); // Store the exclusive mode value in the EEPROM
+
     } else {
-        _AxesConfigurations[transX] = new MotionAxisConfig("TX", EEPROM_ADDRESS_CFG_TX);
-        _AxesConfigurations[transY] = new MotionAxisConfig("TY", EEPROM_ADDRESS_CFG_TY);
-        _AxesConfigurations[transZ] = new MotionAxisConfig("TZ", EEPROM_ADDRESS_CFG_TZ);
-        _AxesConfigurations[rotX] = new MotionAxisConfig("RX", EEPROM_ADDRESS_CFG_RX);
-        _AxesConfigurations[rotY] = new MotionAxisConfig("RY", EEPROM_ADDRESS_CFG_RY);
-        _AxesConfigurations[rotZ] = new MotionAxisConfig("RZ", EEPROM_ADDRESS_CFG_RZ);
+        _loadAxisConfigurations();                            // Load the Axis configuration from the EEPROM
+        EEPROM.get(EEPROM_ADDRESS_SWITCHYZ, _switchYZ);       // Load the switch YZ configuration from the EEPROM
+        EEPROM.get(EEPROM_ADDRESS_EXCLUSIVE, _exclusiveMode); // Load the exclusive mode configuration from the EEPROM
     }
 }
 
@@ -67,10 +79,26 @@ Kinematics::~Kinematics() {
 #endif
 };
 
+void Kinematics::_setDefaultAxisConfigurations() {
+    _AxesConfigurations[transX] = new MotionAxisConfig("TX", EEPROM_ADDRESS_CFG_TX, VelocityConfig_t(DEF_SENS_TX_POS, DEF_SENS_TX_NEG, DEF_GATE_TX_POS, DEF_GATE_TX_NEG, DEF_MF_TX_POS, DEF_MF_TX_NEG, DEF_INVERT_TX));
+    _AxesConfigurations[transY] = new MotionAxisConfig("TY", EEPROM_ADDRESS_CFG_TY, VelocityConfig_t(DEF_SENS_TY_POS, DEF_SENS_TY_NEG, DEF_GATE_TY_POS, DEF_GATE_TY_NEG, DEF_MF_TY_POS, DEF_MF_TY_NEG, DEF_INVERT_TY));
+    _AxesConfigurations[transZ] = new MotionAxisConfig("TZ", EEPROM_ADDRESS_CFG_TZ, VelocityConfig_t(DEF_SENS_TZ_POS, DEF_SENS_TZ_NEG, DEF_GATE_TZ_POS, DEF_GATE_TZ_NEG, DEF_MF_TZ_POS, DEF_MF_TZ_NEG, DEF_INVERT_TZ));
+    _AxesConfigurations[rotX] = new MotionAxisConfig("RX", EEPROM_ADDRESS_CFG_RX, VelocityConfig_t(DEF_SENS_RX_POS, DEF_SENS_RX_NEG, DEF_GATE_RX_POS, DEF_GATE_RX_NEG, DEF_MF_RX_POS, DEF_MF_RX_NEG, DEF_INVERT_RX));
+    _AxesConfigurations[rotY] = new MotionAxisConfig("RY", EEPROM_ADDRESS_CFG_RY, VelocityConfig_t(DEF_SENS_RY_POS, DEF_SENS_RY_NEG, DEF_GATE_RY_POS, DEF_GATE_RY_NEG, DEF_MF_RY_POS, DEF_MF_RY_NEG, DEF_INVERT_RY));
+    _AxesConfigurations[rotZ] = new MotionAxisConfig("RZ", EEPROM_ADDRESS_CFG_RZ, VelocityConfig_t(DEF_SENS_RZ_POS, DEF_SENS_RZ_NEG, DEF_GATE_RZ_POS, DEF_GATE_RZ_NEG, DEF_MF_RZ_POS, DEF_MF_RZ_NEG, DEF_INVERT_RZ));
+}
+
+void Kinematics::_loadAxisConfigurations() {
+    _AxesConfigurations[transX] = new MotionAxisConfig("TX", EEPROM_ADDRESS_CFG_TX);
+    _AxesConfigurations[transY] = new MotionAxisConfig("TY", EEPROM_ADDRESS_CFG_TY);
+    _AxesConfigurations[transZ] = new MotionAxisConfig("TZ", EEPROM_ADDRESS_CFG_TZ);
+    _AxesConfigurations[rotX] = new MotionAxisConfig("RX", EEPROM_ADDRESS_CFG_RX);
+    _AxesConfigurations[rotY] = new MotionAxisConfig("RY", EEPROM_ADDRESS_CFG_RY);
+    _AxesConfigurations[rotZ] = new MotionAxisConfig("RZ", EEPROM_ADDRESS_CFG_RZ);
+}
+
 /**
- *  @brief Calculate the kinematic of the three axis from the eight sensors
- *  @param centered pointer to the array containing the eight centered values from the axis of the 4 joysticks or the 8 Hall Effect sensors
- *  @param velocity pointer to the result array that will contain the translational and rotational motions
+ *  @brief Calculates the kinematics of the six axis (TX, TY, TZ, RX, RY, RZ) from the eight sensors
  */
 void Kinematics::CalculcateKinematic() {
 
@@ -90,70 +118,76 @@ void Kinematics::PrintVelocities() {
     }
 }
 
-int16_t Kinematics::GetVelocity(enumAxis_t axis) {
+int16_t Kinematics::GetVelocity(const enumAxis_t axis) {
     return _AxesConfigurations[axis]->GetVelocity();
 }
 
-void Kinematics::SetVelocity(enumAxis_t axis, int16_t velocity) {
+void Kinematics::SetVelocity(const enumAxis_t axis, const int16_t velocity) {
     _AxesConfigurations[axis]->SetVelocity(velocity);
 }
 
+#if 0
+// JB - I think this function isn't used anywhere
 /**
- *  @brief Switch position of X and Y values
- *
- *  @param velocity pointer to velocity array
+ *  @brief Switches position of X and Y values for both translation and rotation
  */
 void Kinematics::SwitchXY() {
-    int16_t tmp = 0;
-    tmp = _velocities[transX];
-    _velocities[transX] = _velocities[transY];
-    _velocities[transY] = tmp;
+    if (_switchXY) {
+        int16_t tmp = 0;
+        tmp = _velocities[transX];
+        _velocities[transX] = _velocities[transY];
+        _velocities[transY] = tmp;
 
-    tmp = _velocities[rotX];
-    _velocities[rotX] = _velocities[rotY];
-    _velocities[rotY] = tmp;
+        tmp = _velocities[rotX];
+        _velocities[rotX] = _velocities[rotY];
+        _velocities[rotY] = tmp;
+    }
 }
+#endif
 
 /**
- *  @brief Switch position of Y and Z values
- *
- *  @param velocity pointer to velocity array
+ *  @brief Switches position of Y and Z values for both translation and rotation, if configured in the EEPROM.
  */
-void Kinematics::SwitchYZ() {
-    int16_t tmp = 0;
-    tmp = _velocities[transY];
-    _velocities[transY] = _velocities[transZ];
-    _velocities[transZ] = tmp;
+void Kinematics::ProcessSwitchYZ() {
+    if (_switchYZ && !_ignoreArithmetic) {
+        int16_t tmp = 0;
+        tmp = _velocities[transY];
+        _velocities[transY] = _velocities[transZ];
+        _velocities[transZ] = tmp;
 
-    tmp = _velocities[rotY];
-    _velocities[rotY] = _velocities[rotZ];
-    _velocities[rotZ] = tmp;
-}
-
-/**
- *  @brief  Check if translation or rotation is dominant and set the other values to zero to allow exclusively rotation or translation
- *          to avoid issues with classics joysticks.
- */
-void Kinematics::ExclusiveMode() {
-    uint16_t totalRot = abs(_velocities[rotX]) + abs(_velocities[rotY]) + abs(_velocities[rotZ]);
-    uint16_t totalTrans = abs(_velocities[transX]) + abs(_velocities[transY]) + abs(_velocities[transZ]);
-
-    if (totalRot > totalTrans) {
-        _velocities[transX] = 0;
-        _velocities[transY] = 0;
-        _velocities[transZ] = 0;
-    } else {
-        _velocities[rotX] = 0;
-        _velocities[rotY] = 0;
-        _velocities[rotZ] = 0;
+        tmp = _velocities[rotY];
+        _velocities[rotY] = _velocities[rotZ];
+        _velocities[rotZ] = tmp;
     }
 }
 
 /**
- * @brief Update the configuration for the specified axis.
+ *  @brief Prevents conflicts between translation and rotation movements, if configured in the EEPROM. Keeps only the dominant movement type.
+ *  @details This function ensures that only one type of movement is active at a time,
+ *           preventing conflicts between translation and rotation movements.
+ */
+void Kinematics::ProcessExclusiveMode() {
+    if (_exclusiveMode && !_ignoreArithmetic) {
+        uint16_t totalRot = abs(_velocities[rotX]) + abs(_velocities[rotY]) + abs(_velocities[rotZ]);
+        uint16_t totalTrans = abs(_velocities[transX]) + abs(_velocities[transY]) + abs(_velocities[transZ]);
+
+        if (totalRot > totalTrans) {
+            _velocities[transX] = 0;
+            _velocities[transY] = 0;
+            _velocities[transZ] = 0;
+        } else {
+            _velocities[rotX] = 0;
+            _velocities[rotY] = 0;
+            _velocities[rotZ] = 0;
+        }
+    }
+}
+
+/**
+ * @brief Updates the configuration for the specified axis.
  * @param axisName The name of the axis (TX,TY,TZ,RX,RY,RZ) to set the configuration for.
  * @param isGT True if value configures a gate , false otherwise.
- * @param isMF True if value configures a modulation function, false otherwise.
+ * @param isMF True if value configures a modifier function, false otherwise.
  * @param isInversion True if the value configures an inversion, false otherwise.
  * @param pos_neg   1 configures the value for a positive direction,
  *                 -1 configures the value for a negative direction,
@@ -162,7 +196,7 @@ void Kinematics::ExclusiveMode() {
  *
  * @return 1 if the configuration was updated successfully, -1 if the axis name is invalid.
  */
-int8_t Kinematics::UpdateAxisConfig(const char *axisName, boolean isGT, boolean isMF, boolean isInversion, int8_t pos_neg, float value) { // Set the sensitivity for the specified axis
+int8_t Kinematics::UpdateAxisConfig(const char *axisName, const boolean isGT, const boolean isMF, const boolean isInversion, const int8_t pos_neg, const float value) { // Set the sensitivity for the specified axis
 
     // Loop over the axis names and check if the axis name is valid.
     // If the axis name is valid, update the configuration for the specified axis.
@@ -181,7 +215,18 @@ int8_t Kinematics::UpdateAxisConfig(const char *axisName, boolean isGT, boolean 
     return 0; // Success
 }
 
-boolean Kinematics::GetAxisInvert(enumAxis_t axis) {
+int8_t Kinematics::UpdateSwitchYZ(const bool switchOn) { // Update the switch YZ configuration
+    _switchYZ = switchOn;                                // Update the internal switch YZ flag
+    EEPROM.put(EEPROM_ADDRESS_SWITCHYZ, _switchYZ);      // Store the switch YZ value in the EEPROM
+    return 1;                                            // Indicate success
+}
+
+void Kinematics::PrintSwitchYZ() {
+    Serial.print(F("Switch YZ: "));
+    Serial.println(_switchYZ);
+}
+
+boolean Kinematics::GetAxisInvert(const enumAxis_t axis) {
     // Check if the axis is valid and return the inversion for the specified axis.
     if (axis < enumAxis_t::LENGTH) {
         return (_AxesConfigurations[axis]->GetInvert() == 1);
@@ -191,32 +236,11 @@ boolean Kinematics::GetAxisInvert(enumAxis_t axis) {
     }
 }
 
-#if 0
-void _printSeparator(int8_t lspaces, int8_t rspaces) {
-    for (int i = 0; i < lspaces; i++) {
-        Serial.print(F(" "));
-    }
-    Serial.print(F("|"));
-    for (int i = 0; i < rspaces; i++) {
-        Serial.print(F(" "));
-    }
-}
-#endif
 /**
- * @brief Output the configuration of all axis to the Serial Monitor.
+ * @brief Outputs the configuration of all axes to the Serial monitor.
  */
 void Kinematics::PrintAxisConfigurations() {
-#if 0
-    _printSeparator(2, 2);
-    Serial.print(F("Sens"));
-    _printSeparator(2, 2);
-    Serial.print(F("Gate"));
-    _printSeparator(2, 2);
-    Serial.print(F("Modfunc"));
-    _printSeparator(2, 2);
-    Serial.println(F("Invert"));
-#endif
-
+    // Print the header for the axis configuration
     Serial.println(F("\nSensitivity          | Gate               | ModFunc          | Invert"));
     for (uint8_t i = 0; i < enumAxis_t::LENGTH; i++) {
         // Print the sensitivity values for each velocity axis
@@ -240,4 +264,26 @@ enumAxis_t Kinematics::GetMainVelocity() {
         }
     }
     return static_cast<enumAxis_t>(mainVelocity);
+}
+
+void Kinematics::setIgnoreArithmetics(const bool ignore) {
+    if (ignore) {
+        _ignoreArithmetic = true;
+        for (uint8_t i = 0; i < enumAxis_t::LENGTH; i++) {
+            _AxesConfigurations[i]->SetModFunc(ModFunc_t::mfLINEAR); // Temporary set the modulation function to linear
+            _AxesConfigurations[i]->SetInvert(0);                    // Temporary set the inversion to 0 (no inversion)
+        }
+    } else if (_ignoreArithmetic) {
+        _ignoreArithmetic = false; // Reset the ignore flag
+        _loadAxisConfigurations(); // Load the axis configurations from the EEPROM
+    }
+}
+
+void Kinematics::UpdateExclusiveMode(const bool exclusiveMode) {
+    _exclusiveMode = exclusiveMode;                       // Update the exclusive mode configuration
+    EEPROM.put(EEPROM_ADDRESS_EXCLUSIVE, _exclusiveMode); // Store the exclusive mode value in the EEPROM
+}
+void Kinematics::PrintExclusiveMode() { // Print the exclusive mode configuration
+    Serial.print(F("Exclusive Mode: "));
+    Serial.print(_exclusiveMode);
 }

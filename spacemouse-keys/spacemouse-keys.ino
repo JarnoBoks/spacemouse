@@ -115,7 +115,7 @@ void loop() {
     Keys->ReadAllFromKeys();
 #endif
     // Report back 0-1023 raw ADC 10-bit values if enabled
-    Mouse_Calibration.DebugOutputRawInverted();
+    Mouse_Calibration.DebugOutput1_HW_RawInverted();
 
     // Center the read joystick/knob rawValues.
     // The centered values are the difference between the raw values and the centerpoint values, ie. the idle position.
@@ -130,7 +130,7 @@ void loop() {
 
     // Report centered joystick/knob values if enabled. Values should be approx -500 to +500,
     // jitter around 0 when the knob is in idle position.
-    Mouse_Calibration.DebugOutputCentered();
+    Mouse_Calibration.DebugOutput2_HW_Centered();
 
     // The centered values are filtered for deadzone and mapped to the velocity range of -350 to +350.
     // The deadzone is the value that is used to filter out small movements of the joystick/knob.
@@ -138,7 +138,7 @@ void loop() {
     Mouse_Hardware.FilterAnalogReadOuts();
 
     // Report output after deadzone filtering and mapping is applied. Values should be approx -350 to +350,
-    Mouse_Calibration.DebugOutputDeadzonedMapped();
+    Mouse_Calibration.DebugOutput3_HW_DeadzonedMapped();
 
     // The mouse hardware is finished, and the hardware can be translated to kinematics.
     // The kinematics are calculated based on the filtered values from the hardware.
@@ -161,10 +161,11 @@ void loop() {
     calcEncoderAsKey(Keys, Mouse_Calibration.GetDebug());
 #endif
 
-    Mouse_Calibration.DebugOutput4();
-    Mouse_Calibration.DebugOutput5();
+    Mouse_Calibration.DebugOutput4_KIN_Velocity(); // Report translation & rotation values - without arithmetic functions, inversion, YZ switching or Exclusivemode
 
-    // if the kill-key feature is enabled, rotations or translations are killed=set to zero
+    Mouse_Calibration.DebugOutput5_HWKIN_CenteredAndVelocity(); // Report centered sensor values (debug 2) and translation & rotation values and keystatus (4th debug) side by side for direct reference.
+
+    // If the kill-key feature is enabled, rotations or translations are killed (ie. set to zero)
 #if (NUMKILLKEYS == 2)
     if (keyVals[KILLROT] == LOW) {
         // check for the raw keyVal and not keyOut, because keyOut is only 1 for a single iteration. keyVals has inverse Logic due to pull-ups
@@ -181,22 +182,17 @@ void loop() {
     }
 #endif
 
-    // report velocity and keys after possible kill-key feature
-    Mouse_Calibration.DebugOutput6();
+    // Report sensor output, velocity and key status after possible kill-key feature
+    Mouse_Calibration.DebugOutput6_HWKINKEY_CenteredAndVelocityAndKeystate();
 
-#if SWITCHYZ > 0
-    Mouse_Kinematics.SwitchYZ();
-#endif
+    // Switch Y and Z axis if configured. This can be used to move zooming functionality in CAD programs from the transY to the trans Z axis.
+    Mouse_Kinematics.ProcessSwitchYZ();
 
-#ifdef EXCLUSIVEMODE
-    // exclusive mode
-    // rotation OR translation, but never both at the same time
-    // to avoid issues with classics joysticks
-    Mouse_Kinematics.ExclusiveMode();
-#endif
+    // Rotation OR translation, but never both at the same time. To avoid issues with classics joysticks.
+    Mouse_Kinematics.ProcessExclusiveMode();
 
-    // report velocity and keys after Switch or ExclusiveMode
-    Mouse_Calibration.DebugOutput61();
+    // Report sensor output, velocity and keys status after all arithmetic and configured functions are applied.
+    Mouse_Calibration.DebugOutput7_HWKINKEY_CenteredAndVelocityAndKeystate();
 
     // get the values to the USB HID driver to send if necessary
     SpaceMouseHID.send_command(Mouse_Kinematics.GetVelocity(rotX),
@@ -208,10 +204,8 @@ void loop() {
                                Keys,
                                Mouse_Calibration.GetDebug());
 
-    if (Mouse_Calibration.GetDebug() == 7) {
-        // update and report the at what frequency the loop is running
-        Mouse_Calibration.UpdateFrequencyReport();
-    }
+    // Report the frequency at which the loop is running
+    Mouse_Calibration.DebugOutput8_UpdateFrequencyReport();
 
 #ifdef LEDpin
 #ifdef LEDRING

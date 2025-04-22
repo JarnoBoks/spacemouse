@@ -66,3 +66,23 @@ void alignValue(const int value, const uint8_t width) {
         Serial.print(F(" ")); // Add spaces to align the output
     }
 }
+
+void helper_print(const char *text, uint8_t minwidth) {
+    uint8_t nc = Serial.print(text);
+    while (nc < (uint8_t)minwidth) {
+        Serial.print(F(" "));
+        nc++;
+    }
+}
+
+void helper_print(const __FlashStringHelper *text, uint8_t minwidth) {
+    uint8_t nc = Serial.print(text);
+    while (nc < (uint8_t)minwidth) {
+        Serial.print(F(" "));
+        nc++;
+    }
+}
+
+void helper_printseparator() {
+    Serial.print(F(" || "));
+}

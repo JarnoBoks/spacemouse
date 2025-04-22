@@ -12,33 +12,12 @@
 #define JOYSTICK_WARN_MINMAX_RANGE 600    // Warning level for the minmax range calculation value (range below this value throws a warning)
 #define JOYSTICK_AXIS_NAMES {"AX:", "AY:", "BX:", "BY:", "CX:", "CY:", "DX:", "DY:"}
 
-// Default motion configuration for Joystick hardware
-// This file is included in the main sketch and the default values are used if the EEPROM is not set yet.
-// The values differ between the various hardware options.
-#define DEF_SENS_TRANSX 2.0
-#define DEF_SENS_TRANSY 2.0
-#define DEF_SENS_POSITIVE_TRANSZ 0.5
-#define DEF_SENS_NEGATIVE_TRANSZ 2.5
-
-#define DEF_SENS_ROTX 1.5
-#define DEF_SENS_ROTY 1.5
-#define DEF_SENS_ROTZ 2.0
-
-#define DEF_GATE_NEG_TRANSZ 15
-#define DEF_GATE_ROTX 15
-#define DEF_GATE_ROTY 15
-#define DEF_GATE_ROTZ 15
-
-#define DEF_INVERT_TX 1 // 1 = no inversion, -1 = inversion
-#define DEF_INVERT_TY 1 // 1 = no inversion, -1 = inversion
-#define DEF_INVERT_TZ 1 // 1 = no inversion, -1 = inversion
-#define DEF_INVERT_RX 1 // 1 = no inversion, -1 = inversion
-#define DEF_INVERT_RY 1 // 1 = no inversion, -1 = inversion
-#define DEF_INVERT_RZ 1 // 1 = no inversion, -1 = inversion
+// Default motion configuration for Hall effect hardware
+#include "defaults_hall.h"
 
 // The following constants are here for more readable access to the arrays. You don't need to change this values!
 // Axes in centered or rawValues array
-enum Joystick_Sensors {
+enum Joystick_Sensors : uint8_t {
     AX = 0,
     AY,
     BX,

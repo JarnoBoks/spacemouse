@@ -3,6 +3,10 @@
 
 #include "axisconfig.h"
 
+/**
+ * @brief Singleton class for default axis configuration.
+ * Will be used to create default axis configurations for different types of hardware.
+ */
 class DefaultAxisConfig {
 private:
     static DefaultAxisConfig *instance;
@@ -10,7 +14,7 @@ private:
 
 public:
     static DefaultAxisConfig &getInstance();
-    AxisConfig getDefaultConfig();
+    AxisConfig getDefaultConfig(AxisType_t type);
 };
 
 #endif // DEFAULTAXISCONFIG_H

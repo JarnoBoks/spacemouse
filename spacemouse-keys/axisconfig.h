@@ -1,9 +1,8 @@
 #ifndef AXISCONFIG_H
 #define AXISCONFIG_H
 
-#include "directionconfig.h"
-#include "eepromstore.h"
-#include "axis.h" // for AxisType_t enum
+#include "directionconfig.h" // For the DirectionConfig class
+#include "axis.h"            // For AxisType_t enum
 
 class AxisConfig {
 public:
@@ -11,24 +10,23 @@ public:
     DirectionConfig negConfig;
     bool inversion;
 
-    inline AxisConfig() : inversion(false) {
-        // Constructor implementation (if needed)
-        // Initialize the direction configurations with default values
-        posConfig = DirectionConfig(1.0, 0, mfLINEAR); // Default values for positive direction
-        negConfig = DirectionConfig(1.0, 0, mfLINEAR); // Default values for negative direction
-    }
+    /** Constructor with no arguments - not used*/
+    AxisConfig();
 
-    inline AxisConfig(AxisType_t axisType) : inversion(false) {
-        if (!EEPROMStore::loadConfig(*this, static_cast<int>(axisType))) {
-            // TODO Get default values if loading from EEPROM fails
-            posConfig = DirectionConfig(1.0, 0, mfLINEAR); // Default values for positive direction
-            negConfig = DirectionConfig(1.0, 0, mfLINEAR); // Default values for negative direction
-        }
-    }
+    /* Constructor with axisType as argument - used when called from an axis */
+    AxisConfig(AxisType_t axisType);
 
-    inline void saveAxisConfig(AxisType_t axisType) {
-        EEPROMStore::saveConfig(*this, static_cast<int>(axisType)); // Store the configuration in the EEPROM
-    }
+    /* Constructor with parameters for sensitivity, gate, and function types - used when called from default config */
+    AxisConfig(const float psens,
+               const float nsens,
+               const uint8_t pgate,
+               const uint8_t ngate,
+               const ModFunc_t pmf,
+               const ModFunc_t nmf,
+               const bool invert);
+
+    /* Save the axisconfig to EEPROM */
+    void saveAxisConfig(AxisType_t axisType);
 };
 
 #endif // AXISCONFIG_H

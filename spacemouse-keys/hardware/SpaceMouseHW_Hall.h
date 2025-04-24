@@ -18,7 +18,7 @@
 
 // The following constants are here for more readable access to the arrays. You don't need to change this values!
 // When using HallE sensors in centered or rawValues array
-enum Hall_Sensors : uint8_t {
+enum HallSensorsId_t : uint8_t {
     HES0 = 0,
     HES1,
     HES2,

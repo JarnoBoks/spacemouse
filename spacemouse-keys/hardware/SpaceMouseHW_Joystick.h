@@ -17,7 +17,7 @@
 #include "defaults_joystick.h"
 
 // The following constants are here for more readable access to the arrays.
-enum Joystick_Sensors : uint8_t {
+enum JoystickSensorsId_t : uint8_t {
     AX = 0,
     AY,
     BX,

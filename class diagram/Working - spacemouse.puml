@@ -1,0 +1,323 @@
+@startuml chatgpt_kinematics_class_diagram_with_debug
+skinparam classAttributeIconSize 0
+
+' Singleton Kinematics
+class Kinematics <<singleton>> {
+  - instance: Kinematics
+  - axes: Axis[6]
+  + getInstance(): Kinematics&
+  + getAxis(type: AxisType): Axis*
+}
+
+' Axis and its configuration
+class Axis {
+  - type: AxisType
+  - value: int16_t
+  - config: AxisConfig
+  - hardware: Hardware*
+  - light: LightBehavior*
+  - observers: DebugMonitor*[MAX_AXIS_OBSERVERS]
+  + attachObserver(observer: DebugMonitor): void
+  + detachObserver(observer: DebugMonitor): void
+  + notifyObservers(): void
+  + getValue(): int16_t
+  + setValue(val: int16_t)
+  + calculateValue(): void
+  + setLedLight(behavior: LightBehavior*) : void
+}
+
+class DirectionConfig {
+  - sensitivity: float
+  - gate: uint8_t
+  - modifier: ModifierFunction*
+}
+
+class AxisConfig {
+  - posConfig: DirectionConfig
+  - negConfig: DirectionConfig
+  - inversion: bool
+}
+
+AxisConfig o-- DirectionConfig : "posConfig"
+AxisConfig o-- DirectionConfig : "negConfig"
+
+' DirectionConfig uses ModifierFunction strategy
+DirectionConfig o-- ModifierFunction : <<strategy>>
+DirectionConfig --> ModFunc_t : <<selects>>
+
+' Modifier function hierarchy (Strategy)
+abstract class ModifierFunction <<strategy>> {
+  + modify(input: int16_t): int16_t
+}
+class LinearModifier {
+  + modify(input: int16_t): int16_t
+}
+class SquaredModifier{
+  + modify(input: int16_t): int16_t
+}
+class TangentModifier{
+  + modify(input: int16_t): int16_t
+}
+class SquaredTangentModifier{
+  + modify(input: int16_t): int16_t
+}
+class CubedTangentModifier{
+  + modify(input: int16_t): int16_t
+}
+
+ModifierFunction <|-- LinearModifier
+ModifierFunction <|-- SquaredModifier
+ModifierFunction <|-- TangentModifier
+ModifierFunction <|-- SquaredTangentModifier
+ModifierFunction <|-- CubedTangentModifier
+
+' Modifier function identifier enum
+enum ModFunc_t {
+  mfLINEAR = 0
+  mfSQUARED = 1
+  mfTANGENT = 2
+  mfSQUARDED_TANGENT = 3
+  mfCUBED_TANGENT = 4
+}
+
+' Example: AxisConfig uses ModFunc_t to select ModifierFunction
+AxisConfig --> ModFunc_t : <<selects>>
+ModFunc_t --> ModifierFunction : <<identifies>>
+
+' Hardware abstraction (Strategy + Bridge)
+abstract class Hardware {
+  + {abstract} calculateRawValue(): int16_t
+  + getAnalogReference(): uint8_t
+  + setAnalogReference(voltage: uint8_t): void
+  - analogReference: uint8_t
+  - sensors: Sensor*[MAX_SENSORS]
+}
+class HALL {
+  + calculateRawValue(): int16_t
+}
+class Joystick {
+  + calculateRawValue(): int16_t
+}
+
+Hardware <|-- HALL
+Hardware <|-- Joystick
+
+Hardware "1" o-- "8" Sensor : uses
+
+' EEPROM and default fallback (Factory)
+class EEPROM {
+  + loadConfig(): AxisConfig
+  + isInitialized(): bool
+  + loadSensorConfig(id: int): SensorConfig
+  + saveSensorConfig(id: int, config: SensorConfig): void
+}
+
+class DefaultConfig <<singleton, factory>> {
+  + getDefaultConfig(): AxisConfig
+}
+
+' LED ring behavior (Bridge)
+interface LightBehavior {
+  + {abstract} applyTo(axis: Axis*): void
+}
+
+class LedRing {
+  - pin: uint8_t
+  - numLeds: uint8_t
+  - velocityDeadzone: uint8_t
+  - clockOffset: uint8_t
+  - ledUpdateRateMs: uint16_t
+  + applyTo(axis: Axis*): void
+  + setPin(pin: uint8_t): void
+  + setNumLeds(num: uint8_t): void
+  + setVelocityDeadzone(deadzone: uint8_t): void
+  + setClockOffset(offset: uint8_t): void
+  + setLedUpdateRateMs(rate: uint16_t): void
+}
+
+class SimpleLED {
+  - pin: uint8_t
+  + applyTo(axis: Axis*): void
+  + setPin(pin: uint8_t): void
+}
+
+LightBehavior <|.. LedRing
+LightBehavior <|.. SimpleLED
+
+' Axis type enum
+enum AxisType {
+  TX
+  TY
+  TZ
+  RX
+  RY
+  RZ
+}
+
+' Sensor abstraction and types
+abstract class Sensor {
+  - pin: uint8_t
+  - idlePosition: int
+  - config: SensorConfig
+  - observers: List<DebugMonitor>
+  - name: const char*
+  - id: int
+  + getName(): const char*
+  + getId(): int
+  + attachObserver(observer: DebugMonitor): void
+  + detachObserver(observer: DebugMonitor): void
+  + notifyObservers(): void
+  + calibrateIdle(samples: int): void
+  + readValue(): int
+  + applyCalibration(raw: int): int
+}
+
+class JoystickSensor {
+  - id: Joystick_Sensors
+  - name: const char*
+  + getId(): Joystick_Sensors
+  + getName(): const char*
+}
+
+class HallSensor {
+  - id: Hall_Sensors
+  - name: const char*
+  + getId(): Hall_Sensors
+  + getName(): const char*
+}
+
+Sensor <|-- JoystickSensor
+Sensor <|-- HallSensor
+
+JoystickSensor --> Joystick_Sensors : <<identifies>>
+HallSensor --> Hall_Sensors : <<identifies>>
+
+class SensorConfig {
+  - min: int
+  - max: int
+  - invert: bool
+  - deadzone: int
+  + saveToEEPROM(address: uint8_t): void
+  + loadFromEEPROM(address: int): void
+}
+
+class DefaultSensorConfig <<singleton, factory>> {
+  + getDefault(type: const char*): SensorConfig
+}
+
+' Sensor calibration manager
+class SensorCalibrationManager {
+  - commands: CalibrationCommand*[MAX_SENSOR_COMMANDS]
+  - commandCount: uint8_t
+  + calibrateIdle(sensors: Sensor*[], count: uint8_t): void
+  + calibrateMinMax(sensors: Sensor*[], count: uint8_t): void
+  + calibrateDeadzone(sensors: Sensor*[], count: uint8_t): void
+  + addCommand(cmd: CalibrationCommand*): void
+}
+
+' Axis calibration manager
+class AxisCalibrationManager {
+ - commands: CalibrationCommand*[MAX_AXIS_COMMANDS]
+  - commandCount: uint8_t
+  + calibrateSensitivity(axes: Axis*[], count: uint8_t): void
+  + calibrateGate(axes: Axis*[], count: uint8_t): void
+  + calibrateInvert(axes: Axis*[], count: uint8_t): void
+  + calibrateModifier(axes: Axis*[], count: uint8_t): void
+  + addCommand(cmd: CalibrationCommand*): void
+}
+
+SensorCalibrationManager ..> Sensor
+AxisCalibrationManager ..> Axis
+
+' Debug system (Observer pattern optional)
+enum DebugLevel {
+  OFF = -1
+  SILENT = 0
+  RAW_VALUES = 1
+  CENTERED = 2
+  HW_OUTPUT = 3
+  AXIS_VALUES = 4
+  AXIS_VALUES_EXT = 5
+  AXIS_AND_KEYS = 6
+  FULL_DEBUG = 7
+  LOOP_FREQUENCY = 8
+}
+
+class DebugMonitor {
+  - currentLevel: DebugLevel
+  + setLevel(level: DebugLevel): void
+  + logSensorValues(sensors: Sensor*[], count: uint8_t): void
+  + logAxisValues(axes: Axis*[], count: uint8_t): void
+  + logLoopFrequency(): void
+  + update(axis: Axis*): void
+  + update(sensor: Sensor*): void
+}
+
+' Sensor enums for hardware types
+enum Joystick_Sensors  {
+  AX = 0
+  AY
+  BX
+  BY
+  CX
+  CY
+  DX
+  DY
+}
+
+enum Hall_Sensors {
+  HES0 = 0
+  HES1
+  HES2
+  HES3
+  HES6
+  HES7
+  HES8
+  HES9
+}
+
+' Relationships
+Kinematics "1" *-- "6" Axis
+Axis o-- AxisConfig
+Axis --> Hardware : <<bridge>>
+Axis --> LightBehavior : <<bridge>>
+AxisConfig o-- ModifierFunction : <<strategy>>
+AxisConfig --> EEPROM : <<load>>
+AxisConfig --> DefaultConfig : <<fallback>>
+Axis --> AxisType
+
+Sensor o-- SensorConfig
+SensorConfig --> EEPROM
+SensorConfig --> DefaultSensorConfig : <<fallback>>
+DebugMonitor --> DebugLevel
+
+' Optionally, if DebugMonitor observes axes/sensors:
+DebugMonitor ..> Axis : <<observer>>
+DebugMonitor ..> Sensor : <<observer>>
+
+' Add to your diagram:
+
+interface CalibrationCommand {
+  + execute(): void
+}
+
+class CalibrateIdleCommand
+class CalibrateMinMaxCommand
+class CalibrateDeadzoneCommand
+class CalibrateSensitivityCommand
+class CalibrateGateCommand
+class CalibrateInvertCommand
+class CalibrateModifierCommand
+
+CalibrationCommand <|-- CalibrateIdleCommand
+CalibrationCommand <|-- CalibrateMinMaxCommand
+CalibrationCommand <|-- CalibrateDeadzoneCommand
+CalibrationCommand <|-- CalibrateSensitivityCommand
+CalibrationCommand <|-- CalibrateGateCommand
+CalibrationCommand <|-- CalibrateInvertCommand
+CalibrationCommand <|-- CalibrateModifierCommand
+
+SensorCalibrationManager o-- CalibrationCommand
+AxisCalibrationManager o-- CalibrationCommand
+
+@enduml

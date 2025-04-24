@@ -2,13 +2,15 @@
 
 #include "axis.h"
 #include "config.h"
+#include "hardware_hall.h"
+#include "hardware_joystick.h"
 
 Axis::Axis(AxisType_t type) : type(type) {
     // Initialize the axis with the given type
     this->config = new AxisConfig(type); // Create a new AxisConfig object for this axis
 
 #ifdef HALLEFFECT
-    this->hardware = HALL::getInstance(); // Initialize the hardware with Hall effect sensors
+    this->hardware = Hardware_HALL::getInstance(); // Initialize the hardware with Hall effect sensors
 #elif defined(JOYSTICK)
     this->hardware = JOYSTICK::getInstance(); // Initialize the hardware with Joystick
 #endif

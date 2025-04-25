@@ -1,0 +1,78 @@
+@startuml command interpreter
+
+title Class Diagram - Arduino SpaceMouse Command System
+
+'====================
+' Abstract Command
+'====================
+abstract class Command {
+    +execute(params: String[]): void
+}
+
+'====================
+' Concrete Commands
+'====================
+class ShowCommand
+class IdleCommand
+class DeadzoneCommand
+class MinMaxCommand
+class SwitchYZCommand
+class ExclusiveModeCommand
+class DebugCommand
+class ModFuncCommand
+class SensCommand
+
+ShowCommand --|> Command
+IdleCommand --|> Command
+DeadzoneCommand --|> Command
+MinMaxCommand --|> Command
+SwitchYZCommand --|> Command
+ExclusiveModeCommand --|> Command
+DebugCommand --|> Command
+ModFuncCommand --|> Command
+SensCommand --|> Command
+
+'====================
+' CommandHandler
+'====================
+class CommandHandler {
+    -commands[10]: Command*
+    +handleInput(input: String): void
+    +registerCommand(index: int, cmd: Command*): void
+}
+
+CommandHandler --> Command : uses
+
+'====================
+' Debug State Pattern
+'====================
+abstract class DebugState {
+    +apply(): void
+    +report(): void
+}
+
+class DebugOff
+class DebugSilent
+class DebugRawValues
+class DebugCentered
+class DebugHWOutput
+class DebugAxisValues
+class DebugAxisValuesExt
+class DebugAxisAndKeys
+class DebugFullDebug
+class DebugLoopFreq
+
+DebugOff --|> DebugState
+DebugSilent --|> DebugState
+DebugRawValues --|> DebugState
+DebugCentered --|> DebugState
+DebugHWOutput --|> DebugState
+DebugAxisValues --|> DebugState
+DebugAxisValuesExt --|> DebugState
+DebugAxisAndKeys --|> DebugState
+DebugFullDebug --|> DebugState
+DebugLoopFreq --|> DebugState
+
+DebugCommand --> DebugState : currentState
+
+@enduml

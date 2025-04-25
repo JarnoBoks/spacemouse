@@ -1,0 +1,55 @@
+@startuml command interpreter
+skinparam classAttributeIconSize 0
+title State Diagram - Arduino SpaceMouse Command Processor
+
+[*] --> WaitingForCommand : System initialized
+
+state WaitingForCommand {
+  [*] --> Idle
+
+  Idle --> ProcessingCommand : Command received
+
+  state ProcessingCommand {
+    [*] --> CheckCommand
+
+    CheckCommand --> CMD_SHOW : CMD_SHOW
+    CheckCommand --> CMD_IDLE : CMD_IDLE
+    CheckCommand --> CMD_DEADZONE : CMD_DEADZONE
+    CheckCommand --> CMD_MINMAX : CMD_MINMAX
+    CheckCommand --> CMD_SWITCHYZ : CMD_SWITCHYZ
+    CheckCommand --> CMD_EXCLUSIVEMODE : CMD_EXCLUSIVEMODE
+    CheckCommand --> CMD_DEBUG : CMD_DEBUG
+    CheckCommand --> CMD_MODFUNC : CMD_MODFUNC
+    CheckCommand --> CMD_SENS : CMD_SENS
+  }
+
+  CMD_SHOW --> Idle
+  CMD_IDLE --> Idle
+  CMD_DEADZONE --> Idle
+  CMD_MINMAX --> Idle
+  CMD_SWITCHYZ --> Idle
+  CMD_EXCLUSIVEMODE --> Idle
+  CMD_MODFUNC --> Idle
+  CMD_SENS --> Idle : Process SENS [0,1 param]
+
+  state CMD_DEBUG {
+    [*] --> DEBUG_OFF
+
+    DEBUG_OFF --> DEBUG_SILENT : Set 0
+    DEBUG_SILENT --> DEBUG_RAW_VALUES : Set 1
+    DEBUG_RAW_VALUES --> DEBUG_CENTERED : Set 2
+    DEBUG_CENTERED --> DEBUG_HW_OUTPUT : Set 3
+    DEBUG_HW_OUTPUT --> DEBUG_AXIS_VALUES : Set 4
+    DEBUG_AXIS_VALUES --> DEBUG_AXIS_VALUES_EXT : Set 5
+    DEBUG_AXIS_VALUES_EXT --> DEBUG_AXIS_AND_KEYS : Set 6
+    DEBUG_AXIS_AND_KEYS --> DEBUG_FULL_DEBUG : Set 7
+    DEBUG_FULL_DEBUG --> DEBUG_LOOP_FREQ : Set 8
+
+    DEBUG_LOOP_FREQ --> Idle : Done
+    DEBUG_OFF --> Idle : No param (report current)
+  }
+
+  CMD_DEBUG --> Idle : No param (report current)
+}
+
+@enduml

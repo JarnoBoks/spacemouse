@@ -1,22 +1,28 @@
-#ifndef LEDRING_H
-#define LEDRING_H
-#include "lightbehavior.h"
-#include "axis.h"
+#ifndef LEDRING_h
+#define LEDRING_h
+// This is the public header for the ledring.cpp file
+// It contains all functions which can be called from the main application
 
-class LedRing : public LightBehavior {
-private:
-    uint8_t pin;
-    uint8_t numLeds;
-    uint8_t velocityDeadzone;
-    uint8_t clockOffset;
-    uint16_t ledUpdateRateMs;
+#include <FastLED.h>
+#include "config.h"
+#include "kinematics.h"
 
+class LedRing {
 public:
-    void applyTo(Axis *axis) override;
-    void setPin(uint8_t pin);
-    void setNumLeds(uint8_t num);
-    void setVelocityDeadzone(uint8_t deadzone);
-    void setClockOffset(uint8_t offset);
-    void setLedUpdateRateMs(uint16_t rate);
+    LedRing(Kinematics &SMKIN);
+    ~LedRing();
+
+    void ProcessLED(boolean ledCmd);
+
+private:
+    Kinematics *_SMKIN = nullptr;
+
+    CRGB _leds[LEDRING];
+
+    void _setLEDsOnClock(uint16_t clock, CRGB color);
+    void _set4LEDsOnClock(uint16_t clock, CRGB color);
+    void _setAllLEDs(CRGB color);
+    void _rotateColor(boolean clockwise, CRGB color);
 };
-#endif // LEDRING_H
+
+#endif // LEDRING_h

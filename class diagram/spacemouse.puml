@@ -1,0 +1,347 @@
+@startuml
+' ================= Enums =================
+enum AxisType_t {
+  ALL = -2
+  UNINITIALIZED = -1
+  TX
+  TY
+  TZ
+  RX
+  RY
+  RZ
+  LENGTH
+}
+
+enum ModFunc_t {
+  mfLINEAR = 0
+  mfSQUARED = 1
+  mfTANGENT = 2
+  mfSQUARDED_TANGENT = 3
+  mfCUBED_TANGENT = 4
+}
+
+enum DebugLevel {
+  OFF = -1
+  SILENT = 0
+  RAW_VALUES
+  CENTERED
+  HW_OUTPUT
+  AXIS_VALUES
+  AXIS_VALUES_EXT
+  AXIS_AND_KEYS
+  FULL_DEBUG
+  LOOP_FREQUENCY
+}
+
+' ================= Kinematics =================
+class Kinematics {
+  - static Kinematics *instance
+  - Axis axes[6]
+  - Kinematics()
+  + static Kinematics &getInstance()
+  + Axis *getAxis(AxisType_t type)
+  + void processKinematics()
+}
+
+' ================= Axis =================
+class Axis {
+  - AxisType_t type
+  - int16_t value
+  - AxisConfig *config
+  - Hardware *hardware
+  - LightBehavior *light
+  - IDebugMonitor *observers[MAX_AXIS_OBSERVERS]
+  - uint8_t observerCount
+  + Axis()
+  + Axis(AxisType_t type)
+  + void attachObserver(IDebugMonitor *observer)
+  + void detachObserver(IDebugMonitor *observer)
+  + void notifyObservers()
+  + int16_t getValue() const
+  + void calculateValue()
+  + void setLedLight(LightBehavior *behavior)
+  + AxisType_t getType() const
+  + AxisConfig *getConfig() const
+}
+
+' ================= AxisConfig =================
+class AxisConfig {
+  + DirectionConfig posConfig
+  + DirectionConfig negConfig
+  + bool inversion
+  + AxisConfig()
+  + AxisConfig(AxisType_t axisType)
+  + AxisConfig(float, float, uint8_t, uint8_t, ModFunc_t, ModFunc_t, bool)
+  + void saveAxisConfig(AxisType_t axisType)
+}
+
+' ================= DirectionConfig =================
+class DirectionConfig {
+  + float sensitivity
+  + uint8_t gate
+  + ModifierFunction *modifier
+  + ModFunc_t modFuncType
+  + DirectionConfig()
+  + DirectionConfig(float, uint8_t, ModFunc_t)
+  + ~DirectionConfig()
+  + void setModfunc(ModFunc_t)
+}
+
+' ================= ModifierFunction and children =================
+abstract class ModifierFunction {
+  + virtual int16_t modify(int16_t) = 0
+  + virtual ~ModifierFunction()
+}
+class LinearModifier {
+  + int16_t modify(int16_t) override
+}
+class SquaredModifier {
+  + int16_t modify(int16_t) override
+}
+class TangentModifier {
+  + int16_t modify(int16_t) override
+}
+class SquaredTangentModifier {
+  + int16_t modify(int16_t) override
+}
+class CubedTangentModifier {
+  + int16_t modify(int16_t) override
+}
+
+ModifierFunction <|-- LinearModifier
+ModifierFunction <|-- SquaredModifier
+ModifierFunction <|-- TangentModifier
+ModifierFunction <|-- SquaredTangentModifier
+ModifierFunction <|-- CubedTangentModifier
+
+' ================= Hardware and children =================
+class Hardware {
+  - uint8_t referenceVoltage
+  - IDebugMonitor *observers[MAX_HARDWARE_OBSERVERS]
+  - uint8_t observerCount
+  - Sensor *sensors[MAX_SENSORS]
+  + Hardware()
+  + ~Hardware()
+  + virtual int16_t calculateRawValue(AxisType_t) = 0
+  + virtual void setAnalogReference(const uint8_t)
+  + void attachObserver(IDebugMonitor *)
+  + void detachObserver(IDebugMonitor *)
+}
+
+class Hardware_Joystick {
+  - static Hardware_Joystick *instance
+  - Hardware_Joystick()
+  + static Hardware_Joystick *getInstance()
+  + ~Hardware_Joystick()
+  + int16_t calculateRawValue(AxisType_t) override
+}
+
+class Hardware_HALL {
+  - static Hardware_HALL *instance
+  - Hardware_HALL()
+  + static Hardware_HALL *getInstance()
+  + ~Hardware_HALL()
+  + int16_t calculateRawValue(AxisType_t) override
+}
+
+Hardware <|-- Hardware_Joystick
+Hardware <|-- Hardware_HALL
+
+' ================= Sensor and children =================
+class SensorConfig {
+  - int minv
+  - int maxv
+  - bool invert
+  - uint8_t deadzone
+  + SensorConfig()
+  + SensorConfig(int8_t)
+  + SensorConfig(int, int, bool, uint8_t)
+  + int getMin() const
+  + int getMax() const
+  + void setMin(int, bool)
+  + void setMax(int, bool)
+  + void setMin(int)
+  + void setMax(int)
+  + bool isInverted() const
+  + uint8_t getDeadzone() const
+  + void setInverted(bool)
+  + void setDeadzone(uint8_t)
+  + void saveSensorConfig(int8_t)
+  + void loadSensorConfig(uint8_t)
+}
+
+class Sensor {
+  - const int8_t pin
+  - const char *name
+  - const int8_t id
+  - SensorConfig *config
+  - int rawvalue
+  - int centered
+  - int filtered
+  - int idleposition
+  + Sensor() = delete
+  + Sensor(const int8_t, const int8_t)
+  + virtual ~Sensor()
+  + SensorConfig *getConfig() const
+  + int getIdlePosition() const
+  + virtual bool setIdlePosition(int)
+  + virtual bool idlePositionWarning(int) const = 0
+  + int getFilteredValue() const
+  + int getRawValue() const
+  + virtual const char *getName() const
+  + const uint8_t getId() const
+  + virtual void readValue()
+  + virtual void applyCalibration()
+}
+
+class JoystickSensor {
+  - const char *name
+  + JoystickSensor(const int8_t, JoystickSensorsId_t)
+  + ~JoystickSensor()
+  + const char *getName() const override
+  + bool setIdlePosition(int) override
+  + bool idlePositionWarning(int) const override
+}
+
+class HallSensor {
+  - const char *name
+  + HallSensor(const int8_t, HallSensorsId_t)
+  + const char *getName() const override
+  + bool setIdlePosition(int) override
+  + bool idlePositionWarning(int) const override
+}
+
+Sensor <|-- JoystickSensor
+Sensor <|-- HallSensor
+
+' ================= LightBehavior and children =================
+abstract class LightBehavior {
+  + virtual void applyTo(Axis *) = 0
+  + virtual ~LightBehavior()
+}
+
+class SimpleLED {
+  - uint8_t pin
+  + void applyTo(Axis *) override
+  + void setPin(uint8_t)
+}
+
+class LedRing {
+  - uint8_t pin
+  - uint8_t numLeds
+  - uint8_t velocityDeadzone
+  - uint8_t clockOffset
+  - uint16_t ledUpdateRateMs
+  + void applyTo(Axis *) override
+  + void setPin(uint8_t)
+  + void setNumLeds(uint8_t)
+  + void setVelocityDeadzone(uint8_t)
+  + void setClockOffset(uint8_t)
+  + void setLedUpdateRateMs(uint16_t)
+}
+
+LightBehavior <|-- SimpleLED
+LightBehavior <|-- LedRing
+
+' ================= Debug/Observer =================
+class IDebugMonitor {
+  - unsigned long lastDebugOutput
+  + IDebugMonitor()
+  + virtual ~IDebugMonitor()
+  + void logAxisValues(Axis *[], uint8_t)
+  + void logLoopFrequency()
+  + virtual void update(const Axis *)
+  + virtual void update(Hardware *)
+  + bool isDebugOutputDue()
+}
+
+class Output_RawSensorValues {
+  + Output_RawSensorValues()
+  + ~Output_RawSensorValues()
+  + void update(const Axis *) override
+  + void update(Hardware *) override
+}
+IDebugMonitor <|-- Output_RawSensorValues
+
+' ================= SpaceKeys =================
+class SpaceKeys {
+  - const uint8_t _keyList[NUMKEYS]
+  - uint8_t _keyVals[NUMKEYS]
+  - uint8_t _keyOut[NUMKEYS]
+  - uint8_t _keyState[NUMKEYS]
+  - unsigned long _timestamp[NUMKEYS]
+  + SpaceKeys()
+  + ~SpaceKeys()
+  + void ReadAllFromKeys()
+  + void evalKeys()
+  + uint8_t GetKeyState(uint8_t)
+  + void SetKeyState(uint8_t, uint8_t)
+  + void PrintKeyVals()
+  + void PrintKeyOut()
+  + void PrintKeyState()
+  - void _printKeys(uint8_t *)
+}
+
+' ================= Command Handler =================
+abstract class ICommand {
+  - const char *name
+  + ICommand()
+  + ICommand(const char *)
+  + virtual ~ICommand()
+  + bool isCommand(const char *) const
+  + virtual void execute(const char *, const char *, uint8_t) = 0
+}
+
+class DebugCommand {
+  - IDebugState *currentState
+  + DebugCommand()
+  + void execute(const char *, const char *, uint8_t) override
+  + void setState(IDebugState *)
+  + IDebugState *getState() const
+  + ~DebugCommand()
+}
+ICommand <|-- DebugCommand
+
+class CommandHandler {
+  - ICommand *commands[MAX_COMMANDS]
+  + CommandHandler()
+  + void registerCommand(int, ICommand *)
+  + void handleInput(char[], const uint8_t, int8_t)
+}
+
+' ================= EEPROMStore =================
+class EEPROMStore {
+  - static bool _firstrun
+  - static bool _setupdone
+  + static bool isFirstRun()
+  + static void setupEEPROM()
+  + static bool loadConfig(AxisConfig &, const int)
+  + static bool loadConfig(SensorConfig &, const int)
+  + static void saveConfig(AxisConfig &, const int)
+  + static void saveConfig(SensorConfig &, const int)
+  + bool isInitialized()
+  + SensorConfig loadSensorConfig(int)
+}
+
+' ================= Singleton/Composition/Associations =================
+Kinematics "1" *-- "6" Axis
+Axis "1" *-- "1" AxisConfig
+Axis "1" o-- "*" IDebugMonitor
+Axis "1" o-- "1" LightBehavior
+AxisConfig "1" *-- "1" DirectionConfig : posConfig
+AxisConfig "1" *-- "1" DirectionConfig : negConfig
+DirectionConfig "1" o-- "1" ModifierFunction
+Hardware "1" *-- "*" Sensor
+Hardware o-- "*" IDebugMonitor
+Hardware_Joystick ..|> Hardware
+Hardware_HALL ..|> Hardware
+Sensor o-- "1" SensorConfig
+JoystickSensor ..|> Sensor
+HallSensor ..|> Sensor
+SimpleLED ..|> LightBehavior
+LedRing ..|> LightBehavior
+Output_RawSensorValues ..|> IDebugMonitor
+DebugCommand ..|> ICommand
+CommandHandler o-- "*" ICommand
+
+@enduml

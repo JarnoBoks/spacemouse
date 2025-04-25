@@ -1,0 +1,137 @@
+@startuml SpaceMouse_Main_Classes
+
+skinparam classAttributeIconSize 0
+title SpaceMouse Main Classes (src folder)
+
+' --- Kinematics and Hardware ---
+class Kinematics {
+    - _SMHW: SpaceMouseHW_*
+    - _AxesConfigurations: MotionAxisConfig*[6]
+    - _velocities: int16_t[6]
+    - _ignoreArithmetic: bool
+    - _switchYZ: bool
+    - _exclusiveMode: bool
+    + CalculcateKinematic(): void
+    + ProcessSwitchYZ(): void
+    + ProcessExclusiveMode(): void
+    + GetVelocity(axis): int16_t
+    + SetVelocity(axis, value): void
+    + PrintVelocities(): void
+    + RestoreDefaultAxisConfigurations(): void
+    + UpdateAxisConfiguration(...): uint8_t
+    + PrintAxisConfigurations(): void
+    + GetAxisInversion(axis): bool
+    + UpdateSwitchYZ(switchyz_on): int8_t
+    + PrintSwitchYZ(): void
+    + SetIgnoreArithmetics(ignore: bool): void
+    + UpdateExclusiveMode(exclusivemode_on: bool): void
+    + PrintExclusiveMode(): void
+}
+
+class SpaceMouseHW_ {
+    + ReadAllFromSensors(): void
+    + CenterSensors(): void
+    + FilterAnalogReadOuts(): void
+    + CalibrateMinMax(storeResults: bool): void
+    + ProcessCalcMinMax(): void
+    + PrintRawReads(): void
+    + PrintCentered(): void
+    + PrintMinMax(): void
+    + PrintDeadzone(): void
+    + SetAnalogReferenceVoltage(debug: uint8_t): void
+    + CalculateKinematicSensors(velocities: int16_t*): void
+    + BusyZeroing(num_iterations: uint, do_serial_output: bool): bool
+}
+
+class SpaceMouseHW_Hall_ {
+    + SetAnalogReferenceVoltage(debug: uint8_t): void
+    + CalculateKinematicSensors(velocities: int16_t*): void
+    + BusyZeroing(num_iterations: uint, do_serial_output: bool): bool
+}
+SpaceMouseHW_Hall_ --|> SpaceMouseHW_
+
+class SpaceMouseHW_Joystick_ {
+    + SetAnalogReferenceVoltage(debug: uint8_t): void
+    + CalculateKinematicSensors(velocities: int16_t*): void
+    + BusyZeroing(num_iterations: uint, do_serial_output: bool): bool
+}
+SpaceMouseHW_Joystick_ --|> SpaceMouseHW_
+
+Kinematics --> SpaceMouseHW_ : uses
+
+' --- Axis Configuration ---
+class MotionAxisConfig {
+    + CalculcateVelocity(sensorInput: int16_t): void
+    + GetVelocity(): int16_t
+    + SetVelocity(value: int16_t): void
+    + PrintVelocity(): void
+    + SetModFunc(modFunc: uint8_t): void
+    + SetInvert(invert: int8_t): void
+    + GetInvert(): int8_t
+    + UpdateConfig(...): bool
+    + PrintConfig(): void
+}
+
+Kinematics --> MotionAxisConfig : manages *
+
+' --- Keys ---
+class SpaceKeys {
+    + ReadAllFromKeys(): void
+    + evalKeys(): void
+    + GetKeyState(key: uint8_t): uint8_t
+    + SetKeyState(key: uint8_t, value: uint8_t): void
+    + PrintKeyVals(): void
+    + PrintKeyOut(): void
+    + PrintKeyState(): void
+}
+
+' --- Calibration ---
+class Calibration {
+    + SetKeysObject(SpaceKeys&): void
+    + DebugInput(): void
+    + DebugOutput1_HW_RawInverted(): void
+    + DebugOutput2_HW_Centered(): void
+    + DebugOutput3_HW_DeadzonedMapped(): void
+    + DebugOutput4_KIN_Velocity(): void
+    + DebugOutput5_HWKIN_CenteredAndVelocity(): void
+    + DebugOutput6_HWKINKEY_CenteredAndVelocityAndKeystate(): void
+    + DebugOutput7_HWKINKEY_CenteredAndVelocityAndKeystate(): void
+    + DebugOutput8_UpdateFrequencyReport(): void
+    + GetDebug(): DebugLevel_t
+}
+
+Calibration --> Kinematics
+Calibration --> SpaceMouseHW_
+Calibration --> SpaceKeys
+
+' --- LED Ring ---
+class LedRing {
+    + LedRing(Kinematics&)
+    + ~LedRing()
+    + ProcessLED(ledCmd: bool): void
+}
+
+LedRing --> Kinematics
+
+' --- HID ---
+class SpaceMouseHID_ {
+    + write(buffer: uint8_t*, size: size_t): int
+    + SendReport(id: uint8_t, data: void*, len: int): int
+    + readSingleByte(): int
+    + printAllReports(): void
+    + updateLEDState(): bool
+    + getLEDState(): bool
+    + send_command(...): bool
+}
+
+SpaceMouseHID_ --> SpaceKeys
+
+' --- Main Relationships ---
+'spacemouse-keys.ino ..> Kinematics
+'spacemouse-keys.ino ..> SpaceMouseHW_
+'spacemouse-keys.ino ..> Calibration
+'spacemouse-keys.ino ..> SpaceKeys
+'spacemouse-keys.ino ..> LedRing
+'spacemouse-keys.ino ..> SpaceMouseHID_
+
+@enduml

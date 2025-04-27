@@ -13,33 +13,33 @@ enum ModFunc_t : int8_t {
 };
 
 // --- Modifier Function (Strategy) ---
-class ModifierFunction {
+class ModifierStrategy {
 public:
-    virtual int16_t modify(int16_t input) = 0;
-    virtual ~ModifierFunction() {}
+    virtual int16_t modify(int16_t input) = 0; // Pure virtual function to be implemented by derived classes
+    virtual ~ModifierStrategy() {}             // Virtual destructor for proper cleanup of derived classes
 };
 
-class LinearModifier : public ModifierFunction {
-public:
-    int16_t modify(int16_t input) override;
-};
-
-class SquaredModifier : public ModifierFunction {
+class LinearModifier : public ModifierStrategy {
 public:
     int16_t modify(int16_t input) override;
 };
 
-class TangentModifier : public ModifierFunction {
+class SquaredModifier : public ModifierStrategy {
 public:
     int16_t modify(int16_t input) override;
 };
 
-class SquaredTangentModifier : public ModifierFunction {
+class TangentModifier : public ModifierStrategy {
 public:
     int16_t modify(int16_t input) override;
 };
 
-class CubedTangentModifier : public ModifierFunction {
+class SquaredTangentModifier : public ModifierStrategy {
+public:
+    int16_t modify(int16_t input) override;
+};
+
+class CubedTangentModifier : public ModifierStrategy {
 public:
     int16_t modify(int16_t input) override;
 };

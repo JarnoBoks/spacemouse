@@ -9,13 +9,12 @@ class CommandHandler {
 private:
     ICommand *commands[MAX_COMMANDS] = {nullptr}; // Array of command pointers
 
-    void handleInput(char input[], const uint8_t inputsize, int8_t bytesRead);
-
 public:
     CommandHandler();
     void registerCommand(int index, ICommand *cmd);
 
     void parseSerialMonitorInput();
+    void handleInput(char input[], const uint8_t inputsize, const int8_t bytesRead);
 };
 
 #endif // COMMANDHANDLER_H

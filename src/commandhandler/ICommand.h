@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#define CF(x) ((const __FlashStringHelper *)x)
+
 class ICommand {
 private:
     const char *name; // Contains command 'name' as a PROGMEM char *
@@ -17,10 +19,13 @@ public:
     virtual ~ICommand() = default;
 
     inline const bool isCommand(const char *cmdName) const {
-        return strcmp_P(name, cmdName) == 0; // Compare command name with the provided name
-    } // Check if the command name matches
 
-    virtual void execute(const char *param1, const char *param2, uint8_t paramCount) = 0;
+        // NOTE: The strcmp_P function is used to compare the command name with the provided name.
+        //       It is assumed that the second parameter ('name')  is stored in program memory (PROGMEM) to save RAM space.
+        return (strcmp_P(cmdName, name) == 0); // Compare command name with the provided name
+    }
+
+    virtual void execute(const char *param1, const char *param2, const uint8_t paramCount) = 0;
 };
 
 #endif // ICOMMAND_H

@@ -32,6 +32,7 @@ public:
 
     int getFilteredValue() const;
     int getRawValue() const;
+    int getCenteredValue() const;
 
     virtual const char *getName() const = 0; // Pure virtual function to be implemented by derived classes
     const uint8_t getId() const;

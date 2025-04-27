@@ -1,9 +1,9 @@
-#include "DebugOff.h"
+#include "ParamOff.h"
 #include <Arduino.h>
 
-void DebugOff::apply() {
+void DebugParamOff::apply() {
     Serial.println("Debug Off applied");
 }
-void DebugOff::report() {
+void DebugParamOff::report() {
     Serial.println("Debug Off");
 }

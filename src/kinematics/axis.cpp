@@ -1,6 +1,6 @@
-
-
 #include "axis.h"
+#include <math.h>
+#define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
 #include "config.h"
 #include "kinematics/axisconfig.h"
 #include "serialoutput/idebugmonitor.h"
@@ -15,7 +15,7 @@
 #endif
 #elif defined(JOYSTICK)
 #ifndef HW_TYPE
-#define HW_TYPE Hardware_HALL
+#define HW_TYPE Hardware_JOYSTICK
 #endif
 #endif
 
@@ -52,8 +52,7 @@ void Axis::calculateValue() {
     value = dconfig->sensitivity * value; // Apply the sensitivity for this axis & direction
 
     // Apply the modifier function for this axis, override the default one if necessary
-
-    value = dconfig->modifier->modify(value); // Apply the modifier function for this axis, override the default one if necessary
+    modifier(dconfig->modFuncType); // Apply the modifier function for this axis, override the default one if necessary
 
     // Apply any gate for this axis.
     if (abs(value) < dconfig->gate) {
@@ -69,4 +68,30 @@ void Axis::setLedLight(LightBehavior *behavior) {
     if (light) {
         // light->setLight(value);
     }
+}
+
+void Axis::modifier(ModFunc_t type) {
+    value = constrain(value, -350, 350); // Constrain the value to the range of -350 to 350
+
+    switch (type) {
+    case mfLINEAR:
+        value = constrain(value, -350, 350);
+        break;
+    case mfSQUARED:
+        value = 350 * pow(value / 350.0, 2) * sign(value); // sign putting out -1 or 1 depending on sign of value. (Is needed because x^2 will always be positive)
+        break;
+    case mfTANGENT:
+        value = 350 * tan(value / 350.0);
+        break;
+    case mfSQUARDED_TANGENT:
+        value = 350 * tan(pow(value / 350.0, 2) * sign(value)); // sign putting out -1 or 1 depending on sign of value. (Is needed because x^2 will always be positive)
+        break;
+    case mfCUBED_TANGENT:
+        value = 350 * tan(pow(value / 350.0, 3)); // sign putting out -1 or 1 depending on sign of value. (Is needed because x^3 will always be positive)
+        break;
+    default:
+        break;
+    }
+
+    value = constrain(value, -350, 350);
 }

@@ -5,7 +5,7 @@ It was created by reverse-engineering a Space Navigator and relating to the HID 
 
 This code is based on https://forum.arduino.cc/t/solved-unable-to-receive-hid-reports-from-computer-using-pluggableusb/596793
 */
-
+#ifdef ARDUINO_ARCH_AVR
 #include <Arduino.h>
 #include "config.h"
 
@@ -171,7 +171,7 @@ bool SpaceMouseHID_::getLEDState() {
 #include "kinematics/kinematics.h" // for the SpaceMouseKinematics class
 bool SpaceMouseHID_::send_command(SpaceKeys *SMKeys, int debug) {
     Kinematics *kinematics = Kinematics::getInstance(); // Get the instance of the Kinematics class
-    return SpaceMouseHID.send_command(kinematics->getAxis(RX)->getValue(), kinematics->getAxis(RY)->getValue(), kinematics->getAxis(RZ)->getValue(), kinematics->getAxis(TX)->getValue(), kinematics->getAxis(TY)->getValue(), kinematics->getAxis(TZ)->getValue(), SMKeys, debug);
+    return SpaceMouseHID.send_command(kinematics->getAxis(ROTX)->getValue(), kinematics->getAxis(ROTY)->getValue(), kinematics->getAxis(ROTZ)->getValue(), kinematics->getAxis(TRANSX)->getValue(), kinematics->getAxis(TRANSY)->getValue(), kinematics->getAxis(TRANSZ)->getValue(), SMKeys, debug);
 }
 
 #if 0
@@ -358,3 +358,4 @@ void SpaceMouseHID_::prepareKeyBytes(SpaceKeys *SMKeys, uint8_t *keyData, int de
 #endif
 
 SpaceMouseHID_ SpaceMouseHID;
+#endif // ARDUINO_ARCH_AVR

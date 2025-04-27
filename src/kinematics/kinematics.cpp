@@ -27,12 +27,12 @@ Axis *Kinematics::getAxis(AxisType_t type) {
 Kinematics::Kinematics() {
 
     // Initialize the axes with their respective configurations and hardware
-    axes[TX] = Axis(TX); // Initialize the TX axis with the new objects
-    axes[TY] = Axis(TY); // Initialize the TY axis with the new objects
-    axes[TZ] = Axis(TZ); // Initialize the TZ axis with the new objects
-    axes[RX] = Axis(RX); // Initialize the RX axis with the new objects
-    axes[RY] = Axis(RY); // Initialize the RY axis with the new objects
-    axes[RZ] = Axis(RZ); // Initialize the RZ axis with the new objects
+    axes[TRANSX] = Axis(TRANSX); // Initialize the TX axis with the new objects
+    axes[TRANSY] = Axis(TRANSY); // Initialize the TRANSY axis with the new objects
+    axes[TRANSZ] = Axis(TRANSZ); // Initialize the TRANSZ axis with the new objects
+    axes[ROTX] = Axis(ROTX);     // Initialize the RX axis with the new objects
+    axes[ROTY] = Axis(ROTY);     // Initialize the ROTY axis with the new objects
+    axes[ROTZ] = Axis(ROTZ);     // Initialize the ROTZ axis with the new objects
 }
 
 void Kinematics::processKinematics() {

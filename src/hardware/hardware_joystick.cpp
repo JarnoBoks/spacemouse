@@ -23,27 +23,29 @@ Hardware_Joystick::Hardware_Joystick() {
 #define VAL(X) sensors[X]->getFilteredValue()
 int16_t Hardware_Joystick::calculateRawValue(AxisType_t axistype) {
 
+    updateSensorValues();
+
     switch (axistype) {
-    case TX:
+    case TRANSX:
         // calculate sensors transX
         return (-VAL(CY) + VAL(AY));
         break;
-    case TY:
+    case TRANSY:
         // calculate sensors transY
         return (-VAL(BY) + VAL(DY));
         break;
-    case TZ:
+    case TRANSZ:
         return -VAL(AX) - VAL(BX) - VAL(CX) - VAL(DX);
         break;
-    case RX:
+    case ROTX:
         // rotX
         return (-VAL(CX) + VAL(AX));
         break;
-    case RY:
+    case ROTY:
         // rotY
         return (-VAL(BX) + VAL(DX));
         break;
-    case RZ:
+    case ROTZ:
         // rotZ
         return (VAL(AY) + VAL(BY) + VAL(CY) + VAL(DY));
         break;

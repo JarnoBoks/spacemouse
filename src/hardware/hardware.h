@@ -15,8 +15,8 @@ private:
     uint8_t observerCount = 0;
 
 protected:
-    Sensor *sensors[MAX_SENSORS] = {nullptr}; // Array of sensor pointers
-    void notifyObservers();                   // Notify all observers of changes
+    void updateSensorValues(); // Update the values of all sensors
+
 public:
     Hardware() : referenceVoltage(DEFAULT), observers{nullptr}, observerCount(0), sensors{nullptr} {};
 
@@ -28,15 +28,16 @@ public:
             }
         }
     }
-    virtual int16_t calculateRawValue(AxisType_t axistype) = 0;
-    virtual void setAnalogReference(const uint8_t voltage);
 
-    inline void getSensors(Sensor *sensors[]) {
-        sensors = this->sensors; // Return the array of sensor pointers
-    }
+    virtual int16_t calculateRawValue(AxisType_t axistype) = 0;
+
+    void setAnalogReference(const uint8_t voltage);
 
     void attachObserver(IDebugMonitor *observer);
     void detachObserver(IDebugMonitor *observer);
+    void notifyObservers(); // Notify all observers of changes
+
+    Sensor *sensors[MAX_SENSORS] = {nullptr}; // Array of sensor pointers, public defined so it can be used in the observer class
 };
 
 #endif // HARDWARE_H

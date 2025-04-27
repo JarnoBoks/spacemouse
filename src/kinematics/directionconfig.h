@@ -10,10 +10,12 @@ public:
     DirectionConfig(float sensitivity, uint8_t gate, ModFunc_t modFuncType);
     ~DirectionConfig();
 
-    float sensitivity = 1.0f;             // Sensitivity for this axis & direction
-    uint8_t gate = 0;                     // Gate for this axis & direction
-    ModifierFunction *modifier = nullptr; // Modifier function for this axis & direction
-    ModFunc_t modFuncType = mfLINEAR;     // Function type for this axis & direction
+    float sensitivity = 1.0f;         // Sensitivity for this axis & direction
+    uint8_t gate = 0;                 // Gate for this axis & direction
+    ModFunc_t modFuncType = mfLINEAR; // Function type for this axis & direction
+#if 0
+    ModifierStrategy *modifier = nullptr; // Modifier function for this axis & direction
+#endif
 
     void setModfunc(ModFunc_t type);
 };

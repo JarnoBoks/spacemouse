@@ -1,4 +1,5 @@
-@startuml
+@startuml Spacemouse
+' PlantUML Class Diagram for SpaceMouse Project
 ' ================= Enums =================
 enum AxisType_t {
   ALL = -2
@@ -119,7 +120,7 @@ class Hardware {
   - uint8_t referenceVoltage
   - IDebugMonitor *observers[MAX_HARDWARE_OBSERVERS]
   - uint8_t observerCount
-  - Sensor *sensors[MAX_SENSORS]
+  + Sensor *sensors[MAX_SENSORS]
   + Hardware()
   + ~Hardware()
   + virtual int16_t calculateRawValue(AxisType_t) = 0

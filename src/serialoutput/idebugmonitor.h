@@ -46,7 +46,7 @@ protected:
     bool isDebugOutputDue(); // Check if a new debug output should be printed
 
 public:
-    IDebugMonitor() : lastDebugOutput(0) {} // Constructor to initialize currentLevel
+    IDebugMonitor() : lastDebugOutput(0) {} // Constructor
     virtual ~IDebugMonitor() {}             // Destructor
 
     void logAxisValues(Axis *axes[], uint8_t count);

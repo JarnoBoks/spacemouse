@@ -8,8 +8,18 @@
  * @param pin The pin number for the sensor.
  * @param id The ID of the sensor.
  */
-Sensor::Sensor(const int8_t pin, const int8_t id) : pin(pin), name(nullptr), id(id) {
-    this->config = new SensorConfig(id); // Create a new SensorConfig object for this sensor (identified by id)
+Sensor::Sensor(const int8_t pin, const int8_t id)
+    : pin(pin),
+      name(nullptr),
+      id(id),
+      config(new SensorConfig(id)),
+      rawvalue(0),
+      centered(0),
+      filtered(0),
+      idleposition(0) // Initialize the member variables
+{
+    // REVIEW - Move the config init to the initializer list.
+    //   this->config = new SensorConfig(id); // Create a new SensorConfig object for this sensor (identified by id)
 }
 
 /**
@@ -44,24 +54,27 @@ bool Sensor::setIdlePosition(int val) {
 }
 
 /**
- * @brief Retrieves the filtered value of the sensor.
- * @return The filtered value of the sensor.
+ * @brief Retrieves the raw value of the sensor.
+ * @return The raw value of the sensor.
  */
-int Sensor::getFilteredValue() const {
-    /* if (config) {
-        applyCalibration();
-    } else {
-        filtered = rawvalue;
-    } */
-    return filtered;
+int Sensor::getRawValue() const {
+    return rawvalue;
 }
 
 /**
  * @brief Retrieves the raw value of the sensor.
  * @return The raw value of the sensor.
  */
-int Sensor::getRawValue() const {
-    return rawvalue;
+int Sensor::getCenteredValue() const {
+    return centered;
+}
+
+/**
+ * @brief Retrieves the filtered value of the sensor.
+ * @return The filtered value of the sensor.
+ */
+int Sensor::getFilteredValue() const {
+    return filtered;
 }
 
 /**

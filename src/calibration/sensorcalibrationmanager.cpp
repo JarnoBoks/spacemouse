@@ -1,6 +1,7 @@
 #include "sensorcalibrationmanager.h"
 
-#include "sensor/sensor.h" // For Sensor class
+#include "hardware/hardware.h" // For Hardware class - necessary to retrieve the sensors.
+#include "sensor/sensor.h"     // For Sensor class
 #include "sensor/sensorconfig.h"
 
 #define DEADZONEWARNING 10 // Define a threshold for dead zone warning
@@ -9,7 +10,7 @@
 bool SensorCalibrationManager::calibrateIdle(Sensor *sensors[], uint8_t count, int iterations) {
 
     // FIXME - Debug output has to be generated!
-    unsigned long startMillis = millis(); // Start time for zeroing process - Send to debug output
+    // FIXME unsigned long startMillis = millis(); // Start time for zeroing process - Send to debug output
 
     bool WarningsOccurred = false;
     uint8_t maxDeadZone = 0;          // Maximum dead zone value

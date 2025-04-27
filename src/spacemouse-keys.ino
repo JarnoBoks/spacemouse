@@ -10,17 +10,20 @@
 // Please open config_sample.h, adjust your settings and save it as config.h
 #include "config.h"
 
-// Include inbuilt Arduino HID library by NicoHood: https://github.com/NicoHood/HID
+#ifdef ARDUINO_ARCH_AVR // For Arduino boards like Leonardo, Micro, etc.
+// FIXME - ESP32 does not support the HID library. The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
+//  Include inbuilt Arduino HID library by NicoHood: https://github.com/NicoHood/HID
 #include "HID.h"
+
+// header for HID emulation of the spacemouse
+#include "SpaceMouseHID.h"
+#endif // ARDUINO_ARCH_AVR
 
 // Header to calculate the kinematics of the mouse
 #include "kinematics/kinematics.h"
 
 // header file for reading the keys
 #include "spaceKeys.h"
-
-// header for HID emulation of the spacemouse
-#include "SpaceMouseHID.h"
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
 // if an encoder wheel is used
@@ -70,6 +73,11 @@ void setup() {
     myCommandHandler.registerCommand(0, new ShowCommand());  // Register the show command
     myCommandHandler.registerCommand(1, new DebugCommand()); // Register the debug command
 
+    // When debugging through platformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
+    // Use this comamnd to initialize a debug state.
+    // char buffer[32] = "DEBUG 1";
+    // myCommandHandler.handleInput(buffer, 32, 1);
+
     // Check if this is the first run of the program. If so, set the default values for the sensitivities and store them in the EEPROM.
 
     // Read idle/centre positions for joysticks.
@@ -102,6 +110,7 @@ void loop() {
     Kinematics *myKinematics = Kinematics::getInstance();
     myKinematics->processKinematics(); // Process the kinematics of the mouse
 
+// TESTING
 #if NUMKEYS > 0
     // LivingTheDream added reading of key presses
     Keys->ReadAllFromKeys();
@@ -149,8 +158,10 @@ void loop() {
                                Keys,
                                Mouse_Calibration.GetDebug());
 #endif
+#ifdef ARDUINO_ARCH_AVR
+    // FIXME - ESP32 does not support the HID library. The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
     SpaceMouseHID.send_command(Keys, 0);
-
+#endif
     // Check for the LED state by calling updateLEDState.
     // This empties the USB input buffer and checks for the corresponding report.
 

@@ -20,38 +20,42 @@ Hardware_HALL::Hardware_HALL() {
     }
 }
 
-#define VAL(X) sensors[X]->getFilteredValue()
+#define VAL(x) sensors[x]->getFilteredValue()
 int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
+
+    updateSensorValues();
+
+    int16_t retval = 0; // Initialize the value to 0
     switch (axistype) {
-    case TX:
+    case TRANSX:
         // calculate sensors transX
-        return (VAL(HES1) - VAL(HES0) + VAL(HES6) - VAL(HES7)) / 2;
+        retval = (VAL(HES1) - VAL(HES0) + VAL(HES6) - VAL(HES7)) / 2;
         break;
-    case TY:
+    case TRANSY:
         // calculate sensors transY
-        return (VAL(HES2) - VAL(HES3) + VAL(HES9) - VAL(HES8)) / 2;
+        retval = (VAL(HES2) - VAL(HES3) + VAL(HES9) - VAL(HES8)) / 2;
         break;
-    case TZ:
-        return (VAL(HES0) + VAL(HES1) + VAL(HES2) + VAL(HES3) + VAL(HES6) + VAL(HES7) + VAL(HES8) + VAL(HES9)) / 4;
+    case TRANSZ:
+        retval = (VAL(HES0) + VAL(HES1) + VAL(HES2) + VAL(HES3) + VAL(HES6) + VAL(HES7) + VAL(HES8) + VAL(HES9)) / 4;
         break;
-    case RX:
+    case ROTX:
         // rotX
-        return (VAL(HES0) + VAL(HES1) - VAL(HES6) - VAL(HES7)) / 2;
+        retval = (VAL(HES0) + VAL(HES1) - VAL(HES6) - VAL(HES7)) / 2;
         break;
-    case RY:
+    case ROTY:
         // rotY
-        return (VAL(HES8) + VAL(HES9) - VAL(HES2) - VAL(HES3)) / 2;
+        retval = (VAL(HES8) + VAL(HES9) - VAL(HES2) - VAL(HES3)) / 2;
         break;
-    case RZ:
+    case ROTZ:
         // rotZ
-        return (VAL(HES0) + VAL(HES2) + VAL(HES6) + VAL(HES8) - VAL(HES1) - VAL(HES3) - VAL(HES7) - VAL(HES9)) / 4;
+        retval = (VAL(HES0) + VAL(HES2) + VAL(HES6) + VAL(HES8) - VAL(HES1) - VAL(HES3) - VAL(HES7) - VAL(HES9)) / 4;
         break;
     default:
-        // Handle invalid axis type if necessary
+        // Handle invalid axis type if necessary - nothing to do - retval is already 0
         break;
     }
 
     notifyObservers();
-    return 0; // Default return value if no valid axis type is found
+    return retval; // Default return value if no valid axis type is found
 }
 #undef VAL

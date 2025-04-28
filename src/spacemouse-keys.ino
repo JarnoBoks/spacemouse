@@ -51,6 +51,8 @@ SpaceKeys *Keys = nullptr;
 #include "commandhandler/showcommand.h"
 CommandHandler myCommandHandler; // Command handler object to handle the commands from the serial interface
 
+#include "calibration/sensorcalibrationmanager.h"
+
 void setup() {
 
 #if NUMKEYS > 0
@@ -69,7 +71,10 @@ void setup() {
     // Setup the Kinematics object
     Kinematics::getInstance();
 
-    // Setup the Command Handler and register the commands
+    // Start the idle calibration of the sensors. This will zero the sensors during the loop.
+    SensorCalibrationManager::getInstance()->startIdleCalibration(500); // Start the idle calibration with 500 iterations
+
+    // Setup the Command Handler and register the commands that can be handled via the serial interface
     myCommandHandler.registerCommand(0, new ShowCommand());  // Register the show command
     myCommandHandler.registerCommand(1, new DebugCommand()); // Register the debug command
 

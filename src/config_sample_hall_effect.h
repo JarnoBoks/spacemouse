@@ -707,4 +707,11 @@ This little extra noise is called "jiggling" and ensures that a value declared a
 // Add Jiggling to the value reported, if the following symbol is defined:
 // #define ADV_HID_JIGGLE
 
+// ------------------ PREPOCESSOR DIRECTIVES USED IN THE SOFTWARE - DO NOT CHANGE
+#ifdef HALLEFFECT
+#define HW_TYPE Hardware_HALL
+#endif
+#ifdef JOYSTICK
+#define HW_TYPE Hardware_JOYSTICK
+#endif
 #endif // CONFIG_h

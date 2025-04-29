@@ -8,11 +8,12 @@
 
 class Hardware_HALL : public Hardware {
 private:
-    static Hardware_HALL *instance; // Singleton instance
+    // REMOVE static Hardware_HALL *instance; // Singleton instance
     Hardware_HALL();
 
 public:
-    static Hardware_HALL *getInstance();
+    // REMOVE static Hardware_HALL *getInstance();
+    // REMOVE static Hardware *getInstance();
 
     ~Hardware_HALL() {}; // nothing to do in destructor
     int16_t calculateRawValue(AxisType_t axistype) override;

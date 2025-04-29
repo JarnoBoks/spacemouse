@@ -21,6 +21,7 @@ void SensorMinMaxCalibration::finish(Hardware *hardware) {
 
     Serial.println(F("        Min |  Max | Range | Warning"));
 
+    // REVIEW - Should this loop be moved to hardware?
     for (uint8_t id = 0; id < MAX_SENSORS; id++) {
 
         Sensor *sensor = hardware->sensors[id]; // Pointer to the sensor

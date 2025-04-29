@@ -245,7 +245,7 @@
 // The inversion values are used to invert the direction of the translation and rotation sensors.
 // 0 = no inversion, 1 = inversion
 
-#ifdef DEF_INVERT_TX
+#ifndef DEF_INVERT_TX
 #define DEF_INVERT_TX 0
 #endif
 #ifndef DEF_INVERT_TY

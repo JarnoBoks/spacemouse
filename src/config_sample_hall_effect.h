@@ -214,16 +214,18 @@ Expected outcome:
 // The deadzone default value can be overridden in the config.h file by using the following defines format:
 // #define DEADZONE <value>
 
-/* Third calibration: Getting MIN and MAX values   (command: MINMAX | MINMAX <+|-><axisname> <value>)
+/* Third calibration: Getting MIN and MAX values   (command: MINMAX | MINMAX <+|-><sensorname> <value>)
 =====================================================================================================
 Can be done automatic, semi-automatic or manual
 
 The command "SHOW" will show the current values in the serial monitor.
 The command "MINMAX 1" will store the values in the EEPROM. The command "MINMAX 0" will not store the values in the EEPROM.
 
-Semi-automatic (command: MINMAX)
+// TODO: Show min/max values in the serial monitor
+
+Semi-automatic (command: MINMAX 0)
 --------------------------------
-1. In the Serial monitor type the command "MINMAX" and hit ENTER.
+1. In the Serial monitor type the command "MINMAX 0" and hit ENTER.
 2. Move the Spacemouse around for 15s to record the minimum and maximum values for each sensor.
 3. Verify if there are any warnings for the Min, Max or Range. Check if your hardware is working correctly and/or retry the calibration.
    For the joystick sensors, the values should be approximately -400 to +400 and the maxVals around +400 to +400.
@@ -241,7 +243,7 @@ Automatic (command: MINMAX 1)
 4. When satisfied you can enter the values into the config.h file below or enter them one by one using the manual commands as described below.
 // TODO - Do not store the values if there are too many warnings
 
-Manual min/max calibration (command: DEBUG 2)
+Manual min/max calibration (use DEBUG 2)
 ---------------------------------------------
 1. Compile the sketch and upload it. Go to the Serial monitor type the command "DEBUG 2" and hit ENTER.
 2. Get a piece of paper and write downn the following chart:
@@ -708,6 +710,9 @@ This little extra noise is called "jiggling" and ensures that a value declared a
 // #define ADV_HID_JIGGLE
 
 // ------------------ PREPOCESSOR DIRECTIVES USED IN THE SOFTWARE - DO NOT CHANGE
+
+// FIXME - These can probably be removed now (changed the Instance in the hardware.h file should be enough)
+
 #ifdef HALLEFFECT
 #define HW_TYPE Hardware_HALL
 #endif

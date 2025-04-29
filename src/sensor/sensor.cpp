@@ -26,6 +26,14 @@ Sensor::~Sensor() {
     delete config; // Clean up the SensorConfig object to avoid memory leaks
 }
 
+const bool Sensor::isCurrentSensor(const char *name) const {
+    // Check if the provided name matches the sensor's name
+    if (this->name != nullptr) {
+        return (strcmp(this->name, name) == 0); // Compare the names and return true if they match
+    }
+    return false; // Return false if the names do not match or if the sensor name is null
+}
+
 /**
  * @brief Reads the raw value from the sensor pin.
  * @details This function reads the analog value from the specified pin and calculates the centered value.

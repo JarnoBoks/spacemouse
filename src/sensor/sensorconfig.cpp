@@ -3,7 +3,6 @@
 #include "defaultsensorconfig.h"
 #include "eeprom/eepromstore.h" // To load and save the sensor configuration to EEPROM
 #include <math.h>               // For abs() function
-#include DEFAULTS_TYPE          // Include the default values for the specific hardware type
 
 /**
  * @brief Default constructor for SensorConfig.

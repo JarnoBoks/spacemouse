@@ -31,9 +31,10 @@ IDebugParamSensorInformation::IDebugParamSensorInformation() : IDebugParam(), Se
  */
 IDebugParamSensorInformation::~IDebugParamSensorInformation() {
     if (SensorObserver != nullptr) {
-        Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
-        hardware->detachObserver(SensorObserver);    // Detach the observer from the hardware
-        delete SensorObserver;                       // Clean up the observer instance
+        // REMOVE Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
+        Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
+        hardware->detachObserver(SensorObserver);     // Detach the observer from the hardware
+        delete SensorObserver;                        // Clean up the observer instance
         SensorObserver = nullptr;
     }
 }
@@ -45,8 +46,9 @@ void DebugParamSensorInformationRaw::apply() {
     // Instantiate the Observer for the RawSensor values and attach it to the hardware
     SensorObserver = new Output_SensorValuesRaw();
 
-    Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
-    hardware->attachObserver(SensorObserver);    // Attach the observer to the hardware
+    // REMOVE Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
+    Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
+    hardware->attachObserver(SensorObserver);     // Attach the observer to the hardware
 }
 
 void DebugParamSensorInformationRaw::report() {
@@ -60,8 +62,9 @@ void DebugParamSensorInformationCentered::apply() {
     // Instantiate the Observer for the CenteredSensor values and attach it to the hardware
     SensorObserver = new Output_SensorValuesCentered();
 
-    Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
-    hardware->attachObserver(SensorObserver);    // Attach the observer to the hardware
+    // REMOVE Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
+    Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
+    hardware->attachObserver(SensorObserver);     // Attach the observer to the hardware
 }
 
 void DebugParamSensorInformationCentered::report() {
@@ -75,8 +78,9 @@ void DebugParamSensorInformationFiltered::apply() {
     // Instantiate the Observer for the FilteredSensor values and attach it to the hardware
     SensorObserver = new Output_SensorValuesFiltered();
 
-    Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
-    hardware->attachObserver(SensorObserver);    // Attach the observer to the hardware
+    // REMOVE Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
+    Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
+    hardware->attachObserver(SensorObserver);     // Attach the observer to the hardware
 }
 
 void DebugParamSensorInformationFiltered::report() {

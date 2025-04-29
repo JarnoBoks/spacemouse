@@ -1,11 +1,18 @@
 
 #include "hardware.h"
+#include "config.h"
 
 void Hardware::setAnalogReference(const uint8_t voltage) {
     referenceVoltage = voltage;
 #ifdef ARDUINO_ARCH_AVR
     analogReference(referenceVoltage);
 #endif
+}
+
+Hardware *Hardware::_instance = nullptr;
+
+Hardware *Hardware::getInstance() {
+    return _instance;
 }
 
 /**
@@ -21,6 +28,21 @@ void Hardware::updateSensorValues() {
     }
 }
 
+Sensor *Hardware::getSensorByName(const char *name) const {
+    for (int i = 0; i < MAX_SENSORS; i++) {
+        if (sensors[i] != nullptr && sensors[i]->isCurrentSensor(name)) {
+            return sensors[i];
+        }
+    }
+    return nullptr; // Return nullptr if no matching sensor is found
+};
+
+/**
+ * @brief Attach an observer to the hardware class.
+ * @param observer Pointer to the observer to be attached.
+ * @details This function adds the observer to the observers array and increases the observer count.
+ *          If the array is full, it does not add the new observer and can be modified to handle this case.
+ */
 void Hardware::attachObserver(IDebugMonitor *observer) {
     if (observerCount < MAX_HARDWARE_OBSERVERS) {
         Serial.println(F("Hardware::attachObserver: "));

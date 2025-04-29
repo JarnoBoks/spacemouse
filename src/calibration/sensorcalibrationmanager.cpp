@@ -14,6 +14,7 @@
 #define DEADZONEWARNING 10 // Define a threshold for dead zone warning
 // NOTE - At the moment the dead zone warning threshold is non hardware type specific. This should be changed in the future.
 
+// Text messages for calibration
 static const char Error_AlreadyCalibrating[] PROGMEM = "Calibration already in progress!"; // Error message for already calibrating
 
 SensorCalibrationManager *SensorCalibrationManager::instance = nullptr;
@@ -34,14 +35,16 @@ void SensorCalibrationManager::activateIdleCalibration(const int iterations) {
 
     // Attach the idle calibration observer to the hardware
     currentCalibration = new SensorIdleCalibration(this, iterations); // Create a new instance of the idle calibration class
-    HW_TYPE::getInstance()->attachObserver(currentCalibration);       // Attach the idle calibration observer to the hardware
+    Hardware::getInstance()->attachObserver(currentCalibration);      // Attach the idle calibration observer to the hardware
 }
 
 void SensorCalibrationManager::deactivateIdleCalibration(const bool warningsOccurred) {
-    HW_TYPE::getInstance()->detachObserver(currentCalibration); // Detach the idle calibration observer from the hardware
-    delete currentCalibration;                                  // Delete the idle calibration observer
-    currentCalibration = nullptr;                               // Set the pointer to null
+    Hardware::getInstance()->detachObserver(currentCalibration); // Detach the idle calibration observer from the hardware
+    delete currentCalibration;                                   // Delete the idle calibration observer
+    currentCalibration = nullptr;                                // Set the pointer to null
 }
+
+// -------------------- MINMAX -------------------------------------------
 
 void SensorCalibrationManager::activateMinMaxCalibration() {
     if (currentCalibration != nullptr) {
@@ -50,12 +53,12 @@ void SensorCalibrationManager::activateMinMaxCalibration() {
     }
 
     // Attach the MinMax calibration observer to the hardware
-    currentCalibration = new SensorMinMaxCalibration(this);     // Create a new instance of the idle calibration class
-    HW_TYPE::getInstance()->attachObserver(currentCalibration); // Attach the idle calibration observer to the hardware
+    currentCalibration = new SensorMinMaxCalibration(this);      // Create a new instance of the idle calibration class
+    Hardware::getInstance()->attachObserver(currentCalibration); // Attach the idle calibration observer to the hardware
 }
 
 void SensorCalibrationManager::deactivateMinMaxCalibration(const bool warningsOccurred) {
-    HW_TYPE::getInstance()->detachObserver(currentCalibration);
+    Hardware::getInstance()->detachObserver(currentCalibration);
     delete currentCalibration;
     currentCalibration = nullptr;
 }

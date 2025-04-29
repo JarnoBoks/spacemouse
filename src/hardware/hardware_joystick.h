@@ -6,11 +6,12 @@
 
 class Hardware_Joystick : public Hardware {
 private:
-    static Hardware_Joystick *instance; // Singleton instance
+    // REMOVE static Hardware_Joystick *instance; // Singleton instance
     Hardware_Joystick();
 
 public:
-    static Hardware_Joystick *getInstance();
+    // REMOVE static Hardware_Joystick *getInstance();
+    // REMOVE static Hardware *getInstance();
     ~Hardware_Joystick() {}; // nothing to do in destructor
 
     int16_t calculateRawValue(AxisType_t axistype) override;

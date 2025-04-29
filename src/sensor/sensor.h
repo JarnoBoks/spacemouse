@@ -22,6 +22,8 @@ public:
     Sensor(const int8_t pin, const int8_t id);
     virtual ~Sensor(); // Destructor;
 
+    const bool isCurrentSensor(const char *name) const;
+
     SensorConfig *getConfig() const;
 
     inline int getIdlePosition() const { return idleposition; }

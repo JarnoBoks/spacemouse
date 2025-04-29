@@ -11,7 +11,7 @@
 #include "config.h"
 
 #ifdef ARDUINO_ARCH_AVR // For Arduino boards like Leonardo, Micro, etc.
-// FIXME - ESP32 does not support the HID library. The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
+// FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
 //  Include inbuilt Arduino HID library by NicoHood: https://github.com/NicoHood/HID
 #include "HID.h"
 
@@ -46,8 +46,11 @@ SpaceKeys *Keys;
 SpaceKeys *Keys = nullptr;
 #endif
 
+// Include the header files for the command handler and the commands that can be received through the serial interface
 #include "commandhandler/commandhandler.h"
 #include "commandhandler/debugcommand.h"
+#include "commandhandler/idlecommand.h"
+#include "commandhandler/minmaxcommand.h"
 #include "commandhandler/showcommand.h"
 CommandHandler myCommandHandler; // Command handler object to handle the commands from the serial interface
 
@@ -66,29 +69,28 @@ void setup() {
     // Begin Serial for debugging or calibration
     Serial.begin(250000);
     delay(100);
-    Serial.setTimeout(2); // The serial interface will look for new debug values and it will only wait 2ms
+    Serial.setTimeout(2); // The serial interface will look for new commands and it will only wait 2ms
 
-    // Setup the Kinematics object
+    // Setup the Kinematics object. This will setup the kinematics of the mouse, the axes, hardware and the sensors.
+    // The setup will check the EEPROM for the configuration of the sensors and the axes.
+    // If the configuration is not available, the default values as set in config.h will be used (and stored in the EEPROM)
     Kinematics::getInstance();
 
     // Start the idle calibration of the sensors. This will zero the sensors during the loop.
+    // TODO - During setup we aren't interested in the output of the calibration process.
+    // TODO - We do not want to send output to the HID while the calibration isn't finished.
     SensorCalibrationManager::getInstance()->activateIdleCalibration(500); // Start the idle calibration with 500 iterations
 
     // Setup the Command Handler and register the commands that can be handled via the serial interface
-    myCommandHandler.registerCommand(0, new ShowCommand());  // Register the show command
-    myCommandHandler.registerCommand(1, new DebugCommand()); // Register the debug command
+    myCommandHandler.registerCommand(0, new DebugCommand());
+    myCommandHandler.registerCommand(1, new IdleCommand());
+    myCommandHandler.registerCommand(2, new MinMaxCommand());
+    myCommandHandler.registerCommand(3, new ShowCommand());
 
-    // When debugging through platformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
+    // When debugging with SimAVR thorugh PlatformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
     // Use this comamnd to initialize a debug state.
     // char buffer[32] = "DEBUG 1";
     // myCommandHandler.handleInput(buffer, 32, 1);
-
-    // Check if this is the first run of the program. If so, set the default values for the sensitivities and store them in the EEPROM.
-
-    // Read idle/centre positions for joysticks.
-    // zero the joystick position 500 times (takes approx. 480 ms)
-    // during setup() we are not interested in the debug output: debugFlag = false
-    // Mouse_Hardware.BusyZeroing(500, false);
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
     initEncoderWheel();

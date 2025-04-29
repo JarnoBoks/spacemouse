@@ -4,10 +4,6 @@
 #include "config.h"              // Include the config file to know the hardware type
 #include "hardware/hardware.h"   // Include the hardware class to get the number of sensors (MAX_SENSORS)
 
-// Retrieve the defaults for this specific hardware type
-// The default values are defined in the defaults_hall.h or defaults_joystick.h file
-#include DEFAULTS_TYPE
-
 // Initialize the static instance pointer to nullptr
 DefaultSensorConfig *DefaultSensorConfig::instance = nullptr;
 

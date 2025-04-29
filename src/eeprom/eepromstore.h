@@ -22,7 +22,6 @@ public:
     static void saveConfig(SensorConfig &config, const int sensornumber);
 
     bool isInitialized();
-    SensorConfig loadSensorConfig(int id);
 };
 
 // EEPROM Storage structures for complex classes
@@ -65,6 +64,5 @@ constexpr int EEPROM_ADDRESS_CFG_AXES_BASE_END = EEPROM_ADDRESS_CFG_AXES_BASE + 
 
 constexpr int EEPROM_ADDRESS_CFG_SENSORS_BASE = EEPROM_ADDRESS_CFG_AXES_BASE_END; // Base address for the sensor configuration
 constexpr int EEPROM_ADDRESS_CFG_SENSORS_BASE_END = EEPROM_ADDRESS_CFG_SENSORS_BASE + 8 * sizeof(EESensorConfig);
-
 
 #endif // EEPROMSTORE_H

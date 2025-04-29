@@ -44,14 +44,17 @@ void SensorMinMaxCalibration::finish(Hardware *hardware) {
         // Print the value of the min, max and working range for each sensor
         Serial.print(sensor->getName());
         Serial.print(F(":  "));
+        // Print the sensor configuration values
         alignValue(minValue[id], 4);
         Serial.print(minValue[id]);
         Serial.print(F(" | "));
         alignValue(maxValue[id], 4);
         Serial.print(maxValue[id]);
+        // Print the working range
         Serial.print(F(" | "));
         alignValue(range, 4);
         Serial.print(range);
+
         Serial.print(F("  | "));
 
         // TODO - Program more efficiently
@@ -85,7 +88,7 @@ void SensorMinMaxCalibration::finish(Hardware *hardware) {
         Serial.println();
 
         // Save the sensor configuration to EEPROM
-        sensorcfg->saveSensorConfig(sensor->getId()); // Save the updated configuration to EEPROM
+        sensorcfg->saveInEEPROM(sensor->getId()); // Save the updated configuration to EEPROM
     }
 
     CalibrationManager->deactivateMinMaxCalibration(warningsOccurred); // Finish the calibration process

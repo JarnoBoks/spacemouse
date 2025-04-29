@@ -125,7 +125,7 @@ const int SensorConfig::getRange(bool *warning) const {
  * @param id The ID of the sensor to save the configuration for.
  * @note This function uses the EEPROMStore class to save the configuration.
  */
-void SensorConfig::saveSensorConfig(const int8_t id) {
+void SensorConfig::saveInEEPROM(const int8_t id) {
     EEPROMStore::saveConfig(*this, id); // Store the configuration in the EEPROM
 }
 
@@ -133,6 +133,9 @@ void SensorConfig::saveSensorConfig(const int8_t id) {
  * @brief Loads the sensor configuration from EEPROM.
  * @param address The address to load the configuration from.
  */
-void SensorConfig::loadSensorConfig(const uint8_t address) {
+void SensorConfig::loadFromEEPROM(const uint8_t address) {
     EEPROMStore::loadConfig(*this, address);
+}
+
+void outputToSerial() const {
 }

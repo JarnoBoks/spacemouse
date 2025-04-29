@@ -12,6 +12,10 @@
 #define ESP_PRINT(x)
 #endif
 
+/**
+ * @brief Constructor for the MinMaxCommand class.
+ * @details Initializes the command with the CMD_MINMAX command name.
+ */
 MinMaxCommand::MinMaxCommand() : ICommand(CMD_MINMAX) {}
 
 /**
@@ -96,5 +100,9 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         Serial.print(param1);
         Serial.print(F(" to "));
         Serial.println(requestedValue);
+
+        // Store the value in the EEPROM
+        sensor->getConfig()->saveInEEPROM(sensor->getId());
+        Serial.print(F("MinMaxCommand::execute: Store minmax for sensor "));
     }
 }

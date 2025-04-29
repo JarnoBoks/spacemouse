@@ -6,6 +6,7 @@
 #define MAX_HARDWARE_OBSERVERS 4
 
 #include <Arduino.h>
+#include "config.h" // For STARTDEBUG and DEBUGDELAY
 
 #ifndef STARTDEBUG
 // For fail-safe: If STARTDEBUG is not defined, set it to 0 (no debug output).

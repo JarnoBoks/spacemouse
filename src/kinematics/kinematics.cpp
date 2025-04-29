@@ -2,6 +2,8 @@
 #include "hardware/hardware.h"
 #include "config.h"
 
+// Static pointer for the Singleton instance of Kinematics
+// This pointer is initialized to nullptr, indicating that the instance has not been created yet.
 Kinematics *Kinematics::instance = nullptr;
 
 /**
@@ -15,8 +17,29 @@ Kinematics *Kinematics::getInstance() {
     return instance;
 }
 
+/**
+ * @brief Retrieves an axis based on its type.
+ * @param type The type of the axis to retrieve.
+ * @return A pointer to the corresponding Axis object.
+ */
 Axis *Kinematics::getAxis(AxisType_t type) {
     return &axes[type];
+}
+
+/**
+ * @brief Retrieves an axis based on its name.
+ * @param name The name of the axis to retrieve.
+ * @return A pointer to the corresponding Axis object, or nullptr if not found.
+ */
+Axis *Kinematics::getAxis(const char *name) {
+    // TODO - Make progmem string for the axis names
+    const __FlashStringHelper *axisNames[] PROGMEM = {F("TX"), F("TY"), F("TZ"), F("RX"), F("RY"), F("RZ")}; // Axis names
+    for (int i = 0; i < 6; i++) {
+        if (strcmp(name, (const char *)pgm_read_word(&(axisNames[i]))) == 0) {
+            return &axes[i]; // Return the corresponding axis
+        }
+    }
+    return nullptr; // Axis not found, return nullptr
 }
 
 /**
@@ -35,6 +58,10 @@ Kinematics::Kinematics() {
     axes[ROTZ] = Axis(ROTZ);     // Initialize the ROTZ axis with the new objects
 }
 
+/**
+ * @brief Processes the kinematics for all axes.
+ * @details This function calculates the values for each axis based on the hardware input and configuration.
+ */
 void Kinematics::processKinematics() {
     for (int i = 0; i < AxisType_t::LENGTH; i++) {
         axes[i].calculateValue(); // Calculate the value for each axis

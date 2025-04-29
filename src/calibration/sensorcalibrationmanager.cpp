@@ -26,6 +26,8 @@ SensorCalibrationManager *SensorCalibrationManager::getInstance() {
     return instance;
 }
 
+// -------------------- IDEL ---------------------------------------------
+
 // TODO - We can save some code space - lot of duplicate code in the two functions
 void SensorCalibrationManager::activateIdleCalibration(const int iterations) {
     if (currentCalibration != nullptr) {
@@ -68,7 +70,7 @@ void SensorCalibrationManager::calibrateDeadzone(Sensor *sensor, const uint8_t d
 
     SensorConfig *config = sensor->getConfig(); // Get the configuration of the sensor
     config->setDeadzone(deadzone);              // Set the dead zone for the sensor
-    config->saveSensorConfig(sensor->getId());  // Save the updated configuration to EEPROM
+    config->saveInEEPROM(sensor->getId());  // Save the updated configuration to EEPROM
 
 }
 #endif

@@ -12,7 +12,9 @@ private:
 
 public:
     static Kinematics *getInstance();
-    Axis *getAxis(AxisType_t type);
+
+    Axis *getAxis(const AxisType_t type);
+    Axis *getAxis(const char *name);
 
     void processKinematics();
 };

@@ -193,13 +193,14 @@ If you have mounted the magnets upside-down, the values will be inverted.
 // HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9
 #endif
 
-/* Second calibration: Tune deadzone   (command: DEADZONE | DEADZONE <value>)
+/* Second calibration: Tune deadzone   (command: DZ | DZ <value>)
 ==============================================================================
 The Hardware deadzone is used to filter out unintended movements. Increase the deadzone if the space mouse has small movements when it should be idle or
 when the mouse is too sensitive to subtle movements. On the other hand a small deadzone is recommended to allow full range of motion. There are two ways to calibrate the deadzone:
 
 Semi-automatic: Use the command "DZ" (without a value) in the serial monitor. The command will automatically calculate the deadzone based on the current sensor values.
-                Don't touch the mouse and observe the automatic output and the suggested value for the deadzone. Use the command "DZ <value>" to set the deadzone and store it.
+                Don't touch the mouse and observe the automatic output and the suggested value for the deadzone.
+                Use the command "DZ <value>" to set the deadzone and store it.
                 Alternatively, you can apply the suggested value to one of the DEADZONE variables below.
 
 Manual:         Set debug = 2.  Don't touch the mouse but observe the values. They should be nearly to zero.

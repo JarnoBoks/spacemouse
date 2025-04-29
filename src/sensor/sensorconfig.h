@@ -41,8 +41,10 @@ public:
     inline uint8_t getDeadzone() const { return deadzone; }
     inline void setDeadzone(const uint8_t dz) { deadzone = dz; }
 
-    void saveSensorConfig(const int8_t id);
-    void loadSensorConfig(const uint8_t address);
+    void saveInEEPROM(const int8_t id);
+    void loadFromEEPROM(const uint8_t address);
+
+    void outputToSerial() const;
 };
 
 #endif // SENSORCONFIG_H

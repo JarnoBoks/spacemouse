@@ -5,13 +5,6 @@
 #include "hardware/hardware_hall.h"
 #include "hardware/hardware_joystick.h"
 
-#ifdef HALLEFFECT
-#define HW_TYPE Hardware_HALL
-#endif
-#ifdef JOYSTICK
-#define HW_TYPE Hardware_Joystick
-#endif
-
 // Only log to serial if not using Arduino AVR architecture
 #ifndef ARDUINO_ARCH_AVR
 #ifndef ESP_PRINT(x)

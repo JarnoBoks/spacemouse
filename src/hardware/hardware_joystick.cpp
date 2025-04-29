@@ -1,6 +1,7 @@
 
 #include "hardware_joystick.h"
 #include "sensor/sensor_joystick.h"
+#include "config.h" // For PINLIST
 
 Hardware_Joystick *Hardware_Joystick::instance = nullptr;
 

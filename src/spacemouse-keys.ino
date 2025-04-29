@@ -72,7 +72,7 @@ void setup() {
     Kinematics::getInstance();
 
     // Start the idle calibration of the sensors. This will zero the sensors during the loop.
-    SensorCalibrationManager::getInstance()->startIdleCalibration(500); // Start the idle calibration with 500 iterations
+    SensorCalibrationManager::getInstance()->activateIdleCalibration(500); // Start the idle calibration with 500 iterations
 
     // Setup the Command Handler and register the commands that can be handled via the serial interface
     myCommandHandler.registerCommand(0, new ShowCommand());  // Register the show command

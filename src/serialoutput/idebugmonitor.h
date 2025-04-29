@@ -1,14 +1,11 @@
 #ifndef IDEBUGMONITOR_H
 #define IDEBUGMONITOR_H
 
+// Define the maximum number of observers that can connect to axes and hardware
 #define MAX_AXIS_OBSERVERS 4
 #define MAX_HARDWARE_OBSERVERS 4
 
 #include <Arduino.h>
-// REMOVE #include "kinematics/axis.h"
-// REMOVE #include "sensor/sensor.h"
-// REMOVE  #include "hardware/hardware.h"
-#include "config.h" // For STARTDEBUG & DEBUGDELAY
 
 #ifndef STARTDEBUG
 // For fail-safe: If STARTDEBUG is not defined, set it to 0 (no debug output).
@@ -23,9 +20,9 @@
 enum DebugLevel : int8_t {
     OFF = -1,
     SILENT = 0,
-    RAW_VALUES,
-    CENTERED,
-    HW_OUTPUT,
+    RAW_VALUES, // 1 - Raw values of the sensors
+    CENTERED,   // 2 - Centered values of the sensors
+    HW_OUTPUT,  // 3 - Hardware output values (e.g. mapped & deadzone applied)
     AXIS_VALUES,
     AXIS_VALUES_EXT,
     AXIS_AND_KEYS,
@@ -34,7 +31,7 @@ enum DebugLevel : int8_t {
 };
 
 // Forward declaration of classes to avoid circular dependencies
-class Axis; // Forward declaration of AxisConfig class
+class Axis;
 class Hardware;
 
 // --- DebugMonitor (Observer Pattern) ---

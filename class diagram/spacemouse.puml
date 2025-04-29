@@ -1,4 +1,4 @@
-@startuml Spacemouse
+@startuml Spacemouse_ClassDiagram
 ' PlantUML Class Diagram for SpaceMouse Project
 ' ================= Enums =================
 enum AxisType_t {

@@ -6,17 +6,24 @@
 #define DEADZONEWARNING 10 // Define a threshold for dead zone warning
 // NOTE - At the moment the dead zone warning threshold is non hardware type specific. This should be changed in the future.
 
+// TODO - move texts to text.h
+
+/**
+ * @brief Constructor for SensorIdleCalibration class *
+ * @param calmgr Pointer to the SensorCalibrationManager
+ * @param numiterations Number of iterations for calibration
+ */
 SensorIdleCalibration::SensorIdleCalibration(SensorCalibrationManager *calmgr, const int numiterations)
     : requestedIterations(numiterations), processedIterations(0), CalibrationManager(calmgr) {
     startCalibrationTime = millis();
+    Serial.println(F("Starting calibration..."));
 } // Start time for zeroing process - Send to debug output
 
-void SensorIdleCalibration::start() {
-    // Initialize the calibration process
-    Serial.println(F("Starting calibration..."));
-
-} // Start calibration process
-
+/**
+ * @brief Finish the Idle calibration
+ * @param hardware Pointer to the Hardware instance
+ * @details This function calculates the average position by dividing the sum of all readings by the number of iterations.
+ */
 void SensorIdleCalibration::finish(Hardware *hardware) {
 
     // Calculating average position by dividing the sum of all readings by the number of iterations
@@ -34,6 +41,7 @@ void SensorIdleCalibration::finish(Hardware *hardware) {
         warningsOccurred = warningsOccurred || !(sensor->setIdlePosition(sumReads[id] / processedIterations)) || (sensorDZ > DEADZONEWARNING);
     }
 
+    // Output the calibration process information
     Serial.println(F("Calibration finished!"));
     Serial.print(F("Took "));
     Serial.print(millis() - startCalibrationTime); // Print the time taken for calibration
@@ -41,11 +49,17 @@ void SensorIdleCalibration::finish(Hardware *hardware) {
     Serial.print(processedIterations); // Print the number of processed iterations
     Serial.println(F(" iterations."));
 
-    // TODO  - Notify the creator of this observer to let it be destroyed
-    CalibrationManager->finishIdleCalibration(warningsOccurred); // Finish the calibration process
+    // Notify the creator of this observer to let it be destroyed
+    CalibrationManager->deactivateIdleCalibration(warningsOccurred); // Finish the calibration process
 
 } // Finish calibration process
 
+/**
+ * @brief Update the sensor calibration process
+ * @details This function is called to update the calibration process.
+ *          It reads the raw values from the sensors and updates the sum of reads, minimum and maximum values.
+ * @param hardware Pointer to the Hardware instance
+ */
 void SensorIdleCalibration::update(Hardware *hardware) {
     // Finish the calibration process if the requested iterations are reached
     if (processedIterations >= requestedIterations) {
@@ -63,7 +77,7 @@ void SensorIdleCalibration::update(Hardware *hardware) {
         int _rawValue = sensor->getRawValue(); // Get the raw value from the sensor
         sumReads[id] += _rawValue;             // Add the raw read value to the sum of reads
 
-        // Update the minimum and maximum values for dead zone evaluation
+        // Update the minimum and maximum values for deadzone evaluation
         minIdleValue[id] = (_rawValue < minIdleValue[id]) ? _rawValue : minIdleValue[id];
         maxIdleValue[id] = (_rawValue > maxIdleValue[id]) ? _rawValue : maxIdleValue[id];
     }

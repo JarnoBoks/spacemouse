@@ -13,9 +13,7 @@ class SensorCalibrationManager;
  *
  * @details This class is used to calibrate the idle position of the hardware sensors of the spacemouse.
  * It is used to set the idle position of the sensors to the average value of the readings.
- * The class is a observer of the Hardware class and is used to update the idle position of the sensors.
- *
- *
+ * The class is an observer of the Hardware class and is instantiated by the SensorCalibrationManager.
  */
 class SensorIdleCalibration : public IDebugMonitor {
 private:
@@ -32,9 +30,7 @@ private:
     // REVIEW - SessorCalibrationManager is a singleton. Is it necessary to store the pointer here? (Uses some memory).
     SensorCalibrationManager *CalibrationManager = nullptr; // Pointer to the calibration manager
 
-    void start();
-    void finish(Hardware *hardware);                  // Finish the calibration process
-    void printCalibrationResults(Hardware *hardware); // Print the calibration results for each sensor to the serial monitor
+    void finish(Hardware *hardware); // Finish the calibration process
 
 protected:
 public:

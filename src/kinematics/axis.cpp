@@ -9,16 +9,6 @@
 #include "hardware/hardware_hall.h"
 #include "hardware/hardware_joystick.h"
 
-#ifdef HALLEFFECT
-#ifndef HW_TYPE
-#define HW_TYPE Hardware_HALL
-#endif
-#elif defined(JOYSTICK)
-#ifndef HW_TYPE
-#define HW_TYPE Hardware_JOYSTICK
-#endif
-#endif
-
 Axis::Axis() : type(UNINITIALIZED) {
     // Default constructor initializes the axis to UNINITIALIZED
     this->config = new AxisConfig(); // Create a new AxisConfig object for this axis

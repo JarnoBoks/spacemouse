@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define CF(x) ((const __FlashStringHelper *)x)
+// #define CF(x) ((const __FlashStringHelper *)x)
 
 class ICommand {
 private:

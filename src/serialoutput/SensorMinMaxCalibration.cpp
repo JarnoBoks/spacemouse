@@ -1,47 +1,23 @@
 #include "SensorMinMaxCalibration.h"
-#include "hardware/hardware.h" // For Hardware class - necessary to retrieve the sensors.
-#include "sensor/sensor.h"     // For Sensor class
+#include "hardware/hardware.h"   // For Hardware class - necessary to retrieve the sensors.
+#include "sensor/sensor.h"       // For Sensor class
+#include "sensor/sensorconfig.h" // For SensorConfig class
 #include "calibration/sensorcalibrationmanager.h"
 
 #define MINMAXDURATION 15 // Duration for min/max calibration in seconds
 
-SensorMinMaxCalibration::SensorMinMaxCalibration(SensorCalibrationManager *calmgr, const int numiterations)
+SensorMinMaxCalibration::SensorMinMaxCalibration(SensorCalibrationManager *calmgr)
     : CalibrationManager(calmgr) {
     startCalibrationTime = millis();
-} // Start time for zeroing process - Send to debug output
 
-void SensorMinMaxCalibration::start() {
-    // Initialize the calibration process
+    // Initialize the calibration process    // Initialize the calibration process
     Serial.print(F("Move the spacemouse for "));
     Serial.print(MINMAXDURATION);
     Serial.println(F(" sec."));
-
-    if (_minMaxCalcState == statemachineMinMaxCal_t::MEASURING) {
-        if (millis() - _startMillis < (MINMAXDURATION * 1000)) {
-            for (uint8_t i = 0; i < NUM_SENSORS; i++) {
-                // Update the minimum and maximum values
-                if (centered[i] < _minVals[i]) {
-                    _minVals[i] = centered[i];
-                }
-                if (centered[i] > _maxVals[i]) {
-                    _maxVals[i] = centered[i];
-                }
-            }
-        } else {
-            // 15s are over. Go to the next state and report via console.
-            Serial.println(F("\n\nFinished.\nResults: "));
-            _minMaxCalcState = statemachineMinMaxCal_t::RESULTS; // next State: results
-        }
-    } else if (_minMaxCalcState == statemachineMinMaxCal_t::RESULTS) {
-
-        PrintMinMax(); // Print the min and max values to the serial monitor
-
-        _minMaxCalcState = statemachineMinMaxCal_t::IDLE; // no further reporting
-    }
-
-} // Start calibration process
+}
 
 void SensorMinMaxCalibration::finish(Hardware *hardware) {
+    bool warningsOccurred = false; // Flag to track if any warnings occurred during calibration
 
     Serial.println(F("        Min |  Max | Range | Warning"));
 
@@ -52,7 +28,17 @@ void SensorMinMaxCalibration::finish(Hardware *hardware) {
             continue; // Skip if the sensor is not available
         }
 
-        const int workingRange = abs(minValue[id]) + abs(maxValue[id]);
+        // Initialize the flags for min, max and working range warnings
+        bool minWarning = false, maxWarning = false, rangeWarning = false;
+
+        SensorConfig *sensorcfg = sensor->getConfig(); // Get the sensor configuration to update
+#if 0
+        const int min = sensorcfg->getMin(&minWarning);       // Get the minimum value from the sensor configuration
+        const int max = sensorcfg->getMax(&maxWarning);       // Get the maximum value from the sensor configuration
+#endif
+        sensorcfg->setMin(minValue[id], &minWarning);         // Set the minimum value in the sensor configuration
+        sensorcfg->setMax(maxValue[id], &maxWarning);         // Set the maximum value in the sensor configuration
+        const int range = sensorcfg->getRange(&rangeWarning); // Calculate the working range from the sensor configuration
 
         // Print the value of the min, max and working range for each sensor
         Serial.print(sensor->getName());
@@ -60,68 +46,49 @@ void SensorMinMaxCalibration::finish(Hardware *hardware) {
         alignValue(minValue[id], 4);
         Serial.print(minValue[id]);
         Serial.print(F(" | "));
-        alignValue(maxValue[id], 4); // Updated to use maxValue[id]
-        Serial.print(maxValue[id]);  // Updated to use maxValue[id]
+        alignValue(maxValue[id], 4);
+        Serial.print(maxValue[id]);
         Serial.print(F(" | "));
-        alignValue(workingRange, 4);
-        Serial.print(workingRange);
+        alignValue(range, 4);
+        Serial.print(range);
         Serial.print(F("  | "));
 
-        // Check if the min or max values are below the warning threshold
-        bool isWarning = false;
-        bool isFirst = true;
+        // TODO - Program more efficiently
+        // Print the warning status for min, max and working range
+        if (minWarning) {
+            Serial.print(F("Min "));
+        }
+        warningsOccurred = warningsOccurred || minWarning; // Set the warning status if any of the conditions are met
+        if (maxWarning) {
+            if (warningsOccurred)
+                Serial.print(F(", "));
 
-        if (abs(_minVals[i]) < _warningMinMaxMinimum) {
-            Serial.print(F("Min"));
-            isWarning = true;
-            isFirst = false;
+            Serial.print(F("Max "));
         }
-        if (abs(_maxVals[i]) < _warningMinMaxMaximum) {
-            if (!isFirst) {
+        warningsOccurred = warningsOccurred || maxWarning; // Set the warning status if any of the conditions are met
+
+        if (rangeWarning) {
+            if (warningsOccurred)
                 Serial.print(F(", "));
-            }
-            Serial.print(F("Max"));
-            isWarning = true;
-            isFirst = false;
+
+            Serial.print(F("Range "));
         }
-        if (workingRange < _warningMinMaxRange) {
-            if (!isFirst) {
-                Serial.print(F(", "));
-            }
-            Serial.print(F("Range"));
-            isWarning = true;
-        }
-        if (isWarning) {
-            Serial.print(F(" small"));
+        warningsOccurred = warningsOccurred || rangeWarning; // Set the warning status if any of the conditions are met
+
+        if (warningsOccurred) {
+            Serial.print(F("small"));
         } else {
             Serial.print(F("ok"));
         }
 
         Serial.println();
+
+        // Save the sensor configuration to EEPROM
+        sensorcfg->saveSensorConfig(sensor->getId()); // Save the updated configuration to EEPROM
     }
+
+    CalibrationManager->deactivateMinMaxCalibration(warningsOccurred); // Finish the calibration process
 }
-
-/*     // Calculating average position by dividing the sum of all readings by the number of iterations
-    for (uint8_t id = 0; id < MAX_SENSORS; id++) {
-
-        // Calculate the dead zone for the sensor
-        int sensorDZ = maxIdleValue[id] - minIdleValue[id];
-
-        // Update the maximum dead zone seen for all sensors if necessary
-        maxDeadZone = (sensorDZ > maxDeadZone) ? sensorDZ : maxDeadZone;
-
-        // Update the idlePosition for each sensor (returns true if the idle position is in the predefined normal zone)
-        // Secondary check: Check if the dead zone is above the warning threshold.
-        Sensor *sensor = hardware->sensors[id]; // Pointer to the sensor
-        /* warningsOccurred = warningsOccurred || !(sensor->setIdlePosition(sumReads[id] / processedIterations)) || (sensorDZ > DEADZONEWARNING); */
-//}
-
-// Serial.println(F("Calibration finished!"));
-
-// TODO  - Notify the creator of this observer to let it be destroyed
-// CalibrationManager->finishIdleCalibration(warningsOccurred); // Finish the calibration process
-
-//} // Finish calibration process
 
 void SensorMinMaxCalibration::update(Hardware *hardware) {
     // Finish the calibration process if the configured time has elapsed iterations are reached
@@ -141,5 +108,11 @@ void SensorMinMaxCalibration::update(Hardware *hardware) {
 
         minValue[id] = (centeredVal < minValue[id]) ? centeredVal : minValue[id]; // Update the minimum value
         maxValue[id] = (centeredVal > maxValue[id]) ? centeredVal : maxValue[id]; // Update the maximum value
+
+#if 0
+        SensorConfig *sensorcfg = sensor->getConfig();
+        sensorcfg->updateMin(centeredVal);
+        sensorcfg->updateMax(centeredVal);
+#endif
     }
 }

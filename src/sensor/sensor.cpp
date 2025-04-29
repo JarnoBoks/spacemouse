@@ -22,6 +22,10 @@ Sensor::Sensor(const int8_t pin, const int8_t id)
     //   this->config = new SensorConfig(id); // Create a new SensorConfig object for this sensor (identified by id)
 }
 
+Sensor::~Sensor() {
+    delete config; // Clean up the SensorConfig object to avoid memory leaks
+}
+
 /**
  * @brief Reads the raw value from the sensor pin.
  * @details This function reads the analog value from the specified pin and calculates the centered value.

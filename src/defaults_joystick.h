@@ -264,4 +264,16 @@
 #define DEF_INVERT_RZ 1
 #endif
 
+// ------------------ PREPOCESSOR DIRECTIVES USED IN THE SOFTWARE
+// Change the sensor warning levels if your hardware requires. Normally this isn't necessary.
+
+// TODO  - Make these constexpr variables to avoid using preprocessor macros
+#define IDLEPOINT_LOW_WARNINGLEVEL 384  // The idlePoint should be above this level.
+#define IDLEPOINT_HIGH_WARNINGLEVEL 640 // The idlePoint should be below this level.
+
+#define MINIMUM_HIGH_WARNINGLEVEL -250 // The minimum value for the sensor should be below this level.
+#define MAXIMUM_LOW_WARNINGLEVEL 250   // The maximum value for the sensor should be above this level.
+
+#define WORKINGRANGE_WARNINGLEVEL 500 // The working range of the sensor should be above this level (ie. distance between MIN and MAX).
+
 #endif // DEFAULTS_JOYSTICK_H

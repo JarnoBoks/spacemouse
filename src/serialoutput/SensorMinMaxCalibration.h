@@ -22,14 +22,10 @@ private:
     // REVIEW - SessorCalibrationManager is a singleton. Is it necessary to store the pointer here? (Uses some memory).
     SensorCalibrationManager *CalibrationManager = nullptr; // Pointer to the calibration manager
 
-    void start();
-    void finish(Hardware *hardware);                  // Finish the calibration process
-    void printCalibrationResults(Hardware *hardware); // Print the calibration results for each sensor to the serial monitor
-
-protected:
+    void finish(Hardware *hardware); // Finish the calibration process
 public:
-    SensorMinMaxCalibration(SensorCalibrationManager *calibrationManager, int numiterations); // Constructor
-    ~SensorMinMaxCalibration() {};                                                            // nothing to do in destructor
+    SensorMinMaxCalibration(SensorCalibrationManager *calibrationManager); // Constructor
+    ~SensorMinMaxCalibration() {};                                         // nothing to do in destructor
 
     void update(const Axis *axis) override {
         // Doing nothing here, as this output class is only used for sensors and not for axes.

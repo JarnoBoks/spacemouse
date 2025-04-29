@@ -1,6 +1,6 @@
-
 #include "hardware_hall.h"
 #include "sensor/sensor_hall.h"
+#include "config.h" // For PINLIST
 
 Hardware_HALL *Hardware_HALL::instance = nullptr;
 

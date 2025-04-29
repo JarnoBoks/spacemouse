@@ -14,11 +14,11 @@ private:
 public:
     static SensorCalibrationManager *getInstance(); // Moved getInstance() method here
 
-    void startIdleCalibration(const int iterations = 500);
-    void finishIdleCalibration(const bool warningsOccurred);
+    void activateIdleCalibration(const int iterations = 500);
+    void deactivateIdleCalibration(const bool warningsOccurred);
 
-    void calibrateMinMax(Sensor *sensors[], uint8_t count);
-    void calibrateDeadzone(Sensor *sensor, const uint8_t deadzone);
+    void activateMinMaxCalibration();
+    void deactivateMinMaxCalibration(const bool warningsOccurred);
 };
 
 #endif // SENSORCALIBRATIONMANAGER_H

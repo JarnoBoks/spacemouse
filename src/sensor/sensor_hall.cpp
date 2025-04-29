@@ -1,4 +1,5 @@
 #include "sensor_hall.h"
+#include "defaults_hall.h" // For the HALL_SENSOR_NAMES macro
 
 /**
  * @brief Constructor for the HallSensor class.
@@ -27,8 +28,7 @@ const char *HallSensor::getName() const {
  * @return True if the idle position is in the predefined normal zone, false otherwise.
  *
  * NOTE - For the moment the function uses pre processor macros to set the warning limits for the idle position.
- *        The values are defined in the defaultaxisconfig_joystick.h file.
- *        This is acceptable while the Joystick & Hall Effect sensors are not used in the same spacemouse.
+ *        This is acceptable because the different sensors types are not used in the same spacemouse.
  */
 bool HallSensor::setIdlePosition(int val) {
 
@@ -37,5 +37,5 @@ bool HallSensor::setIdlePosition(int val) {
 }
 
 bool HallSensor::idlePositionWarning(const int val) const {
-    return val >= IDLEPOINT_MIN_WARNINGLEVEL && val <= IDLEPOINT_MAX_WARNINGLEVEL; // Return true if in normal zone, false otherwise
+    return val >= IDLEPOINT_LOW_WARNINGLEVEL && val <= IDLEPOINT_HIGH_WARNINGLEVEL; // Return true if in normal zone, false otherwise
 }

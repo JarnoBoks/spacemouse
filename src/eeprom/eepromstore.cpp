@@ -93,6 +93,7 @@ bool EEPROMStore::loadConfig(SensorConfig &config, const int sensornumber) {
         return false; // EEPROM is not initialized, return false
     }
 
+    // Setup the EEPROM address and transfer object for the sensor configuration
     EESensorConfig eeConfig;
     EEPROM.get(EEPROM_ADDRESS_CFG_SENSORS_BASE + sensornumber * sizeof(EESensorConfig), eeConfig); // Load the configuration from the EEPROM
 

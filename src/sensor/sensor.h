@@ -20,14 +20,12 @@ private:
 public:
     Sensor() = delete; // Delete the default constructor to prevent instantiation without parameters
     Sensor(const int8_t pin, const int8_t id);
-    virtual ~Sensor() {
-    };
+    virtual ~Sensor(); // Destructor;
 
     SensorConfig *getConfig() const;
 
     inline int getIdlePosition() const { return idleposition; }
     virtual bool setIdlePosition(int val);
-
     virtual bool idlePositionWarning(const int val) const = 0; // Pure virtual function to be implemented by derived classes
 
     int getFilteredValue() const;

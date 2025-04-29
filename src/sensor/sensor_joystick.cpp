@@ -1,5 +1,6 @@
 
 #include "sensor_joystick.h"
+#include "defaults_joystick.h" // For the Warning levels
 
 JoystickSensor::JoystickSensor(const int8_t pin, JoystickSensorsId_t id) : Sensor(pin, id) {
     const char *names[JoystickSensorsId_t::JS_LENGTH] = JOYSTICK_SENSOR_NAMES;
@@ -26,5 +27,5 @@ bool JoystickSensor::setIdlePosition(int val) {
 }
 
 bool JoystickSensor::idlePositionWarning(const int val) const {
-    return val >= IDLEPOINT_MIN_WARNINGLEVEL && val <= IDLEPOINT_MAX_WARNINGLEVEL; // Return true if in normal zone, false otherwise
+    return val >= IDLEPOINT_LOW_WARNINGLEVEL && val <= IDLEPOINT_HIGH_WARNINGLEVEL; // Return true if in normal zone, false otherwise
 }

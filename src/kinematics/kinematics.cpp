@@ -2,6 +2,7 @@
 #include "hardware/hardware.h"
 #include "config.h"
 #include "KinematicsConfig.h"
+#include "KinematicsConfig.h"
 
 // Static pointer for the Singleton instance of Kinematics
 // This pointer is initialized to nullptr, indicating that the instance has not been created yet.

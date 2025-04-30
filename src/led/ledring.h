@@ -1,7 +1,7 @@
 #ifndef LEDRING_H
 #define LEDRING_H
 #include "lightbehavior.h"
-#include "kinematics/axis.h"
+#include "axis/axis.h"
 
 class LedRing : public LightBehavior {
 private:

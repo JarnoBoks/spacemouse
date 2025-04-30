@@ -1,8 +1,9 @@
 
 #include "axisconfig.h"
 
-#include "eeprom/eepromstore.h" // To load and save the axis configuration to EEPROM
-#include "defaultaxisconfig.h"  // To get the default axis configuration if the EEPROM is empty or the version is changed
+#include "eeprom/eepromstore.h"       // To load and save the axis configuration to EEPROM
+#include "defaultaxisconfig.h"        // To get the default axis configuration if the EEPROM is empty or the version is changed
+#include "visitors/IPrinterVisitor.h" // For the visitor pattern
 
 /** Constructor with no arguments - used when called with a non-existant axis (ie axistype = -1) */
 AxisConfig::AxisConfig() : posConfig(DirectionConfig()), negConfig(DirectionConfig()), inversion(false) {}
@@ -28,4 +29,8 @@ AxisConfig::AxisConfig(const float psens,
 /* Save the axisconfig to EEPROM */
 void AxisConfig::saveAxisConfig(AxisType_t axisType) {
     EEPROMStore::saveConfig(*this, static_cast<const int>(axisType)); // Store the configuration in the EEPROM
+}
+
+void AxisConfig::accept(IPrinterVisitor &visitor) {
+    visitor.visit(*this);
 }

@@ -4,6 +4,7 @@
 
 #include "kinematics/kinematics.h"
 #include "axis/axisconfig.h"
+#include "visitors/AxisConfigPrinter.h"
 
 // Only log to serial if not using Arduino AVR architecture
 #ifndef ARDUINO_ARCH_AVR
@@ -35,25 +36,37 @@ SensCommand::~SensCommand() {}
 void SensCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     if (paramCount == 0) {
         // No params provided, show config
-        Serial.println(F("SensCommand::execute: Show config"));
+        ESP_PRINT(F("SensCommand::execute: Show config"));
+
+        AxisConfigPrinter printer;
+        // REVIEW - Move this to the kinematics class?
+        Kinematics *kinematics = Kinematics::getInstance();
+        for (uint8_t id = 0; id < AxisType_t::LENGTH; id++) {
+            Axis *axis = kinematics->getAxis((AxisType_t)id); // Pointer to the axis
+            if (axis == nullptr) {
+                continue; // Skip if the axis is not available
+            }
+            axis->accept(printer); // Accept the printer visitor to print the axis configuration
+        }
+
         return;
     }
 
     if (paramCount == 1) {
-        Serial.print(F("SensCommand::execute: First parameter: "));
-        Serial.println(param1);
+        ESP_PRINT(F("SensCommand::execute: First parameter: "));
+        ESP_PRINT(param1);
     }
 
     if (paramCount == 2) {
         // Command received: SENS <+|-><axisname> <value>
         // TODO - Add functionality for the second parameter
-        Serial.print(F("SensCommand::execute: Second parameter: "));
-        Serial.println(param2);
+        ESP_PRINT(F("SensCommand::execute: Second parameter: "));
+        ESP_PRINT(param2);
 
         // Get the value that has to be set
         float requestedValue = 0; // Default value for the second word
         if (!convertWordFloat(param2, &requestedValue)) {
-            Serial.println(F("SensCommand::execute: Second parameter is not a float"));
+            ESP_PRINT(F("SensCommand::execute: Second parameter is not a float"));
             return; // Second parameter is not a float
         }
 
@@ -66,22 +79,22 @@ void SensCommand::execute(const char *param1, const char *param2, uint8_t paramC
 
         // REVIEW - Failsafe: Axis not found can be removed from Arduino.
         if (axis == nullptr) {
-            Serial.println(F("SensCommand::execute: Axis not found"));
+            ESP_PRINT(F("SensCommand::execute: Axis not found"));
             return; // Axis not found, exit the function
         }
 
         if (axis != nullptr && direction == '+') {
             // Set the maximum value for the sensor
-            Serial.print(F("SensCommand::execute: Set positive dir for axis "));
+            ESP_PRINT(F("SensCommand::execute: Set positive dir for axis "));
             axis->getConfig()->posConfig.sensitivity = requestedValue; // Set the sensitivity for the positive direction
 
         } else if (axis != nullptr && direction == '-') {
             // Set the minimum value for the sensor
-            Serial.print(F("SensCommand::execute: Set negative dir for axis "));
+            ESP_PRINT(F("SensCommand::execute: Set negative dir for axis "));
             axis->getConfig()->negConfig.sensitivity = requestedValue; // Set the sensitivity for the negative direction
 
         } else {
-            Serial.println(F("SensCommand::execute: Unknown command"));
+            ESP_PRINT(F("SensCommand::execute: Unknown command"));
             return; // Invalid direction, exit the function
         }
 

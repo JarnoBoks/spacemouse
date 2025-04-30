@@ -4,6 +4,7 @@
 #include "sensor/sensor.h"
 #include "sensor/sensorconfig.h"
 #include "hardware/hardware.h"
+#include "kinematics/kinematicsconfig.h"
 #include "text.h"
 
 class IdlePositionPrinter : public IPrinterVisitor {
@@ -49,6 +50,8 @@ public:
     }
 
     inline void visit(SensorConfig &config) override {}
-
     inline void visit(Hardware &hardware) override {}
+    inline void visit(Axis &axis) override {};
+    inline void visit(AxisConfig &config) override {};
+    inline void visit(KinematicsConfig &config) override {}
 };

@@ -4,6 +4,8 @@
 #include "directionconfig.h" // For the DirectionConfig class
 #include "axis.h"            // For AxisType_t enum
 
+// Forward declaration of classes to avoid circular dependencies
+class IPrinterVisitor;
 
 class AxisConfig {
 public:
@@ -28,6 +30,8 @@ public:
 
     /* Save the axisconfig to EEPROM */
     void saveAxisConfig(AxisType_t axisType);
+
+    void accept(IPrinterVisitor &visitor);
 };
 
 #endif // AXISCONFIG_H

@@ -1,5 +1,4 @@
-#ifndef KINEMATICS_H
-#define KINEMATICS_H
+#pragma once
 
 #define MAX_AXES 6
 
@@ -28,6 +27,5 @@ public:
     void notifyObservers(); // Notify all observers of changes
 
     void processKinematics();
+    const AxisType_t getMainAxis(Axis *axis); // Get the main and secondary axis for the kinematics
 };
-
-#endif // KINEMATICS_H

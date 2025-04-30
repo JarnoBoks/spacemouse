@@ -120,7 +120,7 @@ void setup() {
 #ifdef LEDpin
 #ifdef LEDRING
     // Initialize the LED ring object
-    Mouse_LEDRing = new LedRing(Mouse_Kinematics);
+    Mouse_LEDRing = new LedRing();
     // Initialize the LED ring with the number of LEDs and the pin number
 #else
     // configure LED output for simple LED
@@ -136,8 +136,7 @@ void loop() {
         myCommandHandler.parseSerialMonitorInput();
     }
 
-    Kinematics *myKinematics = Kinematics::getInstance();
-    myKinematics->processKinematics(); // Process the kinematics of the mouse
+    Kinematics::getInstance()->processKinematics(); // Process the kinematics of the mouse
 
 // TESTING
 #if NUMKEYS > 0

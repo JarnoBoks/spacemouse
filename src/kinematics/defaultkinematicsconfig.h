@@ -1,21 +1,18 @@
-#ifndef DEFAULTAXISCONFIG_H
-#define DEFAULTAXISCONFIG_H
+#pragma once
 
-#include "axisconfig.h"
+#include "kinematicsconfig.h"
 
 /**
  * @brief Singleton class for default axis configuration.
  * This class reads the default Axis parameters from config.h and provides them to the AxisConfig class.
  * It is used to set the default values for the axis configuration when the AxisConfig class is instantiated and the EEPROM is empty or the version number is changed.
  */
-class DefaultAxisConfig {
+class DefaultKinematicsConfig {
 private:
-    static DefaultAxisConfig *instance;
-    DefaultAxisConfig(); // Private constructor to prevent instantiation
+    static DefaultKinematicsConfig *instance;
+    DefaultKinematicsConfig(); // Private constructor to prevent instantiation
 
 public:
-    static DefaultAxisConfig &getInstance();
-    AxisConfig getDefaultConfig(AxisType_t type);
+    static DefaultKinematicsConfig &getInstance();
+    KinematicsConfig getDefaultConfig();
 };
-
-#endif // DEFAULTAXISCONFIG_H

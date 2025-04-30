@@ -23,7 +23,7 @@ static const char CMD_MODFUNC[] PROGMEM = "MODFUNC"; // The modulation function 
 
 // Command with a parameter and a value (3 words)
 // static const char CMD_INVERT[] PROGMEM = "INVERT"; // The axis we want to invert. [0..5] ! Boundaries are inclusive, set in kinematics.h
-static const char CMD_SENS[] PROGMEM = "SENS"; // The axis we want to set the sensitivity for. [0..5] ! Boundaries are inclusive, set in kinematics.h
+// REMOVE static const char CMD_SENS[] PROGMEM = "SENS"; // The axis we want to set the sensitivity for. [0..5] ! Boundaries are inclusive, set in kinematics.h
 
 // REMOVE static const char Error_CommandUnkown[] PROGMEM = "Unknown command or -format.";
 // REMOVE static const char Error[] PROGMEM = "Err: ";

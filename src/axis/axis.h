@@ -18,10 +18,10 @@ enum AxisType_t : int8_t { ALL = -2,
 #define AXIS_NAMES {"TX", "TY", "TZ", "RX", "RY", "RZ"} // Axis names for debugging
 
 // Forward declaration of classes to avoid circular dependencies
-class AxisConfig; // Forward declaration of AxisConfig class
+class AxisConfig;
 class Hardware;
 class LightBehavior;
-class IDebugMonitor;
+class IPrinterVisitor;
 
 class Axis {
 private:
@@ -50,13 +50,11 @@ public:
 
     void setLedLight(LightBehavior *behavior);
 
-    inline AxisType_t getType() const {
-        return type;
-    } // Getter for type
+    inline AxisType_t getType() const { return type; } // Getter for type
 
-    inline AxisConfig *getConfig() const {
-        return config;
-    } // Getter for config
+    inline AxisConfig *getConfig() const { return config; } // Getter for config
+
+    void accept(IPrinterVisitor &visitor);
 };
 
 #endif // AXIS_H

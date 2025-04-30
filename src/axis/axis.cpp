@@ -4,6 +4,7 @@
 #include "config.h"
 #include "axisconfig.h"
 #include "observers/IObserver.h"
+#include "visitors/IPrinterVisitor.h"
 #include "led/lightbehavior.h"
 #include "hardware/hardware.h"
 
@@ -90,4 +91,8 @@ void Axis::modifier(ModFunc_t type) {
     }
 
     value = constrain(value, -350, 350);
+}
+
+void Axis::accept(IPrinterVisitor &visitor) {
+    visitor.visit(*this);
 }

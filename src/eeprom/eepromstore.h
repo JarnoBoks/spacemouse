@@ -1,11 +1,10 @@
-#ifndef EEPROMSTORE_H
-#define EEPROMSTORE_H
+#pragma once
 
 #include <Arduino.h>
-// #include "config.h" // Include the config.h file for EEPROM_VERSION
 
-class AxisConfig;   // Forward declaration of AxisConfig class
-class SensorConfig; // Forward declaration of SensorConfig class
+class AxisConfig;       // Forward declaration of AxisConfig class
+class SensorConfig;     // Forward declaration of SensorConfig class
+class KinematicsConfig; // Forward declaration of Kinematics class
 
 class EEPROMStore {
 private:
@@ -18,11 +17,9 @@ public:
 
     static bool loadConfig(AxisConfig &config, const int axisnumber);
     static bool loadConfig(SensorConfig &config, const int sensornumber);
+    static bool loadConfig(KinematicsConfig &config);
 
     static void saveConfig(AxisConfig &config, const int axisnumber);
     static void saveConfig(SensorConfig &config, const int sensornumber);
-
-    bool isInitialized();
+    static void saveConfig(KinematicsConfig &config);
 };
-
-#endif // EEPROMSTORE_H

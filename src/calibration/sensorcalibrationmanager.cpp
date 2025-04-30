@@ -27,7 +27,7 @@ SensorCalibrationManager *SensorCalibrationManager::getInstance() {
     return instance;
 }
 
-// -------------------- IDEL ---------------------------------------------
+// -------------------- IDLE ---------------------------------------------
 
 // TODO - We can save some code space - lot of duplicate code in the two functions
 void SensorCalibrationManager::activateIdleCalibration(const int iterations) {

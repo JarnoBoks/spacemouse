@@ -43,7 +43,6 @@ Axis *Kinematics::getAxis(const char *name) {
     return nullptr; // Axis not found, return nullptr
 }
 
-
 /**
  * @brief  Constructor for the Kinematics class.
  * @details Initializes the axes with their respective configurations and hardware.
@@ -104,3 +103,23 @@ void Kinematics::notifyObservers() {
         observers[i]->update(this); // Notify each observer
     }
 };
+
+/**
+ * @brief Calculates which velocity is the main action. What is the strongest movement?
+ * @return index with the biggest velocity. Returns enumAxis_t::LENGTH if all in deadzone
+ * @see Ledring.cpp for usage
+ */
+#define VELOCITYDEADZONEFORLED 10 // Deadzone for the LED ring, if the velocity is below this value, it will not be displayed on the LED ring
+const AxisType_t Kinematics::getMainAxis(Axis *axis) {
+    int8_t mainVelocity = -1;
+    int16_t velMax = 0;
+    for (int i = 0; i < AxisType_t::LENGTH; i++) {
+        // bigger than deadzone and bigger than before?
+        if ((abs(axes[i].getValue()) > velMax) && (abs(axes[i].getValue()) > VELOCITYDEADZONEFORLED)) {
+            velMax = abs(axes[i].getValue());
+            mainVelocity = i;
+        }
+    }
+    *axis = axes[mainVelocity]; // Set the axis to the main velocity axis   //REVIEW - Probably incorrect
+    return static_cast<AxisType_t>(mainVelocity);
+}

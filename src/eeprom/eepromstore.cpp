@@ -6,6 +6,7 @@
 // Header files for the objects that will be stored in the EEPROM)
 #include "axis/axisconfig.h"
 #include "sensor/sensorconfig.h"
+#include "kinematics/kinematicsconfig.h"
 
 /// @brief If the version number defined in the EEPROM is not equal to the version number defined in this file, the EEPROM will be erased and initialized with the default values.
 /// @warning Changing the version number will reset all stored calibration parameters in the EEPROM.
@@ -39,11 +40,14 @@ struct EESensorConfig {
 constexpr int EEPROM_ADDRESS_VERSION = 1;                                            // Start EEPROM address for the Datastorage version
 constexpr int EEPROM_ADDRESS_VERSION_END = EEPROM_ADDRESS_VERSION + sizeof(uint8_t); // End EEPROM address for the Datastorageversion
 
-constexpr int EEPROM_ADDRESS_CFG_AXES_BASE = 16;                                                          // Base address for the axis configuration
-constexpr int EEPROM_ADDRESS_CFG_AXES_BASE_END = EEPROM_ADDRESS_CFG_AXES_BASE + 6 * sizeof(EEAxisConfig); // We store 6 axis configurations in the EEPROM
+constexpr int EEPROM_ADDRESS_CFG_AXES_BASE = 16;                                                     // Base address for the axis configuration
+constexpr int EEPROM_ADDRESS_CFG_AXES_END = EEPROM_ADDRESS_CFG_AXES_BASE + 6 * sizeof(EEAxisConfig); // We store 6 axis configurations in the EEPROM
 
-constexpr int EEPROM_ADDRESS_CFG_SENSORS_BASE = EEPROM_ADDRESS_CFG_AXES_BASE_END; // Base address for the sensor configuration
-constexpr int EEPROM_ADDRESS_CFG_SENSORS_BASE_END = EEPROM_ADDRESS_CFG_SENSORS_BASE + 8 * sizeof(EESensorConfig);
+constexpr int EEPROM_ADDRESS_CFG_SENSORS_BASE = EEPROM_ADDRESS_CFG_AXES_END; // Base address for the sensor configuration
+constexpr int EEPROM_ADDRESS_CFG_SENSORS_END = EEPROM_ADDRESS_CFG_SENSORS_BASE + 8 * sizeof(EESensorConfig);
+
+constexpr int EEPROM_ADDRESS_CFG_KINEMATICS_BASE = EEPROM_ADDRESS_CFG_SENSORS_END;        // Base address for the kinematics configuration
+constexpr int EEPROM_ADDRESS_CFG_KINEMATICS_END = EEPROM_ADDRESS_CFG_KINEMATICS_BASE + 2; // End EEPROM address for kinematics configuration - Stores two booleans
 
 // -------------------------- EEPROM ADDRESS TABLE END -------------------------
 
@@ -160,4 +164,20 @@ void EEPROMStore::saveConfig(SensorConfig &config, const int sensornumber) {
     eeConfig.deadzone = config.getDeadzone();
 
     EEPROM.put(EEPROM_ADDRESS_CFG_SENSORS_BASE + sensornumber * sizeof(EESensorConfig), eeConfig); // Store the configuration in the EEPROM
+}
+
+bool EEPROMStore::loadConfig(KinematicsConfig &config) {
+    if (isFirstRun()) {
+        return false; // EEPROM is not initialized, return false
+    }
+
+    EEPROM.get(EEPROM_ADDRESS_CFG_AXES_BASE, config.exclusiveMode); // Load the configuration from the EEPROM
+    EEPROM.get(EEPROM_ADDRESS_CFG_AXES_BASE + 1, config.switchYZ);  // Load the configuration from the EEPROM
+    // FIXME return true; // Return true while the configuration was loaded successfully
+    return false;
+}
+
+void EEPROMStore::saveConfig(KinematicsConfig &config) {
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXES_BASE, config.exclusiveMode);
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXES_BASE + 1, config.switchYZ);
 }

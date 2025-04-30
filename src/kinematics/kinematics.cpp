@@ -155,7 +155,9 @@ void Kinematics::notifyObservers() {
  * @return index with the biggest velocity. Returns enumAxis_t::LENGTH if all in deadzone
  * @see Ledring.cpp for usage
  */
+#ifndef VELOCITYDEADZONEFORLED    // Defined in config.h
 #define VELOCITYDEADZONEFORLED 10 // Deadzone for the LED ring, if the velocity is below this value, it will not be displayed on the LED ring
+#endif
 const AxisType_t Kinematics::getMainAxis(Axis *axis) {
     int8_t mainVelocity = -1;
     int16_t velMax = 0;

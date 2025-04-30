@@ -27,7 +27,7 @@ AxisConfig::AxisConfig(const float psens,
     : posConfig(DirectionConfig(psens, pgate, pmf)), negConfig(DirectionConfig(nsens, ngate, nmf)), inversion(invert) {}
 
 /* Save the axisconfig to EEPROM */
-void AxisConfig::saveAxisConfig(AxisType_t axisType) {
+void AxisConfig::persist(AxisType_t axisType) {
     EEPROMStore::saveConfig(*this, static_cast<const int>(axisType)); // Store the configuration in the EEPROM
 }
 

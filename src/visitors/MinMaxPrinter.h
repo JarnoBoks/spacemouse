@@ -7,7 +7,7 @@
 #include "sensor/sensorconfig.h"
 #include "hardware/hardware.h"
 #include "kinematics/kinematicsconfig.h"
-#include "text.h"
+#include "TextHelper.h"
 
 class MinMaxPrinter : public IPrinterVisitor {
 public:

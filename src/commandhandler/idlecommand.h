@@ -4,7 +4,7 @@
 
 #include "ICommand.h"
 
-// Static (global) command name for the IDLE command
+/// @brief command text for the Idle Calibration command
 static const char CMD_IDLE[] PROGMEM = "IDLE";
 
 /**

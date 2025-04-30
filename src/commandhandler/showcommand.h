@@ -4,7 +4,7 @@
 
 #include "ICommand.h"
 
-// Static (global) command name for the SHOW command
+/// @brief command text for the Show command
 static const char CMD_SHOW[] PROGMEM = "SHOW";
 
 class ShowCommand : public ICommand {

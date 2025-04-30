@@ -4,7 +4,7 @@
 
 #include "ICommand.h"
 
-// Static (global) command name for the MINMAX command
+/// @brief command text for the MinMax calibration command
 static const char CMD_MINMAX[] PROGMEM = "MINMAX";
 
 class MinMaxCommand : public ICommand {

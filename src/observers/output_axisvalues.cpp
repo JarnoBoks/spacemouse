@@ -1,6 +1,6 @@
 #include "output_axisvalues.h"
 #include "kinematics/kinematics.h"
-#include "text.h"
+#include "TextHelper.h"
 
 // REVIEW - Move to Visitor?
 

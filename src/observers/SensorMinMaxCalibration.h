@@ -3,7 +3,7 @@
 
 #include "IObserver.h"
 #include "hardware/hardware.h"
-#include "text.h"
+// REMOVE #include "TextHelper.h"
 
 // Forward declaration of classes to avoid circular dependencies
 class SensorCalibrationManager;

@@ -1,4 +1,4 @@
-#include "text.h"
+#include "TextHelper.h"
 
 void TextHelper::alignValue(const int value, const uint8_t width) {
     int8_t spaces = width - 1;

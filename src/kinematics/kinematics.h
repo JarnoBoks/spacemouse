@@ -29,6 +29,8 @@ public:
     Axis *getAxis(const AxisType_t type);
     Axis *getAxis(const char *name);
 
+    inline KinematicsConfig *getConfig() const { return config; } // Getter for config
+
     void attachObserver(IObserver *observer);
     void detachObserver(IObserver *observer);
     void notifyObservers(); // Notify all observers of changes

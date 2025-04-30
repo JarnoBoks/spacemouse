@@ -29,7 +29,7 @@ public:
                const bool invert);
 
     /* Save the axisconfig to EEPROM */
-    void saveAxisConfig(AxisType_t axisType);
+    void persist(AxisType_t axisType);
 
     void accept(IPrinterVisitor &visitor);
 };

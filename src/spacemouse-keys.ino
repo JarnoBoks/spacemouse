@@ -70,6 +70,8 @@ SpaceKeys *Keys = nullptr;
 #include "commandhandler/minmaxcommand.h"
 #include "commandhandler/senscommand.h"
 #include "commandhandler/showcommand.h"
+#include "commandhandler/exclusivecommand.h"
+#include "commandhandler/switchyzcommand.h"
 CommandHandler myCommandHandler; // Command handler object to handle the commands from the serial interface
 
 #include "calibration/sensorcalibrationmanager.h"
@@ -108,6 +110,8 @@ void setup() {
     myCommandHandler.registerCommand(2, new MinMaxCommand());
     myCommandHandler.registerCommand(3, new SensCommand());
     myCommandHandler.registerCommand(4, new ShowCommand());
+    myCommandHandler.registerCommand(5, new ExclusiveCommand());
+    myCommandHandler.registerCommand(6, new SwitchYZCommand());
 
     // When debugging with SimAVR thorugh PlatformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
     // Use this comamnd to initialize a debug state.

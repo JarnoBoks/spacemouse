@@ -35,7 +35,7 @@ void SensorMinMaxCalibration::finish(Hardware *hardware) {
         sensorcfg->setMax(maxValue[id]);               // Set the maximum value in the sensor configuration
 
         // Save the sensor configuration to EEPROM
-        sensorcfg->saveInEEPROM(sensor->getId()); // Save the updated configuration to EEPROM
+        sensorcfg->persist(sensor->getId()); // Save the updated configuration to EEPROM
 
         sensor->accept(printer);    // Accept the printer visitor to print the sensor name
         sensorcfg->accept(printer); // Accept the printer visitor to print the sensor configuration values

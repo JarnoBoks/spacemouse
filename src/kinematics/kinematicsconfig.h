@@ -21,7 +21,7 @@ public:
                      const bool switchyz);
 
     /* Save the config to EEPROM */
-    void saveConfig();
+    void persist();
 
     void accept(IPrinterVisitor &visitor);
 };

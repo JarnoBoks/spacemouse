@@ -1,6 +1,6 @@
 #include "output_sensorvalues.h"
 #include "hardware/hardware.h"
-#include "text.h"
+#include "TextHelper.h"
 
 // REVIEW - Move to Visitor?
 

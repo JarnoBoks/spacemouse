@@ -1,5 +1,4 @@
-#ifndef TEXT_H
-#define TEXT_H
+#pragma once
 
 #include <Arduino.h>
 
@@ -12,7 +11,7 @@ static const char CMD_IDLE[] PROGMEM = "IDLE"; // Calibrate the idle position of
 // Commands with no parameters (1 word) or with an integer value (2 words)
 static const char CMD_DEADZONE[] PROGMEM = "DEADZONE"; // "DEADZONE" | "DEADZONE x"    Reports or update and reports the global deadzone configuration.
 //  static const char CMD_MINMAX[] PROGMEM = "MINMAX";      // TODO "MINMAX" | "MINMAX x"    Reports or updates and reports the min/max values of the spacemouse
-static const char CMD_SWITCHYZ[] PROGMEM = "SWITCHYZ";  // "SWITCHYZ" | "SWITCHYZ x"    Reports or updates the switch of YZ axes [0..1].
+// static const char CMD_SWITCHYZ[] PROGMEM = "SWITCHYZ";  // "SWITCHYZ" | "SWITCHYZ x"    Reports or updates the switch of YZ axes [0..1].
 static const char CMD_EXCLUSIVEMODE[] PROGMEM = "EXCL"; // "EXCL" | "EXCL x" Reports or updates the Exclusive mode configuration [0..1].
 
 // Command with an integer value (2 words)
@@ -42,10 +41,6 @@ static const char Error_InvalidAxisName[] PROGMEM = "Invalid Axisname.";
 
 #define CF(x) ((const __FlashStringHelper *)x)
 
-bool isWordEmpty(const char *str, const char *errorMsg);
-bool convertWordNumber(const char *str, long *n, const char *errorMsg);
-bool convertWordFloat(const char *str, float *const &f, const char *errorMsg);
-
 // TODO - Check if we need these functions (do they save space overall?)
 void helper_print(const char *text, uint8_t minwidth = 0);
 void helper_print(const __FlashStringHelper *text, uint8_t minwidth = 0);
@@ -56,7 +51,8 @@ public:
     static void alignValue(const int value, const uint8_t width = 4);   // Align the value to the right with spaces
     static void alignedPrint(const int value, const uint8_t width = 4); // Align the value to the right with spaces
     static void printSeparator() { Serial.print(F(" | ")); }            // Print a separator between values
-};
 
-#endif // TEXT_H
-       // vim: set ts=4 sw=4 et:
+    static void printBooleanDescription(const bool value) {
+        Serial.print(value ? F(" (ON)") : F(" (OFF)")); // Print "ON" or "OFF" based on the boolean value
+    }
+};

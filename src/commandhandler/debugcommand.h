@@ -7,7 +7,7 @@
 
 // TODO - Add the STARTUPDEBUG definition to the default constructor
 
-// Static (global) command name for the DEBUG command
+/// @brief command text for the command
 static const char CMD_DEBUG[] PROGMEM = "DEBUG";
 
 /**

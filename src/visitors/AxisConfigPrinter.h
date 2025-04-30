@@ -5,7 +5,7 @@
 #include "axis/axisconfig.h"
 #include "hardware/hardware.h"
 #include "kinematics/kinematicsconfig.h"
-#include "text.h"
+#include "TextHelper.h"
 
 #define FMT_NOCOMMA false
 #define FMT_COMMA true

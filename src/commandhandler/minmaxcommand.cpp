@@ -116,7 +116,7 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         Serial.println(requestedValue);
 
         // Store the value in the EEPROM
-        sensor->getConfig()->saveInEEPROM(sensor->getId());
+        sensor->getConfig()->persist(sensor->getId());
         Serial.print(F("MinMaxCommand::execute: Store minmax for sensor "));
     }
 }

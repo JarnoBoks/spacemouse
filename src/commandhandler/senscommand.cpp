@@ -99,6 +99,6 @@ void SensCommand::execute(const char *param1, const char *param2, uint8_t paramC
         }
 
         // Store the value in the EEPROM
-        axis->getConfig()->saveAxisConfig(axis->getType());
+        axis->getConfig()->persist(axis->getType());
     }
 }

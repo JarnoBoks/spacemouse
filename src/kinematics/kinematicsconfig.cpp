@@ -22,7 +22,7 @@ KinematicsConfig::KinematicsConfig(const bool exclmd,
                                    const bool switchyz) : exclusiveMode(exclmd), switchYZ(switchyz) {};
 
 /* Save the axisconfig to EEPROM */
-void KinematicsConfig::saveConfig() {
+void KinematicsConfig::persist() {
     EEPROMStore::saveConfig(*this); // Store the configuration in the EEPROM
 }
 

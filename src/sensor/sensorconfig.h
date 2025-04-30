@@ -43,8 +43,8 @@ public:
     inline uint8_t getDeadzone() const { return deadzone; }
     inline void setDeadzone(const uint8_t dz) { deadzone = dz; }
 
-    void saveInEEPROM(const int8_t id);
-    void loadFromEEPROM(const uint8_t address);
+    void persist(const int8_t id);
+    void retrieve(const uint8_t address);
 
     void accept(IPrinterVisitor &visitor);
 };

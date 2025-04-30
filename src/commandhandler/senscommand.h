@@ -4,7 +4,7 @@
 
 #include "ICommand.h"
 
-// Static (global) command name for the SENS command
+/// @brief command text for the Sensitivity configuration command
 static const char CMD_SENS[] PROGMEM = "SENS";
 
 class SensCommand : public ICommand {

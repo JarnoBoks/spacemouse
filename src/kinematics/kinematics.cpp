@@ -1,6 +1,7 @@
 #include "kinematics.h"
 #include "hardware/hardware.h"
 #include "config.h"
+#include "KinematicsConfig.h"
 
 // Static pointer for the Singleton instance of Kinematics
 // This pointer is initialized to nullptr, indicating that the instance has not been created yet.
@@ -15,6 +16,27 @@ Kinematics *Kinematics::getInstance() {
         instance = new Kinematics();
     }
     return instance;
+}
+
+/**
+ * @brief  Constructor for the Kinematics class.
+ * @details Initializes a Kinematics object by initializing its config and initializing the
+ *          axes with their respective configurations and hardware.
+ * @note   This constructor sets up all the axes for the Spacemouse functionality.
+ */
+Kinematics::Kinematics() {
+    // Initialize the configuration for the kinematics
+    // The configuration is used to set the exclusive mode and switch YZ settings.
+    // The configuration is loaded from the EEPROM or set to default values if the EEPROM is empty or the version is changed.
+    config = new KinematicsConfig();
+
+    // Initialize the axes with their respective configurations and hardware
+    axes[TRANSX] = Axis(TRANSX);
+    axes[TRANSY] = Axis(TRANSY);
+    axes[TRANSZ] = Axis(TRANSZ);
+    axes[ROTX] = Axis(ROTX);
+    axes[ROTY] = Axis(ROTY);
+    axes[ROTZ] = Axis(ROTZ);
 }
 
 /**
@@ -44,22 +66,6 @@ Axis *Kinematics::getAxis(const char *name) {
 }
 
 /**
- * @brief  Constructor for the Kinematics class.
- * @details Initializes the axes with their respective configurations and hardware.
- * @note   This constructor sets up all the axes for the Spacemouse functionality.
- */
-Kinematics::Kinematics() {
-
-    // Initialize the axes with their respective configurations and hardware
-    axes[TRANSX] = Axis(TRANSX); // Initialize the TX axis with the new objects
-    axes[TRANSY] = Axis(TRANSY); // Initialize the TRANSY axis with the new objects
-    axes[TRANSZ] = Axis(TRANSZ); // Initialize the TRANSZ axis with the new objects
-    axes[ROTX] = Axis(ROTX);     // Initialize the RX axis with the new objects
-    axes[ROTY] = Axis(ROTY);     // Initialize the ROTY axis with the new objects
-    axes[ROTZ] = Axis(ROTZ);     // Initialize the ROTZ axis with the new objects
-}
-
-/**
  * @brief Processes the kinematics for all axes.
  * @details This function calculates the values for each axis based on the hardware input and configuration.
  */
@@ -69,6 +75,45 @@ void Kinematics::processKinematics() {
     }
 
     notifyObservers(); // Notify observers of changes in the kinematics
+}
+
+// REVIEW - This should be a decorator function for the axis class, but we need to check if we can use the same function for both classes.
+void Kinematics::_applyExclusiveMode() {
+    if (config != nullptr && config->exclusiveMode) {
+        uint16_t totalRot = abs(axes[ROTX].getValue()) + abs(axes[ROTY].getValue()) + abs(axes[ROTZ].getValue());
+        uint16_t totalTrans = abs(axes[TRANSX].getValue()) + abs(axes[TRANSY].getValue()) + abs(axes[TRANSZ].getValue());
+
+        // If the total rotation is greater than the total translation, set translation axes to 0
+        // Otherwise, set rotation axes to 0
+        int8_t startAxis = -1;
+        int8_t endAxis = -1;
+        if (totalRot > totalTrans) {
+            startAxis = TRANSX;
+            endAxis = TRANSZ; // Set translation axes to 0
+        } else {
+            startAxis = ROTX;
+            endAxis = ROTZ; // Set translation axes to 0
+        }
+
+        for (int i = startAxis; i <= endAxis; i++) {
+            axes[i].setValue(0); // Set translation axes to 0
+        }
+    }
+}
+
+// REVIEW - What is the order of the exclusive mode and switch YZ?
+// REVIEW - Can we switch the entire axis at once in the array?
+void Kinematics::_applySwitchYZ() {
+    if (config != nullptr && config->switchYZ) {
+        int16_t tmp = 0;
+        tmp = axes[TRANSY].getValue();
+        axes[TRANSY].setValue(axes[TRANSZ].getValue());
+        axes[TRANSZ].setValue(tmp);
+
+        tmp = axes[ROTY].getValue();
+        axes[ROTY].setValue(axes[ROTZ].getValue());
+        axes[ROTZ].setValue(tmp);
+    }
 }
 
 // REVIEW The following functions are almost exactly the same as in hardware.cpp. Maybe move them to a common base class or use templates to avoid code duplication.

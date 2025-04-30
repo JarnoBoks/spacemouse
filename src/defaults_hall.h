@@ -197,6 +197,17 @@
 #define DEF_INVERT_RZ 1 // 0 = no inversion, 1 = inversion
 #endif
 
+// --------------------- KINEMATICS DEFAULTS  ----------------------------
+// The kinematics defaults are used to set the default configuration for the kinematics of the spacemouse.
+// The values can be overridden by the user in the config.h file.
+// Switch Zoom direction with Up/Down Movement
+#ifndef DEF_SWITCHYZ
+#define DEF_SWITCHYZ 0 // change to 1 to switch Y and Z axis
+#endif
+#ifndef DEF_EXCLUSIVEMODE
+#define DEF_EXCLUSIVEMODE 0 // change to 1 to enable exclusive mode
+#endif
+
 // ------------------ PREPOCESSOR DIRECTIVES USED IN THE SOFTWARE
 // Change the sensor warning levels if your hardware requires. Normally this isn't necessary.
 

@@ -2,6 +2,7 @@
 // Please open config_sample.h, adjust your settings and save it as config.h
 #include "config.h"
 #include <Arduino.h>
+
 #ifdef LEDRING
 #include "ledring.h"
 #include "kinematics/kinematics.h"
@@ -9,23 +10,15 @@
 
 LedRing::LedRing() {
     FastLED.addLeds<WS2811, LEDpin, GRB>(_leds, LEDRING);
-} // Constructor with parameters
-
-#if 0
-//REVIEW
-LedRing::LedRing(Kinematics &SMKIN) : _SMKIN(&SMKIN) {
-    FastLED.addLeds<WS2811, LEDpin, GRB>(_leds, LEDRING);
-} // Constructor with parameters
-#endif
-LedRing::~LedRing() {
-    // Destructor
 }
 
-/// @brief process the LEDs connected via FastLED. Call this in loop()
-/// @param velocity array with velocity informations
-/// @param ledCmd transmit if the LED shall be on (as it may be demanded over USB)
 #define VAL(x) Kinematics::getInstance()->getAxis(x)->getValue();
 #define INV(x) Kinematics::getInstance()->getAxis(x)->getConfig()->inversion;
+/**
+ * @brief Processes the LED commands and updates the LED states based on axis values
+ * @param ledCmd Indicates if the LED should be turned on or off, regardless of the axis values
+ * @details This function updates the LED states based on the axis values and the LED command.
+ */
 void LedRing::ProcessLED(boolean ledCmd) {
     unsigned long now = millis();
     static unsigned long lastLEDupdate = now;
@@ -98,7 +91,9 @@ void LedRing::ProcessLED(boolean ledCmd) {
                     _rotateColor(true, CRGB::DarkRed);
                 }
                 break;
-            default: // all very dimm
+            case UNINITIALIZED: /* no-break */
+            default:
+                // Set all LEDs to dimmed dark grey
                 _setAllLEDs(CRGB::DarkGrey);
                 FastLED.setBrightness(5);
                 break;
@@ -109,10 +104,12 @@ void LedRing::ProcessLED(boolean ledCmd) {
     }
 }
 
-/// @brief rotate a single around the LED ring
-/// @param clockwise turns clockwise if true
-/// @param color which CRGB color
-void LedRing::_rotateColor(boolean clockwise, CRGB color) {
+/**
+ * @brief Rotates a single LED around the LED ring
+ * @param clockwise Turns clockwise if true
+ * @param color The CRGB color to use for the LED
+ */
+void LedRing::_rotateColor(const boolean clockwise, const CRGB color) {
     static int rotateLEDpos = 0;
     _leds[rotateLEDpos] = color;
     if (clockwise) {
@@ -122,28 +119,36 @@ void LedRing::_rotateColor(boolean clockwise, CRGB color) {
     }
 }
 
-/// @brief set all leds to given color
-/// @param color
-void LedRing::_setAllLEDs(CRGB color) {
+/**
+ * @brief Sets all leds to given color
+ * @param color the color to set all LEDs to
+ * @details This function iterates through all LEDs in the LED ring and sets them to the specified color.
+ */
+void LedRing::_setAllLEDs(const CRGB color) {
     for (int i = 0; i < LEDRING; i++) {
         _leds[i] = color;
     }
 }
 
-/// @brief set LED on LED ring regarding the ring as a clock
-/// @param clock position of the LED to light up
-/// @param color color to light
-void LedRing::_setLEDsOnClock(uint16_t clock, CRGB color) {
+/**
+ * @brief Sets the LED at a specific clock position to a given color
+ * @param clock Position of the LED to light up
+ * @param color Color to light
+ */
+void LedRing::_setLEDsOnClock(const uint16_t clock, const CRGB color) {
     uint16_t pos = 0;
     pos = (clock * (LEDRING / 12)) % LEDRING;
     pos = (LEDclockOffset + pos) % LEDRING;
     _leds[pos] = color;
 }
 
-/// @brief set 4 LEDs on LED ring regarding the ring as a clock
-/// @param clock position of the LED to light up
-/// @param color color to light
-void LedRing::_set4LEDsOnClock(uint16_t clock, CRGB color) {
+/**
+ * @brief Sets 4 LEDs on the LED ring at a specific clock position to a given color
+ * @details This function lights up the LED at the specified clock position and the two LEDs adjacent to it, creating a visual effect.
+ * @param clock Position of the LED to light up
+ * @param color Color to light
+ */
+void LedRing::_set4LEDsOnClock(const uint16_t clock, const CRGB color) {
     uint16_t pos = 0;
     pos = (clock * (LEDRING / 12)) % LEDRING;
     pos = (LEDclockOffset + pos) % LEDRING;
@@ -155,4 +160,3 @@ void LedRing::_set4LEDsOnClock(uint16_t clock, CRGB color) {
 }
 
 #endif // #if LEDring
-       //

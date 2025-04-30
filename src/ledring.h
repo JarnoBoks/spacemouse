@@ -8,22 +8,19 @@
 #include "kinematics/kinematics.h"
 
 class LedRing {
-public:
-    LedRing();
-    LedRing(Kinematics &SMKIN);
-    ~LedRing();
-
-    void ProcessLED(boolean ledCmd);
-
 private:
-    // Kinematics *_SMKIN = nullptr;
-
     CRGB _leds[LEDRING];
 
-    void _setLEDsOnClock(uint16_t clock, CRGB color);
-    void _set4LEDsOnClock(uint16_t clock, CRGB color);
-    void _setAllLEDs(CRGB color);
-    void _rotateColor(boolean clockwise, CRGB color);
+    void _setLEDsOnClock(const uint16_t clock, const CRGB color);
+    void _set4LEDsOnClock(const uint16_t clock, const CRGB color);
+    void _setAllLEDs(const CRGB color);
+    void _rotateColor(const boolean clockwise, const CRGB color);
+
+public:
+    LedRing();
+    ~LedRing() {};
+
+    void ProcessLED(boolean ledCmd);
 };
 
 #endif // LEDRING_h

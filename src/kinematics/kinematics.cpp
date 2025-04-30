@@ -151,23 +151,34 @@ void Kinematics::notifyObservers() {
 };
 
 /**
- * @brief Calculates which velocity is the main action. What is the strongest movement?
- * @return index with the biggest velocity. Returns enumAxis_t::LENGTH if all in deadzone
+ * @brief Get the axis with the largest velocity.
+ * @param axis Pointer to the Axis object to be set with the main axis.
+ * @return The AxisId for the axis with the largest velocity. Returns enumAxis_t::UNITIALIZED if all axes are in the VELOCITYDEADZONEFORLED
  * @see Ledring.cpp for usage
  */
 #ifndef VELOCITYDEADZONEFORLED    // Defined in config.h
 #define VELOCITYDEADZONEFORLED 10 // Deadzone for the LED ring, if the velocity is below this value, it will not be displayed on the LED ring
 #endif
+
 const AxisType_t Kinematics::getMainAxis(Axis *axis) {
-    int8_t mainVelocity = -1;
-    int16_t velMax = 0;
+    AxisType_t idMainAxis = AxisType_t::UNINITIALIZED;
+    int16_t maximumVelocity = 0;
+
+    // Loop through all axes to find the one with the biggest velocity
     for (int i = 0; i < AxisType_t::LENGTH; i++) {
-        // bigger than deadzone and bigger than before?
-        if ((abs(axes[i].getValue()) > velMax) && (abs(axes[i].getValue()) > VELOCITYDEADZONEFORLED)) {
-            velMax = abs(axes[i].getValue());
-            mainVelocity = i;
+        int16_t absvalue = abs(axes[i].getValue()); // Get the value of the axis
+
+        // Is the value of this axis greater than deadzone and greater than any of the axis before?
+        if ((absvalue > maximumVelocity) && (absvalue > VELOCITYDEADZONEFORLED)) {
+            maximumVelocity = absvalue;
+            idMainAxis = static_cast<AxisType_t>(i);
         }
     }
-    *axis = axes[mainVelocity]; // Set the axis to the main velocity axis   //REVIEW - Probably incorrect
-    return static_cast<AxisType_t>(mainVelocity);
+    if (idMainAxis == AxisType_t::UNINITIALIZED) {
+        axis = nullptr; // Set the axis to nullptr if no axis is found
+    } else {
+        axis = &axes[idMainAxis]; // Set the axis to the main velocity axis
+        // REVIEW - Check if the pointer assignment is correct. It should be a reference to the axis, not a pointer.
+    }
+    return idMainAxis;
 }

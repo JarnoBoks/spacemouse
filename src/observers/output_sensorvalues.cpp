@@ -22,5 +22,4 @@ void Output_SensorValues::update(Hardware *hardware) {
         TextHelper::alignValue(value, 4);         // Align the value to the right with spaces
         Serial.print(value);
     }
-    Serial.println(); // Print a newline after the last sensor status was printed to the serial monitor
 }

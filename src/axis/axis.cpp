@@ -46,7 +46,7 @@ void Axis::calculateValue() {
 
     // Apply the sensitivity for this axis & direction
     value = dconfig->sensitivity * value; // Apply the sensitivity for this axis & direction
-    sensValue = value;                    // Store the raw value for debugging purposes
+    rawValue = value;                     // Store the raw value for debugging purposes
 
     // Apply the modifier function for this axis, override the default one if necessary
     modifier(dconfig->modFuncType); // Apply the modifier function for this axis, override the default one if necessary
@@ -58,6 +58,7 @@ void Axis::calculateValue() {
 
     // Invert the motion if necessary
     value = (config->inversion) ? -value : value; // Invert the value if necessary
+    modifiedValue = value;                        // Store the modified value for debugging purposes
 }
 
 void Axis::setLedLight(LightBehavior *behavior) {

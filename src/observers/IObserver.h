@@ -19,19 +19,6 @@
 #define DEBUGDELAY 250
 #endif
 
-enum DebugLevel : int8_t {
-    OFF = -1,
-    SILENT = 0,
-    RAW_VALUES, // 1 - Raw values of the sensors
-    CENTERED,   // 2 - Centered values of the sensors
-    HW_OUTPUT,  // 3 - Hardware output values (e.g. mapped & deadzone applied)
-    AXIS_VALUES,
-    AXIS_VALUES_EXT,
-    AXIS_AND_KEYS,
-    FULL_DEBUG,
-    LOOP_FREQUENCY
-};
-
 // Forward declaration of classes that are observed (to avoid circular dependencies)
 class Kinematics;
 class Axis; // REMOVE ?
@@ -48,8 +35,6 @@ protected:
 public:
     IObserver() : lastDebugOutput(0) {} // Constructor
     virtual ~IObserver() {}             // Destructor
-
-    void logLoopFrequency();
 
     virtual void update(const Axis *axis); // REMOVE?
     virtual void update(Kinematics *kinematics);

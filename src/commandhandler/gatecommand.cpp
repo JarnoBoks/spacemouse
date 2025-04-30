@@ -1,4 +1,4 @@
-#include "senscommand.h"
+#include "gatecommand.h"
 #include "axis/axisconfig.h"
 
 // Only log to serial if not using Arduino AVR architecture
@@ -16,17 +16,17 @@
  * @param param2 Second parameter
  * @param paramCount Number of parameters provided.
  */
-void SensCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
-    ESP_PRINT(F("SensCommand executed"));
+void GateCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
+    ESP_PRINT(F("GateCommand executed"));
     // Call the base class execute function to handle common functionality
-    IAxisConfigCommand::execute(param1, param2, paramCount);
+    IAxisConfigCommand::execute(param1, param2, paramCount); // Call the base class execute function
 
     // Check if the directionfig is valid
     if (_directionConfig == nullptr) {
-        ESP_PRINT(F("SensCommand::execute: No direction config available"));
+        ESP_PRINT(F("GateCommand::execute: No direction config available"));
         return; // No direction config available, exit the function
     }
 
-    _directionConfig->sensitivity = _requestedValue; // Set the sensitivity value to the requested value
-    _axis->getConfig()->persist(_axis->getType());   // Store the value in the EEPROM
+    _directionConfig->gate = _requestedValue;      // Set the gate value to the requested value
+    _axis->getConfig()->persist(_axis->getType()); // Store the value in the EEPROM
 }

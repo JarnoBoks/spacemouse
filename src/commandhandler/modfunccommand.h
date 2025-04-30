@@ -3,13 +3,13 @@
 #include "IAxisConfigCommand.h"
 
 /// @brief command text for the Sensitivity configuration command
-static const char CMD_SENS[] PROGMEM = "SENS";
+static const char CMD_MODFUNC[] PROGMEM = "MODFUNC";
 
-class SensCommand : public IAxisConfigCommand {
+class ModFuncCommand : public IAxisConfigCommand {
 private:
 public:
-    SensCommand() : IAxisConfigCommand(CMD_SENS) {};
-    ~SensCommand() {};
+    ModFuncCommand() : IAxisConfigCommand(CMD_MODFUNC) {};
+    ~ModFuncCommand() {};
 
     void execute(const char *param1, const char *param2, uint8_t paramCount) override;
 };

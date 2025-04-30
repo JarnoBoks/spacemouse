@@ -69,6 +69,9 @@ SpaceKeys *Keys = nullptr;
 #include "commandhandler/idlecommand.h"
 #include "commandhandler/minmaxcommand.h"
 #include "commandhandler/senscommand.h"
+#include "commandhandler/gatecommand.h"
+#include "commandhandler/modfunccommand.h"
+#include "commandhandler/invertcommand.h"
 #include "commandhandler/showcommand.h"
 #include "commandhandler/exclusivecommand.h"
 #include "commandhandler/switchyzcommand.h"
@@ -109,9 +112,12 @@ void setup() {
     myCommandHandler.registerCommand(1, new IdleCommand());
     myCommandHandler.registerCommand(2, new MinMaxCommand());
     myCommandHandler.registerCommand(3, new SensCommand());
-    myCommandHandler.registerCommand(4, new ShowCommand());
-    myCommandHandler.registerCommand(5, new ExclusiveCommand());
-    myCommandHandler.registerCommand(6, new SwitchYZCommand());
+    myCommandHandler.registerCommand(4, new GateCommand());
+    myCommandHandler.registerCommand(5, new ModFuncCommand());
+    myCommandHandler.registerCommand(6, new InvertCommand());
+    myCommandHandler.registerCommand(7, new ShowCommand());
+    myCommandHandler.registerCommand(8, new ExclusiveCommand());
+    myCommandHandler.registerCommand(9, new SwitchYZCommand());
 
     // When debugging with SimAVR thorugh PlatformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
     // Use this comamnd to initialize a debug state.

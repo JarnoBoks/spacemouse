@@ -11,13 +11,13 @@
  */
 Sensor::Sensor(const int8_t pin, const int8_t id)
     : pin(pin),
-      name(nullptr),
       id(id),
       config(new SensorConfig(id)),
       rawvalue(0),
       centered(0),
       filtered(0),
-      idleposition(0) // Initialize the member variables
+      idleposition(0),
+      name(nullptr) // Initialize the member variables
 {
     // REVIEW - Move the config init to the initializer list.
     //   this->config = new SensorConfig(id); // Create a new SensorConfig object for this sensor (identified by id)
@@ -110,6 +110,10 @@ void Sensor::applyCalibration() {
 
 const uint8_t Sensor::getId() const {
     return static_cast<uint8_t>(id);
+}
+
+const char *Sensor::getName() const {
+    return name;
 }
 
 void Sensor::accept(IPrinterVisitor &visitor) {

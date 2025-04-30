@@ -13,7 +13,7 @@ public:
     MinMaxPrinter() {
         // Constructor to initialize the MinMaxPrinter object
         // Print the header for the min/max output
-        Serial.println(F("        Min |  Max | Range | Warning"));
+        Serial.println(F("        Min |  Max | Rnge | Warning"));
     }
 
     inline void visit(Sensor &sensor) override {
@@ -32,12 +32,14 @@ public:
 
         TextHelper::alignValue(min, 4);
         Serial.print(min);
-        TextHelper::printSeparator(); // Print the ' | ' separator
+        TextHelper::printSeparator();
         TextHelper::alignValue(max, 4);
         Serial.print(max);
         TextHelper::printSeparator();
         TextHelper::alignValue(range, 4);
         Serial.print(range); // Print the working range
+
+        TextHelper::printSeparator();
 
         // TODO - Program more efficiently
         // Print the warning status for min, max and working range
@@ -64,7 +66,7 @@ public:
         if (warningsOccurred) {
             Serial.print(F("small"));
         } else {
-            Serial.print(F("ok"));
+            Serial.print(F("-"));
         }
 
         Serial.println();

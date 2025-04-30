@@ -18,10 +18,11 @@ HallSensor::HallSensor(const int8_t pin, HallSensorsId_t id) : Sensor(pin, id) {
  * NOTE - The names are defined in the HALL_SENSOR_NAMES macro.
  *        The values are defined in the defaultaxisconfig_joystick.h file.
  */
+/* REMOVE
 const char *HallSensor::getName() const {
     return name;
 }
-
+ */
 /**
  * @brief Sets the idle position for the sensor configuration. Overrides the base class method.
  * @param val The new idle position to set.

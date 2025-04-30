@@ -1,7 +1,9 @@
 #include "DebugCommand.h"
 
+// Include necessary headers for the Debug states
 #include "DebugParam/ParamOff.h"
 #include "DebugParam/ParamSensorInformation.h"
+#include "DebugParam/ParamAxisInformation.h"
 // ...include other debug states...
 
 /**
@@ -85,27 +87,27 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
     case 4:
         // Translation and rotation values - withoud modifier function, inversion, YZ switching nor Exclusivemode applied
         Serial.println(F("4"));
-        //TODO setState(new DebugParamSensorInformationRaw());
+        setState(new DebugParamAxisInformation());
         break;
     case 5:
         // Centered values (2nd debug) and translation & rotation values side by side for direct reference. Modifier function and inversion are applied. Any configured YZ switching or Exclusivemode is not applied.
         Serial.println(F("5"));
-        //TODO setState(new DebugParamSensorInformationCentered());
+        // TODO setState(new DebugParamSensorInformationCentered());
         break;
     case 6:
         // Debug 5 and the key state after applying the kill-key functionality
         Serial.println(F("6"));
-        //TODO setState(new DebugParamSensorInformationRaw());
+        // TODO setState(new DebugParamSensorInformationRaw());
         break;
     case 7:
         // Centered values, translation & rotation, keystate (with kill switch) and exclusive mode applied
         Serial.println(F("7"));
-        //TODO setState(new DebugParamSensorInformationCentered());
+        // TODO setState(new DebugParamSensorInformationCentered());
         break;
     case 8:
         // Report the frequency of the loop()
         Serial.println(F("8"));
-        //TODO setState(new DebugParamSensorInformationRaw());
+        // TODO setState(new DebugParamSensorInformationRaw());
         break;
     case 9:
         // Report the bits and bytes send as button codes

@@ -2,6 +2,8 @@
 #include "hardware/hardware.h"
 #include "text.h"
 
+// REVIEW - Move to Visitor?
+
 void Output_SensorValues::update(Hardware *hardware) {
     if (!isDebugOutputDue() || hardware == nullptr) {
         return; // If the debug output is not due, do nothing

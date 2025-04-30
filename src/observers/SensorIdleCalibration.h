@@ -38,7 +38,7 @@ public:
     ~SensorIdleCalibration() {};                                                            // nothing to do in destructor
 
     void update(const Axis *axis) override {
-        // Doing nothing here, as this output class is only used for sensors and not for axes.
+        // Doing nothing here, as this class is only used for sensors and not for axes.
     }
 
     void update(Hardware *hardware) override;

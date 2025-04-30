@@ -7,10 +7,10 @@ JoystickSensor::JoystickSensor(const int8_t pin, JoystickSensorsId_t id) : Senso
     this->name = names[static_cast<uint8_t>(id)];
 }
 
-const char *JoystickSensor::getName() const {
+/* REMOVE const char *JoystickSensor::getName() const {
     return name;
 }
-
+ */
 /**
  * @brief Sets the idle position for the sensor configuration. Overrides the base class method.
  * @param val The new idle position to set.

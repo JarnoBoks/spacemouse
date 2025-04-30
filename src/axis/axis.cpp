@@ -16,8 +16,8 @@ Axis::Axis() : type(UNINITIALIZED) {
     config = new AxisConfig(); // Create a new AxisConfig object for this axis
 
     hardware = Hardware::getInstance(); // Initialize the hardware with Hall effect sensors
-    light = nullptr;                    // Initialize light to nullptr
-    value = 0;                          // Initialize value to 0
+    light = nullptr;
+    value = 0;
 }
 
 Axis::Axis(AxisType_t type) : type(type) {
@@ -26,12 +26,16 @@ Axis::Axis(AxisType_t type) : type(type) {
 
     hardware = Hardware::getInstance(); // Initialize the hardware with Hall effect sensors
 
-    light = nullptr; // Initialize light to nullptr
-    value = 0;       // Initialize value to 0
-}
+    // Setup the name of the axis based on the type
+    const char *names[AxisType_t::LENGTH] = AXIS_NAMES;
+    if (type < 0 || type >= AxisType_t::LENGTH) {
+        this->name = "?"; // Set name to UNKNOWN if type is invalid
+    } else {
+        this->name = names[type];
+    }
 
-int16_t Axis::getValue() const {
-    return value;
+    light = nullptr;
+    value = 0;
 }
 
 void Axis::calculateValue() {
@@ -41,6 +45,7 @@ void Axis::calculateValue() {
 
     // Apply the sensitivity for this axis & direction
     value = dconfig->sensitivity * value; // Apply the sensitivity for this axis & direction
+    sensValue = value;                    // Store the raw value for debugging purposes
 
     // Apply the modifier function for this axis, override the default one if necessary
     modifier(dconfig->modFuncType); // Apply the modifier function for this axis, override the default one if necessary

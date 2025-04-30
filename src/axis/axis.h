@@ -15,6 +15,8 @@ enum AxisType_t : int8_t { ALL = -2,
                            ROTZ,
                            LENGTH };
 
+#define AXIS_NAMES {"TX", "TY", "TZ", "RX", "RY", "RZ"} // Axis names for debugging
+
 // Forward declaration of classes to avoid circular dependencies
 class AxisConfig; // Forward declaration of AxisConfig class
 class Hardware;
@@ -24,7 +26,11 @@ class IDebugMonitor;
 class Axis {
 private:
     AxisType_t type = UNINITIALIZED;
-    int16_t value = 0;
+    const char *name;
+
+    int16_t value = 0;     // Value of the axis after reading from the hardware and applying all configurations
+    int16_t sensValue = 0; // Raw value from the hardware, including sensitivity application (stored for debugging purposes)
+
     AxisConfig *config = nullptr;
     Hardware *hardware = nullptr;
     LightBehavior *light = nullptr;
@@ -36,7 +42,10 @@ public:
     Axis(); // Default constructor
     Axis(AxisType_t type);
 
-    int16_t getValue() const;
+    inline int16_t getValue() const { return value; }         // Getter for value           // REVIEW - Same asa Sensor class, but we need to check if we can use the same function for both classes.
+    inline int16_t getSensValue() const { return sensValue; } // Getter for sensValue
+    inline const char *getName() const { return name; }       // Getter for name            // REVIEW - Same as Sensor class, but we need to check if we can use the same function for both classes.
+
     void calculateValue();
 
     void setLedLight(LightBehavior *behavior);

@@ -31,6 +31,7 @@ Axis *Kinematics::getAxis(AxisType_t type) {
  * @param name The name of the axis to retrieve.
  * @return A pointer to the corresponding Axis object, or nullptr if not found.
  */
+// REVIEW - This function can be removed, while we have an axis name in the axis class.
 Axis *Kinematics::getAxis(const char *name) {
     // TODO - Make progmem string for the axis names
     const __FlashStringHelper *axisNames[] PROGMEM = {F("TX"), F("TY"), F("TZ"), F("RX"), F("RY"), F("RZ")}; // Axis names
@@ -41,6 +42,7 @@ Axis *Kinematics::getAxis(const char *name) {
     }
     return nullptr; // Axis not found, return nullptr
 }
+
 
 /**
  * @brief  Constructor for the Kinematics class.
@@ -66,4 +68,39 @@ void Kinematics::processKinematics() {
     for (int i = 0; i < AxisType_t::LENGTH; i++) {
         axes[i].calculateValue(); // Calculate the value for each axis
     }
+
+    notifyObservers(); // Notify observers of changes in the kinematics
 }
+
+// REVIEW The following functions are almost exactly the same as in hardware.cpp. Maybe move them to a common base class or use templates to avoid code duplication.
+/**
+ * @brief Attach an observer to the kinematics class.
+ * @param observer Pointer to the observer to be attached.
+ * @details This function adds the observer to the observers array and increases the observer count.
+ *          If the array is full, it does not add the new observer and can be modified to handle this case.
+ */
+void Kinematics::attachObserver(IObserver *observer) {
+    if (observerCount < MAX_KINEMATICS_OBSERVERS) {
+        // insert the observer into the array, at position observerCount and increase the count after inserting.
+        observers[observerCount++] = observer;
+    } else {
+        // TODO - Handle the case when the observer array is full. Maybe remove the oldest observer or ignore the new one?
+    }
+};
+
+void Kinematics::detachObserver(IObserver *observer) {
+    // remove the observer from the array by replacing it with the last observer in the array and decrease the count.
+    for (int i = 0; i < observerCount; i++) {
+        if (observers[i] == observer) {
+            observers[i] = observers[--observerCount];
+            observers[observerCount] = nullptr;
+            break;
+        }
+    }
+};
+
+void Kinematics::notifyObservers() {
+    for (int i = 0; i < observerCount; i++) {
+        observers[i]->update(this); // Notify each observer
+    }
+};

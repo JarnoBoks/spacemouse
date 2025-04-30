@@ -9,12 +9,6 @@ enum SensorOutputValType_t {
     SO_CENTERED,
 };
 
-/**
- * @brief Class to output raw sensor values for debugging purposes.
- * This class inherits from DebugMonitor.
- *
- * DEBUG_LEVEL = 1 / 2
- */
 class Output_SensorValues : public IObserver {
 private:
 protected:

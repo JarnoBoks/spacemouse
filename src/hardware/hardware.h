@@ -30,6 +30,7 @@ public:
     static Hardware *getInstance();
 
     ~Hardware() {
+        // REVIEW - Destructor will never be called, as the static instance is never deleted.
         for (int i = 0; i < MAX_SENSORS; i++) {
             if (sensors[i] != nullptr) {
                 delete sensors[i];

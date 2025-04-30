@@ -67,8 +67,8 @@ Debug Modes:
      Hall Effect: The values should be approximately -350 to +350, small movements are ignored.   //TODO - check if this is correct for the HES sensors
 
  4:  Report translation & rotation values.
-     The translation (TX, TY, TZ) and rotation (RX, RY, RZ) values are calculated from the hardware output. Modifier function, inversion, YZ switching nor Exclusivemode are
-     applied. See kinematics.h for the details of the calculation. The parameters for the calculation can be configured (see further below).
+     The translation (TX, TY, TZ) and rotation (RX, RY, RZ) values are calculated from the hardware output and sensitivity is applied. None of the modifier function, inversion, YZ switching nor Exclusivemode are
+     applied. See kinematics.h for the details of the calculation. The parameters used in the calculation can be configured (see further below).
 
      Output:      Approximately -350 to +350 depending on the parameter.
 

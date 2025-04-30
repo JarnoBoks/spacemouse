@@ -2,7 +2,8 @@
 #define IOBSERVER_H
 
 // Define the maximum number of observers that can connect to axes and hardware
-#define MAX_AXIS_OBSERVERS 4
+#define MAX_KINEMATICS_OBSERVERS 4
+#define MAX_AXIS_OBSERVERS 4 // REMOVE ?
 #define MAX_HARDWARE_OBSERVERS 4
 
 #include <Arduino.h>
@@ -32,7 +33,8 @@ enum DebugLevel : int8_t {
 };
 
 // Forward declaration of classes that are observed (to avoid circular dependencies)
-class Axis;
+class Kinematics;
+class Axis; // REMOVE?
 class Hardware;
 
 // --- DebugMonitor (Observer Pattern) ---
@@ -51,7 +53,8 @@ public:
 
     void logLoopFrequency();
 
-    virtual void update(const Axis *axis);
+    virtual void update(const Axis *axis); // REMOVE?
+    virtual void update(Kinematics *kinematics);
     virtual void update(Hardware *hardware);
 };
 

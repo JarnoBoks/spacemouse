@@ -2,15 +2,15 @@
 #define SENSORCALIBRATIONMANAGER_H
 #include <Arduino.h>
 
-#include "observers/idebugmonitor.h" // For IDebugMonitor class  //TODO - Rename class to IAxisHardware_Observer
-class Sensor;                        // Forward declaration of Sensor class
+#include "observers/IObserver.h" // For IDebugMonitor class
+class Sensor;                    // Forward declaration of Sensor class
 
 class SensorCalibrationManager {
 private:
     static SensorCalibrationManager *instance; // Singleton instance
     SensorCalibrationManager() {};             // Private constructor for singleton pattern
 
-    IDebugMonitor *currentCalibration = nullptr; // Pointer to the current calibration observer
+    IObserver *currentCalibration = nullptr; // Pointer to the current calibration observer
 public:
     static SensorCalibrationManager *getInstance(); // Moved getInstance() method here
 

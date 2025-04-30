@@ -1,7 +1,7 @@
 #ifndef SENSORIDLECALIBRATION_H
 #define SENSORIDLECALIBRATION_H
 
-#include "idebugmonitor.h"
+#include "IObserver.h"
 #include "hardware/hardware.h"
 
 // Forward declaration of classes to avoid circular dependencies
@@ -15,7 +15,7 @@ class SensorCalibrationManager;
  * It is used to set the idle position of the sensors to the average value of the readings.
  * The class is an observer of the Hardware class and is instantiated by the SensorCalibrationManager.
  */
-class SensorIdleCalibration : public IDebugMonitor {
+class SensorIdleCalibration : public IObserver {
 private:
     int requestedIterations = 500;          // Number of remaining iterations for the idle calibration
     int processedIterations = 0;            // Number of processed iterations for the idle calibration

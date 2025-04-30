@@ -1,5 +1,5 @@
 
-#include "idebugmonitor.h"
+#include "iobserver.h"
 
 /**
  * @brief Indicate if a new debug output should be printed.
@@ -8,7 +8,7 @@
  * @retval true     debug output is due
  * @retval false    debug output is not due
  */
-bool IDebugMonitor::isDebugOutputDue() {
+bool IObserver::isDebugOutputDue() {
     lastDebugOutput = 0; // time from millis(), when the last debug output was given
 
     if (millis() - lastDebugOutput > DEBUGDELAY) {
@@ -19,12 +19,12 @@ bool IDebugMonitor::isDebugOutputDue() {
     }
 }
 
-void IDebugMonitor::update(const Axis *axis) {
+void IObserver::update(const Axis *axis) {
     // Doing nothing here, as this is a virtual function to be overridden by derived classes.
     // Additional implementation can be added in derived classes.
 }
 
-void IDebugMonitor::update(Hardware *hardware) {
+void IObserver::update(Hardware *hardware) {
     // Doing nothing here, as this is a virtual function to be overridden by derived classes.
     // Additional implementation can be added in derived classes.
 }

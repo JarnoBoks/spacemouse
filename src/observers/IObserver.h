@@ -1,5 +1,5 @@
-#ifndef IDEBUGMONITOR_H
-#define IDEBUGMONITOR_H
+#ifndef IOBSERVER_H
+#define IOBSERVER_H
 
 // Define the maximum number of observers that can connect to axes and hardware
 #define MAX_AXIS_OBSERVERS 4
@@ -36,7 +36,7 @@ class Axis;
 class Hardware;
 
 // --- DebugMonitor (Observer Pattern) ---
-class IDebugMonitor {
+class IObserver {
 private:
     unsigned long lastDebugOutput = 0; // time from millis(), when the last debug output was given // FIXME - We should be able to store a smaller value than 4 bytes here, but we need to check if the compiler does this automatically.
 
@@ -44,8 +44,8 @@ protected:
     bool isDebugOutputDue(); // Check if a new debug output should be printed
 
 public:
-    IDebugMonitor() : lastDebugOutput(0) {} // Constructor
-    virtual ~IDebugMonitor() {}             // Destructor
+    IObserver() : lastDebugOutput(0) {} // Constructor
+    virtual ~IObserver() {}             // Destructor
 
     void logAxisValues(Axis *axes[], uint8_t count);
 
@@ -55,4 +55,4 @@ public:
     virtual void update(Hardware *hardware);
 };
 
-#endif // IDEBUGMONITOR_H
+#endif // IOBSERVER_H

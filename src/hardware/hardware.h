@@ -7,14 +7,14 @@
 #define MAX_SENSORS 8
 
 #include "axis/axis.h" // for AxisType enum
-#include "observers/idebugmonitor.h"
+#include "observers/IObserver.h"
 #include "sensor/sensor.h"
 
 class Hardware {
 private:
     uint8_t referenceVoltage = DEFAULT;
 
-    IDebugMonitor *observers[MAX_HARDWARE_OBSERVERS] = {nullptr}; // Array of observers
+    IObserver *observers[MAX_HARDWARE_OBSERVERS] = {nullptr}; // Array of observers
     uint8_t observerCount = 0;
 
 protected:
@@ -42,8 +42,8 @@ public:
 
     void setAnalogReference(const uint8_t voltage);
 
-    void attachObserver(IDebugMonitor *observer);
-    void detachObserver(IDebugMonitor *observer);
+    void attachObserver(IObserver *observer);
+    void detachObserver(IObserver *observer);
     void notifyObservers(); // Notify all observers of changes
 
     Sensor *sensors[MAX_SENSORS] = {nullptr}; // Array of sensor pointers, public defined so it can be used in the observer class

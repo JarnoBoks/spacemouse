@@ -1,7 +1,7 @@
 #ifndef OUTPUT_SENSORVALUES_H
 #define OUTPUT_SENSORVALUES_H
 
-#include "idebugmonitor.h"
+#include "IObserver.h"
 #include "hardware/hardware.h"
 
 enum SensorOutputValType_t {
@@ -15,7 +15,7 @@ enum SensorOutputValType_t {
  *
  * DEBUG_LEVEL = 1 / 2
  */
-class Output_SensorValues : public IDebugMonitor {
+class Output_SensorValues : public IObserver {
 private:
 protected:
     virtual const int getSensorValue(const Sensor *sensor) const = 0;

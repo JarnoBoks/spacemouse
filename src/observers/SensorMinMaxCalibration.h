@@ -1,7 +1,7 @@
 #ifndef SENSORMINMAXCALIBRATION_H
 #define SENSORMINMAXCALIBRATION_H
 
-#include "idebugmonitor.h"
+#include "IObserver.h"
 #include "hardware/hardware.h"
 #include "text.h"
 
@@ -12,7 +12,7 @@ class SensorCalibrationManager;
  * @brief  *
  *
  */
-class SensorMinMaxCalibration : public IDebugMonitor {
+class SensorMinMaxCalibration : public IObserver {
 private:
     unsigned long startCalibrationTime = 0; // Time from millis(), when the calibration was started
 

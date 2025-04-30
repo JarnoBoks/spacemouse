@@ -47,7 +47,7 @@ Sensor *Hardware::getSensorByName(const char *name) const {
  * @details This function adds the observer to the observers array and increases the observer count.
  *          If the array is full, it does not add the new observer and can be modified to handle this case.
  */
-void Hardware::attachObserver(IDebugMonitor *observer) {
+void Hardware::attachObserver(IObserver *observer) {
     if (observerCount < MAX_HARDWARE_OBSERVERS) {
         Serial.println(F("Hardware::attachObserver: "));
         // insert the observer into the array, at position observerCount and increase the count after inserting.
@@ -57,7 +57,7 @@ void Hardware::attachObserver(IDebugMonitor *observer) {
     }
 };
 
-void Hardware::detachObserver(IDebugMonitor *observer) {
+void Hardware::detachObserver(IObserver *observer) {
     Serial.println(F("Hardware::detachObserver: "));
     // remove the observer from the array by replacing it with the last observer in the array and decrease the count.
     for (int i = 0; i < observerCount; i++) {

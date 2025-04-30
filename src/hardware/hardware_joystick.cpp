@@ -3,20 +3,7 @@
 #include "sensor/sensor_joystick.h"
 #include "config.h" // For PINLIST
 
-// REMOVE Hardware_Joystick *Hardware_Joystick::instance = nullptr;
-
-#if 0
-Hardware *Hardware_Joystick::getInstance() {
-    if (!instance) {
-        instance = new Hardware_Joystick();
-    }
-    return instance;
-}
-#endif
-
 Hardware_Joystick::Hardware_Joystick() {
-    registerInstance(this); // Register the instance of the derived class in the base class
-
     // Initialize the sensors
     const uint8_t sensorPins[JoystickSensorsId_t::JS_LENGTH] = PINLIST; // Pins for the sensors, as defined in config.h
 
@@ -25,7 +12,9 @@ Hardware_Joystick::Hardware_Joystick() {
     }
 }
 
+// Define a macro to simplify the access to the sensor values
 #define VAL(X) sensors[X]->getFilteredValue()
+
 int16_t Hardware_Joystick::calculateRawValue(AxisType_t axistype) {
 
     updateSensorValues();

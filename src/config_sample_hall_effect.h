@@ -714,10 +714,4 @@ This little extra noise is called "jiggling" and ensures that a value declared a
 
 // FIXME - These can probably be removed now (changed the Instance in the hardware.h file should be enough)
 
-#ifdef HALLEFFECT
-#define HW_TYPE Hardware_HALL
-#endif
-#ifdef JOYSTICK
-#define HW_TYPE Hardware_JOYSTICK
-#endif
 #endif // CONFIG_h

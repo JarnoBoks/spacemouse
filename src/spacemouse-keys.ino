@@ -19,6 +19,19 @@
 #include "SpaceMouseHID.h"
 #endif // ARDUINO_ARCH_AVR
 
+// Definitions & Header for the various hardware types
+// ------------------ PREPOCESSOR DIRECTIVES USED IN THE SOFTWARE - DO NOT CHANGE
+#ifdef HALLEFFECT
+#include "hardware/hardware_hall.h"
+#define HW_TYPE Hardware_HALL
+#define DEFAULTS_TYPE "defaults_hall.h"
+#endif
+#ifdef JOYSTICK
+#include "hardware/hardware_joystick.h"
+#define HW_TYPE Hardware_JOYSTICK
+#define DEFAULTS_TYPE "defaults_joystick.h"
+#endif
+
 // Header to calculate the kinematics of the mouse
 #include "kinematics/kinematics.h"
 
@@ -72,7 +85,10 @@ void setup() {
     delay(100);
     Serial.setTimeout(2); // The serial interface will look for new commands and it will only wait 2ms
 
-    // Setup the Kinematics object. This will setup the kinematics of the mouse, the axes, hardware and the sensors.
+    // Setup the Hardware object. This will setup the hardware and sensors of the mouse. The hardware type is defined in config.h
+    HW_TYPE::getInstance();
+
+    // Setup the Kinematics object. This will setup the kinematic axes of the mouse.
     // The setup will check the EEPROM for the configuration of the sensors and the axes.
     // If the configuration is not available, the default values as set in config.h will be used (and stored in the EEPROM)
     Kinematics::getInstance();

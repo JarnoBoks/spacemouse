@@ -2,20 +2,7 @@
 #include "sensor/sensor_hall.h"
 #include "config.h" // For PINLIST
 
-// REMOVE Hardware_HALL *Hardware_HALL::instance = nullptr;
-
-#if 0
-Hardware *Hardware_HALL::getInstance() {
-    if (!instance) {
-        instance = new Hardware_HALL();
-    }
-    return instance;
-}
-#endif
-
 Hardware_HALL::Hardware_HALL() {
-    registerInstance(this); // Register the instance of the derived class in the base class
-
     // Initialize the sensors
     const uint8_t sensorPins[HallSensorsId_t::HALL_LENGTH] = PINLIST; // Pins for the sensors, as defined in config.h
 
@@ -24,7 +11,9 @@ Hardware_HALL::Hardware_HALL() {
     }
 }
 
-#define VAL(x) sensors[x]->getFilteredValue()
+// Define a macro to simplify the access to the sensor values
+#define VAL(X) sensors[X]->getFilteredValue()
+
 int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
 
     updateSensorValues();

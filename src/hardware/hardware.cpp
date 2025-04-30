@@ -1,18 +1,22 @@
-
 #include "hardware.h"
-#include "config.h"
+
+// -- Static part of the class (= application specific)
+// In this part the hardware class is defined and the static instance is created
+
+Hardware *Hardware::_instance = nullptr;
+
+Hardware *Hardware::getInstance() {
+    /*if (_instance == nullptr) {
+        _instance = HW_TYPE::getInstance(); // Create the hardware instance based on the defined hardware type
+    }*/
+    return _instance;
+}
 
 void Hardware::setAnalogReference(const uint8_t voltage) {
     referenceVoltage = voltage;
 #ifdef ARDUINO_ARCH_AVR
     analogReference(referenceVoltage);
 #endif
-}
-
-Hardware *Hardware::_instance = nullptr;
-
-Hardware *Hardware::getInstance() {
-    return _instance;
 }
 
 /**

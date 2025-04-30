@@ -7,17 +7,6 @@
 #include "led/lightbehavior.h"
 
 #include "hardware/hardware.h"
-#include "hardware/hardware_hall.h"
-#include "hardware/hardware_joystick.h"
-
-#ifdef HALLEFFECT
-#define HW_TYPE Hardware_HALL
-#define DEFAULTS_TYPE "defaults_hall.h"
-#endif
-#ifdef JOYSTICK
-#define HW_TYPE Hardware_JOYSTICK
-#define DEFAULTS_TYPE "defaults_joystick.h"
-#endif
 
 // The Axis instantiates the hardware class and the AxisConfig class.
 // The AxisConfig class is used to configure the axis, including the sensitivity, gate, and function type.
@@ -27,17 +16,16 @@ Axis::Axis() : type(UNINITIALIZED) {
     // Default constructor initializes the axis to UNINITIALIZED
     config = new AxisConfig(); // Create a new AxisConfig object for this axis
 
-    hardware = HW_TYPE::getInstance(); // Initialize the hardware with Hall effect sensors
-
-    light = nullptr; // Initialize light to nullptr
-    value = 0;       // Initialize value to 0
+    hardware = Hardware::getInstance(); // Initialize the hardware with Hall effect sensors
+    light = nullptr;                    // Initialize light to nullptr
+    value = 0;                          // Initialize value to 0
 }
 
 Axis::Axis(AxisType_t type) : type(type) {
     // Initialize the axis with the given type
     config = new AxisConfig(type); // Create a new AxisConfig object for this axis
 
-    hardware = HW_TYPE::getInstance(); // Initialize the hardware with Hall effect sensors
+    hardware = Hardware::getInstance(); // Initialize the hardware with Hall effect sensors
 
     light = nullptr; // Initialize light to nullptr
     value = 0;       // Initialize value to 0

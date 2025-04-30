@@ -136,6 +136,3 @@ void SensorConfig::saveInEEPROM(const int8_t id) {
 void SensorConfig::loadFromEEPROM(const uint8_t address) {
     EEPROMStore::loadConfig(*this, address);
 }
-
-void outputToSerial() const {
-}

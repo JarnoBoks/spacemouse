@@ -28,8 +28,12 @@ private:
     AxisType_t type = UNINITIALIZED;
     const char *name;
 
-    int16_t value = 0;     // Value of the axis after reading from the hardware and applying all configurations
-    int16_t sensValue = 0; // Raw value from the hardware, including sensitivity application (stored for debugging purposes)
+    /// @brief The value of the axis after reading from the hardware and applying all axis configurations.
+    int16_t value = 0;
+
+    /// @brief The value of the axis after reading from the hardware and applying the sensitivity configuration.
+    /// @details This value is stored for debugging purposes.
+    int16_t sensValue = 0;
 
     AxisConfig *config = nullptr;
     Hardware *hardware = nullptr;
@@ -42,7 +46,9 @@ public:
     Axis(); // Default constructor
     Axis(AxisType_t type);
 
-    inline int16_t getValue() const { return value; }         // Getter for value           // REVIEW - Same asa Sensor class, but we need to check if we can use the same function for both classes.
+    inline int16_t getValue() const { return value; }            // Getter for value           // REVIEW - Same asa Sensor class, but we need to check if we can use the same function for both classes.
+    inline void setValue(int16_t value) { this->value = value; } // Setter for value (used by kinematics, for Exclusieve mode & YZ switching)
+
     inline int16_t getSensValue() const { return sensValue; } // Getter for sensValue
     inline const char *getName() const { return name; }       // Getter for name            // REVIEW - Same as Sensor class, but we need to check if we can use the same function for both classes.
 

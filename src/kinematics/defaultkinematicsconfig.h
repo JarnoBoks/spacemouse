@@ -10,7 +10,7 @@
 class DefaultKinematicsConfig {
 private:
     static DefaultKinematicsConfig *instance;
-    DefaultKinematicsConfig(); // Private constructor to prevent instantiation
+    DefaultKinematicsConfig() {}; // Private constructor to prevent instantiation
 
 public:
     static DefaultKinematicsConfig &getInstance();

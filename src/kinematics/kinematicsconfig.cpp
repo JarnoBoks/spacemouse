@@ -9,30 +9,17 @@
 KinematicsConfig::KinematicsConfig() {
     if (!EEPROMStore::loadConfig(*this)) {
         // If loading from EEPROM fails, setup the configuration with default defined values, using the default axis configuration class.
-        // TODO *this = DefaultAxisConfig::getInstance().getDefaultConfig(axisType);
+        *this = DefaultKinematicsConfig::getInstance().getDefaultConfig();
     }
 };
 
-#if 0
-/* Constructor with axisType as argument - used when called from an axis */
-KinematicsConfig::AxisConfig(AxisType_t axisType) : inversion(false) {
-    if (!EEPROMStore::loadConfig(*this, static_cast<const int>(axisType))) {
-        // If loading from EEPROM fails, setup the configuration with default defined values, using the default axis configuration class.
-        *this = DefaultAxisConfig::getInstance().getDefaultConfig(axisType);
-    }
-}
-
-/* Constructor with parameters for sensitivity, gate, and function types - used when called from default config */
-KinematicsConfig::AxisConfig(const float psens,
-                             const float nsens,
-                             const uint8_t pgate,
-                             const uint8_t ngate,
-                             const ModFunc_t pmf,
-                             const ModFunc_t nmf,
-                             const bool invert)
-    : posConfig(DirectionConfig(psens, pgate, pmf)), negConfig(DirectionConfig(nsens, ngate, nmf)), inversion(invert) {}
-
-#endif
+/**
+ * @brief   Constructor with parameters - used when called from default config
+ * @param exclmd  Exclusive mode flag
+ * @param switchyz Switch YZ flag
+ */
+KinematicsConfig::KinematicsConfig(const bool exclmd,
+                                   const bool switchyz) : exclusiveMode(exclmd), switchYZ(switchyz) {};
 
 /* Save the axisconfig to EEPROM */
 void KinematicsConfig::saveConfig() {

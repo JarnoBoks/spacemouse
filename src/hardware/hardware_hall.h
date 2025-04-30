@@ -3,8 +3,6 @@
 
 #include <Arduino.h>
 #include "hardware.h"
-#include "sensor/sensor_hall.h"
-#include "kinematics/axis.h" // for AxisType enum
 
 class Hardware_HALL : public HardwareImpl<Hardware_HALL> {
 private:

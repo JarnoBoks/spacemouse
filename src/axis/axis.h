@@ -2,8 +2,8 @@
 #define AXIS_H
 
 #include <Arduino.h>
-#include "serialoutput/idebugmonitor.h" // For MAX_AXIS_OBSERVERS
-#include "modifierfunction.h"           // For ModFunc_t
+#include "observers/idebugmonitor.h" // For MAX_AXIS_OBSERVERS
+#include "modifierfunction.h"        // For ModFunc_t
 
 enum AxisType_t : int8_t { ALL = -2,
                            UNINITIALIZED = -1,

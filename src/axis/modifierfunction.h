@@ -1,3 +1,4 @@
+#pragma once
 #ifndef MODIFIERFUNCTION_H
 #define MODIFIERFUNCTION_H
 

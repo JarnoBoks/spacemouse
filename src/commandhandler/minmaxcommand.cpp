@@ -2,14 +2,17 @@
 #include "calibration/sensorcalibrationmanager.h"
 #include "hardware/hardware.h" // For Hardware class - necessary to retrieve the sensors.
 #include "sensor/sensorconfig.h"
+#include "visitors/MinMaxPrinter.h"
 
 // Only log to serial if not using Arduino AVR architecture
 #ifndef ARDUINO_ARCH_AVR
 #ifndef ESP_PRINT(x)
 #define ESP_PRINT(x) Serial.println(x)
+#define ESP_DBG(x) Serial.println(x)
 #endif
 #else
 #define ESP_PRINT(x)
+#define ESP_DBG(x)
 #endif
 
 /**
@@ -33,7 +36,19 @@ MinMaxCommand::~MinMaxCommand() {}
 void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     if (paramCount == 0) {
         // No params provided, show config
-        Serial.println(F("MinMaxCommand::execute: Show config"));
+        ESP_DBG(F("MinMaxCommand::execute: Show config"));
+
+        MinMaxPrinter printer;
+        // REVIEW - Move this to the hardware class
+        Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
+        for (uint8_t id = 0; id < MAX_SENSORS; id++) {
+            Sensor *sensor = hardware->sensors[id]; // Pointer to the sensor
+            if (sensor == nullptr) {
+                continue; // Skip if the sensor is not available
+            }
+            sensor->accept(printer);              // Accept the printer visitor to print the sensor name
+            sensor->getConfig()->accept(printer); // Accept the printer visitor to print the sensor configuration values
+        }
         return;
     }
 
@@ -60,7 +75,6 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
     if (paramCount == 2) {
         // Command received: MINMAX <+|-><sensorname> <value>
         // TODO - Add functionality for the second parameter
-        Serial.println(F("MinMaxCommand::execute: Second parameter not implemented"));
 
         // Get the value that has to be set
         long requestedValue = 0; // Default value for the second word
@@ -77,7 +91,7 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
 
         // REVIEW - Failsafe: Sensor not found can be removed from Arduino.
         if (sensor == nullptr) {
-            Serial.println(F("MinMaxCommand::execute: Sensor not found"));
+            ESP_DBG(F("MinMaxCommand::execute: Sensor not found"));
             return; // Sensor not found, exit the function
         }
 

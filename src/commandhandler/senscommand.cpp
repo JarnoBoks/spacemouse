@@ -1,9 +1,9 @@
 #include "SensCommand.h"
-#include "hardware/hardware.h" // For Hardware class - necessary to retrieve the sensors.
-#include "sensor/sensorconfig.h"
+// REMOVE #include "hardware/hardware.h" // For Hardware class - necessary to retrieve the sensors.
+// REMOVE #include "sensor/sensorconfig.h"
 
 #include "kinematics/kinematics.h"
-#include "kinematics/axisconfig.h"
+#include "axis/axisconfig.h"
 
 // Only log to serial if not using Arduino AVR architecture
 #ifndef ARDUINO_ARCH_AVR

@@ -1,7 +1,7 @@
 #ifndef KINEMATICS_H
 #define KINEMATICS_H
 
-#include "axis.h"
+#include "axis/axis.h"
 
 // --- Kinematics Singleton ---
 class Kinematics {

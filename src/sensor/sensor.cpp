@@ -1,5 +1,6 @@
 #include "sensor.h"
 #include "sensorconfig.h"
+#include "visitors/IPrinterVisitor.h"
 
 /**
  * @brief Constructor for Sensor.
@@ -109,4 +110,8 @@ void Sensor::applyCalibration() {
 
 const uint8_t Sensor::getId() const {
     return static_cast<uint8_t>(id);
+}
+
+void Sensor::accept(IPrinterVisitor &visitor) {
+    visitor.visit(*this); // Call the visit method of the visitor with this sensor as an argument
 }

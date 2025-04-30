@@ -2,8 +2,8 @@
 #define SENSORCALIBRATIONMANAGER_H
 #include <Arduino.h>
 
-#include "serialoutput/idebugmonitor.h" // For IDebugMonitor class  //TODO - Rename class to IAxisHardware_Observer
-class Sensor;                           // Forward declaration of Sensor class
+#include "observers/idebugmonitor.h" // For IDebugMonitor class  //TODO - Rename class to IAxisHardware_Observer
+class Sensor;                        // Forward declaration of Sensor class
 
 class SensorCalibrationManager {
 private:

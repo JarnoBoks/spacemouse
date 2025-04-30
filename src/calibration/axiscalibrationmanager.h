@@ -2,7 +2,7 @@
 #define AXISCALIBRATIONMANAGER_H
 
 #include <Arduino.h>
-#include "kinematics/modifierfunction.h" // For ModFunc_t enum
+#include "axis/modifierfunction.h" // For ModFunc_t enum
 
 // Forward declaration of classes to avoid circular dependencies
 class Axis;

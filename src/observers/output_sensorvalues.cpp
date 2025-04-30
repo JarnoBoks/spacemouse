@@ -1,6 +1,6 @@
 #include "output_sensorvalues.h"
-
 #include "hardware/hardware.h"
+#include "text.h"
 
 void Output_SensorValues::update(Hardware *hardware) {
     if (!isDebugOutputDue() || hardware == nullptr) {
@@ -17,7 +17,7 @@ void Output_SensorValues::update(Hardware *hardware) {
         Serial.print(sensor->getName()); // Print the sensor name
         Serial.print(F(":"));
         const int value = getSensorValue(sensor); // Get the sensor value using the virtual function
-        alignValue(value, 4);                     // Align the value to the right with spaces
+        TextHelper::alignValue(value, 4);         // Align the value to the right with spaces
         Serial.print(value);
     }
     Serial.println(); // Print a newline after the last sensor status was printed to the serial monitor

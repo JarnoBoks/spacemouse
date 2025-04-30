@@ -1,6 +1,6 @@
 #include "text.h"
 
-void alignValue(const int value, const uint8_t width) {
+void TextHelper::alignValue(const int value, const uint8_t width) {
     int8_t spaces = width - 1;
     if (value < 0) {
         spaces--; // Remove a space to compensate for the sign

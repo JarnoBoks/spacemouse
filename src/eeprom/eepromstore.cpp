@@ -1,7 +1,53 @@
 #include "eepromStore.h"
 #include <EEPROM.h> // Include the EEPROM library for EEPROM operations
 
-// Initialize the static variables
+#include "config.h" // Include the config.h file for EEPROM_VERSION
+
+// Header files for the objects that will be stored in the EEPROM)
+#include "axis/axisconfig.h"
+#include "sensor/sensorconfig.h"
+
+/// @brief If the version number defined in the EEPROM is not equal to the version number defined in this file, the EEPROM will be erased and initialized with the default values.
+/// @warning Changing the version number will reset all stored calibration parameters in the EEPROM.
+constexpr uint8_t EEPROM_VERSION = SM_VERSION;
+
+/// EEPROM Storage structures for complex classes
+/// @warning Changing this without changing the version number will give undefined behavior!
+struct EEAxisConfig {
+    float pSens;
+    float nSens;        // Sensitivity for the positive and negative direction
+    uint8_t pGate;      // Gate for the positive direction
+    uint8_t nGate;      // Gate for the negative direction
+    ModFunc_t pModFunc; // Modifier function for the positive direction
+    ModFunc_t nModFunc; // Modifier function for the negative direction
+    bool inversion;     // Inversion flag for the axis
+};
+
+struct EESensorConfig {
+    int minv = 0;
+    int maxv = 0;
+    bool inversion = false;
+    uint8_t deadzone = 0;
+};
+
+// -------------------------- EEPROM ADDRESS TABLE END -------------------------
+
+/**
+ * The Arduino Micro has an EEPROM storage that can store 1024bytes (1KB)
+ * This configuration file maintains the address table of the stored data. *
+ */
+constexpr int EEPROM_ADDRESS_VERSION = 1;                                            // Start EEPROM address for the Datastorage version
+constexpr int EEPROM_ADDRESS_VERSION_END = EEPROM_ADDRESS_VERSION + sizeof(uint8_t); // End EEPROM address for the Datastorageversion
+
+constexpr int EEPROM_ADDRESS_CFG_AXES_BASE = 16;                                                          // Base address for the axis configuration
+constexpr int EEPROM_ADDRESS_CFG_AXES_BASE_END = EEPROM_ADDRESS_CFG_AXES_BASE + 6 * sizeof(EEAxisConfig); // We store 6 axis configurations in the EEPROM
+
+constexpr int EEPROM_ADDRESS_CFG_SENSORS_BASE = EEPROM_ADDRESS_CFG_AXES_BASE_END; // Base address for the sensor configuration
+constexpr int EEPROM_ADDRESS_CFG_SENSORS_BASE_END = EEPROM_ADDRESS_CFG_SENSORS_BASE + 8 * sizeof(EESensorConfig);
+
+// -------------------------- EEPROM ADDRESS TABLE END -------------------------
+
+// Initialize the static class variables
 bool EEPROMStore::_firstrun = false; // Initialize the first run flag
 bool EEPROMStore::_setupdone = false;
 

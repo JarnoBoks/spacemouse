@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+class IPrinterVisitor; // Forward declaration of IPrinterVisitor class
+
 class SensorConfig {
 private:
     int minv = 0;
@@ -44,7 +46,7 @@ public:
     void saveInEEPROM(const int8_t id);
     void loadFromEEPROM(const uint8_t address);
 
-    void outputToSerial() const;
+    void accept(IPrinterVisitor &visitor);
 };
 
 #endif // SENSORCONFIG_H

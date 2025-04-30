@@ -1,9 +1,10 @@
 
 #include "axiscalibrationmanager.h"
 #include "kinematics/kinematics.h"
-#include "kinematics/directionconfig.h"
-#include "kinematics/axis.h"
-#include "kinematics/axisconfig.h"
+
+#include "axis/axis.h"
+#include "axis/axisconfig.h"
+#include "axis/directionconfig.h"
 
 AxisCalibrationManager::AxisCalibrationManager() {
     // Constructor implementation (if needed)

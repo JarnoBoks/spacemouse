@@ -3,7 +3,8 @@
 
 #include <Arduino.h>
 
-class SensorConfig; // Forward declaration of SensorConfig class
+class SensorConfig;    // Forward declaration of SensorConfig class
+class IPrinterVisitor; // Forward declaration of IPrinterVisitor class
 
 class Sensor {
 private:
@@ -39,6 +40,8 @@ public:
 
     virtual void readValue();
     virtual void applyCalibration();
+
+    void accept(IPrinterVisitor &visitor);
 };
 
 #endif // SENSOR_H

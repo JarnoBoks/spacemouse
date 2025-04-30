@@ -1,10 +1,11 @@
 #include "sensorcalibrationmanager.h"
-#include "config.h"                               // For hardware type
-#include "hardware/hardware.h"                    // For Hardware class - necessary to retrieve the sensors.
-#include "hardware/hardware_hall.h"               // For Hardware class - necessary to retrieve the sensors.
-#include "hardware/hardware_joystick.h"           // For Hardware class - necessary to retrieve the sensors.
-#include "serialoutput/SensorIdleCalibration.h"   // For SensorIdleCalibration class
-#include "serialoutput/SensorMinMaxCalibration.h" // For SensorMinMaxCalibration class
+#include "config.h"                     // For hardware type
+#include "hardware/hardware.h"          // For Hardware class - necessary to retrieve the sensors.
+#include "hardware/hardware_hall.h"     // For Hardware class - necessary to retrieve the sensors.
+#include "hardware/hardware_joystick.h" // For Hardware class - necessary to retrieve the sensors.
+
+#include "observers/SensorIdleCalibration.h"   // For SensorIdleCalibration class
+#include "observers/SensorMinMaxCalibration.h" // For SensorMinMaxCalibration class
 
 #ifndef CF
 #define CF(x) ((const __FlashStringHelper *)x)

@@ -1,8 +1,9 @@
 
 #include "sensorconfig.h"
 #include "defaultsensorconfig.h"
-#include "eeprom/eepromstore.h" // To load and save the sensor configuration to EEPROM
-#include <math.h>               // For abs() function
+#include "eeprom/eepromstore.h"       // To load and save the sensor configuration to EEPROM
+#include <math.h>                     // For abs() function
+#include "visitors/IPrinterVisitor.h" // For IPrinterVisitor interface
 
 /**
  * @brief Default constructor for SensorConfig.
@@ -135,4 +136,8 @@ void SensorConfig::saveInEEPROM(const int8_t id) {
  */
 void SensorConfig::loadFromEEPROM(const uint8_t address) {
     EEPROMStore::loadConfig(*this, address);
+}
+
+void SensorConfig::accept(IPrinterVisitor &visitor) {
+    visitor.visit(*this); // Accept the visitor and call the visit method for this class
 }

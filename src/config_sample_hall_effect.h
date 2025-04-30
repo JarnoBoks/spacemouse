@@ -95,9 +95,12 @@ Debug Modes:
 /// The hardware that is used for the spacemouse. This is used to select the correct hardware library.
 /// This setting can only be changed in the config.h file.
 /// @note Valid values are "#define HALLEFFECT" or "#define JOYSTICK"
-#define HALLEFFECT
 
-#ifdef JOYSTICK // Hardware definition for the joystick version - does not apply to the Hall effect version
+// Hardware uses HallEffect sensors instead of joystick sensors
+#define HW_HALLEFFECT
+// #define HW_JOYSTICK // Hardware definition for the joystick version - does not apply to the Hall effect version
+
+#ifdef HW_JOYSTICK // Hardware definition for the joystick version - does not apply to the Hall effect version
 /* First Calibration: Joystick axis pin assignment
 ==============================================
 Default Assembly when looking from above on top of the space mouse
@@ -142,7 +145,7 @@ If you have the joystick TeachingTech recommended:
 // AX, AY, BX, BY, CX, CY, DX, DY
 #endif // JOYSTICK
 
-#ifdef HALLEFFECT // Hardware definition for the Hall effect version - does not apply to the joystick version
+#ifdef HW_HALLEFFECT // Hardware definition for the Hall effect version - does not apply to the joystick version
 /* First Calibration: Hall effect sensors pin assignment
 ==============================================
 Default assembly when looking from above on top of the space mouse
@@ -219,10 +222,8 @@ Expected outcome:
 =====================================================================================================
 Can be done automatic, semi-automatic or manual
 
-The command "SHOW" will show the current values in the serial monitor.
-The command "MINMAX 1" will store the values in the EEPROM. The command "MINMAX 0" will not store the values in the EEPROM.
-
-// TODO: Show min/max values in the serial monitor
+The command "MINMAX" will show the current values in the serial monitor.
+The command "MINMAX 1" will let you calibrate the values and store them in the EEPROM. The command "MINMAX 0" will not store the values in the EEPROM (ie. they will be lost at reboot).
 
 Semi-automatic (command: MINMAX 0)
 --------------------------------
@@ -231,7 +232,7 @@ Semi-automatic (command: MINMAX 0)
 3. Verify if there are any warnings for the Min, Max or Range. Check if your hardware is working correctly and/or retry the calibration.
    For the joystick sensors, the values should be approximately -400 to +400 and the maxVals around +400 to +400.
    For the HES sensors, the values should be approximately -400 to -520 and the maxVals around +400 to +520.
-4. When satisfied you can enter the values into the config.h file below or enter them one by one using the manual commands as described below.
+4. When satisfied you can enter the values into the config.h file below or enter them one by one using the manual commands as described below. //TODO REWRITE THIS LINE
 
 Automatic (command: MINMAX 1)
 -----------------------------
@@ -241,8 +242,7 @@ Automatic (command: MINMAX 1)
 3. Verify if there are any warnings for the Min, Max or Range. Check if your hardware is working correctly and/or retry the calibration.
    For the joystick sensors, the values should be approximately -400 to +400 and the maxVals around +400 to +400.
    For the HES sensors, the values should be approximately -400 to -520 and the maxVals around +400 to +520.
-4. When satisfied you can enter the values into the config.h file below or enter them one by one using the manual commands as described below.
-// TODO - Do not store the values if there are too many warnings
+4. When satisfied you can enter the values into the config.h file below or enter them one by one using the manual commands as described below. //TODO - REWRITE THIS LINE
 
 Manual min/max calibration (use DEBUG 2)
 ---------------------------------------------
@@ -269,7 +269,6 @@ Manual min/max calibration (use DEBUG 2)
 5. Do the same for your negative Values to populate the minVals
 6. Write all the positive Values starting from the top into the Array maxValues
 7. Write all the negative Values starting from the top into the Array minValues
-8. You finished calibrating the min and max settings of the hardware.
 
 To store the values for single sensors in the EEPROM, you can use the command "MINMAX <+|-><sensorname> <value>".
    <+|->        - Indication of the value to set. + for max, - for min
@@ -277,9 +276,8 @@ To store the values for single sensors in the EEPROM, you can use the command "M
    <value>      - The value to set for the sensor.
 
 Examples:
-   To set the max value for HES0 to 1000, you can use the command "MINMAX +HES0 1000".
-   To set the min value for DY to -350, you can use the command "MINMAX -HES0 -350".
-
+   MINMAX +AX 1000       // Set the maximum value for AX to 1000
+   MINMAX -HES0 350      // Set the minimum value for HES0 to -350
 
 Insert measured Values like this:
 
@@ -709,9 +707,5 @@ This little extra noise is called "jiggling" and ensures that a value declared a
 
 // Add Jiggling to the value reported, if the following symbol is defined:
 // #define ADV_HID_JIGGLE
-
-// ------------------ PREPOCESSOR DIRECTIVES USED IN THE SOFTWARE - DO NOT CHANGE
-
-// FIXME - These can probably be removed now (changed the Instance in the hardware.h file should be enough)
 
 #endif // CONFIG_h

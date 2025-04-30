@@ -2,10 +2,9 @@
 #include <math.h>
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
 #include "config.h"
-#include "kinematics/axisconfig.h"
-#include "serialoutput/idebugmonitor.h"
+#include "axisconfig.h"
+#include "observers/idebugmonitor.h"
 #include "led/lightbehavior.h"
-
 #include "hardware/hardware.h"
 
 // The Axis instantiates the hardware class and the AxisConfig class.

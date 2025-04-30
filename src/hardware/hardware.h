@@ -6,8 +6,8 @@
 
 #define MAX_SENSORS 8
 
-#include "kinematics/axis.h" // for AxisType enum
-#include "serialoutput/idebugmonitor.h"
+#include "axis/axis.h" // for AxisType enum
+#include "observers/idebugmonitor.h"
 #include "sensor/sensor.h"
 
 class Hardware {

@@ -3,7 +3,6 @@
 
 #include "idebugmonitor.h"
 #include "hardware/hardware.h"
-#include "text.h"
 
 enum SensorOutputValType_t {
     SO_RAW = 0,

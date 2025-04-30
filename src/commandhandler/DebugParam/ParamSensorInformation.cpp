@@ -1,6 +1,6 @@
 #include "ParamSensorInformation.h"
 #include <Arduino.h>
-#include "serialoutput/output_sensorvalues.h"
+#include "observers/output_sensorvalues.h"
 #include "config.h" // For Hardware type
 #include "hardware/hardware_hall.h"
 #include "hardware/hardware_joystick.h"
@@ -31,7 +31,6 @@ IDebugParamSensorInformation::IDebugParamSensorInformation() : IDebugParam(), Se
  */
 IDebugParamSensorInformation::~IDebugParamSensorInformation() {
     if (SensorObserver != nullptr) {
-        // REMOVE Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
         Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
         hardware->detachObserver(SensorObserver);     // Detach the observer from the hardware
         delete SensorObserver;                        // Clean up the observer instance
@@ -46,7 +45,6 @@ void DebugParamSensorInformationRaw::apply() {
     // Instantiate the Observer for the RawSensor values and attach it to the hardware
     SensorObserver = new Output_SensorValuesRaw();
 
-    // REMOVE Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
     Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
     hardware->attachObserver(SensorObserver);     // Attach the observer to the hardware
 }
@@ -62,7 +60,6 @@ void DebugParamSensorInformationCentered::apply() {
     // Instantiate the Observer for the CenteredSensor values and attach it to the hardware
     SensorObserver = new Output_SensorValuesCentered();
 
-    // REMOVE Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
     Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
     hardware->attachObserver(SensorObserver);     // Attach the observer to the hardware
 }
@@ -78,7 +75,6 @@ void DebugParamSensorInformationFiltered::apply() {
     // Instantiate the Observer for the FilteredSensor values and attach it to the hardware
     SensorObserver = new Output_SensorValuesFiltered();
 
-    // REMOVE Hardware *hardware = HW_TYPE::getInstance(); // Get the hardware instance
     Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
     hardware->attachObserver(SensorObserver);     // Attach the observer to the hardware
 }

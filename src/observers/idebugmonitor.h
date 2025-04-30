@@ -31,7 +31,7 @@ enum DebugLevel : int8_t {
     LOOP_FREQUENCY
 };
 
-// Forward declaration of classes to avoid circular dependencies
+// Forward declaration of classes that are observed (to avoid circular dependencies)
 class Axis;
 class Hardware;
 

@@ -21,15 +21,19 @@
 
 // Definitions & Header for the various hardware types
 // ------------------ PREPOCESSOR DIRECTIVES USED IN THE SOFTWARE - DO NOT CHANGE
-#ifdef HALLEFFECT
+
 #include "hardware/hardware_hall.h"
-#define HW_TYPE Hardware_HALL
-#define DEFAULTS_TYPE "defaults_hall.h"
-#endif
-#ifdef JOYSTICK
 #include "hardware/hardware_joystick.h"
+
+// FIXME - Something is not going ok with the preprocessor directives. The hardware type is not set correctly in the config.h file. The default values are not used in the hardware setup.
+#ifdef JOYSTICK
 #define HW_TYPE Hardware_JOYSTICK
-#define DEFAULTS_TYPE "defaults_joystick.h"
+// #define DEFAULTS_TYPE "defaults_joystick.h"
+#endif
+
+#ifdef HALLEFFECT
+#define HW_TYPE Hardware_HALL
+// #define DEFAULTS_TYPE "defaults_hall.h"
 #endif
 
 // Header to calculate the kinematics of the mouse

@@ -18,6 +18,8 @@ public:
 
     ~Hardware_HALL() {}; // nothing to do in destructor
     int16_t calculateRawValue(AxisType_t axistype) override;
+
+    void setAnalogReference(const bool isDebug = false) override;
 };
 
 #endif // HARDWARE_HALL_H

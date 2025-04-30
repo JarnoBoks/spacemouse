@@ -1,5 +1,4 @@
-#ifndef DP_IDEBUGPARAM_H
-#define DP_IDEBUGPARAM_H
+#pragma once
 
 /**
  * @brief Class IDebugState
@@ -12,5 +11,3 @@ public:
     virtual void report() = 0;
     virtual ~IDebugParam() {}
 };
-
-#endif // DP_IDEBUGPARAM_H

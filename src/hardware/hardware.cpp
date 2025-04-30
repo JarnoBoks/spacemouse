@@ -12,10 +12,10 @@ Hardware *Hardware::getInstance() {
     return _instance;
 }
 
-void Hardware::setAnalogReference(const uint8_t voltage) {
-    referenceVoltage = voltage;
+void Hardware::setAnalogReference(const bool isDebug) {
+    referenceVoltage = DEFAULT; // Set the default reference voltage to DEFAULT
 #ifdef ARDUINO_ARCH_AVR
-    analogReference(referenceVoltage);
+    analogReference(referenceVoltage); // Set the analog reference voltage to DEFAULT
 #endif
 }
 

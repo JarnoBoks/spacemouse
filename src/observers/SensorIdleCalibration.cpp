@@ -2,6 +2,7 @@
 #include "hardware/hardware.h" // For Hardware class - necessary to retrieve the sensors.
 #include "sensor/sensor.h"     // For Sensor class
 #include "calibration/sensorcalibrationmanager.h"
+#include "visitors/IdlePositonPrinter.h" // For IdlePositionPrinter class
 
 #define DEADZONEWARNING 10 // Define a threshold for dead zone warning
 // NOTE - At the moment the dead zone warning threshold is non hardware type specific. This should be changed in the future.
@@ -14,10 +15,15 @@
  * @param numiterations Number of iterations for calibration
  */
 SensorIdleCalibration::SensorIdleCalibration(SensorCalibrationManager *calmgr, const int numiterations)
-    : requestedIterations(numiterations), processedIterations(0), CalibrationManager(calmgr) {
-    startCalibrationTime = millis();
+    : requestedIterations(numiterations), processedIterations(0), startCalibrationTime(millis()), CalibrationManager(calmgr) {
     Serial.println(F("Starting calibration..."));
-} // Start time for zeroing process - Send to debug output
+
+    for (uint8_t id = 0; id < MAX_SENSORS; id++) {
+        sumReads[id] = 0;
+        minIdleValue[id] = 1023;
+        maxIdleValue[id] = 0;
+    }
+}
 
 /**
  * @brief Finish the Idle calibration
@@ -25,6 +31,8 @@ SensorIdleCalibration::SensorIdleCalibration(SensorCalibrationManager *calmgr, c
  * @details This function calculates the average position by dividing the sum of all readings by the number of iterations.
  */
 void SensorIdleCalibration::finish(Hardware *hardware) {
+
+    IdlePositionPrinter printer;
 
     // Calculating average position by dividing the sum of all readings by the number of iterations
     for (uint8_t id = 0; id < MAX_SENSORS; id++) {
@@ -37,15 +45,19 @@ void SensorIdleCalibration::finish(Hardware *hardware) {
 
         // Update the idlePosition for each sensor (returns true if the idle position is in the predefined normal zone)
         // Secondary check: Check if the dead zone is above the warning threshold.
-        Sensor *sensor = hardware->sensors[id]; // Pointer to the sensor
-        warningsOccurred = warningsOccurred || !(sensor->setIdlePosition(sumReads[id] / processedIterations)) || (sensorDZ > DEADZONEWARNING);
+        Sensor *sensor = hardware->sensors[id];
+        bool positionWarning = !(sensor->setIdlePosition(sumReads[id] / processedIterations));
+        warningsOccurred = warningsOccurred || positionWarning || (sensorDZ > DEADZONEWARNING);
+
+        printer.setPrintParams(minIdleValue[id], maxIdleValue[id], sensorDZ); // Set the print parameters for the printer visitor
+        sensor->accept(printer);                                              // Accept the printer visitor to print the information for this sensor
     }
 
     // Output the calibration process information
     Serial.println(F("Calibration finished!"));
     Serial.print(F("Took "));
     Serial.print(millis() - startCalibrationTime); // Print the time taken for calibration
-    Serial.println(F(" ms. for "));
+    Serial.println(F(" ms for "));
     Serial.print(processedIterations); // Print the number of processed iterations
     Serial.println(F(" iterations."));
 
@@ -68,14 +80,15 @@ void SensorIdleCalibration::update(Hardware *hardware) {
     }
 
     for (uint8_t id = 0; id < MAX_SENSORS; id++) {
-        Sensor *sensor = hardware->sensors[id]; // Pointer to the sensor
+        // Get the sensor by ID
+        Sensor *sensor = hardware->sensors[id];
         if (sensor == nullptr) {
             continue; // Skip if the sensor is not available
         }
 
         // Update the mean value (= Idle position) for the sensor
-        int _rawValue = sensor->getRawValue(); // Get the raw value from the sensor
-        sumReads[id] += _rawValue;             // Add the raw read value to the sum of reads
+        int _rawValue = sensor->getRawValue();
+        sumReads[id] += _rawValue;
 
         // Update the minimum and maximum values for deadzone evaluation
         minIdleValue[id] = (_rawValue < minIdleValue[id]) ? _rawValue : minIdleValue[id];

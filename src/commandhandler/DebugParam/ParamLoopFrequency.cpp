@@ -1,7 +1,6 @@
-#include "ParamAxisInformation.h"
+#include "ParamLoopFrequency.h"
 #include <Arduino.h>
-
-#include "observers/output_axisvalues.h"
+#include "observers/output_loopfrequency.h"
 
 // Only log to serial if not using Arduino AVR architecture
 #ifndef ARDUINO_ARCH_AVR
@@ -18,7 +17,7 @@
  *          If it is not null, it detaches the observer from the hardware and deletes the observer instance.
  *          This ensures that the observer is properly cleaned up and does not cause memory leaks.
  */
-DebugParamAxisInformation::~DebugParamAxisInformation() {
+DebugParamLoopFrequency::~DebugParamLoopFrequency() {
     if (AxisObserver != nullptr) {
         Kinematics::getInstance()->detachObserver(AxisObserver); // Detach the observer from the hardware
         delete AxisObserver;                                     // Clean up the observer instance
@@ -26,14 +25,14 @@ DebugParamAxisInformation::~DebugParamAxisInformation() {
     }
 }
 
-void DebugParamAxisInformation::apply() {
-    ESP_PRINT("Debug Axis Information applied");
+void DebugParamLoopFrequency::apply() {
+    ESP_PRINT("Debug Loop Frequency applied");
 
-    // Instantiate the Observer for the RawSensor values and attach it to the hardware
-    AxisObserver = new Output_AxisValuesRaw();
+    // Instantiate the Observer for the Loop Frequency values and attach it to the hardware
+    AxisObserver = new Output_LoopFrequency();
     Kinematics::getInstance()->attachObserver(AxisObserver);
 }
 
-void DebugParamAxisInformation::report() {
-    ESP_PRINT("Debug Axis Information:");
+void DebugParamLoopFrequency::report() {
+    ESP_PRINT("Debug Loop Frequency Information:");
 }

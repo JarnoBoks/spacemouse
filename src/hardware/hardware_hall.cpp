@@ -9,13 +9,22 @@ Hardware_HALL::Hardware_HALL() {
     for (uint8_t i = 0; i < HallSensorsId_t::HALL_LENGTH; i++) {
         sensors[i] = new HallSensor(sensorPins[i], static_cast<HallSensorsId_t>(i)); // Create new HallSensor objects
     }
+
+    // Set the analog reference voltage for the sensors
+    setAnalogReference(INTERNAL);
+}
+
+void Hardware_HALL::setAnalogReference(const bool isDebug) {
+    referenceVoltage = (isDebug) ? DEFAULT : INTERNAL; // Set the default reference voltage to DEFAULT or INTERNAL based on isDebug
+#ifdef ARDUINO_ARCH_AVR
+    analogReference(referenceVoltage); // Set the analog reference voltage to DEFAULT
+#endif
 }
 
 // Define a macro to simplify the access to the sensor values
 #define VAL(X) sensors[X]->getFilteredValue()
 
 int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
-
     updateSensorValues();
 
     int16_t retval = 0; // Initialize the value to 0

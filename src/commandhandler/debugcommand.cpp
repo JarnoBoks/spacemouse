@@ -4,6 +4,7 @@
 #include "DebugParam/ParamOff.h"
 #include "DebugParam/ParamSensorInformation.h"
 #include "DebugParam/ParamAxisInformation.h"
+#include "DebugParam/ParamLoopFrequency.h"
 // ...include other debug states...
 
 /**
@@ -68,9 +69,9 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
         Serial.println(F("OFF"));
         setState(new DebugParamOff());
         break;
-    /* case 0:
-        setState(new DebugSilent());
-        break; */
+    case 0:
+        setState(new DebugParamOff());
+        break;
     case 1:
         Serial.println(F("1"));
         setState(new DebugParamSensorInformationRaw());
@@ -107,7 +108,7 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
     case 8:
         // Report the frequency of the loop()
         Serial.println(F("8"));
-        // TODO setState(new DebugParamSensorInformationRaw());
+        setState(new DebugParamLoopFrequency());
         break;
     case 9:
         // Report the bits and bytes send as button codes

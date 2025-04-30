@@ -25,7 +25,7 @@ private:
     void finish(Hardware *hardware); // Finish the calibration process
 public:
     SensorMinMaxCalibration(SensorCalibrationManager *calibrationManager); // Constructor
-    ~SensorMinMaxCalibration() {};                                         // nothing to do in destructor
+    virtual ~SensorMinMaxCalibration() {};                                 // nothing to do in destructor
 
     void update(const Axis *axis) override {
         // Doing nothing here, as this class is only used for sensors and not for axes.

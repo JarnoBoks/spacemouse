@@ -26,19 +26,18 @@ public:
 
     const bool isCurrentSensor(const char *name) const;
 
-    SensorConfig *getConfig() const;
+    inline SensorConfig *getConfig() const { return config; };
 
     inline int getIdlePosition() const { return idleposition; }
     virtual bool setIdlePosition(int val);
     virtual bool idlePositionWarning(const int val) const = 0; // Pure virtual function to be implemented by derived classes
 
-    int getFilteredValue() const;
-    int getRawValue() const;
-    int getCenteredValue() const;
+    inline int getFilteredValue() const { return filtered; }
+    inline int getRawValue() const { return rawvalue; }
+    inline int getCenteredValue() const { return centered; }
 
-    /* virtual const char *getName() const = 0; // Pure virtual function to be implemented by derived classes */
-    const char *getName() const;
-    const uint8_t getId() const;
+    inline const char *getName() const { return name; }
+    inline const uint8_t getId() const { return static_cast<uint8_t>(id); };
 
     virtual void readValue();
     virtual void applyCalibration();

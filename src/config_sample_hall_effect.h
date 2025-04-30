@@ -1,5 +1,4 @@
-#ifndef CONFIG_h
-#define CONFIG_h
+#pragma once
 
 /* The user specific settings, like pin mappings or special configuration variables and sensitivities are stored in config.h.
    Please adjust your settings and save it as --> config.h <-- !
@@ -707,5 +706,3 @@ This little extra noise is called "jiggling" and ensures that a value declared a
 
 // Add Jiggling to the value reported, if the following symbol is defined:
 // #define ADV_HID_JIGGLE
-
-#endif // CONFIG_h

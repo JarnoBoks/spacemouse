@@ -22,10 +22,11 @@ private:
     unsigned long startCalibrationTime = 0; // Time from millis(), when the calibration was started
 
     bool warningsOccurred = false;
-    uint8_t maxDeadZone = 0;                // Maximum dead zone value (of all sensors)
-    uint32_t sumReads[MAX_SENSORS] = {0};   // Array to store sum of reads, necessaru for the average calculation, all items initialized to 0
-    int minIdleValue[MAX_SENSORS] = {1023}; // Array to store minimum idle values for each sensor, all items set to maximum possible value
-    int maxIdleValue[MAX_SENSORS] = {0};    // Array to store maximum idle values for each sensor, all items set to minimum possible value
+    uint8_t maxDeadZone = 0; // Maximum dead zone value (of all sensors)
+
+    uint32_t sumReads[MAX_SENSORS]; // Array to store sum of reads, necessaru for the average calculation
+    int minIdleValue[MAX_SENSORS];  // Array to store minimum idle values for each sensor
+    int maxIdleValue[MAX_SENSORS];  // Array to store maximum idle values for each sensor
 
     // REVIEW - SessorCalibrationManager is a singleton. Is it necessary to store the pointer here? (Uses some memory).
     SensorCalibrationManager *CalibrationManager = nullptr; // Pointer to the calibration manager
@@ -35,7 +36,7 @@ private:
 protected:
 public:
     SensorIdleCalibration(SensorCalibrationManager *calibrationManager, int numiterations); // Constructor
-    ~SensorIdleCalibration() {};                                                            // nothing to do in destructor
+    virtual ~SensorIdleCalibration() {};                                                    // nothing to do in destructor
 
     void update(const Axis *axis) override {
         // Doing nothing here, as this class is only used for sensors and not for axes.

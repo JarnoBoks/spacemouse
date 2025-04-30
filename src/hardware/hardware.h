@@ -12,16 +12,21 @@
 
 class Hardware {
 private:
-    uint8_t referenceVoltage = DEFAULT;
-
     IObserver *observers[MAX_HARDWARE_OBSERVERS] = {nullptr}; // Array of observers
     uint8_t observerCount = 0;
 
 protected:
     static Hardware *_instance; // Singleton instance - contains the derived hardware class
 
+    uint8_t referenceVoltage = DEFAULT;
+
     // Hardware can only be instantiated by derived classes
-    Hardware() : referenceVoltage(DEFAULT), observers{nullptr}, observerCount(0), sensors{nullptr} {};
+    Hardware() : observerCount(0), referenceVoltage(DEFAULT), sensors{nullptr} {
+        for (int i = 0; i < MAX_HARDWARE_OBSERVERS; i++) {
+            observers[i] = nullptr; // Initialize the observers array to nullptr
+        }
+    };
+
     void updateSensorValues();
 
     virtual Hardware *GetHardwareInstance() = 0;
@@ -41,7 +46,7 @@ public:
 
     virtual int16_t calculateRawValue(AxisType_t axistype) = 0;
 
-    void setAnalogReference(const uint8_t voltage);
+    virtual void setAnalogReference(const bool isDebug = false);
 
     void attachObserver(IObserver *observer);
     void detachObserver(IObserver *observer);

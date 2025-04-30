@@ -16,6 +16,11 @@ void TextHelper::alignValue(const int value, const uint8_t width) {
     }
 }
 
+void TextHelper::alignedPrint(const int value, const uint8_t width) {
+    alignValue(value, width);
+    Serial.print(value);
+}
+
 void helper_print(const char *text, uint8_t minwidth) {
     uint8_t nc = Serial.print(text);
     while (nc < (uint8_t)minwidth) {

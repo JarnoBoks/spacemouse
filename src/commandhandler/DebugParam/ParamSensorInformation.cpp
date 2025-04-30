@@ -40,6 +40,13 @@ IDebugParamSensorInformation::~IDebugParamSensorInformation() {
 
 // ----------------- RAW SENSORS ----------------
 
+DebugParamSensorInformationRaw::DebugParamSensorInformationRaw() {
+    Hardware::getInstance()->setAnalogReference(true);
+}
+DebugParamSensorInformationRaw::~DebugParamSensorInformationRaw() {
+    Hardware::getInstance()->setAnalogReference(false);
+}
+
 void DebugParamSensorInformationRaw::apply() {
 
     // Instantiate the Observer for the RawSensor values and attach it to the hardware

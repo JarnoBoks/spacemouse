@@ -1,5 +1,5 @@
-#ifndef DP_PARAMAXISINFORMATION_H
-#define DP_PARAMAXISINFORMATION_H
+#pragma once
+
 #include "IDebugParam.h"
 #include "observers/output_axisvalues.h"
 
@@ -8,9 +8,8 @@ protected:
     Output_AxisValues *AxisObserver = nullptr; // Pointer to the raw sensor observer instance       // REVIEW - Why is this necesar
 public:
     DebugParamAxisInformation() = default; // Constructor
-    ~DebugParamAxisInformation();          // Destructor to clean up the observer instance
+    virtual ~DebugParamAxisInformation();  // Destructor to clean up the observer instance
 
     void apply() override;
     void report() override;
 };
-#endif // DP_PARAMAXISINFORMATION_H

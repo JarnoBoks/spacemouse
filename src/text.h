@@ -53,8 +53,9 @@ void helper_printseparator();
 
 class TextHelper {
 public:
-    static void alignValue(const int value, const uint8_t width = 4); // Align the value to the right with spaces
-    static void printSeparator() { Serial.print(F(" | ")); }          // Print a separator between values
+    static void alignValue(const int value, const uint8_t width = 4);   // Align the value to the right with spaces
+    static void alignedPrint(const int value, const uint8_t width = 4); // Align the value to the right with spaces
+    static void printSeparator() { Serial.print(F(" | ")); }            // Print a separator between values
 };
 
 #endif // TEXT_H

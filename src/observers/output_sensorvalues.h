@@ -16,7 +16,7 @@ protected:
 
 public:
     Output_SensorValues() {};
-    ~Output_SensorValues() {}; // nothing to do in destructor
+    virtual ~Output_SensorValues() {}; // nothing to do in destructor
 
     void update(const Axis *axis) override {
         // Doing nothing here, as this output class is only used for sensors and not for axes.

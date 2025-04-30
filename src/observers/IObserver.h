@@ -34,13 +34,13 @@ enum DebugLevel : int8_t {
 
 // Forward declaration of classes that are observed (to avoid circular dependencies)
 class Kinematics;
-class Axis; // REMOVE?
+class Axis; // REMOVE ?
 class Hardware;
 
 // --- DebugMonitor (Observer Pattern) ---
 class IObserver {
 private:
-    unsigned long lastDebugOutput = 0; // time from millis(), when the last debug output was given // FIXME - We should be able to store a smaller value than 4 bytes here, but we need to check if the compiler does this automatically.
+    unsigned long lastDebugOutput = 0; // time from millis(), when the last debug output was given // REVIEW - We should be able to store a smaller value than 4 bytes here, but we need to check if the compiler does this automatically.
 
 protected:
     bool isDebugOutputDue(); // Check if a new debug output should be printed
@@ -48,8 +48,6 @@ protected:
 public:
     IObserver() : lastDebugOutput(0) {} // Constructor
     virtual ~IObserver() {}             // Destructor
-
-    void logAxisValues(Axis *axes[], uint8_t count);
 
     void logLoopFrequency();
 

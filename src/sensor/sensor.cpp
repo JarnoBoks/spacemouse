@@ -17,22 +17,23 @@ Sensor::Sensor(const int8_t pin, const int8_t id)
       centered(0),
       filtered(0),
       idleposition(0),
-      name(nullptr) // Initialize the member variables
-{
-    // REVIEW - Move the config init to the initializer list.
-    //   this->config = new SensorConfig(id); // Create a new SensorConfig object for this sensor (identified by id)
+      name(nullptr) {
 }
 
 Sensor::~Sensor() {
-    delete config; // Clean up the SensorConfig object to avoid memory leaks
+    delete config;
 }
 
+/**
+ * @brief Checks if the provided name matches the sensor's name.
+ * @param name The name to compare against the sensor's name.
+ * @return True if the names match, false otherwise.
+ */
 const bool Sensor::isCurrentSensor(const char *name) const {
-    // Check if the provided name matches the sensor's name
     if (this->name != nullptr) {
-        return (strcmp(this->name, name) == 0); // Compare the names and return true if they match
+        return (strcmp(this->name, name) == 0);
     }
-    return false; // Return false if the names do not match or if the sensor name is null
+    return false;
 }
 
 /**
@@ -49,14 +50,6 @@ void Sensor::readValue() {
 }
 
 /**
- * @brief Retrieves the configuration of the sensor.
- * @return A pointer to the SensorConfig object associated with this sensor.
- */
-SensorConfig *Sensor::getConfig() const {
-    return config;
-}
-
-/**
  * @brief Sets the idle position for the sensor configuration.
  * @param val The new idle position to set.
  * @return True if the idle position was set successfully, false otherwise.
@@ -67,53 +60,23 @@ bool Sensor::setIdlePosition(int val) {
 }
 
 /**
- * @brief Retrieves the raw value of the sensor.
- * @return The raw value of the sensor.
- */
-int Sensor::getRawValue() const {
-    return rawvalue;
-}
-
-/**
- * @brief Retrieves the raw value of the sensor.
- * @return The raw value of the sensor.
- */
-int Sensor::getCenteredValue() const {
-    return centered;
-}
-
-/**
- * @brief Retrieves the filtered value of the sensor.
- * @return The filtered value of the sensor.
- */
-int Sensor::getFilteredValue() const {
-    return filtered;
-}
-
-/**
  * @brief Applies calibration to the sensor value.
  * @details This function adjusts the filtered value based on the sensor's configuration.
  */
+#define TOTALSENSITIVITY 350
 void Sensor::applyCalibration() {
     filtered = centered;
 
     if (config) {
-        filtered = map(filtered, config->getMin(), config->getMax(), 0, 1023);
-        if (config->isInverted()) {
-            filtered = 1023 - filtered;
-        }
-        if (abs(filtered) < config->getDeadzone()) {
+        uint8_t _deadzone = config->getDeadzone(); // Get the deadzone value from the configuration
+        if (abs(centered) < _deadzone) {
             filtered = 0;
+        } else if (centered > _deadzone) {
+            filtered = map(centered, _deadzone, config->getMax(), 0, TOTALSENSITIVITY);
+        } else { // if the value is smaller than -DEADZONE
+            filtered = map(centered, config->getMin(), (-1 * _deadzone), -TOTALSENSITIVITY, 0);
         }
     }
-}
-
-const uint8_t Sensor::getId() const {
-    return static_cast<uint8_t>(id);
-}
-
-const char *Sensor::getName() const {
-    return name;
 }
 
 void Sensor::accept(IPrinterVisitor &visitor) {

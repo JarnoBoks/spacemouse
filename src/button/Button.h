@@ -1,25 +1,23 @@
 // Button.h
 #pragma once
 #include "ButtonConfig.h"
-#include "IButtonFunctionality.h"
-#include "DefaultButtonConfig.h"
+#include "functionality/IButtonFunctionality.h"
 
 class Button {
 protected:
+    bool buttonState = false; // Current state of the button (true = pressed, false = released)
     ButtonConfig *config;
-    ButtonConfig *defaultConfig;
     IButtonFunctionality *functionality;
 
 public:
     virtual ~Button() = default;
-    virtual void press() = 0;
-    virtual void release() = 0;
+    virtual void pressed() = 0;
+    virtual void released() = 0;
+    virtual void evaluate() = 0;
 
-    void setFunctionality(IButtonFunctionality *func) { functionality = func; }
-    IButtonFunctionality *getFunctionality() const { return functionality; }
+    inline void setFunctionality(IButtonFunctionality *func) { functionality = func; }
+    inline IButtonFunctionality *getFunctionality() const { return functionality; }
 
-    virtual void setConfig(ButtonConfig *cfg) { config = cfg; }
-    virtual ButtonConfig *getConfig() const { return config; }
-
-    virtual ButtonConfig *getDefaultConfig() const { return defaultConfig; }
+    inline virtual void setConfig(ButtonConfig *cfg) { config = cfg; }
+    inline virtual ButtonConfig *getConfig() const { return config; }
 };

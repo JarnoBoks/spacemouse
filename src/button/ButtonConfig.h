@@ -1,15 +1,33 @@
 // ButtonConfig.h
 #pragma once
-// REMOVE #include <string>
+#include <Arduino.h>
+#include "eeprom/eepromstore.h"  // To load and save the axis configuration to EEPROM
+#include "defaultbuttonconfig.h" // To get the default axis configuration if the EEPROM is empty or the version is changed
 
+/**
+ * @brief Class for the button configuration
+ * @details This class is used to configure the buttons of the space mouse.
+ *  The configuration is loaded from the EEPROM when the button is created.
+ *  If the EEPROM is empty or the version number is changed, the default configuration is used.
+ *  The default configuration is defined in the DefaultButtonConfig class.
+ */
 class ButtonConfig {
 protected:
-    int id;
+    int8_t id;
     const char *label;
     bool enabled;
 
 public:
-    ButtonConfig() : id(0), label(""), enabled(true) {}
+    ButtonConfig() : id(-1), label(""), enabled(true) {}
+    ButtonConfig(int8_t id) : id(id), label(""), enabled(true) {
+        // Constructor to initialize the button configuration with an ID
+        // TODO - Load the configuration from EEPROM or set default values
+        if (!EEPROMStore::loadConfig(*this, id)) {
+            // If loading from EEPROM fails, setup the configuration with default defined values, using the default button configuration class.
+            *this = DefaultButtonConfig::getInstance().getDefaultConfig(id);
+        }
+    }
+
     virtual ~ButtonConfig() = default;
 
     void setId(int id_) { id = id_; }
@@ -22,23 +40,32 @@ public:
     bool isEnabled() const { return enabled; }
 };
 
+/**
+ * @brief Class to configure physical buttons
+ */
 class PhysicalButtonConfig : public ButtonConfig {
-    int pinNumber;
-    int debounceTime;
+    int8_t pinNumber;
 
 public:
-    PhysicalButtonConfig() : pinNumber(0), debounceTime(50) {}
-    void setPinNumber(int pin) { pinNumber = pin; }
-    int getPinNumber() const { return pinNumber; }
-
-    void setDebounceTime(int ms) { debounceTime = ms; }
-    int getDebounceTime() const { return debounceTime; }
+    PhysicalButtonConfig() : pinNumber(-1) {
+        // Constructor to initialize the physical button configuration
+        // TODO - Load the configuration from EEPROM or set default values
+        if (!EEPROMStore::loadConfig(*this, id)) {
+            // If loading from EEPROM fails, setup the configuration with default defined values, using the default button configuration class.
+            *this = DefaultButtonConfig::getInstance().getDefaultConfig(id);
+        }
+    }
+    inline void setPinNumber(int8_t pin) { pinNumber = pin; }
+    inline int8_t getPinNumber() const { return pinNumber; }
 };
 
-class SimulatedButtonConfig : public ButtonConfig {
+/**
+ * @brief Class to configure simulated buttons
+ */
+class RotaryButtonConfig : public ButtonConfig {
     const char *simulationKey;
 
 public:
-    void setSimulationKey(const char *key) { simulationKey = key; }
-    const char *getSimulationKey() const { return simulationKey; }
+    inline void setSimulationKey(const char *key) { simulationKey = key; }
+    inline const char *getSimulationKey() const { return simulationKey; }
 };

@@ -1,19 +1,9 @@
 #ifndef AXIS_H
 #define AXIS_H
 
-#include <Arduino.h>
+#include "axis/axistype.h"       // For AxisType_t
+#include "modfunctype.h"         // For ModFunc_t
 #include "observers/IObserver.h" // For MAX_AXIS_OBSERVERS
-#include "modifierfunction.h"    // For ModFunc_t
-
-enum AxisType_t : int8_t { ALL = -2,
-                           UNINITIALIZED = -1,
-                           TRANSX = 0,
-                           TRANSY,
-                           TRANSZ,
-                           ROTX,
-                           ROTY,
-                           ROTZ,
-                           LENGTH };
 
 #define AXIS_NAMES {"TX", "TY", "TZ", "RX", "RY", "RZ"} // Axis names for debugging
 
@@ -28,12 +18,12 @@ private:
     AxisType_t type = UNINITIALIZED;
     const char *name;
 
-    /// @brief The value of the axis after reading from the hardware and applying all axis & kinematics configurations.
-    int16_t value = 0;
+    /// @brief
+    int16_t value = 0; // The value of the axis after reading from the hardware and applying all axis & kinematics configurations.
 
     /// @brief The value of the axis after reading from the hardware and applying the sensitivity configuration.
     /// @details This value is stored for debugging purposes.
-    int16_t modifiedValue = 0;
+    int16_t modifiedValue = 0; // The value of the axis after reading from the hardware and just applying the sensiti
 
     /// @brief The value of the axis after reading from the hardware and applying the sensitivity configuration.
     /// @details This value is stored for debugging purposes.
@@ -42,13 +32,15 @@ private:
     AxisConfig *config = nullptr;
     Hardware *hardware = nullptr;
     LightBehavior *light = nullptr;
-    uint8_t observerCount = 0;
 
-    void modifier(ModFunc_t type); // Modifier function for this axis & direction
+    void modifier(ModFunc_t type);   // Modifier function for this axis & direction
+    bool isKillSwitchActive = false; // Flag to indicate if the kill switch for this Axis is active
 
 public:
-    Axis(); // Default constructor
-    Axis(AxisType_t type);
+    Axis();                // Default constructor (not used in the code)
+    Axis(AxisType_t type); // Constructor with axis type
+
+    void setKillSwitchActive(bool active) { isKillSwitchActive = active; } // Setter for kill switch state
 
     inline int16_t getValue() const { return value; }            // Getter for value           // REVIEW - Same asa Sensor class, but we need to check if we can use the same function for both classes.
     inline void setValue(int16_t value) { this->value = value; } // Setter for value (used by kinematics, for Exclusieve mode & YZ switching)

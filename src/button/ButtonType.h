@@ -2,5 +2,5 @@
 #pragma once
 enum class ButtonType {
     PHYSICAL,
-    SIMULATED
+    ROTARY,
 };

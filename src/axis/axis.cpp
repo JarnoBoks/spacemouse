@@ -40,6 +40,11 @@ Axis::Axis(AxisType_t type) : type(type) {
 }
 
 void Axis::calculateValue() {
+    if (isKillSwitchActive) {
+        value = 0; // Set the value to 0 for the kill switch
+        return;
+    }
+
     value = hardware->calculateRawValue(type);
 
     DirectionConfig *dconfig = (value > 0) ? &this->config->posConfig : &this->config->negConfig; // Get the config for the current axis and direction
@@ -48,10 +53,10 @@ void Axis::calculateValue() {
     value = dconfig->sensitivity * value; // Apply the sensitivity for this axis & direction
     rawValue = value;                     // Store the raw value for debugging purposes
 
-    // Apply the modifier function for this axis, override the default one if necessary
-    modifier(dconfig->modFuncType); // Apply the modifier function for this axis, override the default one if necessary
+    // Apply the modifier function for this axis & direction
+    modifier(dconfig->modFuncType);
 
-    // Apply any gate for this axis.
+    // Apply any gate for this axis & direction.
     if (abs(value) < dconfig->gate) {
         value = 0;
     }

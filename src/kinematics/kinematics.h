@@ -2,7 +2,8 @@
 
 #define MAX_AXES 6
 
-#include "axis/axis.h"
+#include "axis/axistype.h" // For AxisType_t
+#include "axis/axis.h"     // For Axis class
 #include "observers/IObserver.h"
 
 class KinematicsConfig;
@@ -11,7 +12,7 @@ class KinematicsConfig;
 class Kinematics {
 private:
     static Kinematics *instance;
-    Axis axes[AxisType_t::LENGTH];
+    Axis axes[AxisType_t::LENGTH]; // FIXME - Use a pointer to Axis instead of an array of Axis objects
 
     KinematicsConfig *config = nullptr;
 
@@ -22,6 +23,13 @@ private:
 
     void _applyExclusiveMode();
     void _applySwitchYZ();
+
+    void _applyKillSwitch(const uint8_t start, const uint8_t end, const bool killSwitchActive) {
+        // Set strategy for the rotation axes to kill switch
+        for (uint8_t i = start; i <= end; i++) {
+            axes[i].setKillSwitchActive(killSwitchActive); // Set the kill switch state for the axis
+        }
+    };
 
 public:
     static Kinematics *getInstance();
@@ -37,4 +45,12 @@ public:
 
     void processKinematics();
     const AxisType_t getMainAxis(Axis *axis); // Get the main and secondary axis for the kinematics
+
+    // Functionality for the kill switches
+    void killRotation(const bool killSwitchActive = true) {
+        _applyKillSwitch(AxisType_t::ROTX, AxisType_t::ROTZ, killSwitchActive); // Set strategy for the rotation axes to kill switch
+    };
+    void killTranslation(const bool killSwitchActive = true) {
+        _applyKillSwitch(AxisType_t::TRANSX, AxisType_t::TRANSZ, killSwitchActive);
+    };
 };

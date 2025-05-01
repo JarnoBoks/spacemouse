@@ -1,13 +1,17 @@
 #ifndef IOBSERVER_H
 #define IOBSERVER_H
 
-// Define the maximum number of observers that can connect to axes and hardware
-#define MAX_KINEMATICS_OBSERVERS 4
-#define MAX_AXIS_OBSERVERS 4 // REMOVE ?
-#define MAX_HARDWARE_OBSERVERS 4
-
 #include <Arduino.h>
 #include "config.h" // For STARTDEBUG and DEBUGDELAY
+
+// Define maximum observers for Kinematics class
+#define MAX_KINEMATICS_OBSERVERS 4
+
+// Define maximum observers for Axis class
+#define MAX_AXIS_OBSERVERS 4 // REMOVE ?
+
+// Define maximum observers for Hardware class
+#define MAX_HARDWARE_OBSERVERS 4
 
 #ifndef STARTDEBUG
 // For fail-safe: If STARTDEBUG is not defined, set it to 0 (no debug output).

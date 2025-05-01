@@ -2,7 +2,7 @@
 #define DIRECTIONCONFIG_H
 
 #include <Arduino.h>
-#include "modifierfunction.h"
+#include "modfunctype.h"
 
 class DirectionConfig {
 public:

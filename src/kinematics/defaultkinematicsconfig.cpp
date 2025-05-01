@@ -28,7 +28,5 @@ DefaultKinematicsConfig &DefaultKinematicsConfig::getInstance() {
  * @return The default AxisConfig for the specified axis type.
  */
 KinematicsConfig DefaultKinematicsConfig::getDefaultConfig() {
-    // This function will return the default configuration for the given axis type.
-    // The default configuration is used if there isn't a configuration in the EEPROM or if the EEPROM version is changed.
     return KinematicsConfig(DEF_EXCLUSIVEMODE, DEF_SWITCHYZ);
 }

@@ -79,8 +79,9 @@ CommandHandler myCommandHandler; // Command handler object to handle the command
 
 #include "calibration/sensorcalibrationmanager.h"
 
+// #include <ArduinoShrink.h>
 void setup() {
-
+    millis(); // Wait for the serial interface to be ready
 #if NUMKEYS > 0
     // Instantiate the keys object and setup the keys to internal pull-ups
     Keys = new SpaceKeys();

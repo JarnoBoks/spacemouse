@@ -1,6 +1,5 @@
 @startuml gpt_button
 
-' Abstract base class for Button
 abstract class Button {
     - config: ButtonConfig
     - defaultConfig: ButtonConfig
@@ -15,11 +14,15 @@ abstract class Button {
 }
 
 class PhysicalButton {
+    - pinNumber: int
+    - lastState: bool
     + press(): void
     + release(): void
     + setConfig(cfg: PhysicalButtonConfig): void
     + getConfig(): PhysicalButtonConfig
+    + readStatus(): bool
 }
+
 class SimulatedButton {
     + press(): void
     + release(): void
@@ -30,7 +33,6 @@ class SimulatedButton {
 Button <|-- PhysicalButton
 Button <|-- SimulatedButton
 
-' Configuration classes
 class ButtonConfig {
     + id: int
     + label: string
@@ -60,19 +62,16 @@ class SimulatedButtonConfig {
 ButtonConfig <|-- PhysicalButtonConfig
 ButtonConfig <|-- SimulatedButtonConfig
 
-' Singleton for default configuration
 class DefaultButtonConfig <<Singleton>> {
     - static instance: DefaultButtonConfig
     + getInstance(): DefaultButtonConfig
     + getDefaultConfig(type: ButtonType): ButtonConfig
 }
 
-' Strategy pattern for button functionality
 interface IButtonFunctionality {
     + execute(): void
 }
 
-' CommandButton functionality
 class CommandButtonFunctionality {
     - command: CommandType
     + CommandButtonFunctionality(cmd: CommandType)
@@ -81,12 +80,10 @@ class CommandButtonFunctionality {
     + setCommand(cmd: CommandType): void
 }
 
-' KillSwitchButton functionality (abstract)
 abstract class KillSwitchButtonFunctionality {
     + execute(): void
 }
 
-' Two types of kill switch buttons
 class KillTranslationFunctionality {
     + execute(): void
 }
@@ -99,23 +96,24 @@ IButtonFunctionality <|.. KillSwitchButtonFunctionality
 KillSwitchButtonFunctionality <|-- KillTranslationFunctionality
 KillSwitchButtonFunctionality <|-- KillRotationFunctionality
 
-' Enum for command types
 enum CommandType {
-    CMD1
-    CMD2
-    CMD3
-    CMD4
-    CMD5
-    CMD6
-    CMD7
-    CMD8
-    CMD9
-    CMD10
-    CMD11
-    CMD12
+    SM_MENU = 0,  // Key "Menu"
+    SM_FIT = 1,   // Key "Fit"
+    SM_T = 2,     // Key "Top"
+    SM_R = 4,     // Key "Right"
+    SM_F = 5,     // Key "Front"
+    SM_RCW = 8,   // Key "Roll 90°CW"
+    SM_1 = 12,    // Key "1"
+    SM_2 = 13,    // Key "2"
+    SM_3 = 14,    // Key "3"
+    SM_4 = 15,    // Key "4"
+    SM_ESC = 22,  // Key "ESC"
+    SM_ALT = 23,  // Key "ALT"
+    SM_SHFT = 24, // Key "SHIFT"
+    SM_CTRL = 25, // Key "CTRL"
+    SM_ROT = 26   // Key "Rotate"
 }
 
-' Factory for button creation
 class ButtonFactory {
     + createButton(type: ButtonType, config: ButtonConfig): Button
 }
@@ -125,10 +123,11 @@ enum ButtonType {
     SIMULATED
 }
 
-' Relationships
+class EEPROMStore {}
 Button o-- ButtonConfig : uses
 Button o-- IButtonFunctionality : has
-Button ..> DefaultButtonConfig : gets default config
+ButtonConfig ..> DefaultButtonConfig : gets default config
 ButtonFactory ..> Button : creates
+ButtonConfig ..> EEPROMStore : loads config
 
 @enduml

@@ -8,9 +8,9 @@ class CommandButtonFunctionality : public IButtonFunctionality {
 
 public:
     CommandButtonFunctionality(CommandType cmd) : command(cmd) {}
-    void execute() override {
-        // Implement command execution
-    }
-    CommandType getCommand() const { return command; }
-    void setCommand(CommandType cmd) { command = cmd; }
+    inline void onPress() {};   // Called when the button is pressed
+    inline void onRelease() {}; // Called when the button is released
+
+    inline CommandType getCommand() const { return command; }
+    inline void setCommand(CommandType cmd) { command = cmd; }
 };

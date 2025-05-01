@@ -4,5 +4,6 @@
 
 class KillSwitchButtonFunctionality : public IButtonFunctionality {
 public:
-    virtual void execute() override = 0;
+    virtual void onPress() override = 0;
+    virtual void onRelease() override = 0;
 };

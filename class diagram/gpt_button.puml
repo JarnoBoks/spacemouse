@@ -1,0 +1,134 @@
+@startuml gpt_button
+
+' Abstract base class for Button
+abstract class Button {
+    - config: ButtonConfig
+    - defaultConfig: ButtonConfig
+    - functionality: IButtonFunctionality
+    + press(): void
+    + release(): void
+    + setFunctionality(func: IButtonFunctionality): void
+    + getFunctionality(): IButtonFunctionality
+    + setConfig(cfg: ButtonConfig): void
+    + getConfig(): ButtonConfig
+    + getDefaultConfig(): ButtonConfig
+}
+
+class PhysicalButton {
+    + press(): void
+    + release(): void
+    + setConfig(cfg: PhysicalButtonConfig): void
+    + getConfig(): PhysicalButtonConfig
+}
+class SimulatedButton {
+    + press(): void
+    + release(): void
+    + setConfig(cfg: SimulatedButtonConfig): void
+    + getConfig(): SimulatedButtonConfig
+}
+
+Button <|-- PhysicalButton
+Button <|-- SimulatedButton
+
+' Configuration classes
+class ButtonConfig {
+    + id: int
+    + label: string
+    + isEnabled: bool
+    + setId(id: int): void
+    + getId(): int
+    + setLabel(label: string): void
+    + getLabel(): string
+    + setEnabled(enabled: bool): void
+    + isEnabled(): bool
+}
+
+class PhysicalButtonConfig {
+    + pinNumber: int
+    + debounceTime: int
+    + setPinNumber(pin: int): void
+    + getPinNumber(): int
+    + setDebounceTime(ms: int): void
+    + getDebounceTime(): int
+}
+class SimulatedButtonConfig {
+    + simulationKey: string
+    + setSimulationKey(key: string): void
+    + getSimulationKey(): string
+}
+
+ButtonConfig <|-- PhysicalButtonConfig
+ButtonConfig <|-- SimulatedButtonConfig
+
+' Singleton for default configuration
+class DefaultButtonConfig <<Singleton>> {
+    - static instance: DefaultButtonConfig
+    + getInstance(): DefaultButtonConfig
+    + getDefaultConfig(type: ButtonType): ButtonConfig
+}
+
+' Strategy pattern for button functionality
+interface IButtonFunctionality {
+    + execute(): void
+}
+
+' CommandButton functionality
+class CommandButtonFunctionality {
+    - command: CommandType
+    + CommandButtonFunctionality(cmd: CommandType)
+    + execute(): void
+    + getCommand(): CommandType
+    + setCommand(cmd: CommandType): void
+}
+
+' KillSwitchButton functionality (abstract)
+abstract class KillSwitchButtonFunctionality {
+    + execute(): void
+}
+
+' Two types of kill switch buttons
+class KillTranslationFunctionality {
+    + execute(): void
+}
+class KillRotationFunctionality {
+    + execute(): void
+}
+
+IButtonFunctionality <|.. CommandButtonFunctionality
+IButtonFunctionality <|.. KillSwitchButtonFunctionality
+KillSwitchButtonFunctionality <|-- KillTranslationFunctionality
+KillSwitchButtonFunctionality <|-- KillRotationFunctionality
+
+' Enum for command types
+enum CommandType {
+    CMD1
+    CMD2
+    CMD3
+    CMD4
+    CMD5
+    CMD6
+    CMD7
+    CMD8
+    CMD9
+    CMD10
+    CMD11
+    CMD12
+}
+
+' Factory for button creation
+class ButtonFactory {
+    + createButton(type: ButtonType, config: ButtonConfig): Button
+}
+
+enum ButtonType {
+    PHYSICAL
+    SIMULATED
+}
+
+' Relationships
+Button o-- ButtonConfig : uses
+Button o-- IButtonFunctionality : has
+Button ..> DefaultButtonConfig : gets default config
+ButtonFactory ..> Button : creates
+
+@enduml

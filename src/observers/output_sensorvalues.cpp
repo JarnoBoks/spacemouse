@@ -10,9 +10,7 @@ void Output_SensorValues::update(Hardware *hardware) {
     }
 
     for (uint8_t id = 0; id < MAX_SENSORS; id++) {
-        if (id != 0) {
-            Serial.print(F(", ")); // Print a comma if it's not the first sensor
-        }
+        TextHelper::printLeadingComma(id); // Print a komma if it's not the first axis
 
         Sensor *sensor = hardware->sensors[id]; // Pointer to the sensor
 

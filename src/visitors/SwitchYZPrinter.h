@@ -19,6 +19,7 @@ public:
     inline void visit(Hardware &hardware) override {}
     inline void visit(Axis &axis) override {};
     inline void visit(AxisConfig &config) override {};
+
     inline void visit(KinematicsConfig &config) override {
         bool switchYZ = config.switchYZ; // Get the minimum value from the sensor configuration
         Serial.print(switchYZ);

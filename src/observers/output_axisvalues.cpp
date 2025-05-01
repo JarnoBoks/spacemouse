@@ -10,9 +10,7 @@ void Output_AxisValues::update(Kinematics *kinematics) {
     }
 
     for (uint8_t id = 0; id < AxisType_t::LENGTH; id++) {
-        if (id != 0) {
-            Serial.print(F(", ")); // Print a comma if it's not the first sensor
-        }
+        TextHelper::printLeadingComma(id); // Print a komma if it's not the first axis
 
         Axis *axis = kinematics->getAxis(static_cast<AxisType_t>(id)); // Pointer to the axis
 

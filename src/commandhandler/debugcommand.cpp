@@ -65,10 +65,8 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
         return; // First parameter is not a number
     }
 
-    Serial.print(F("DebugCommand::execute: Debug mode"));
     switch (requestedLevel) {
     case -1:
-        Serial.println(F("OFF"));
         setState(new DebugParamOff());
         break;
     case 0:
@@ -100,22 +98,18 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
         break;
     case 7:
         // Centered values, translation & rotation, keystate (with kill switch) and exclusive mode applied
-        Serial.println(F("7"));
         // TODO setState(new DebugParamSensorInformationCentered());
         break;
     case 8:
         // Report the frequency of the loop()
-        Serial.println(F("8"));
         setState(new DebugParamLoopFrequency());
         break;
     case 9:
         // Report the bits and bytes send as button codes
-        Serial.println(F("9"));
         // TODO setState(new DS_ButtonCodesInformation());
         break;
     case 10:
         // Report details about the encoder wheel, if ROTARY_AXIS > 0 or ROTARY_KEYS>0
-        Serial.println(F("10"));
         // TODO setState(new DS_EncoderWheelInformation());
         break;
     default:

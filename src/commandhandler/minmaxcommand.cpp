@@ -58,18 +58,18 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
             return; // First parameter is not a number
         }
 
-        Serial.print(F("MinMaxCommand::execute: MinMax calibration requested: "));
-        Serial.println(requestedCalibration);
+        ESP_DBG(F("MinMaxCommand::execute: MinMax calibration requested: "));
+        ESP_DBG(requestedCalibration);
 
         if (requestedCalibration == 0) {
-            Serial.println(F("MinMaxCommand::execute: Start minmax calibration"));
+            ESP_DBG(F("MinMaxCommand::execute: Start minmax calibration"));
             SensorCalibrationManager::getInstance()->activateMinMaxCalibration();
         } else if (requestedCalibration == 1) {
-            Serial.println(F("MinMaxCommand::execute: Start minmax calibration and store in EEPROM"));
+            ESP_DBG(F("MinMaxCommand::execute: Start minmax calibration and store in EEPROM"));
             SensorCalibrationManager::getInstance()->activateMinMaxCalibration();
             // TODO - Start the minmax calibration process and store the values in EEPROM
         } else {
-            Serial.println(F("MinMaxCommand::execute: Unknown command"));
+            ESP_DBG(F("MinMaxCommand::execute: Unknown command"));
         }
     }
     if (paramCount == 2) {
@@ -97,26 +97,26 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
 
         if (sensor != nullptr && direction == '+') {
             // Set the maximum value for the sensor
-            Serial.print(F("MinMaxCommand::execute: Set max for sensor "));
+            ESP_DBG(F("MinMaxCommand::execute: Set max for sensor "));
             sensor->getConfig()->setMax(requestedValue);
 
         } else if (sensor != nullptr && direction == '-') {
             // Set the minimum value for the sensor
-            Serial.print(F("MinMaxCommand::execute: Set min for sensor "));
+            ESP_DBG(F("MinMaxCommand::execute: Set min for sensor "));
             sensor->getConfig()->setMin(requestedValue);
 
         } else {
-            Serial.println(F("MinMaxCommand::execute: Unknown command"));
+            ESP_DBG(F("MinMaxCommand::execute: Unknown command"));
             return; // Invalid direction, exit the function
         }
 
-        Serial.print(F("MinMaxCommand::execute: Set minmax for sensor "));
-        Serial.print(param1);
-        Serial.print(F(" to "));
-        Serial.println(requestedValue);
+        ESP_DBG(F("MinMaxCommand::execute: Set minmax for sensor "));
+        ESP_DBG(param1);
+        ESP_DBG(F(" to "));
+        ESP_DBG(requestedValue);
 
         // Store the value in the EEPROM
         sensor->getConfig()->persist(sensor->getId());
-        Serial.print(F("MinMaxCommand::execute: Store minmax for sensor "));
+        ESP_DBG(F("MinMaxCommand::execute: Store minmax for sensor "));
     }
 }

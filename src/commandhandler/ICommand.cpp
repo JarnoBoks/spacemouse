@@ -13,8 +13,10 @@ static const char Error_EmptyValue[] PROGMEM = "value";
 const bool ICommand::isWordEmpty(const char *str, const char *errorMsg) const {
     // Check if the string is empty or null
     if (!str || *str == '\0') {
+#ifndef ARDUINO_ARCH_AVR
         Serial.print(CF(Error));
         Serial.println(CF(errorMsg));
+#endif
         return true; // String is empty or null
     }
 
@@ -30,8 +32,10 @@ const bool ICommand::convertWordNumber(const char *str, long *n) const {
 
     if (*endptr != '\0') {
         // TODO: Check if compile size is smaller with the usage of F() macro
+#ifndef ARDUINO_ARCH_AVR
         Serial.print(CF(Error));
         Serial.print(CF(Error_ParameterNoNumber));
+#endif
         return false; // Not a valid number
     }
 
@@ -46,8 +50,10 @@ const bool ICommand::convertWordFloat(const char *str, float *value) const {
 
     if (*endptr != '\0') {
         // TODO: Check if compile size is smaller with the usage of F() macro
+#ifndef ARDUINO_ARCH_AVR
         Serial.print(CF(Error));
         Serial.println(CF(Error_ParameterNoFloat));
+#endif
         return false; // Not a valid float
     }
 

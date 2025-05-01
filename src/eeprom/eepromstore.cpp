@@ -44,10 +44,20 @@ constexpr int EEPROM_ADDRESS_CFG_AXES_BASE = 16;                                
 constexpr int EEPROM_ADDRESS_CFG_AXES_END = EEPROM_ADDRESS_CFG_AXES_BASE + 6 * sizeof(EEAxisConfig); // We store 6 axis configurations in the EEPROM
 
 constexpr int EEPROM_ADDRESS_CFG_SENSORS_BASE = EEPROM_ADDRESS_CFG_AXES_END; // Base address for the sensor configuration
-constexpr int EEPROM_ADDRESS_CFG_SENSORS_END = EEPROM_ADDRESS_CFG_SENSORS_BASE + 8 * sizeof(EESensorConfig);
+// constexpr int EEPROM_ADDRESS_CFG_SENSORS_END = EEPROM_ADDRESS_CFG_SENSORS_BASE + 8 * sizeof(EESensorConfig); // FIXME We use the SensorConfig class to store the sensor configuration in the EEPROM
+constexpr int EEPROM_ADDRESS_CFG_SENSORS_END = EEPROM_ADDRESS_CFG_SENSORS_BASE + 8 * sizeof(SensorConfig);
 
 constexpr int EEPROM_ADDRESS_CFG_KINEMATICS_BASE = EEPROM_ADDRESS_CFG_SENSORS_END;        // Base address for the kinematics configuration
 constexpr int EEPROM_ADDRESS_CFG_KINEMATICS_END = EEPROM_ADDRESS_CFG_KINEMATICS_BASE + 2; // End EEPROM address for kinematics configuration - Stores two booleans
+
+constexpr int EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE = EEPROM_ADDRESS_CFG_KINEMATICS_END;                                   // End EEPROM address for the configuration
+constexpr int EEPROM_ADDRESS_CFG_AXIS_PCONFIG_END = EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + (6 * sizeof(DirectionConfig)); // End EEPROM address for the configuration
+
+constexpr int EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE = EEPROM_ADDRESS_CFG_AXIS_PCONFIG_END;                                 // End EEPROM address for the configuration
+constexpr int EEPROM_ADDRESS_CFG_AXIS_NCONFIG_END = EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE + (6 * sizeof(DirectionConfig)); // End EEPROM address for the configuration
+
+constexpr int EEPROM_ADDRESS_CFG_AXIS_INV_BASE = EEPROM_ADDRESS_CFG_AXIS_NCONFIG_END;                                   // End EEPROM address for the configuration
+constexpr int EEPROM_ADDRESS_CFG_AXIS_INV_END = EEPROM_ADDRESS_CFG_AXIS_INV_BASE + (6 * sizeof(AxisConfig::inversion)); // End EEPROM address for the configuration
 
 // -------------------------- EEPROM ADDRESS TABLE END -------------------------
 
@@ -88,6 +98,7 @@ bool EEPROMStore::isFirstRun() {
     return _firstrun; // Return the state of the EEPROM
 }
 
+#if 0
 /**
  * @brief Loads the axis configuration from the EEPROM.
  * @param config The axis configuration to load.
@@ -131,7 +142,33 @@ void EEPROMStore::saveConfig(AxisConfig &config, const int axisnumber) {
 
     EEPROM.put(EEPROM_ADDRESS_CFG_AXES_BASE + axisnumber * sizeof(EEAxisConfig), eeConfig); // Store the configuration in the EEPROM
 }
+#else
+bool EEPROMStore::loadConfig(AxisConfig &config, const int axisnumber) {
+    if (isFirstRun()) {
+        return false; // EEPROM is not initialized, return false
+    }
 
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + axisnumber * sizeof(DirectionConfig), config.posConfig);   // Store the configuration in the EEPROM
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE + axisnumber * sizeof(DirectionConfig), config.negConfig);   // Store the configuration in the EEPROM
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_INV_BASE + axisnumber * sizeof(AxisConfig::inversion), config.inversion); // Store the configuration in the EEPROM
+
+    // FIXME return true; // Return true while the configuration was loaded successfully
+    return false;
+}
+
+/**
+ * @brief Stores the axis configuration in the EEPROM.
+ * @param config The axis configuration to store.
+ * @param address The EEPROM address to store the configuration.
+ */
+void EEPROMStore::saveConfig(AxisConfig &config, const int axisnumber) {
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + axisnumber * sizeof(DirectionConfig), config.posConfig);   // Store the configuration in the EEPROM
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE + axisnumber * sizeof(DirectionConfig), config.negConfig);   // Store the configuration in the EEPROM
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_INV_BASE + axisnumber * sizeof(AxisConfig::inversion), config.inversion); // Store the configuration in the EEPROM
+}
+#endif
+
+#if 0 // REVIEW - If this is not used, remove it. It is only used for the old EEPROM version.
 /**
  * @brief Loads the sensor configuration from the EEPROM.
  * @param config The sensor configuration to load.
@@ -165,6 +202,23 @@ void EEPROMStore::saveConfig(SensorConfig &config, const int sensornumber) {
 
     EEPROM.put(EEPROM_ADDRESS_CFG_SENSORS_BASE + sensornumber * sizeof(EESensorConfig), eeConfig); // Store the configuration in the EEPROM
 }
+#else
+
+bool EEPROMStore::loadConfig(SensorConfig &config, const int sensornumber) {
+    if (isFirstRun()) {
+        return false; // EEPROM is not initialized, return false
+    }
+
+    // Setup the EEPROM address and transfer object for the sensor configuration
+    EEPROM.get(EEPROM_ADDRESS_CFG_SENSORS_BASE + sensornumber * sizeof(SensorConfig), config); // Load the configuration from the EEPROM
+    // FIXME return true; // Return true while the configuration was loaded successfully. Is necessary for simulation purposes (simavr has no EEPROM available)
+    return false;
+}
+
+void EEPROMStore::saveConfig(SensorConfig &config, const int sensornumber) {
+    EEPROM.put(EEPROM_ADDRESS_CFG_SENSORS_BASE + sensornumber * sizeof(SensorConfig), config); // Store the configuration in the EEPROM
+}
+#endif
 
 bool EEPROMStore::loadConfig(KinematicsConfig &config) {
     if (isFirstRun()) {

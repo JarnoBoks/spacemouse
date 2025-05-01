@@ -1,6 +1,4 @@
-#ifndef ICOMMAND_H
-#define ICOMMAND_H
-
+#pragma once
 #include <Arduino.h>
 
 // #define CF(x) ((const __FlashStringHelper *)x)
@@ -27,5 +25,3 @@ public:
 
     virtual void execute(const char *param1, const char *param2, const uint8_t paramCount) = 0;
 };
-
-#endif // ICOMMAND_H

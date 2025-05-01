@@ -23,8 +23,9 @@ public:
         // Constructor to initialize the button configuration with an ID
         // TODO - Load the configuration from EEPROM or set default values
         if (!EEPROMStore::loadConfig(*this, id)) {
-            // If loading from EEPROM fails, setup the configuration with default defined values, using the default button configuration class.
-            *this = DefaultButtonConfig::getInstance().getDefaultConfig(id);
+            // If loading from EEPROM fails, setup the configuration with default defined values,
+            // using the default button configuration class.
+            //*this = *DefaultButtonConfig::getInstance()->getDefaultConfig(static_cast<ButtonType>(id));
         }
     }
 
@@ -52,7 +53,7 @@ public:
         // TODO - Load the configuration from EEPROM or set default values
         if (!EEPROMStore::loadConfig(*this, id)) {
             // If loading from EEPROM fails, setup the configuration with default defined values, using the default button configuration class.
-            *this = DefaultButtonConfig::getInstance().getDefaultConfig(id);
+            //*this = DefaultButtonConfig::getInstance()->getDefaultConfig(static_cast<ButtonType>(id));
         }
     }
     inline void setPinNumber(int8_t pin) { pinNumber = pin; }

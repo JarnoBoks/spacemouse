@@ -5,9 +5,7 @@ It was created by reverse-engineering a Space Navigator and relating to the HID 
 
 This code is based on https://forum.arduino.cc/t/solved-unable-to-receive-hid-reports-from-computer-using-pluggableusb/596793
 */
-
-#ifndef SpaceMouseHID_h
-#define SpaceMouseHID_h
+#pragma once
 #include <Arduino.h>
 
 // make sure that it is a supported Architecture
@@ -23,6 +21,7 @@ This code is based on https://forum.arduino.cc/t/solved-unable-to-receive-hid-re
 #define SPACEMOUSE_D_HIDREPORT(length) \
     {                                  \
         9, 0x21, 0x11, 0x01, 0, 1, 0x22, lowByte(length), highByte(length)}
+
 typedef struct
 {
     InterfaceDescriptor hid;
@@ -31,7 +30,8 @@ typedef struct
     EndpointDescriptor out;
 } SpaceMouseHIDDescriptor;
 
-// The USB VID and PID for this emulated space mouse pro must be set in the boards.txt in arduino IDE or in set_hwids.py in platformIO.
+// The USB VID and PID for this emulated space mouse pro must be set in the boards.txt in arduino IDE or
+// in set_hwids.py in platformIO.
 
 static const uint8_t SpaceMouseReportDescriptor[] PROGMEM = {
     0x05, 0x01,       // Usage Page (Generic Desktop)
@@ -108,7 +108,7 @@ static const uint8_t SpaceMouseReportDescriptor[] PROGMEM = {
 #define USBControllerTX USBControllerEndpointIn
 #define USBControllerRX USBControllerEndpointOut
 
-// Send a HID report every 8 ms
+// Send a HID report every 8 ms (125 Hz)
 #define HIDUPDATERATE_MS 8
 
 // State machine to track, which report to send next
@@ -161,5 +161,3 @@ protected:
 };
 
 extern SpaceMouseHID_ SpaceMouseHID;
-
-#endif // SpaceMouseHID_h import guard

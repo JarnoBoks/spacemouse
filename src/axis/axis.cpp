@@ -16,7 +16,6 @@ Axis::Axis() : type(UNINITIALIZED) {
     // Default constructor initializes the axis to UNINITIALIZED
     config = new AxisConfig(); // Create a new AxisConfig object for this axis
 
-    hardware = Hardware::getInstance(); // Initialize the hardware with Hall effect sensors
     light = nullptr;
     value = 0;
 }
@@ -24,8 +23,6 @@ Axis::Axis() : type(UNINITIALIZED) {
 Axis::Axis(AxisType_t type) : type(type) {
     // Initialize the axis with the given type
     config = new AxisConfig(type); // Create a new AxisConfig object for this axis
-
-    hardware = Hardware::getInstance(); // Initialize the hardware with Hall effect sensors
 
     // Setup the name of the axis based on the type
     const char *names[AxisType_t::LENGTH] = AXIS_NAMES;
@@ -39,13 +36,13 @@ Axis::Axis(AxisType_t type) : type(type) {
     value = 0;
 }
 
-void Axis::calculateValue() {
+void Axis::calculateValue(int16_t hwvalue) {
+    value = hwvalue; // Set the value to the hardware value
+
     if (isKillSwitchActive) {
         value = 0; // Set the value to 0 for the kill switch
         return;
     }
-
-    value = hardware->calculateRawValue(type);
 
     DirectionConfig *dconfig = (value > 0) ? &this->config->posConfig : &this->config->negConfig; // Get the config for the current axis and direction
 
@@ -64,13 +61,6 @@ void Axis::calculateValue() {
     // Invert the motion if necessary
     value = (config->inversion) ? -value : value; // Invert the value if necessary
     modifiedValue = value;                        // Store the modified value for debugging purposes
-}
-
-void Axis::setLedLight(LightBehavior *behavior) {
-    light = behavior;
-    if (light) {
-        // light->setLight(value);
-    }
 }
 
 void Axis::modifier(ModFunc_t type) {

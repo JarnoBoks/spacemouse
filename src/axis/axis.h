@@ -30,7 +30,6 @@ private:
     int16_t rawValue = 0;
 
     AxisConfig *config = nullptr;
-    Hardware *hardware = nullptr;
     LightBehavior *light = nullptr;
 
     void modifier(ModFunc_t type);   // Modifier function for this axis & direction
@@ -42,21 +41,15 @@ public:
 
     void setKillSwitchActive(bool active) { isKillSwitchActive = active; } // Setter for kill switch state
 
-    inline int16_t getValue() const { return value; }            // Getter for value           // REVIEW - Same asa Sensor class, but we need to check if we can use the same function for both classes.
-    inline void setValue(int16_t value) { this->value = value; } // Setter for value (used by kinematics, for Exclusieve mode & YZ switching)
-
+    inline int16_t getValue() const { return value; }                 // Getter for value           // REVIEW - Same asa Sensor class, but we need to check if we can use the same function for both classes.
     inline int16_t getRawValue() const { return rawValue; }           // Getter for rawValue
     inline int16_t getModifiedValue() const { return modifiedValue; } // Getter for modifiedValue
+    inline const char *getName() const { return name; }               // Getter for name            // REVIEW - Same as Sensor class, but we need to check if we can use the same function for both classes.
+    inline AxisType_t getType() const { return type; }                // Getter for type
+    inline AxisConfig *getConfig() const { return config; }           // Getter for config
 
-    inline const char *getName() const { return name; } // Getter for name            // REVIEW - Same as Sensor class, but we need to check if we can use the same function for both classes.
-
-    void calculateValue();
-
-    void setLedLight(LightBehavior *behavior);
-
-    inline AxisType_t getType() const { return type; } // Getter for type
-
-    inline AxisConfig *getConfig() const { return config; } // Getter for config
+    inline void setValue(int16_t value) { this->value = value; } // Setter for value (used by kinematics, for Exclusieve mode & YZ switching)
+    void calculateValue(int16_t hwvalue);                        // Calculate the value of the axis based on the hardware input and the configuration
 
     void accept(IPrinterVisitor &visitor);
 };

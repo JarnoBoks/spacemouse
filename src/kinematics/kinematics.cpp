@@ -32,12 +32,12 @@ Kinematics::Kinematics() {
     config = new KinematicsConfig();
 
     // Initialize the axes with their respective configurations and hardware
-    axes[TRANSX] = Axis(TRANSX);
-    axes[TRANSY] = Axis(TRANSY);
-    axes[TRANSZ] = Axis(TRANSZ);
-    axes[ROTX] = Axis(ROTX);
-    axes[ROTY] = Axis(ROTY);
-    axes[ROTZ] = Axis(ROTZ);
+    axes[TRANSX] = new Axis(TRANSX);
+    axes[TRANSY] = new Axis(TRANSY);
+    axes[TRANSZ] = new Axis(TRANSZ);
+    axes[ROTX] = new Axis(ROTX);
+    axes[ROTY] = new Axis(ROTY);
+    axes[ROTZ] = new Axis(ROTZ);
 }
 
 /**
@@ -46,7 +46,7 @@ Kinematics::Kinematics() {
  * @return A pointer to the corresponding Axis object.
  */
 Axis *Kinematics::getAxis(AxisType_t type) {
-    return &axes[type];
+    return axes[type];
 }
 
 /**
@@ -60,7 +60,7 @@ Axis *Kinematics::getAxis(const char *name) {
     const __FlashStringHelper *axisNames[] PROGMEM = {F("TX"), F("TY"), F("TZ"), F("RX"), F("RY"), F("RZ")}; // Axis names
     for (int i = 0; i < 6; i++) {
         if (strcmp(name, (const char *)pgm_read_word(&(axisNames[i]))) == 0) {
-            return &axes[i]; // Return the corresponding axis
+            return axes[i]; // Return the corresponding axis
         }
     }
     return nullptr; // Axis not found, return nullptr
@@ -72,7 +72,8 @@ Axis *Kinematics::getAxis(const char *name) {
  */
 void Kinematics::processKinematics() {
     for (int i = 0; i < AxisType_t::LENGTH; i++) {
-        axes[i].calculateValue(); // Calculate the value for each axis
+        int16_t raw = Hardware::getInstance()->calculateRawValue(static_cast<AxisType_t>(i)); // Get the raw value from the hardware
+        axes[i]->calculateValue(raw);                                                         // Calculate the value for each axis
     }
 
     notifyObservers(); // Notify observers of changes in the kinematics
@@ -81,8 +82,8 @@ void Kinematics::processKinematics() {
 // REVIEW - This should be a decorator function for the axis class, but we need to check if we can use the same function for both classes.
 void Kinematics::_applyExclusiveMode() {
     if (config != nullptr && config->exclusiveMode) {
-        uint16_t totalRot = abs(axes[ROTX].getValue()) + abs(axes[ROTY].getValue()) + abs(axes[ROTZ].getValue());
-        uint16_t totalTrans = abs(axes[TRANSX].getValue()) + abs(axes[TRANSY].getValue()) + abs(axes[TRANSZ].getValue());
+        uint16_t totalRot = abs(axes[ROTX]->getValue()) + abs(axes[ROTY]->getValue()) + abs(axes[ROTZ]->getValue());
+        uint16_t totalTrans = abs(axes[TRANSX]->getValue()) + abs(axes[TRANSY]->getValue()) + abs(axes[TRANSZ]->getValue());
 
         // If the total rotation is greater than the total translation, set translation axes to 0
         // Otherwise, set rotation axes to 0
@@ -97,7 +98,7 @@ void Kinematics::_applyExclusiveMode() {
         }
 
         for (int i = startAxis; i <= endAxis; i++) {
-            axes[i].setValue(0); // Set translation axes to 0
+            axes[i]->setValue(0); // Set translation axes to 0
         }
     }
 }
@@ -107,13 +108,13 @@ void Kinematics::_applyExclusiveMode() {
 void Kinematics::_applySwitchYZ() {
     if (config != nullptr && config->switchYZ) {
         int16_t tmp = 0;
-        tmp = axes[TRANSY].getValue();
-        axes[TRANSY].setValue(axes[TRANSZ].getValue());
-        axes[TRANSZ].setValue(tmp);
+        tmp = axes[TRANSY]->getValue();
+        axes[TRANSY]->setValue(axes[TRANSZ]->getValue());
+        axes[TRANSZ]->setValue(tmp);
 
-        tmp = axes[ROTY].getValue();
-        axes[ROTY].setValue(axes[ROTZ].getValue());
-        axes[ROTZ].setValue(tmp);
+        tmp = axes[ROTY]->getValue();
+        axes[ROTY]->setValue(axes[ROTZ]->getValue());
+        axes[ROTZ]->setValue(tmp);
     }
 }
 
@@ -166,7 +167,7 @@ const AxisType_t Kinematics::getMainAxis(Axis *axis) {
 
     // Loop through all axes to find the one with the biggest velocity
     for (int i = 0; i < AxisType_t::LENGTH; i++) {
-        int16_t absvalue = abs(axes[i].getValue()); // Get the value of the axis
+        int16_t absvalue = abs(axes[i]->getValue()); // Get the value of the axis
 
         // Is the value of this axis greater than deadzone and greater than any of the axis before?
         if ((absvalue > maximumVelocity) && (absvalue > VELOCITYDEADZONEFORLED)) {
@@ -177,7 +178,7 @@ const AxisType_t Kinematics::getMainAxis(Axis *axis) {
     if (idMainAxis == AxisType_t::UNINITIALIZED) {
         axis = nullptr; // Set the axis to nullptr if no axis is found
     } else {
-        axis = &axes[idMainAxis]; // Set the axis to the main velocity axis
+        axis = axes[idMainAxis]; // Set the axis to the main velocity axis
         // REVIEW - Check if the pointer assignment is correct. It should be a reference to the axis, not a pointer.
     }
     return idMainAxis;

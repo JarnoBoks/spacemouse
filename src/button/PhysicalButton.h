@@ -11,17 +11,6 @@ private:
     bool lastButtonState = false;       // Last state of the button, necessary for debouncing
     unsigned long lastDebounceTime = 0; // Last time the button state was changed.
 public:
-    void pressed() override {
-        if (functionality)
-            functionality->onPress();
-    }
-    void released() override {
-        // Implement release logic
-        if (functionality) {
-            functionality->onRelease();
-        }
-    }
-
     void evaluate() override {
         // Implement logic to read the button status
         int8_t pinNumber = static_cast<PhysicalButtonConfig *>(config)->getPinNumber(); // Get the pin number from the configuration
@@ -41,10 +30,13 @@ public:
                 lastButtonState = buttonState;
             }
 
-            if (buttonState) {
-                pressed(); // Call press() if the button is pressed
-            } else {
-                released(); // Call release() if the button is released
+            if (functionality && config->isEnabled()) {
+                // Call the appropriate functionality based on the button state
+                if (buttonState) {
+                    functionality->onPress(); // Call press() if the button is pressed
+                } else {
+                    functionality->onRelease(); // Call release() if the button is released
+                }
             }
         }
     }

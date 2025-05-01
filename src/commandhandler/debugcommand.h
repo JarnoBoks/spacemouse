@@ -1,6 +1,4 @@
 #pragma once
-#ifndef DEBUGCOMMAND_H
-#define DEBUGCOMMAND_H
 
 #include "ICommand.h"
 #include "DebugParam/IDebugParam.h"
@@ -29,5 +27,3 @@ public:
     void setState(IDebugParam *state);
     IDebugParam *getState() const;
 };
-
-#endif // DEBUGCOMMAND_H

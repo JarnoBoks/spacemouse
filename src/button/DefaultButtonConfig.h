@@ -14,12 +14,16 @@ public:
             instance = new DefaultButtonConfig();
         return instance;
     }
-
+#if 0
     ButtonConfig *getDefaultConfig(ButtonType type) {
         // Return default config for type
-        if (type == ButtonType::PHYSICAL)
-            return new PhysicalButtonConfig();
-        else
-            return new RotaryButtonConfig();
+        if (type == ButtonType::PHYSICAL) {
+            ButtonConfig *config = new PhysicalButtonConfig();
+            return config;
+        } else {
+            ButtonConfig *config = new RotaryButtonConfig();
+            return config;
+        }
     }
+#endif
 };

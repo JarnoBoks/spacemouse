@@ -11,8 +11,6 @@ protected:
 
 public:
     virtual ~Button() = default;
-    virtual void pressed() = 0;
-    virtual void released() = 0;
     virtual void evaluate() = 0;
 
     inline void setFunctionality(IButtonFunctionality *func) { functionality = func; }

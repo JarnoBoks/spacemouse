@@ -12,7 +12,7 @@ class KinematicsConfig;
 class Kinematics {
 private:
     static Kinematics *instance;
-    Axis axes[AxisType_t::LENGTH]; // FIXME - Use a pointer to Axis instead of an array of Axis objects
+    Axis *axes[AxisType_t::LENGTH];
 
     KinematicsConfig *config = nullptr;
 
@@ -27,7 +27,7 @@ private:
     void _applyKillSwitch(const uint8_t start, const uint8_t end, const bool killSwitchActive) {
         // Set strategy for the rotation axes to kill switch
         for (uint8_t i = start; i <= end; i++) {
-            axes[i].setKillSwitchActive(killSwitchActive); // Set the kill switch state for the axis
+            axes[i]->setKillSwitchActive(killSwitchActive); // Set the kill switch state for the axis
         }
     };
 

@@ -27,7 +27,7 @@ public:
 
     void processKeys() {
         for (int i = 0; i < buttonCount; i++) {
-            buttons[i]->readStatus();
+            buttons[i]->evaluate();
         }
     }
 };

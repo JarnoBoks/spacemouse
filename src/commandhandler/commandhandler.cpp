@@ -47,7 +47,7 @@ void CommandHandler::handleInput(char input[], const uint8_t inputsize, const in
         wordPtr = strtok(NULL, " "); // Get the next token
     }
 
-    // TODO - Necessary to check for empty command?
+    // REVIEW - Necessary to check for empty command?
 
     // Loop through the commands array to find the command we want to process.
     // FIXME - MAX_COMMANDS is not the correct size. We need to check for the command count or nullpointer.

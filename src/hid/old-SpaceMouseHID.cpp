@@ -98,11 +98,13 @@ int SpaceMouseHID_::write(const uint8_t *buffer, size_t size) {
     return USB_Send(USBControllerTX, buffer, size);
 }
 
-/// @brief Send a HID Report
-/// @param id Report Id of the data to be sent
-/// @param data Pointer to the data array
-/// @param len  Length of the data
-/// @return Length of data sent (including 1 byte for report id)
+/**
+ * @brief Send a HID Report
+ * @param id Report Id of the data to be sent
+ * @param data Pointer to the data array
+ * @param len  Length of the data
+ * @return Length of data sent (including 1 byte for report id)
+ */
 int SpaceMouseHID_::SendReport(uint8_t id, const void *data, int len) {
     auto ret = USB_Send(USBControllerTX, &id, 1);
     if (ret < 0)
@@ -113,8 +115,10 @@ int SpaceMouseHID_::SendReport(uint8_t id, const void *data, int len) {
     return ret + ret2;
 }
 
-/// @brief Reads a single byte from the interface, if available
-/// @return Returns the byte or zero
+/**
+ * @brief Reads a single byte from the interface, if available
+ * @return Returns the byte or zero
+ */
 int SpaceMouseHID_::readSingleByte() {
     if (USB_Available(USBControllerRX)) {
         return USB_Recv(USBControllerRX);
@@ -123,8 +127,9 @@ int SpaceMouseHID_::readSingleByte() {
     }
 }
 
-/// @brief Try to read some reports and print them
-/// @return  Returns nothing
+/**
+ * @brief Try to read some reports and print them
+ */
 void SpaceMouseHID_::printAllReports() {
     uint8_t numBytes = USB_Available(USBControllerRX);
     if (numBytes >= 2) {
@@ -140,8 +145,11 @@ void SpaceMouseHID_::printAllReports() {
     }
 }
 
-/// @brief Check for LED hid reports (report Id: 4). This empties the RX buffer.
-/// @return  Returns the led status
+/**
+ * @brief Check for LED hid reports (report Id: 4). This empties the RX buffer.
+ * @return Returns the led status (false = off, true = on)
+ * @details This function is called in the main loop to check for LED reports from the host.
+ */
 bool SpaceMouseHID_::updateLEDState() {
     uint8_t numBytes = USB_Available(USBControllerRX);
     if (numBytes >= 2) {
@@ -162,8 +170,11 @@ bool SpaceMouseHID_::updateLEDState() {
     return ledState;
 }
 
-/// @brief Get the LED state, which shall be updated regularly by calling updateLEDstate()
-/// @return Boolean LED state
+/**
+ * @brief Get the LED state, which shall be updated regularly by calling updateLEDstate()
+ * @return Boolean LED state
+ * @details This function returns the current state of the LED, which is updated by the updateLEDState function.
+ */
 bool SpaceMouseHID_::getLEDState() {
     return ledState;
 }
@@ -178,6 +189,8 @@ bool SpaceMouseHID_::send_command(SpaceKeys *SMKeys, int debug) {
 bool SpaceMouseHID_::send_command(int16_t rx, int16_t ry, int16_t rz, int16_t x, int16_t y, int16_t z, uint8_t *keys, int debug) {
 #endif
 bool SpaceMouseHID_::send_command(int16_t rx, int16_t ry, int16_t rz, int16_t x, int16_t y, int16_t z, SpaceKeys *SMKeys, int debug) {
+    // Set the current time to now
+    // this is used to check if the 8ms since the last report have passed.
     unsigned long now = millis();
 
     bool hasSentNewData = false; // this value will be returned

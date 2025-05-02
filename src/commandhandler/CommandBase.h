@@ -3,7 +3,7 @@
 
 // #define CF(x) ((const __FlashStringHelper *)x)
 
-class ICommand {
+class CommandBase {
 private:
     const char *name; // Contains command 'name' as a PROGMEM char *
 protected:
@@ -12,9 +12,9 @@ protected:
     const bool convertWordFloat(const char *str, float *value) const;
 
 public:
-    ICommand() : name(nullptr) {}                    // Default constructor to initialize command name
-    ICommand(const char *cmdName) : name(cmdName) {} // Constructor to initialize command name
-    virtual ~ICommand() = default;
+    CommandBase() : name(nullptr) {}                    // Default constructor to initialize command name
+    CommandBase(const char *cmdName) : name(cmdName) {} // Constructor to initialize command name
+    virtual ~CommandBase() = default;
 
     inline const bool isCommand(const char *cmdName) const {
 
@@ -24,4 +24,5 @@ public:
     }
 
     virtual void execute(const char *param1, const char *param2, const uint8_t paramCount) = 0;
+    virtual void stop() {}; // Stop the command execution (if applicable)
 };

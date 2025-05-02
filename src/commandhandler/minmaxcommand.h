@@ -1,13 +1,12 @@
+// minmaxcommand.h
 #pragma once
-#ifndef MINMAXCOMMAND_H
-#define MINMAXCOMMAND_H
 
-#include "ICommand.h"
+#include "CommandBase.h"
 
 /// @brief command text for the MinMax calibration command
 static const char CMD_MINMAX[] PROGMEM = "MINMAX";
 
-class MinMaxCommand : public ICommand {
+class MinMaxCommand : public CommandBase {
 private:
 public:
     MinMaxCommand();
@@ -15,5 +14,3 @@ public:
 
     void execute(const char *param1, const char *param2, uint8_t paramCount) override;
 };
-
-#endif // MINMAXCOMMAND_H

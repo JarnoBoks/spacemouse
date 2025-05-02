@@ -1,7 +1,8 @@
+// invertcommand.h
 #pragma once
 
 #include "IAxisConfigCommand.h"
-/// @brief command text for the Sensitivity configuration command
+/// @brief command text for the Invert configuration command
 static const char CMD_INVERT[] PROGMEM = "INVERT";
 
 class InvertCommand : public IAxisConfigCommand {

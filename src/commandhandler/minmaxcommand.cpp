@@ -19,7 +19,7 @@
  * @brief Constructor for the MinMaxCommand class.
  * @details Initializes the command with the CMD_MINMAX command name.
  */
-MinMaxCommand::MinMaxCommand() : ICommand(CMD_MINMAX) {}
+MinMaxCommand::MinMaxCommand() : CommandBase(CMD_MINMAX) {}
 
 /**
  * @brief Destructor for the MinMaxCommand class.

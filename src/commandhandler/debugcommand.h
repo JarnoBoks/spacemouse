@@ -1,6 +1,7 @@
+// debugcommand.h
 #pragma once
 
-#include "ICommand.h"
+#include "CommandBase.h"
 #include "DebugParam/IDebugParam.h"
 
 // TODO - Add the STARTUPDEBUG definition to the default constructor
@@ -9,12 +10,11 @@
 static const char CMD_DEBUG[] PROGMEM = "DEBUG";
 
 /**
- * @brief Class DebugCommand
- * @details This class implements the ICommand interface and is responsible for handling debug commands received from the serial monitor.
- * The class allows the user to set and change the current debug state of the Spacemouse.
- * @note The constructor initializes the current state to nullptr.
+ * @brief  Class to handle the DEBUG command.
+ * @details This class implements the DEBUG command functionality.
+ * It includes methods for executing the command and managing debug parameters.
  */
-class DebugCommand : public ICommand {
+class DebugCommand : public CommandBase {
 private:
     IDebugParam *currentParam = nullptr; // Pointer to the current debug parameter state
 
@@ -23,6 +23,7 @@ public:
     ~DebugCommand();
 
     void execute(const char *param1, const char *param2, uint8_t paramCount) override;
+    void stop() override; // Stop the command execution
 
     void setState(IDebugParam *state);
     IDebugParam *getState() const;

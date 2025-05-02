@@ -17,7 +17,7 @@
  * This class is essential for managing the debugging process and ensuring that the correct state is applied during operation. *
  */
 
-DebugCommand::DebugCommand() : ICommand(CMD_DEBUG), currentParam(new DebugParamOff()) {}
+DebugCommand::DebugCommand() : CommandBase(CMD_DEBUG), currentParam(new DebugParamOff()) {}
 
 /**
  * @brief Destructor for the DebugCommand class.
@@ -43,6 +43,17 @@ void DebugCommand::setState(IDebugParam *state) {
  * @return Pointer to the current debug state.
  */
 IDebugParam *DebugCommand::getState() const { return currentParam; }
+
+/**
+ * @brief Stops the current debug command execution.
+ * @details Removes the current debug state to clean up resources and stop any ongoing processes.
+ */
+void DebugCommand::stop() {
+    if (currentParam) {
+        delete currentParam;    // Clean up the current debug state
+        currentParam = nullptr; // Set the pointer to nullptr to avoid dangling references
+    }
+}
 
 /**
  * @brief Executes the debug command based on the provided parameters.

@@ -83,6 +83,20 @@ void cstmDelay(unsigned long ms) {
 #include "hidhandler/usbinterface/SpaceMouseUSBInterface.h" // Include the HID interface header
 // #include <ArduinoShrink.h>
 void setup() {
+#ifndef cbi
+#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+#endif
+#ifndef sbi
+#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+#endif
+
+#if 0
+    // set prescale to 16
+    sbi(ADCSRA, ADPS2);
+    cbi(ADCSRA, ADPS1);
+    cbi(ADCSRA, ADPS0);
+#endif
+
     cstmDelay(100); // Wait for the serial interface to be ready
 
     // Begin Serial for debugging or calibration
@@ -110,16 +124,16 @@ void setup() {
     SensorCalibrationManager::getInstance()->activateIdleCalibration(500); // Start the idle calibration with 500 iterations
 
     //  Setup the Command Handler and register the commands that can be handled via the serial interface
-    myCommandHandler.registerCommand(0, new DebugCommand());
-    myCommandHandler.registerCommand(1, new IdleCommand());
-    myCommandHandler.registerCommand(2, new MinMaxCommand());
-    myCommandHandler.registerCommand(3, new SensCommand());
-    myCommandHandler.registerCommand(4, new GateCommand());
-    myCommandHandler.registerCommand(5, new ModFuncCommand());
-    myCommandHandler.registerCommand(6, new InvertCommand());
-    myCommandHandler.registerCommand(7, new ShowCommand());
-    myCommandHandler.registerCommand(8, new ExclusiveCommand());
-    myCommandHandler.registerCommand(9, new SwitchYZCommand());
+    myCommandHandler.registerCommand(new DebugCommand());
+    myCommandHandler.registerCommand(new IdleCommand());
+    myCommandHandler.registerCommand(new MinMaxCommand());
+    myCommandHandler.registerCommand(new SensCommand());
+    myCommandHandler.registerCommand(new GateCommand());
+    myCommandHandler.registerCommand(new ModFuncCommand());
+    myCommandHandler.registerCommand(new InvertCommand());
+    myCommandHandler.registerCommand(new ShowCommand());
+    myCommandHandler.registerCommand(new ExclusiveCommand());
+    myCommandHandler.registerCommand(new SwitchYZCommand());
 
     // When debugging with SimAVR thorugh PlatformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
     // Use this comamnd to initialize a debug state.

@@ -1,22 +1,21 @@
 #include "CommandHandler.h"
 
-#define MAX_INPUT_SIZE 64 // Maximum size of the input buffer
-
-/**
- * @brief CommandHandler constructor.
- * @details Initializes the command handler with a null pointer for the commands array.
- */
-CommandHandler::CommandHandler() : commands{nullptr} {}
+#define MAX_INPUT_SIZE 48 // Maximum size of the input buffer
 
 /**
  * @brief Registers a command in the command handler.
  * @details Stores the command pointer in the commands array at the specified index.
  * @param index The index to store the command in the commands array.
  * @param cmd The command pointer to be stored.
+ * @return True if the command was registered successfully, false otherwise.
  */
-void CommandHandler::registerCommand(int index, ICommand *cmd) {
-    if (index >= 0 && index < MAX_COMMANDS)
-        commands[index] = cmd;
+bool CommandHandler::registerCommand(CommandBase *cmd) {
+    if (commandCount >= MAX_COMMANDS) {
+        // TODO ESPPRINT- Serial.println(F("CommandHandler: Command array is full!"));  // Print error message if the array is full
+        return false; // Exit the function if the array is full
+    }
+    commands[commandCount++] = cmd; // Store the command pointer in the commands array and increment the command count
+    return true;
 }
 
 /**
@@ -53,7 +52,12 @@ void CommandHandler::handleInput(char input[], const uint8_t inputsize, const in
     // FIXME - MAX_COMMANDS is not the correct size. We need to check for the command count or nullpointer.
     for (int i = 0; i < MAX_COMMANDS; ++i) {
 
-        if (commands[i] && commands[i]->isCommand(words[0])) {      // Check if the command name matches) {
+        if (commands[i] && commands[i]->isCommand(words[0])) { // Check if the command name matches
+            if (i != lastCommandIndex) {
+                // If the command is different from the last one, stop the last executed command
+                commands[lastCommandIndex]->stop();
+            }
+            lastCommandIndex = i;                                   // Update the last command index
             commands[i]->execute(words[1], words[2], --paramCount); // Execute the command with the parameters
             return;
         }
@@ -61,7 +65,7 @@ void CommandHandler::handleInput(char input[], const uint8_t inputsize, const in
 }
 
 /**
- * @brief Parses the input received from the serial monitor.
+ * @brief   Parses the input received from the serial monitor in to a buffer and calls the handleInput function to process the input.
  * @details Reads the input from the serial monitor and stores it in a buffer.
  *          The input is terminated by a newline character or when the buffer is full.
  */

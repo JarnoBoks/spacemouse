@@ -1,4 +1,4 @@
-#include "ICommand.h"
+#include "CommandBase.h"
 #include <Arduino.h>
 
 #define CF(x) ((const __FlashStringHelper *)x)
@@ -10,7 +10,7 @@ static const char Error_ParameterNoNumber[] PROGMEM = "integer";
 static const char Error_ParameterNoFloat[] PROGMEM = "float";
 static const char Error_EmptyValue[] PROGMEM = "value";
 
-const bool ICommand::isWordEmpty(const char *str, const char *errorMsg) const {
+const bool CommandBase::isWordEmpty(const char *str, const char *errorMsg) const {
     // Check if the string is empty or null
     if (!str || *str == '\0') {
 #ifndef ARDUINO_ARCH_AVR
@@ -25,7 +25,7 @@ const bool ICommand::isWordEmpty(const char *str, const char *errorMsg) const {
 
 // NOTE - The number conversion functions are both written with the usage of the strtod function, for code size purposes.
 //        strtod is already used by somewhere else and to preserve space in the compiled code we do not use strtol or atof.
-const bool ICommand::convertWordNumber(const char *str, long *n) const {
+const bool CommandBase::convertWordNumber(const char *str, long *n) const {
     // Check if the string is a number (integer or float)
     char *endptr = nullptr;
     *n = (long)strtod(str, &endptr); // Convert to long integer
@@ -42,7 +42,7 @@ const bool ICommand::convertWordNumber(const char *str, long *n) const {
     return true; // Valid number
 }
 
-const bool ICommand::convertWordFloat(const char *str, float *value) const {
+const bool CommandBase::convertWordFloat(const char *str, float *value) const {
 
     // Check if the string is a number (integer or float)
     char *endptr = nullptr;

@@ -168,23 +168,6 @@ void loop() {
     calcEncoderAsKey(Keys, Mouse_Calibration.GetDebug());
 #endif
 
-    // If the kill-key feature is enabled, rotations or translations are killed (ie. set to zero)
-#if (NUMKILLKEYS == 2)
-    if (keyVals[KILLROT] == LOW) {
-        // check for the raw keyVal and not keyOut, because keyOut is only 1 for a single iteration. keyVals has inverse Logic due to pull-ups
-        // kill rotation
-        velocity[ROTX] = 0;
-        velocity[ROTY] = 0;
-        velocity[ROTZ] = 0;
-    }
-    if (keyVals[KILLTRANS] == LOW) {
-        // kill translation
-        velocity[TRANSX] = 0;
-        velocity[TRANSY] = 0;
-        velocity[TRANSZ] = 0;
-    }
-#endif
-
 #ifdef ARDUINO_ARCH_AVR
     // FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
     mySpaceMouseHID.execute();

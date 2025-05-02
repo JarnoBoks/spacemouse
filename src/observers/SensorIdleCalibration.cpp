@@ -5,7 +5,7 @@
 #include "visitors/IdlePositonPrinter.h" // For IdlePositionPrinter class
 
 #define DEADZONEWARNING 10 // Define a threshold for dead zone warning
-// NOTE - At the moment the dead zone warning threshold is non hardware type specific. This should be changed in the future.
+// NOTE - At the moment the dead zone warning threshold is non hardware type specific. This could be changed in the future.
 
 // TODO - move texts to text.h
 
@@ -61,7 +61,7 @@ void SensorIdleCalibration::finish(Hardware *hardware) {
     Serial.print(processedIterations); // Print the number of processed iterations
     Serial.println(F(" iterations."));
 
-    // Notify the creator of this observer to let it be destroyed
+    // Notify the creator of this observer so it can be deleted.
     CalibrationManager->deactivateIdleCalibration(warningsOccurred); // Finish the calibration process
 
 } // Finish calibration process

@@ -27,15 +27,15 @@ protected:
         }
     };
 
-    void updateSensorValues();
+
 
     virtual Hardware *GetHardwareInstance() = 0;
 
 public:
     static Hardware *getInstance();
 
+    // NOTE - Destructor will never be executed, while the static instance is never deleted.
     ~Hardware() {
-        // REVIEW - Destructor will never be called, as the static instance is never deleted.
         for (int i = 0; i < MAX_SENSORS; i++) {
             if (sensors[i] != nullptr) {
                 delete sensors[i];
@@ -44,6 +44,7 @@ public:
         }
     }
 
+    void updateSensorValues();
     virtual int16_t calculateRawValue(AxisType_t axistype) = 0;
 
     virtual void setAnalogReference(const bool isDebug = false);

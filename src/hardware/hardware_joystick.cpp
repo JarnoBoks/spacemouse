@@ -48,7 +48,6 @@ int16_t Hardware_Joystick::calculateRawValue(AxisType_t axistype) {
         break;
     }
 
-    notifyObservers();
     return 0; // Default return value if no valid axis type is found
 }
 #undef VAL

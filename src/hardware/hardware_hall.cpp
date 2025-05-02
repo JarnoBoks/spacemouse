@@ -35,9 +35,8 @@ void Hardware_HALL::setAnalogReference(const bool isDebug) {
 #define VAL(X) sensors[X]->getFilteredValue()
 
 int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
-    updateSensorValues();
-
     int16_t retval = 0; // Initialize the value to 0
+
     switch (axistype) {
     case TRANSX:
         // calculate sensors transX
@@ -67,7 +66,7 @@ int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
         break;
     }
 
-    notifyObservers();
+    // notifyObservers();
     return retval; // Default return value if no valid axis type is found
 }
 #undef VAL

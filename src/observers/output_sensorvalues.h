@@ -3,6 +3,7 @@
 
 #include "IObserver.h"
 #include "hardware/hardware.h"
+#include "TextHelper.h"
 
 enum SensorOutputValType_t {
     SO_RAW = 0,
@@ -64,15 +65,22 @@ public:
 };
 
 /**
- * @brief Output class for centered sensor values.
+ * @brief Output class for centered sensor values, without a newline (but with a separator).
  * @details This class inherits from Output_SensorValues and overrides the getSensorValue method to return the centered value of the sensor.
  * It also overrides the update method to print the sensor values to the serial monitor.
+ * @details This class is used to print the sensor values without a newline at the end, but with a separator. Used in conjunction with the axis values.
  */
 class Output_SensorValuesCenteredWithoutNewline : public Output_SensorValues {
 private:
 protected:
     inline const int getSensorValue(const Sensor *sensor) const override {
         return sensor->getCenteredValue(); // Get the centered value from the sensor
+    }
+
+public:
+    inline void update(Hardware *hardware) override {
+        Output_SensorValues::update(hardware); // Call the base class update method
+        TextHelper::printSeparator();          // Print a separator after the sensors values
     }
 };
 

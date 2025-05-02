@@ -18,11 +18,9 @@
  *          This ensures that the observer is properly cleaned up and does not cause memory leaks.
  */
 DebugParamLoopFrequency::~DebugParamLoopFrequency() {
-    if (AxisObserver != nullptr) {
-        Kinematics::getInstance()->detachObserver(AxisObserver); // Detach the observer from the hardware
-        delete AxisObserver;                                     // Clean up the observer instance
-        AxisObserver = nullptr;
-    }
+    Kinematics::getInstance()->detachObserver(AxisObserver); // Detach the observer from the kinematics object
+    delete AxisObserver;                                     // Clean up the observer instance
+    AxisObserver = nullptr;
 }
 
 void DebugParamLoopFrequency::apply() {

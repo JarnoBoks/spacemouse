@@ -19,11 +19,8 @@
  *          This ensures that the observer is properly cleaned up and does not cause memory leaks.
  */
 DebugParamAxisInformation::~DebugParamAxisInformation() {
-    if (AxisObserver != nullptr) {
-        Kinematics::getInstance()->detachObserver(AxisObserver); // Detach the observer from the hardware
-        delete AxisObserver;                                     // Clean up the observer instance
-        AxisObserver = nullptr;
-    }
+    Kinematics::getInstance()->detachObserver(AxisObserver); // Detach the observer from the hardware
+    delete AxisObserver;                                     // Clean up the observer instance
 }
 
 void DebugParamAxisInformation::apply() {

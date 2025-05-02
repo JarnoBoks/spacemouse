@@ -81,8 +81,17 @@ void Hardware::detachObserver(IObserver *observer) {
     }
 };
 
+/**
+ * @brief   Notify all attached observers of a state change.
+ * @details This function iterates through the observers array and calls the update method of each observer.
+ *          This allows all observers to be informed of changes in the hardware state.
+ * @note    This function should be called whenever there is a change in the hardware state that observers need to be aware of.
+ *          It is typically called after updating sensor values or other significant changes in the hardware.
+ *          For now it is called in the calculateRawValue function, but it can be called in other places as well.
+ * @warning Ensure that observers are properly attached before calling this function to avoid null pointer dereferences.
+ */
 void Hardware::notifyObservers() {
     for (int i = 0; i < observerCount; i++) {
-        observers[i]->update(this); // Notify each observer
+        observers[i]->update(this); // Notify each observer, with the hardware instance as parameter
     }
-};
+}

@@ -23,7 +23,9 @@ DebugCommand::DebugCommand() : CommandBase(CMD_DEBUG), currentParam(new DebugPar
  * @brief Destructor for the DebugCommand class.
  * @details Cleans up the current debug state by deleting it.
  */
-DebugCommand::~DebugCommand() { delete currentParam; }
+DebugCommand::~DebugCommand() {
+    delete currentParam;
+}
 
 /**
  * @brief Sets the current debug state.
@@ -31,8 +33,7 @@ DebugCommand::~DebugCommand() { delete currentParam; }
  * @details Deletes the previous state and applies the new state.
  */
 void DebugCommand::setState(IDebugParam *state) {
-    if (currentParam)
-        delete currentParam;
+    delete currentParam;
 
     currentParam = state;
     currentParam->apply();
@@ -49,10 +50,7 @@ IDebugParam *DebugCommand::getState() const { return currentParam; }
  * @details Removes the current debug state to clean up resources and stop any ongoing processes.
  */
 void DebugCommand::stop() {
-    if (currentParam) {
-        delete currentParam;    // Clean up the current debug state
-        currentParam = nullptr; // Set the pointer to nullptr to avoid dangling references
-    }
+    delete currentParam; // Clean up the current debug state
 }
 
 /**

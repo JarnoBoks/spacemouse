@@ -71,12 +71,14 @@ Axis *Kinematics::getAxis(const char *name) {
  * @details This function calculates the values for each axis based on the hardware input and configuration.
  */
 void Kinematics::processKinematics() {
+    Hardware *hardware = Hardware::getInstance();
+    hardware->updateSensorValues(); // Update the sensor values from the hardware
     for (int i = 0; i < AxisType_t::LENGTH; i++) {
-        int16_t raw = Hardware::getInstance()->calculateRawValue(static_cast<AxisType_t>(i)); // Get the raw value from the hardware
-        axes[i]->calculateValue(raw);                                                         // Calculate the value for each axis
+        int16_t raw = hardware->calculateRawValue(static_cast<AxisType_t>(i)); // Get the raw value from the hardware
+        axes[i]->calculateValue(raw);                                          // Calculate the value for each axis
     }
-
-    notifyObservers(); // Notify observers of changes in the kinematics
+    hardware->notifyObservers(); // Notify observers of changes in the hardware
+    notifyObservers();           // Notify observers of changes in the kinematics
 }
 
 // REVIEW - This should be a decorator function for the axis class, but we need to check if we can use the same function for both classes.

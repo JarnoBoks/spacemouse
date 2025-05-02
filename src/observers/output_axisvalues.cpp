@@ -2,8 +2,6 @@
 #include "kinematics/kinematics.h"
 #include "TextHelper.h"
 
-// REVIEW - Move to Visitor?
-
 void Output_AxisValues::update(Kinematics *kinematics) {
     if (!isDebugOutputDue() || kinematics == nullptr) {
         return; // If the debug output is not due, do nothing

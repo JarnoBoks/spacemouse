@@ -22,7 +22,7 @@ bool CommandHandler::registerCommand(CommandBase *cmd) {
  * @brief Handles the input received from the serial monitor.
  * @details Parses the input string and executes the corresponding command.
  * @param input The input string received from the serial monitor.
- * @param size The size of the input string.
+ * @param inputsize The size of the input string.
  * @param bytesRead The number of bytes read from the input.
  */
 void CommandHandler::handleInput(char input[], const uint8_t inputsize, const int8_t bytesRead) {
@@ -33,14 +33,14 @@ void CommandHandler::handleInput(char input[], const uint8_t inputsize, const in
     // Retrieve the command name and parameters from the input
     // Assuming input is a text like "command param1 param2"
 
-    char *wordPtr = NULL;   // Pointer to the current word buffer
-    char *words[3] = {};    // Array of word pointers
-    uint8_t paramCount = 0; // Initialize paramCount
+    char *wordPtr = NULL;  // Pointer to the current word buffer
+    char *words[3] = {};   // Array of word pointers
+    uint8_t wordCount = 0; // The number of words/items that are in the input string.
 
-    wordPtr = strtok(input, " ");                                // Tokenize the input string by spaces
+    wordPtr = strtok(input, " ");                                // Tokenize the input string by using spaces as the delimiter.
     while (wordPtr != NULL && wordPtr - input < inputsize - 1) { // cast to char to prevent signed/unsigned comparison. Will fit easily due to the buffer size of 64.
-        words[paramCount++] = wordPtr;                           // Store the token in the words array and increment paramCount
-        if (paramCount >= 3) {
+        words[wordCount++] = wordPtr;                            // Store the token in the words array and increment wordCount
+        if (wordCount >= 3) {
             break; // Stop if we have processed three words
         }
         wordPtr = strtok(NULL, " "); // Get the next token
@@ -48,17 +48,16 @@ void CommandHandler::handleInput(char input[], const uint8_t inputsize, const in
 
     // REVIEW - Necessary to check for empty command?
 
-    // Loop through the commands array to find the command we want to process.
-    // FIXME - MAX_COMMANDS is not the correct size. We need to check for the command count or nullpointer.
-    for (int i = 0; i < MAX_COMMANDS; ++i) {
+    // Loop through the commands array to find the command to process.
+    for (uint8_t i = 0; i < commandCount; ++i) {
 
         if (commands[i] && commands[i]->isCommand(words[0])) { // Check if the command name matches
-            if (i != lastCommandIndex) {
-                // If the command is different from the last one, stop the last executed command
+            if (i != lastCommandIndex && lastCommandIndex >= 0) {
+                // If the command is different from the last one, stop the execution of the last executed command
                 commands[lastCommandIndex]->stop();
             }
-            lastCommandIndex = i;                                   // Update the last command index
-            commands[i]->execute(words[1], words[2], --paramCount); // Execute the command with the parameters
+            lastCommandIndex = i;                                  // Update the last command index
+            commands[i]->execute(words[1], words[2], --wordCount); // Execute the command with the retrieved parameters (wordCount decremented, while the first word is the command name)
             return;
         }
     }

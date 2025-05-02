@@ -53,12 +53,17 @@ void lightSimpleLED(boolean light);
 LedRing *Mouse_LEDRing;
 #endif
 
-// FIXME - Remove the #If brackets. The pointer to SMKEYS has to be set in the constructor of the calibration class, otherwise several debug functions will explode if NUMKEYS=0
+#if 0
 #if NUMKEYS > 0
 SpaceKeys *Keys;
 #else
 SpaceKeys *Keys = nullptr;
 #endif
+#endif
+
+// Include the header file for the button factory
+#include "button/ButtonFactory.h"
+ButtonFactory myButtonFactory;
 
 // Include the header files for the command handler and the commands that can be received through the serial interface
 #include "commandhandler/commandhandler.h"
@@ -77,9 +82,18 @@ CommandHandler myCommandHandler; // Command handler object to handle the command
 // Include the header file for the sensor calibration manager
 #include "calibration/sensorcalibrationmanager.h"
 
+void cstmDelay(unsigned long ms) {
+    // This function is used to delay the program for a certain amount of time.
+    // It is used to wait for the serial interface to be ready.
+    // We could use delay(ms), but this costs another 100bytes in the program size.
+    unsigned long now = millis(); // Get the current time
+    while (millis() - now < ms) {
+        // Wait for the specified amount of time
+    }
+}
+
 // #include <ArduinoShrink.h>
 void setup() {
-    millis(); // Wait for the serial interface to be ready
 #if NUMKEYS > 0
     // Instantiate the keys object and setup the keys to internal pull-ups
     Keys = new SpaceKeys();
@@ -87,10 +101,11 @@ void setup() {
     // Notify the calibration object about the keys object (necessary for debug output)
     Mouse_Calibration.SetKeysObject(*Keys);
 #endif
+    cstmDelay(100); // Wait for the serial interface to be ready
 
     // Begin Serial for debugging or calibration
     Serial.begin(250000);
-    delay(100);
+    cstmDelay(100);       // Wait for the serial interface to be ready
     Serial.setTimeout(2); // The serial interface will look for new commands and it will only wait 2ms
 
     // Setup the Hardware object. This will setup the hardware and sensors of the mouse. The hardware type is defined in config.h
@@ -100,6 +115,9 @@ void setup() {
     // The setup will check the EEPROM for the configuration of the sensors and the axes.
     // If the configuration is not available, the default values as set in config.h will be used (and stored in the EEPROM)
     Kinematics::getInstance();
+
+    // Call the setup function of the button factory. This will setup the buttons and the button configuration.
+    myButtonFactory.setupButtons();
 
     // Start the idle calibration of the sensors. This will zero the sensors during the loop.
     // TODO - During setup we aren't interested in the output of the calibration process.
@@ -139,9 +157,8 @@ void setup() {
 }
 
 void loop() {
-    // check if the user entered a debug mode via serial interface
+    // Check if the user entered a command through the Serial monitor
     if (Serial.available()) {
-        // Read the input command from the serial interface and send it to the Command Handler
         myCommandHandler.parseSerialMonitorInput();
     }
 
@@ -162,6 +179,7 @@ void loop() {
     // The keys are debounced and the status will be reported to the HID interface
     Keys->evalKeys();
 #endif
+    myButtonFactory.evaluate(); // Process the buttons and send the button status to the HID interface
 
 #if ROTARY_KEYS > 0
     // The encoder wheel shall be treated as a key.

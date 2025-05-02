@@ -564,7 +564,7 @@ EXAMPLES
 #error "Index of killkeys must be smaller than the total number of keys"
 #endif
 
-// Time in ms which is needed to allow a new button press
+// Time in ms which is needed to allow a new (physical) button press
 #define DEBOUNCE_KEYS_MS 200
 
 /* Encoder Wheel configuration

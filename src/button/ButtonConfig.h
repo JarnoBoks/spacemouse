@@ -56,8 +56,8 @@ public:
             //*this = DefaultButtonConfig::getInstance()->getDefaultConfig(static_cast<ButtonType>(id));
         }
     }
-    inline void setPinNumber(int8_t pin) { pinNumber = pin; }
-    inline int8_t getPinNumber() const { return pinNumber; }
+    inline void setPin(int8_t pin) { pinNumber = pin; }
+    inline int8_t getPin() const { return pinNumber; }
 };
 
 /**

@@ -1,5 +1,16 @@
 #include "hardware.h"
 
+// Only log to serial if not using Arduino AVR architecture
+#ifndef ARDUINO_ARCH_AVR
+#ifndef ESP_PRINT(x)
+#define ESP_PRINT(x) Serial.println(x)
+#define ESP_DBG(x) Serial.println(x)
+#endif
+#else
+#define ESP_PRINT(x)
+#define ESP_DBG(x)
+#endif
+
 // -- Static part of the class (= application specific)
 // In this part the hardware class is defined and the static instance is created
 
@@ -49,7 +60,7 @@ Sensor *Hardware::getSensorByName(const char *name) const {
  */
 void Hardware::attachObserver(IObserver *observer) {
     if (observerCount < MAX_HARDWARE_OBSERVERS) {
-        Serial.println(F("Hardware::attachObserver: "));
+        ESP_DBG(F("Hardware::attachObserver: "));
         // insert the observer into the array, at position observerCount and increase the count after inserting.
         observers[observerCount++] = observer;
     } else {
@@ -58,7 +69,7 @@ void Hardware::attachObserver(IObserver *observer) {
 };
 
 void Hardware::detachObserver(IObserver *observer) {
-    Serial.println(F("Hardware::detachObserver: "));
+    ESP_DBG(F("Hardware::detachObserver: "));
     // remove the observer from the array by replacing it with the last observer in the array and decrease the count.
     for (int i = 0; i < observerCount; i++) {
         if (observers[i] == observer) {

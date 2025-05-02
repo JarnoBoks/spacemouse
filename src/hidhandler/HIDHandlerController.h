@@ -23,10 +23,8 @@ public:
     }
 
     ~HIDHandlerController() {
-        if (currentState) {
-            delete currentState; // Clean up the current state
-            // FIXME - delete the state data object
-        }
+        delete currentState; // Clean up the current state
+                             // FIXME - delete the state data object
     };
 
     void execute() {
@@ -36,9 +34,7 @@ public:
     };
 
     void setState(HIDStateBase *state) {
-        if (currentState) {
-            delete currentState; // Clean up the previous state
-        }
+        delete currentState; // Clean up the previous state
         currentState = state;
         currentState->set_context(this);
     }

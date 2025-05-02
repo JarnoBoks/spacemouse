@@ -24,6 +24,7 @@ void HIDStateSendtranslation::apply() {
                                       // the toggleValue is toggled after sending the rotations, down below
 #endif
 
+    Serial.print("Send translation: ");
     // Send new translational values
     translator->execute();
 

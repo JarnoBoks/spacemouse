@@ -10,7 +10,8 @@ public:
 
     inline virtual void execute() override {
 
-        TranslatorKinematicsBase::execute();
+        TranslatorKinematicsBase::execute(); // Call the base class execute method to fill the message array
+
         // Send new translational values
         SpaceMouseUSBInterface_ *usbInterface = SpaceMouseUSBInterface_::getInstance(); // Get the USB interface instance
         usbInterface->SendReport(REPORTID_TRANS, message, sizeof(message));             // send new translational values

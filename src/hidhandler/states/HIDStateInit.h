@@ -16,9 +16,11 @@ public:
     virtual ~SpaceMouseHIDStateInit() = default; // Destructor to clean up the observer instance
 
     void apply() override {
-        data->now = millis();             // Get the current time in milliseconds
-        data->lastHIDsentRep = data->now; // Set the last HID report time to now
-        data->hasSentNewData = false;     // this value will be returned
+        Serial.println("HIDStateInit::apply()"); // Debug output to indicate the state is being applied
+        unsigned long now = millis();            // Get the current time in milliseconds
+        data->now = now;                         // Get the current time in milliseconds
+        data->lastHIDsentRep = now;              // Set the last HID report time to now
+        data->hasSentNewData = false;            // this value will be returned
 #ifdef ADV_HID_JIGGLE
         data->toggleValue = false; // reset the toggle value
 #endif

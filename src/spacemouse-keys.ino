@@ -36,9 +36,6 @@ SpaceMouseHID mySpaceMouseHID;
 // Header to calculate the kinematics of the mouse
 #include "kinematics/kinematics.h"
 
-// header file for reading the keys
-#include "spaceKeys.h"
-
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
 // if an encoder wheel is used
 #include "encoderWheel.h"
@@ -53,17 +50,8 @@ void lightSimpleLED(boolean light);
 LedRing *Mouse_LEDRing;
 #endif
 
-#if 0
-#if NUMKEYS > 0
-SpaceKeys *Keys;
-#else
-SpaceKeys *Keys = nullptr;
-#endif
-#endif
-
 // Include the header file for the button factory
 #include "button/ButtonFactory.h"
-ButtonFactory myButtonFactory;
 
 // Include the header files for the command handler and the commands that can be received through the serial interface
 #include "commandhandler/commandhandler.h"
@@ -92,15 +80,9 @@ void cstmDelay(unsigned long ms) {
     }
 }
 
+#include "hidhandler/usbinterface/SpaceMouseUSBInterface.h" // Include the HID interface header
 // #include <ArduinoShrink.h>
 void setup() {
-#if NUMKEYS > 0
-    // Instantiate the keys object and setup the keys to internal pull-ups
-    Keys = new SpaceKeys();
-
-    // Notify the calibration object about the keys object (necessary for debug output)
-    Mouse_Calibration.SetKeysObject(*Keys);
-#endif
     cstmDelay(100); // Wait for the serial interface to be ready
 
     // Begin Serial for debugging or calibration
@@ -116,15 +98,18 @@ void setup() {
     // If the configuration is not available, the default values as set in config.h will be used (and stored in the EEPROM)
     Kinematics::getInstance();
 
+    // FIXME - For now a manual start. Should be done automatically.
+    SpaceMouseUSBInterface_::getInstance();
+
     // Call the setup function of the button factory. This will setup the buttons and the button configuration.
-    myButtonFactory.setupButtons();
+    ButtonFactory::getInstance()->setupButtons();
 
     // Start the idle calibration of the sensors. This will zero the sensors during the loop.
     // TODO - During setup we aren't interested in the output of the calibration process.
     // TODO - We do not want to send output to the HID while the calibration isn't finished.
     SensorCalibrationManager::getInstance()->activateIdleCalibration(500); // Start the idle calibration with 500 iterations
 
-    // Setup the Command Handler and register the commands that can be handled via the serial interface
+    //  Setup the Command Handler and register the commands that can be handled via the serial interface
     myCommandHandler.registerCommand(0, new DebugCommand());
     myCommandHandler.registerCommand(1, new IdleCommand());
     myCommandHandler.registerCommand(2, new MinMaxCommand());
@@ -164,22 +149,12 @@ void loop() {
 
     Kinematics::getInstance()->processKinematics(); // Process the kinematics of the mouse
 
-// TESTING
-#if NUMKEYS > 0
-    // LivingTheDream added reading of key presses
-    Keys->ReadAllFromKeys();
-#endif
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
     // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities
     calcEncoderWheel(Mouse_Kinematics, Mouse_Calibration.GetDebug());
 #endif
 
-#if NUMKEYS > 0
-    // Check if the keys are pressed and report the status of the keys
-    // The keys are debounced and the status will be reported to the HID interface
-    Keys->evalKeys();
-#endif
-    myButtonFactory.evaluate(); // Process the buttons and send the button status to the HID interface
+    ButtonFactory::getInstance()->evaluate(); // Process the buttons and send the button status to the HID interface
 
 #if ROTARY_KEYS > 0
     // The encoder wheel shall be treated as a key.

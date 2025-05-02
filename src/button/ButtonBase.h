@@ -24,17 +24,20 @@ public:
 
     inline IButtonFunctionality *getFunctionality() const { return functionality; }
     inline void setFunctionality(IButtonFunctionality *func, CommandType cmd) {
-        if (functionality != nullptr)
-            delete functionality; // Delete the previous functionality instance to free memory
-
+        delete functionality; // Delete any previous functionality instance to free memory
         functionality = func;
         commandType = cmd;
     }
 
+    inline CommandType getCommandType() const { return commandType; }
+    inline void setCommandType(CommandType cmd) { commandType = cmd; }
+
+    inline bool getState() const { return buttonState; }
+    inline void setState(bool state) { buttonState = state; }
+
     inline virtual ButtonConfig *getConfig() const { return config; }
     inline virtual void setConfig(ButtonConfig *cfg) {
-        if (config != nullptr)
-            delete config; // Delete the previous configuration instance to free memory
+        delete config; // Delete any previous configuration instance to free memory
         config = cfg;
     }
 

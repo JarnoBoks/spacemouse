@@ -15,6 +15,7 @@ HIDStateStart::~HIDStateStart() {
 };
 
 void HIDStateStart::apply() {
+    Serial.print("Current state: HIDStateStart");
     // Check if there is something to send. If there are zero data packages to send (have to send 3 in total) or if any of the axes has movement,
     // proceed to the next state. This function is evaluated every time the state is called.
     if (data->countTransZeros < 3 || data->countRotZeros < 3 || static_cast<TranslatorKinematicsBase *>(translator)->areAllAxisZero()) {

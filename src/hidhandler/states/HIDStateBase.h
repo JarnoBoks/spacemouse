@@ -5,6 +5,7 @@
 #include "config.h"                               // for ADV_HID_JIGGLE
 #include <hidhandler/HIDHandlerConfig.h>          // for HIDUPDATERATE_MS
 #include <hidhandler/translator/TranslatorBase.h> // for TranslatorBase
+#include <Arduino.h>                              // for millis()
 
 class HIDHandlerController; // Forward declaration of HIDHandlerController
 
@@ -26,7 +27,7 @@ protected:
     inline bool isNewHidReportDue() {
         // calculate the difference between now and the last time it was sent
         // such a difference calculation is safe with regard to integer overflow after 48 days
-        return (data->now - data->lastHIDsentRep >= HIDUPDATERATE_MS);
+        return ((millis() - data->lastHIDsentRep) >= HIDUPDATERATE_MS);
     }
 
 public:

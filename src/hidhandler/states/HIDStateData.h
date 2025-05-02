@@ -9,6 +9,12 @@
  */
 class HIDStateData {
 public:
+    HIDStateData() : lastHIDsentRep(0), now(0), hasSentNewData(false), countTransZeros(0), countRotZeros(0) {
+        // Constructor to initialize the state data
+        for (int i = 0; i < KEYDATASIZE; i++) {
+            prevKeyData[i] = 0; // Initialize the previous key data to zero
+        }
+    }
     // State variables - these are used to manage the state(or state transitions) of the HID report sending
     unsigned long lastHIDsentRep = 0; // Last time the HID report was sent
     unsigned long now = 0;            // The time the state sequence started in milliseconds

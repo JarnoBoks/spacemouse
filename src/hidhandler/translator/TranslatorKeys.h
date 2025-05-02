@@ -1,17 +1,69 @@
 #pragma once
 #include "TranslatorBase.h"
+#include "button/ButtonFactory.h"
+#include <hidhandler/usbinterface/SpaceMouseUSBInterface.h> // for SpaceMouseUSBInterface
+#include <hidhandler/HIDHandlerConfig.h>
+#include <stdint.h>
 
 /**
- * @brief Base class to translate the kinematics data to the spacemouse HID interface formats
+ * @brief Base class to translate the key data to the spacemouse HID interface formats
  */
 class TranslatorKeys : public TranslatorBase {
-    // The class is used to translate the kinematics & key data to the spacemouse HID interface formats.
-    // It is a base class and should be inherited by other classes that implement the execute() method.
 private:
+    uint8_t *prevKeyData = nullptr; // Pointer to the previous data (not used in this class)
 protected:
 public:
-    TranslatorKeys() = default;
+    TranslatorKeys(uint8_t *prevKeyData = nullptr) : prevKeyData(prevKeyData) {
+        // Init or empty the keyData array
+        for (int i = 0; i < KEYDATASIZE; i++) {
+            keyData[i] = 0;
+        }
+
+        uint8_t cmds[NUMHIDKEYS];
+        int8_t count = ButtonFactory::getInstance()->getButtonCommandsForHID(cmds); // Get the button commands for HID
+
+        for (int8_t i = 0; i < count; i++) {
+            keyData[(cmds[i] / 8)] = (1 << (cmds[i] % 8));
+        }
+    }
+
     virtual ~TranslatorKeys() = default;
 
-    virtual void execute() = 0; // Pure virtual function to be implemented by derived classes
+    uint8_t keyData[KEYDATASIZE] = {0}; // Array to hold the key state
+
+    virtual void prepareMessage() {
+        // Init or empty the keyData array
+        for (int i = 0; i < KEYDATASIZE; i++) {
+            keyData[i] = 0;
+        }
+
+        uint8_t cmds[NUMHIDKEYS];
+        int8_t count = ButtonFactory::getInstance()->getButtonCommandsForHID(cmds); // Get the button commands for HID
+
+        for (int8_t i = 0; i < count; i++) {
+            keyData[(cmds[i] / 8)] = (1 << (cmds[i] % 8));
+#if 0
+        if (debug == 9) {
+            // debug the key board outputs
+            Serial.print(F("bitnumber: "));
+            Serial.print(bitNumber[i]);
+            Serial.print(F(" -> keyData["));
+            Serial.print((bitNumber[i] / 8));
+            Serial.print(F("] = 0x"));
+            Serial.println(keyData[(bitNumber[i] / 8)], HEX);
+        }
+#endif
+        }
+    }
+
+    virtual void execute() {
+        SpaceMouseUSBInterface_ *usbInterface = SpaceMouseUSBInterface_::getInstance(); // Get the USB interface instance
+        usbInterface->SendReport(3, keyData, KEYDATASIZE);
+        memcpy(prevKeyData, keyData, KEYDATASIZE); // Copy the current key data to the previous key data
+    }
+
+    virtual bool isAnythingChanged() {
+        // Check if there is something to send. If nothing is to be sent, go to the start state
+        return (memcmp(keyData, prevKeyData, KEYDATASIZE) != 0);
+    }
 };

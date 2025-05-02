@@ -17,6 +17,7 @@ HIDStateSendrotation::~HIDStateSendrotation() {
 }
 
 void HIDStateSendrotation::apply() {
+    Serial.print("Send rotation: ");
     if (!isNewHidReportDue()) {
         return;
     }
@@ -29,18 +30,7 @@ void HIDStateSendrotation::apply() {
     data->lastHIDsentRep += HIDUPDATERATE_MS;
     data->hasSentNewData = true;
 
-// check if the next state should be keys
-#if (NUMKEYS > 0)
-    if (memcmp(keyData, prevKeyData, HIDMAXBUTTONS / 8) != 0)
-    // compare key data to previous key data
-    {
-        context->setState(new SpaceMouseHIDStateSendkeys(data)); // Set the next state to start
-    } else {
-        // go back to start
-        context->setState(new SpaceMouseHIDStateStart(data)); // Set the next state to start
-    }
-#else
-    // if no keys are used, go to start state after rotations
-    context->setState(new HIDStateStart(data)); // Set the next state to start
-#endif
+    // NOTE: In the original software, there was a check for the key data to see if it was different from the previous key data.
+    //       This is not necessary in the new implementation, as the key data is handled separately in the HIDStateSendkeys class.
+    context->setState(new HIDStateSendkeys(data)); // Set the next state to start
 }

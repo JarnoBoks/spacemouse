@@ -15,9 +15,15 @@ Hardware_HALL::Hardware_HALL() {
 }
 
 void Hardware_HALL::setAnalogReference(const bool isDebug) {
+    // REMOVE Serial.println(F("Set analog reference voltage")); // Debug message to indicate the reference voltage settings
     referenceVoltage = (isDebug) ? DEFAULT : INTERNAL; // Set the default reference voltage to DEFAULT or INTERNAL based on isDebug
 #ifdef ARDUINO_ARCH_AVR
-    analogReference(referenceVoltage); // Set the analog reference voltage to DEFAULT
+    // REVIEW analogReference(referenceVoltage); // Set the analog reference voltage to DEFAULT
+    if (referenceVoltage == DEFAULT) {
+        Serial.println(F("Set analog reference voltage to DEFAULT")); // Debug message to indicate the reference voltage settings
+    } else {
+        Serial.println(F("Set analog reference voltage to INTERNAL"));
+    }
 #endif
 }
 

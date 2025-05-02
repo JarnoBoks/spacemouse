@@ -17,7 +17,7 @@ HIDStateSendrotation::~HIDStateSendrotation() {
 }
 
 void HIDStateSendrotation::apply() {
-    Serial.print("Send rotation: ");
+    // Serial.print("Send rotation: ");
     if (!isNewHidReportDue()) {
         return;
     }

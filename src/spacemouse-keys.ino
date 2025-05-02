@@ -99,7 +99,7 @@ void setup() {
     Kinematics::getInstance();
 
     // FIXME - For now a manual start. Should be done automatically.
-    SpaceMouseUSBInterface_::getInstance();
+    // SpaceMouseUSBInterface_::getInstance();
 
     // Call the setup function of the button factory. This will setup the buttons and the button configuration.
     ButtonFactory::getInstance()->setupButtons();
@@ -163,7 +163,7 @@ void loop() {
 
 #ifdef ARDUINO_ARCH_AVR
     // FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
-    mySpaceMouseHID.execute();
+    // mySpaceMouseHID.execute();
 #endif
 
     // Check for the LED state by calling updateLEDState.

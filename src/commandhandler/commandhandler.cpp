@@ -68,7 +68,6 @@ void CommandHandler::handleInput(char input[], const uint8_t inputsize, const in
 void CommandHandler::parseSerialMonitorInput() {
     char inputBuffer[MAX_INPUT_SIZE] = ""; // Buffer to store the input command
     uint8_t bytesRead = 0;
-
     // Read the input into the buffer until a newline character or buffer limit
     while (Serial.available() > 0 && bytesRead < sizeof(inputBuffer) - 1) {
         //  Read a character from the serial input

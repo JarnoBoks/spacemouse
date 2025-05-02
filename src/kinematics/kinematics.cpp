@@ -72,8 +72,8 @@ Axis *Kinematics::getAxis(const char *name) {
  */
 void Kinematics::processKinematics() {
     for (int i = 0; i < AxisType_t::LENGTH; i++) {
-        int16_t raw = Hardware::getInstance()->calculateRawValue(static_cast<AxisType_t>(i)); // Get the raw value from the hardware
-        axes[i]->calculateValue(raw);                                                         // Calculate the value for each axis
+        int16_t raw = 0;              // Hardware::getInstance()->calculateRawValue(static_cast<AxisType_t>(i)); // Get the raw value from the hardware
+        axes[i]->calculateValue(raw); // Calculate the value for each axis
     }
 
     notifyObservers(); // Notify observers of changes in the kinematics

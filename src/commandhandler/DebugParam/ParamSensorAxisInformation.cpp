@@ -37,10 +37,10 @@ DebugParamSensorAxisInformation::~DebugParamSensorAxisInformation() {
 void DebugParamSensorAxisInformation::apply() {
 
     // Instantiate the Observers and attach them to the hardware
-    SensorObserver = new Output_SensorValuesCenteredWithoutNewline();
+    // SensorObserver = new Output_SensorValuesCenteredWithoutNewline();
     AxisObserver = new Output_AxisValuesModified();
 
-    Hardware::getInstance()->attachObserver(SensorObserver);
+    // Hardware::getInstance()->attachObserver(SensorObserver);
     Kinematics::getInstance()->attachObserver(AxisObserver);
 }
 

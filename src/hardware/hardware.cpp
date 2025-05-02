@@ -24,7 +24,8 @@ Hardware *Hardware::getInstance() {
 }
 
 void Hardware::setAnalogReference(const bool isDebug) {
-    referenceVoltage = DEFAULT; // Set the default reference voltage to DEFAULT
+    Serial.println(F("Set analog reference voltage")); // Debug message to indicate the reference voltage settings
+        referenceVoltage = DEFAULT; // Set the default reference voltage to DEFAULT
 #ifdef ARDUINO_ARCH_AVR
     analogReference(referenceVoltage); // Set the analog reference voltage to DEFAULT
 #endif

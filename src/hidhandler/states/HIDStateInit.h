@@ -1,11 +1,11 @@
 #pragma once
 
-#include "HIDStateBase.h"
-#include "HIDStateStart.h"
 #include <Arduino.h> // for millis()
 #include "config.h"  // for ADV_HID_JIGGLE
 
 #include <hidhandler/HIDHandlerController.h>
+#include "HIDStateBase.h"
+#include "HIDStateStart.h"
 
 class SpaceMouseHIDStateInit : public HIDStateBase {
 protected:

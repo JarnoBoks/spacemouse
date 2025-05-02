@@ -1,4 +1,3 @@
-#pragma once
 #include "HIDStateSendtranslation.h"
 #include <hidhandler/translator/TranslatorKinematicsTranslation.h> // for TranslatorKinematicsRotation
 #include <hidhandler/HIDHandlerController.h>                       // For HIDHandlerController (context)

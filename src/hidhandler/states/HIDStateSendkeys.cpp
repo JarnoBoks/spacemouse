@@ -1,4 +1,3 @@
-#pragma once
 #include "HIDStateSendKeys.h"
 #include <hidhandler/translator/TranslatorKinematicsBase.h> // for TranslatorKeys
 #include <hidhandler/HIDHandlerController.h>                // For HIDHandlerController (context)

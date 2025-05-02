@@ -10,6 +10,10 @@ Hardware_HALL::Hardware_HALL() {
         sensors[i] = new HallSensor(sensorPins[i], static_cast<HallSensorsId_t>(i)); // Create new HallSensor objects
     }
 
+    // Set the ADC Prescaler to 16 in order to read the ADC much faster.
+    // NOTE: Maybe this is relevant for the Joystick hardware as well, but cannot test it.
+    ADCSRA = (ADCSRA & B11111000) | 4; // Set prescaler to 16 for ADC
+
     // Set the analog reference voltage for the sensors
     setAnalogReference(INTERNAL);
 }

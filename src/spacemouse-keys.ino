@@ -1,27 +1,24 @@
 // This is the source code for the open source space mouse with keys.
 // Please read the introduction and history with all contributors here:
 // https://github.com/AndunHH/spacemouse
-
 // One good starting point is the work and video by TeachingTech: https://www.printables.com/de/model/864950-open-source-spacemouse-space-mushroom-remix
 // Then follow along on github, how we reached this state of the source code.
+
 #include <Arduino.h>
 
 // The user specific settings, like pin mappings or special configuration variables and sensitivities are stored in config.h.
 // Please open config_sample.h, adjust your settings and save it as config.h
 #include "config.h"
 
-#ifdef ARDUINO_ARCH_AVR // For Arduino boards like Leonardo, Micro, etc.
+#ifdef ARDUINO_ARCH_AVR
+// Include header files for the HID interface
+#include <hidhandler/SpaceMouseHID.h> // Include the HID interface header
+SpaceMouseHID mySpaceMouseHID;
+#else
 // FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
-//  Include inbuilt Arduino HID library by NicoHood: https://github.com/NicoHood/HID
-#include "HID.h"
-
-// header for HID emulation of the spacemouse
-#include "SpaceMouseHID.h"
 #endif // ARDUINO_ARCH_AVR
 
 // Definitions & Header for the various hardware types
-// ------------------ PREPOCESSOR DIRECTIVES USED IN THE SOFTWARE - DO NOT CHANGE
-
 #include "hardware/hardware_hall.h"
 #include "hardware/hardware_joystick.h"
 
@@ -77,6 +74,7 @@ SpaceKeys *Keys = nullptr;
 #include "commandhandler/switchyzcommand.h"
 CommandHandler myCommandHandler; // Command handler object to handle the commands from the serial interface
 
+// Include the header file for the sensor calibration manager
 #include "calibration/sensorcalibrationmanager.h"
 
 // #include <ArduinoShrink.h>
@@ -186,24 +184,17 @@ void loop() {
         velocity[TRANSZ] = 0;
     }
 #endif
-#if 0
-    // get the values to the USB HID driver to send if necessary
-    SpaceMouseHID.send_command(Mouse_Kinematics.GetVelocity(rotX),
-                               Mouse_Kinematics.GetVelocity(rotY),
-                               Mouse_Kinematics.GetVelocity(rotZ),
-                               Mouse_Kinematics.GetVelocity(transX),
-                               Mouse_Kinematics.GetVelocity(transY),
-                               Mouse_Kinematics.GetVelocity(transZ),
-                               Keys,
-                               Mouse_Calibration.GetDebug());
-#endif
+
 #ifdef ARDUINO_ARCH_AVR
-    // FIXME - ESP32 does not support the HID library. The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
-    SpaceMouseHID.send_command(Keys, 0);
+    // FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
+    mySpaceMouseHID.execute();
 #endif
+
     // Check for the LED state by calling updateLEDState.
     // This empties the USB input buffer and checks for the corresponding report.
 
+#if 0
+// FIXME - LedState has to be set in the HID interface.
 #ifdef LEDpin
 #ifdef LEDRING
     Mouse_LEDRing->ProcessLED(SpaceMouseHID.updateLEDState());
@@ -213,7 +204,7 @@ void loop() {
     // This empties the USB input buffer and checks for the corresponding report.
 #endif
 #endif
-
+#endif
 } // end loop()
 
 #ifdef LEDpin

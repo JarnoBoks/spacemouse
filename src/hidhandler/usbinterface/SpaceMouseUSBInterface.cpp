@@ -11,6 +11,8 @@ This code is based on https://forum.arduino.cc/t/solved-unable-to-receive-hid-re
 
 #include "SpaceMouseUSBInterface.h"
 
+SpaceMouseUSBInterface_ *SpaceMouseUSBInterface_::_instance = nullptr;
+
 SpaceMouseUSBInterface_::SpaceMouseUSBInterface_() : PluggableUSBModule(2, 1, endpointTypes) {
     endpointTypes[0] = EP_TYPE_INTERRUPT_IN;
     endpointTypes[1] = EP_TYPE_INTERRUPT_OUT;
@@ -99,7 +101,7 @@ int SpaceMouseUSBInterface_::write(const uint8_t *buffer, size_t size) {
 
 /**
  * @brief Send a HID Report
- * @param id Report Id of the data to be sent
+ * @param id Report id of the data to be sent
  * @param data Pointer to the data array
  * @param len  Length of the data
  * @return Length of data sent (including 1 byte for report id)
@@ -178,5 +180,5 @@ bool SpaceMouseUSBInterface_::getLEDState() {
     return ledState;
 }
 
-SpaceMouseUSBInterface_ SpaceMouseUSBInterface;
+// Replaced with instance SpaceMouseUSBInterface_ SpaceMouseUSBInterface;
 #endif // ARDUINO_ARCH_AVR

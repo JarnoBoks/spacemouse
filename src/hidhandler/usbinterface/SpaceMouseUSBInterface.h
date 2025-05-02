@@ -15,8 +15,7 @@ This code is based on https://forum.arduino.cc/t/solved-unable-to-receive-hid-re
 
 #include "PluggableUSB.h"
 #include "HID.h"
-
-#include "spaceKeys.h" //NOTE - Added JB
+#include <hidhandler/HIDHandlerConfig.h>
 
 #define SPACEMOUSE_D_HIDREPORT(length) \
     {                                  \
@@ -29,6 +28,13 @@ typedef struct
     EndpointDescriptor in;
     EndpointDescriptor out;
 } SpaceMouseHIDDescriptor;
+
+// HID Report IDs
+// These IDs are used to identify the different reports sent by the SpaceMouse to the host computer.
+#define REPORTID_TRANS 0x01 // Report ID for the first report (translation)
+#define REPORTID_ROT 0x02   // Report ID for the second report (rotation)
+#define REPORTID_KEYS 0x03  // Report ID for the third report (keys)
+#define REPORTID_LEDS 0x04  // Report ID for the fourth report (LEDs)
 
 // The USB VID and PID for this emulated space mouse pro must be set in the boards.txt in arduino IDE or
 // in set_hwids.py in platformIO.
@@ -108,46 +114,10 @@ static const uint8_t SpaceMouseReportDescriptor[] PROGMEM = {
 #define USBControllerTX USBControllerEndpointIn
 #define USBControllerRX USBControllerEndpointOut
 
-// Send a HID report every 8 ms (125 Hz)
-#define HIDUPDATERATE_MS 8
-
-// State machine to track, which report to send next
-enum SpaceMouseHIDStates {
-    ST_INIT,      // init variables
-    ST_START,     // start to check if something is to be sent
-    ST_SENDTRANS, // send translations
-    ST_SENDROT,   // send rotations
-    ST_SENDKEYS   // send keys
-};
-
-class SpaceMouseHID_ : public PluggableUSBModule {
-public:
-    SpaceMouseHID_();
-    int write(const uint8_t *buffer, size_t size);
-    int SendReport(uint8_t id, const void *data, int len);
-    int readSingleByte();
-    void printAllReports();
-    bool updateLEDState();
-    bool getLEDState();
-    // NOTE bool send_command(int16_t rx, int16_t ry, int16_t rz, int16_t x, int16_t y, int16_t z, uint8_t *keys, int debug);
-    bool send_command(int16_t rx, int16_t ry, int16_t rz, int16_t x, int16_t y, int16_t z, SpaceKeys *SMKeys, int debug);
-    bool send_command(SpaceKeys *SMKeys, int debug); // NOTE - Added JB
-
+class SpaceMouseUSBInterface_ : public PluggableUSBModule {
 private:
-    bool IsNewHidReportDue(unsigned long now);
-    bool jiggleValues(uint8_t val[6], bool lastBit);
-
-    SpaceMouseHIDStates nextState;
-#if (NUMKEYS > 0)
-    // Array with the bitnumbers, which should assign keys to buttons
-    uint8_t bitNumber[NUMHIDKEYS] = BUTTONLIST;
-    void prepareKeyBytes(SpaceKeys *SMKeys, uint8_t *keyData, int debug);
-#endif
-    uint8_t countTransZeros = 0; // count how many times, the zero data has been sent
-    uint8_t countRotZeros = 0;
-
-    unsigned long lastHIDsentRep; // time from millis(), when the last HID report was sent
-
+    SpaceMouseUSBInterface_();
+    static SpaceMouseUSBInterface_ *_instance;
     bool ledState;
 
 protected:
@@ -158,6 +128,21 @@ protected:
     int getInterface(uint8_t *interfaceNumber);
     int getDescriptor(USBSetup &setup);
     bool setup(USBSetup &setup);
+
+public:
+    static SpaceMouseUSBInterface_ *getInstance() {
+        if (!_instance) {
+            _instance = new SpaceMouseUSBInterface_();
+        }
+        return _instance;
+    }
+
+    int write(const uint8_t *buffer, size_t size);
+    int SendReport(uint8_t id, const void *data, int len);
+    int readSingleByte();
+    void printAllReports();
+    bool updateLEDState();
+    bool getLEDState();
 };
 
-extern SpaceMouseHID_ SpaceMouseHID;
+// REMOVE - Replaced with instance - extern SpaceMouseUSBInterface_ SpaceMouseUSBInterface;

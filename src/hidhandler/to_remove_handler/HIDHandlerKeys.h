@@ -1,17 +1,12 @@
 #pragma once
 
-#include "SpaceMouseHIDActionsSendBase.h" // for ISpaceMouseHIDActions
-#include "../SpaceMouseTranslatorMovement.h"
-#include "config.h"  // for HIDMAXBUTTONS
-#include <Arduino.h> // for memcpy()
+#include "HIDHandlerBase.h"     // for HIDHandlerBase
+#include <hid/TranslatorKeys.h> // for TranslatorKeys
+#include "config.h"             // for NUMHIDKEYS, HIDMAXBUTTONS
 
 constexpr uint8_t KEYDATASIZE = HIDMAXBUTTONS / 8; // Size of the key data array
 
-class SpaceMouseHIDKeys : public SpaceMouseHIDActionsSendBase {
-    // This class is used to handle the debug parameter for axis information.
-    // It inherits from ISpaceMouseHIDState and implements the apply and report methods.
-    // The apply method is used to apply the changes to the axis observer.
-    // The report method is used to report the current state of the axis observer.
+class HIDHandlerKeys : public HIDHandlerBase {
 private:
     uint8_t keyData[KEYDATASIZE] = {0};     // Array to hold the key state
     uint8_t prevKeyData[KEYDATASIZE] = {0}; // Array to hold the previous key state
@@ -49,17 +44,16 @@ private:
 
 public:
     // SpaceMouse HID keys
-    SpaceMouseHIDKeys(SpaceMouseUSBInterface_ *usbInterface)
-        : SpaceMouseHIDActionsSendBase(usbInterface),
+    HIDHandlerKeys(TranslatorKeys *translator)
+        : HIDHandlerBase(translator),
           keyData{0},
           prevKeyData{0},
           bitNumber BUTTONLIST {};
-    virtual ~SpaceMouseHIDKeys() = default; // Default destructor
+    virtual ~HIDHandlerKeys() = default; // Default destructor
 
     void execute() {
         // Send the key state to the Host
-        translator->execute(); // Execute the translator to get the key state
-        // TODO usbInterface->SendReport(3, keyData, HIDMAXBUTTONS / 8);
+        translator->execute();
         memcpy(prevKeyData, keyData, HIDMAXBUTTONS / 8); // copy actual keyData to previous keyData
     };
 };

@@ -50,7 +50,7 @@ IDebugParam *DebugCommand::getState() const { return currentParam; }
  * @details Removes the current debug state to clean up resources and stop any ongoing processes.
  */
 void DebugCommand::stop() {
-    delete currentParam; // Clean up the current debug state
+    delete currentParam; // Clean up any current debug state
 }
 
 /**

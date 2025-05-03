@@ -6,7 +6,7 @@
 
 class DebugParamSensorAxisInformation : public IDebugParam {
 protected:
-    Output_AxisValues *AxisObserver = nullptr;     // Pointer to the raw sensor observer instance       // REVIEW - Why is this necesar
+    Output_AxisValues *AxisObserver = nullptr;     // Pointer to the raw axis observer instance
     Output_SensorValues *SensorObserver = nullptr; // Pointer to the raw sensor observer instance
 public:
     DebugParamSensorAxisInformation() = default; // Constructor

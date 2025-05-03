@@ -140,7 +140,11 @@ void Kinematics::detachObserver(IObserver *observer) {
     // remove the observer from the array by replacing it with the last observer in the array and decrease the count.
     for (int i = 0; i < observerCount; i++) {
         if (observers[i] == observer) {
-            observers[i] = observers[--observerCount];
+            observerCount--; // Decrease the observer count
+            if (observerCount > 0) {
+                // Move the last observer to the current position
+                observers[i] = observers[observerCount];
+            }
             observers[observerCount] = nullptr;
             break;
         }

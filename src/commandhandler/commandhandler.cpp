@@ -48,12 +48,14 @@ void CommandHandler::handleInput(char input[], const uint8_t inputsize, const in
 
     // REVIEW - Necessary to check for empty command?
 
-    // Loop through the commands array to find the command to process.
+    // Loop through the commands array to find the command to execute.
     for (uint8_t i = 0; i < commandCount; ++i) {
 
-        if (commands[i] && commands[i]->isCommand(words[0])) { // Check if the command name matches
+        if (commands[i] && commands[i]->isCommand(words[0])) {
+
+            // There can be a running command. If the found command is different from the last one executed,
+            // stop the execution of the last executed command
             if (i != lastCommandIndex && lastCommandIndex >= 0) {
-                // If the command is different from the last one, stop the execution of the last executed command
                 commands[lastCommandIndex]->stop();
             }
             lastCommandIndex = i;                                  // Update the last command index

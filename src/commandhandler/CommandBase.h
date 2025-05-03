@@ -12,7 +12,7 @@ protected:
     const bool convertWordFloat(const char *str, float *value) const;
 
 public:
-    CommandBase() : name(nullptr) {}                    // Default constructor to initialize command name
+    CommandBase() : name(nullptr) {}                    // Default constructor to initialize empty command name
     CommandBase(const char *cmdName) : name(cmdName) {} // Constructor to initialize command name
     virtual ~CommandBase() = default;
 

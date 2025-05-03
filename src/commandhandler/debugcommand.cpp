@@ -50,7 +50,16 @@ IDebugParam *DebugCommand::getState() const { return currentParam; }
  * @details Removes the current debug state to clean up resources and stop any ongoing processes.
  */
 void DebugCommand::stop() {
-    delete currentParam; // Clean up any current debug state
+#if 0
+    // Two options to stop the command execution:
+    // 1. Delete the current debug state and set it to nullptr.
+    // 2. Set the state to a new instance of DebugParamOff.
+    // The first option is more efficient as it avoids creating a new instance of DebugParamOff.
+    // The second option is more explicit and may be easier to understand for future developers.
+    delete currentParam; // Clean up the current debug state
+    currentParam = nullptr; // Set the current parameter to nullptr to indicate no active state
+#endif
+    setState(new DebugParamOff()); // Set the state to off
 }
 
 /**

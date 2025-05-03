@@ -20,26 +20,26 @@ int16_t Hardware_Joystick::calculateRawValue(AxisType_t axistype) {
     updateSensorValues();
 
     switch (axistype) {
-    case TRANSX:
+    case AxisType_t::TRANSX:
         // calculate sensors transX
         return (-VAL(CY) + VAL(AY));
         break;
-    case TRANSY:
+    case AxisType_t::TRANSY:
         // calculate sensors transY
         return (-VAL(BY) + VAL(DY));
         break;
-    case TRANSZ:
+    case AxisType_t::TRANSZ:
         return -VAL(AX) - VAL(BX) - VAL(CX) - VAL(DX);
         break;
-    case ROTX:
+    case AxisType_t::ROTX:
         // rotX
         return (-VAL(CX) + VAL(AX));
         break;
-    case ROTY:
+    case AxisType_t::ROTY:
         // rotY
         return (-VAL(BX) + VAL(DX));
         break;
-    case ROTZ:
+    case AxisType_t::ROTZ:
         // rotZ
         return (VAL(AY) + VAL(BY) + VAL(CY) + VAL(DY));
         break;

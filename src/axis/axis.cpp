@@ -12,7 +12,7 @@
 // The AxisConfig class is used to configure the axis, including the sensitivity, gate, and function type.
 // The Axis class is used to calculate the value of the axis based on the hardware input and the configuration.
 // The hardware is instantiated in the constructor of the Axis class, picking the hardware that is configured in config.h.
-Axis::Axis() : type(UNINITIALIZED) {
+Axis::Axis() : type(AxisType_t::UNINITIALIZED) {
     // Default constructor initializes the axis to UNINITIALIZED
     config = new AxisConfig(); // Create a new AxisConfig object for this axis
 
@@ -25,8 +25,8 @@ Axis::Axis(AxisType_t type) : type(type) {
     config = new AxisConfig(type); // Create a new AxisConfig object for this axis
 
     // Setup the name of the axis based on the type
-    const char *names[AxisType_t::LENGTH] = AXIS_NAMES;
-    if (type < 0 || type >= AxisType_t::LENGTH) {
+    const char *names[static_cast<int>(AxisType_t::LENGTH)] = AXIS_NAMES;
+    if (type <= AxisType_t::UNINITIALIZED || type >= AxisType_t::LENGTH) {
         this->name = "?"; // Set name to UNKNOWN if type is invalid
     } else {
         this->name = names[type];

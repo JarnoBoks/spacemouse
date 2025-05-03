@@ -38,26 +38,26 @@ int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
     int16_t retval = 0; // Initialize the value to 0
 
     switch (axistype) {
-    case TRANSX:
+    case AxisType_t::TRANSX:
         // calculate sensors transX
         retval = (VAL(HES1) - VAL(HES0) + VAL(HES6) - VAL(HES7)) / 2;
         break;
-    case TRANSY:
+    case AxisType_t::TRANSY:
         // calculate sensors transY
         retval = (VAL(HES2) - VAL(HES3) + VAL(HES9) - VAL(HES8)) / 2;
         break;
-    case TRANSZ:
+    case AxisType_t::TRANSZ:
         retval = (VAL(HES0) + VAL(HES1) + VAL(HES2) + VAL(HES3) + VAL(HES6) + VAL(HES7) + VAL(HES8) + VAL(HES9)) / 4;
         break;
-    case ROTX:
+    case AxisType_t::ROTX:
         // rotX
         retval = (VAL(HES0) + VAL(HES1) - VAL(HES6) - VAL(HES7)) / 2;
         break;
-    case ROTY:
+    case AxisType_t::ROTY:
         // rotY
         retval = (VAL(HES8) + VAL(HES9) - VAL(HES2) - VAL(HES3)) / 2;
         break;
-    case ROTZ:
+    case AxisType_t::ROTZ:
         // rotZ
         retval = (VAL(HES0) + VAL(HES2) + VAL(HES6) + VAL(HES8) - VAL(HES1) - VAL(HES3) - VAL(HES7) - VAL(HES9)) / 4;
         break;

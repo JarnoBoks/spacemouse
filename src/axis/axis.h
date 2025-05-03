@@ -1,5 +1,5 @@
-#ifndef AXIS_H
-#define AXIS_H
+// axis.h
+#pragma once
 
 #include "axis/axistype.h"       // For AxisType_t
 #include "modfunctype.h"         // For ModFunc_t
@@ -15,7 +15,7 @@ class IPrinterVisitor;
 
 class Axis {
 private:
-    AxisType_t type = UNINITIALIZED;
+    AxisType_t type = AxisType_t::UNINITIALIZED;
     const char *name;
 
     /// @brief
@@ -53,5 +53,3 @@ public:
 
     void accept(IPrinterVisitor &visitor);
 };
-
-#endif // AXIS_H

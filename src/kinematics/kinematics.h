@@ -24,7 +24,7 @@ private:
     void _applyExclusiveMode();
     void _applySwitchYZ();
 
-    void _applyKillSwitch(const uint8_t start, const uint8_t end, const bool killSwitchActive) {
+    void _applyKillSwitch(const AxisType_t start, const AxisType_t end, const bool killSwitchActive) {
         // Set strategy for the rotation axes to kill switch
         for (uint8_t i = start; i <= end; i++) {
             axes[i]->setKillSwitchActive(killSwitchActive); // Set the kill switch state for the axis

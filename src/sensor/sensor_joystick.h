@@ -19,13 +19,9 @@ enum JoystickSensorsId_t : int8_t { AX = 0,
 
 class JoystickSensor : public Sensor {
 private:
-    // REMOVE const char *name;
-
 public:
     JoystickSensor(const int8_t pin, JoystickSensorsId_t id);
     ~JoystickSensor() override {}
-
-    /* REMOVE const char *getName() const override; */
 
     bool setIdlePosition(int val) override;
     bool idlePositionWarning(const int val) const override;

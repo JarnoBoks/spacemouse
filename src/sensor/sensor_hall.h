@@ -17,13 +17,8 @@ enum HallSensorsId_t : int8_t { HES0 = 0,
 
 class HallSensor : public Sensor {
 private:
-    // REVIEW - Can the name move to the base class?
-    /* REMOVE const char *name; */
-
 public:
     HallSensor(const int8_t pin, HallSensorsId_t id);
-
-    /* REMOVE const char *getName() const override; */
 
     bool setIdlePosition(int val) override;
     bool idlePositionWarning(const int val) const override;

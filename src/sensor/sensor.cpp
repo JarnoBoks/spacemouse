@@ -12,12 +12,7 @@
 Sensor::Sensor(const int8_t pin, const int8_t id)
     : pin(pin),
       id(id),
-      config(new SensorConfig(id)),
-      rawvalue(0),
-      centered(0),
-      filtered(0),
-      idleposition(0),
-      name(nullptr) {
+      config(new SensorConfig(id)) {
 }
 
 Sensor::~Sensor() {

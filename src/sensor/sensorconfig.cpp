@@ -10,7 +10,7 @@
  * Initializes the sensor configuration with zeroed values.
  * @note This constructor is not used in the current implementation.
  */
-SensorConfig::SensorConfig() : minv(0), maxv(0), invert(false), deadzone(0) {};
+SensorConfig::SensorConfig() {};
 
 /**
  * @brief Constructor for SensorConfig with sensorId.
@@ -18,7 +18,7 @@ SensorConfig::SensorConfig() : minv(0), maxv(0), invert(false), deadzone(0) {};
  * If loading fails, it sets up the configuration with default defined values.
  * @param sensorId The ID of the sensor to load the configuration for.
  */
-SensorConfig::SensorConfig(int8_t sensorId) : minv(0), maxv(0), invert(false), deadzone(0) {
+SensorConfig::SensorConfig(int8_t sensorId) {
     if (!EEPROMStore::loadConfig(*this, sensorId)) {
         // If loading from EEPROM fails, setup the configuration with default defined values
         *this = DefaultSensorConfig::getInstance().getDefaultConfig(sensorId);

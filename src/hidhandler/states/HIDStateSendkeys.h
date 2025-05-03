@@ -5,8 +5,7 @@
 class HIDStateSendkeys : public HIDStateBase {
 protected:
 public:
-    HIDStateSendkeys(HIDStateData *data);
-
+    HIDStateSendkeys();
     virtual ~HIDStateSendkeys();
 
     void apply() override;

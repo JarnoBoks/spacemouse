@@ -14,6 +14,7 @@ public:
 
         // Send new rotational values
         SpaceMouseUSBInterface_ *usbInterface = SpaceMouseUSBInterface_::getInstance(); // Get the USB interface instance
+
         usbInterface->SendReport(REPORTID_ROT, message, sizeof(message));               // send new rotational values
     }
 };

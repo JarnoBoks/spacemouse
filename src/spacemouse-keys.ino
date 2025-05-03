@@ -83,19 +83,6 @@ void cstmDelay(unsigned long ms) {
 #include "hidhandler/usbinterface/SpaceMouseUSBInterface.h" // Include the HID interface header
 // #include <ArduinoShrink.h>
 void setup() {
-#ifndef cbi
-#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
-#endif
-#ifndef sbi
-#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
-#endif
-
-#if 0
-    // set prescale to 16
-    sbi(ADCSRA, ADPS2);
-    cbi(ADCSRA, ADPS1);
-    cbi(ADCSRA, ADPS0);
-#endif
 
     cstmDelay(100); // Wait for the serial interface to be ready
 
@@ -113,7 +100,7 @@ void setup() {
     Kinematics::getInstance();
 
     // FIXME - For now a manual start. Should be done automatically.
-    // SpaceMouseUSBInterface_::getInstance();
+    SpaceMouseUSBInterface_::getInstance();
 
     // Call the setup function of the button factory. This will setup the buttons and the button configuration.
     ButtonFactory::getInstance()->setupButtons();
@@ -177,7 +164,8 @@ void loop() {
 
 #ifdef ARDUINO_ARCH_AVR
     // FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
-    // mySpaceMouseHID.execute();
+    cstmDelay(8000);
+    mySpaceMouseHID.execute();
 #endif
 
     // Check for the LED state by calling updateLEDState.

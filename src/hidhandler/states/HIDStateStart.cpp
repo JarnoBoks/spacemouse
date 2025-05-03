@@ -4,9 +4,9 @@
 
 // Includes for the target states
 #include "HIDStateSendtranslation.h"
+#include "HIDStateSendkeys.h"
 
-HIDStateStart::HIDStateStart(HIDStateData *data) // Constructor to initialize the state data
-    : HIDStateBase(data) {
+HIDStateStart::HIDStateStart() {
     translator = new TranslatorKinematicsBase(); // Initialize the translator for translation data
 }
 
@@ -15,24 +15,33 @@ HIDStateStart::~HIDStateStart() {
 };
 
 void HIDStateStart::apply() {
-    // Serial.print("Current state: HIDStateStart");
+    Serial.print("Current state: HIDStateStart");
     //  Check if there is something to send. If there are zero data packages to send (have to send 3 in total) or if any of the axes has movement,
     //  proceed to the next state. This function is evaluated every time the state is called.
     if (data->countTransZeros < 3 || data->countRotZeros < 3 || static_cast<TranslatorKinematicsBase *>(translator)->areAllAxisZero()) {
-        context->setState(new HIDStateSendtranslation(data)); // Set the next state to start
+        context->setState(new HIDStateSendtranslation()); // Set the next state to translation
     } else {
-        // if nothing is to be sent, check for keys. If no keys, don't change state
 #if (NUMKEYS > 0)
-        if (memcmp(keyData, prevKeyData, HIDMAXBUTTONS / 8) != 0)
+        // TODO - Extra state for keycheck
+        <TranslatorKeys *>(translator)->isAnythingChanged()) { // Check for changes in key data
+            context->setState(new HIDStateStart());            // Go back to start state
+            return;
+        }
+
+        // if nothing is to be sent, check for keys. If no keys, don't change state
+        if (memcmp(data->keyData, prevKeyData, HIDMAXBUTTONS / 8) != 0)
         // compare key data to previous key data
         {
-            context->setState(new SpaceMouseHIDStateSendkeys(data)); // Set the next state to start
+            context->setState(new HIDStateSendkeys()); // Set the next state to send keys
         }
 #endif
+        //  if we are still in this state (ie. not in keys), check if we are waiting here
+        //  for more than the update rate.
         if (context->getState() == this && isNewHidReportDue()) {
-            // if we are still in this state, check if we are waiting here for more than the update rate
-            // keep the timestamp for the last sent package nearby
+
+            // Keep the timestamp for the last sent package nearby.
             data->lastHIDsentRep = data->now - HIDUPDATERATE_MS;
         }
     }
+
 };

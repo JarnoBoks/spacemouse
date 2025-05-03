@@ -10,7 +10,7 @@
 class HIDStateStart : public HIDStateBase {
 protected:
 public:
-    HIDStateStart(HIDStateData *data);
+    HIDStateStart();
     virtual ~HIDStateStart();
 
     void apply() override;

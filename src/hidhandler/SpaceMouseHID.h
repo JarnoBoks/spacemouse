@@ -20,14 +20,16 @@ private:
 protected:
 public:
     SpaceMouseHID() {
-        controller_ = new HIDHandlerController(new SpaceMouseHIDStateInit()); // Initialize the state machine to the initial state
+        Serial.println("SpaceMouseHID::SpaceMouseHID()"); // Debug output to indicate the constructor is called
+        controller_ = new HIDHandlerController();         // Initialize the state machine to the initial state
     }
 
     ~SpaceMouseHID() {
-        delete controller_; // Clean up the state machine
-    } // Default destructor
+        delete controller_;
+    }
 
     void execute() {
-        controller_->execute(); // Execute the state machine
+        Serial.println("SpaceMouseHID::execute()"); // Debug output to indicate the execute method is called
+        controller_->execute();
     }
 };

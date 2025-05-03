@@ -5,8 +5,7 @@
 // Includes for the target states
 #include "HIDStateStart.h"
 
-HIDStateSendkeys::HIDStateSendkeys(HIDStateData *data) // Constructor to initialize the state data
-    : HIDStateBase(data) {
+HIDStateSendkeys::HIDStateSendkeys() {
     translator = new TranslatorKeys(data->prevKeyData); // Initialize the translator for key data  // FIXME: Test if this is working correctly (does the entire array is passed to the constructor or only the first element?)
 }
 HIDStateSendkeys::~HIDStateSendkeys() {
@@ -22,7 +21,7 @@ void HIDStateSendkeys::apply() {
     }
 #endif
     if (!static_cast<TranslatorKeys *>(translator)->isAnythingChanged()) { // Check for changes in key data
-        context->setState(new HIDStateStart(data));                        // Go back to start state
+        context->setState(new HIDStateStart());                            // Go back to start state
         return;
     }
 
@@ -34,6 +33,6 @@ void HIDStateSendkeys::apply() {
     memcpy(data->prevKeyData, static_cast<TranslatorKeys *>(translator)->keyData, KEYDATASIZE); // Copy the current key data to the previous key data
 
     data->lastHIDsentRep += HIDUPDATERATE_MS;
-    data->hasSentNewData = true;                // return value
-    context->setState(new HIDStateStart(data)); // Go back to start state
+    data->hasSentNewData = true;            // return value
+    context->setState(new HIDStateStart()); // Go back to start state
 }

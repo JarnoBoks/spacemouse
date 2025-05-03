@@ -27,13 +27,17 @@ protected:
     inline bool isNewHidReportDue() {
         // calculate the difference between now and the last time it was sent
         // such a difference calculation is safe with regard to integer overflow after 48 days
-        return ((millis() - data->lastHIDsentRep) >= HIDUPDATERATE_MS);
+        // return ((millis() - data->lastHIDsentRep) >= HIDUPDATERATE_MS);
+        data->now = millis(); // Update the current time
+        return ((data->now - data->lastHIDsentRep) >= HIDUPDATERATE_MS);
     }
 
 public:
     HIDStateBase() = default; // Default constructor
+#if 0
     HIDStateBase(HIDStateData *data = nullptr)
         : data(data) {}                // Constructor to initialize the state data and translator
+#endif
     virtual ~HIDStateBase() = default; // Default destructor
 
     inline void set_context(HIDHandlerController *context) { this->context = context; }

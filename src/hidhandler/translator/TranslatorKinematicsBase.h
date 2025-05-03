@@ -51,6 +51,7 @@ public:
     }
 
     inline bool areAllAxisZero() const {
+        Serial.println("Checking if all axes are zero..."); // Debug output
         for (uint8_t i = AxisType_t::ROTX; i < AxisType_t::LENGTH; i++) {
             int16_t vel = Kinematics::getInstance()->getAxis(static_cast<AxisType_t>(i))->getValue();
             if (vel != 0) {

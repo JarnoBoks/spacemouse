@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 #include <Arduino.h> // for millis()
@@ -17,7 +18,9 @@ public:
 
     void apply() override {
         Serial.println("HIDStateInit::apply()"); // Debug output to indicate the state is being applied
+
         unsigned long now = millis();            // Get the current time in milliseconds
+
         data->now = now;                         // Get the current time in milliseconds
         data->lastHIDsentRep = now;              // Set the last HID report time to now
         data->hasSentNewData = false;            // this value will be returned
@@ -32,3 +35,4 @@ public:
         // This function is empty because there is no need to report anything in this state.
     }
 };
+#endif

@@ -1,6 +1,8 @@
+// HIDStateData.h
 #pragma once
 
 #include <stdint.h>                      // for uint8_t
+#include <Arduino.h>                     // for millis()
 #include <hidhandler/HIDHandlerConfig.h> // for KEYDATASIZE
 
 /**
@@ -9,16 +11,19 @@
  */
 class HIDStateData {
 public:
-    HIDStateData() : lastHIDsentRep(0), now(0), hasSentNewData(false), countTransZeros(0), countRotZeros(0) {
+    HIDStateData() {
         // Constructor to initialize the state data
         for (int i = 0; i < KEYDATASIZE; i++) {
             prevKeyData[i] = 0; // Initialize the previous key data to zero
         }
+        now = millis();
+        lastHIDsentRep = now; // Set the last HID report time to now
     }
+
     // State variables - these are used to manage the state(or state transitions) of the HID report sending
-    unsigned long lastHIDsentRep = 0; // Last time the HID report was sent
-    unsigned long now = 0;            // The time the state sequence started in milliseconds
-    bool hasSentNewData = false;      // Flag to indicate if new data has been sent
+    unsigned long lastHIDsentRep; // Last time the HID report was sent
+    unsigned long now;            // The time the state sequence started in milliseconds
+    bool hasSentNewData = false;  // Flag to indicate if new data has been sent
 
     uint8_t countTransZeros = 0; // Counter for the number of Translation zero data packages sent
     uint8_t countRotZeros = 0;   // Counter for the number of Rotation zero data packages sent

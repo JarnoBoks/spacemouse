@@ -5,7 +5,7 @@
 class HIDStateSendrotation : public HIDStateBase {
 protected:
 public:
-    HIDStateSendrotation(HIDStateData *data);
+    HIDStateSendrotation();
     virtual ~HIDStateSendrotation();
 
     void apply() override;

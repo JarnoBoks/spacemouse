@@ -13,6 +13,7 @@ HIDStateSendkeys::~HIDStateSendkeys() {
 }
 
 void HIDStateSendkeys::apply() {
+    Serial.println(F("Current state: HIDStateSendkeys"));
     // Check if there is something to send. If nothing is to be sent, go to the start state
 #if 0
     if (memcmp(static_cast<TranslatorKeys *>(translator)->keyData, data->prevKeyData, KEYDATASIZE) == 0) { // Check for changes in key data
@@ -29,7 +30,7 @@ void HIDStateSendkeys::apply() {
         return; // if no new HID report is due, return
     }
 
-    translator->execute();                                                                      // Send the key data
+    // translator->execute();                                                                      // Send the key data
     memcpy(data->prevKeyData, static_cast<TranslatorKeys *>(translator)->keyData, KEYDATASIZE); // Copy the current key data to the previous key data
 
     data->lastHIDsentRep += HIDUPDATERATE_MS;

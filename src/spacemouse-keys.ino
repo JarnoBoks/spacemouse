@@ -13,7 +13,7 @@
 #ifdef ARDUINO_ARCH_AVR
 // Include header files for the HID interface
 #include <hidhandler/SpaceMouseHID.h> // Include the HID interface header
-SpaceMouseHID mySpaceMouseHID;
+SpaceMouseHID *mySpaceMouseHID;
 #else
 // FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
 #endif // ARDUINO_ARCH_AVR
@@ -127,6 +127,9 @@ void setup() {
     // char buffer[32] = "DEBUG 1";
     // myCommandHandler.handleInput(buffer, 32, 1);
 
+    cstmDelay(7500);                       // Debugging: give the user some time to open the serial monitor and start the debugging process
+    mySpaceMouseHID = new SpaceMouseHID(); // Initialize the HID interface
+
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
     initEncoderWheel();
 #endif
@@ -164,8 +167,7 @@ void loop() {
 
 #ifdef ARDUINO_ARCH_AVR
     // FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
-    cstmDelay(8000);
-    mySpaceMouseHID.execute();
+    mySpaceMouseHID->execute();
 #endif
 
     // Check for the LED state by calling updateLEDState.

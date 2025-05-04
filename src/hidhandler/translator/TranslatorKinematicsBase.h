@@ -3,6 +3,9 @@
 #include "TranslatorBase.h"
 #include <kinematics/kinematics.h> // for the SpaceMouseKinematics class
 
+// DEBUG:
+#include <Arduino.h> // for Serial
+
 /**
  * @brief Class to translate the kinematics data to the spacemouse HID interface formats
  * @details This class is used to translate the kinematics data to the spacemouse HID interface formats.
@@ -19,7 +22,11 @@ protected:
     uint8_t message[6] = {0}; // Array to hold the message data
     bool isAllZero = true;    // Flag to indicate if all values are zero
 public:
-    TranslatorKinematicsBase() : idx_start(AxisType_t::UNINITIALIZED), idx_end(AxisType_t::UNINITIALIZED) {} // Default constructor
+    TranslatorKinematicsBase() : idx_start(AxisType_t::UNINITIALIZED), idx_end(AxisType_t::UNINITIALIZED) {
+        for (uint8_t i = 0; i < sizeof(message); i++) {
+            message[i] = 0; // Initialize the message array to zero
+        }
+    } // Default constructor
 
     TranslatorKinematicsBase(AxisType_t start, AxisType_t end)
         : idx_start(start), idx_end(end) {}
@@ -27,20 +34,39 @@ public:
     virtual ~TranslatorKinematicsBase() = default; // Default destructor
 
     virtual void execute() {
+        Serial.println(F("TranslatorKinematicsBase::execute() - ")); // Debug output to indicate the execute method is called
+
         if (idx_start == AxisType_t::UNINITIALIZED || idx_end == AxisType_t::UNINITIALIZED) {
+            Serial.println(F("Base: not initialized"));
             return; // If the start or end index is uninitialized, do nothing
         }
 
-        // Setup the message array to hold the values. The message array is used to
-        // send the values to the USB interface. The array is filled either with the values
-        // of the translational axes or the rotation axes.
-        // Each movement is split into two bytes, one for the lower byte and one for the upper byte.
+        Serial.print(F("Base: idx_start: "));
+        Serial.print(idx_start); // Debug output for the start index
+        Serial.print(F(", idx_end: "));
+        Serial.print(idx_end); // Debug output for the end index
+        Serial.println(F(" - "));
+
         Kinematics *Kinematics = Kinematics::getInstance();
+
         for (uint8_t i = idx_start; i <= idx_end; i++) {
+            Serial.print(F("Base: proces Axis (i): ")); // Debug output for the index
+            Serial.print(i);                            // Print the index
+            Serial.print(F(", "));
+            Serial.print(F("AxisType_t: "));          // Debug output for the axis type
+            Serial.print(static_cast<AxisType_t>(i)); // Print the axis type
+            Serial.print(F(", "));
+            Serial.print(F("AxisType_t: "));                                          // Debug output for the axis type
+            Serial.print(Kinematics->getAxis(static_cast<AxisType_t>(i))->getName()); // Print the axis name
+            Serial.print(F(", "));
+            Serial.print(F("AxisType_t: "));                                           // Debug output for the axis type
+            Serial.print(Kinematics->getAxis(static_cast<AxisType_t>(i))->getValue()); // Print the axis value
+            Serial.println(F(" - "));                                                  // Debug output for the axis value
             int16_t vel = Kinematics->getAxis(static_cast<AxisType_t>(i))->getValue();
 
-            message[i * 2] = (byte)vel & 0xFF;     // Store the lower byte of the velocity
-            message[i * 2 + 1] = (byte)(vel >> 8); // Store the upper byte of the velocity
+            uint8_t i_msg = (i - idx_start) * 2;   // Calculate the index (zero based) in the message array for the current axis
+            message[i_msg] = (byte)vel & 0xFF;     // Store the lower byte of the velocity
+            message[i_msg + 1] = (byte)(vel >> 8); // Store the upper byte of the velocity
 
             isAllZero &= (vel == 0); // Check if all values are zero, if one value is not zero, the flag will be false.
         }
@@ -55,9 +81,15 @@ public:
         for (uint8_t i = AxisType_t::ROTX; i < AxisType_t::LENGTH; i++) {
             int16_t vel = Kinematics::getInstance()->getAxis(static_cast<AxisType_t>(i))->getValue();
             if (vel != 0) {
+                Serial.print("Axis ");
+                Serial.print(i);
+                Serial.print(" is not zero: ");
+                Serial.print(vel); // Print the non-zero axis value for debugging
+                Serial.println();
                 return false; // If any axis is not zero, return false
             }
         }
-        return true; // All axes are zero
+        Serial.println("All axes are zero."); // Debug output
+        return true;                          // All axes are zero
     }
 };

@@ -16,7 +16,9 @@ HIDStateSendrotation::~HIDStateSendrotation() {
 }
 
 void HIDStateSendrotation::apply() {
-    // Serial.print("Send rotation: ");
+    Serial.println(F("Current state: HIDStateSendrotation"));
+    data->output(); // Output the state data for debugging purposes
+
     if (!isNewHidReportDue()) {
         return;
     }
@@ -32,5 +34,5 @@ void HIDStateSendrotation::apply() {
 
     // NOTE: In the original software, there was a check for the key data to see if it was different from the previous key data.
     //       This is not necessary in the new implementation, as the key data is handled separately in the HIDStateSendkeys class.
-    context->setState(new HIDStateSendkeys()); // Set the next state to start
+    context->setState(new HIDStateSendkeys());
 }

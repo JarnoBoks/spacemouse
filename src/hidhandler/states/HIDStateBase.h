@@ -27,8 +27,14 @@ protected:
     inline bool isNewHidReportDue() {
         // calculate the difference between now and the last time it was sent
         // such a difference calculation is safe with regard to integer overflow after 48 days
-        // return ((millis() - data->lastHIDsentRep) >= HIDUPDATERATE_MS);
         data->now = millis(); // Update the current time
+        bool ret = (data->now - data->lastHIDsentRep) >= HIDUPDATERATE_MS;
+        if (!ret) {
+            Serial.println(F("HIDStateBase::isNewHidReportDue() - not yet due: "));
+        } else {
+            Serial.println(F("HIDStateBase::isNewHidReportDue() - due: "));
+        }
+
         return ((data->now - data->lastHIDsentRep) >= HIDUPDATERATE_MS);
     }
 

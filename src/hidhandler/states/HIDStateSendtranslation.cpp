@@ -14,6 +14,9 @@ HIDStateSendtranslation::~HIDStateSendtranslation() {
 };
 
 void HIDStateSendtranslation::apply() {
+    Serial.println(F("Current state: HIDStateSendtranslation, with:"));
+    data->output(); // Output the state data for debugging purposes
+
     if (!isNewHidReportDue()) {
         return; // if no new HID report is due, return
     }
@@ -23,7 +26,6 @@ void HIDStateSendtranslation::apply() {
                                       // the toggleValue is toggled after sending the rotations, down below
 #endif
 
-    // Serial.print("Send translation: ");
     //  Send new translational values
     translator->execute();
 

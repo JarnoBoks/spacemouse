@@ -11,11 +11,18 @@ private:
     HIDStateBase *currentState = nullptr; // Pointer to the current HID state
     HIDStateData *stateData = nullptr;    // Pointer to the state data object - public for states to access
 public:
-    HIDHandlerController() : currentState(new HIDStateStart()) {
+    /**
+     * @brief Constructor to initialize the HID handler controller.
+     * @details This constructor initializes the state machine to the initial state and sets up the context and state data.
+     *          It also sets the context for the current state and initializes the state data.
+     *          With use of the initializer list the state is set to the 'Start' state.
+     *
+     */
+    HIDHandlerController() : currentState(new HIDStateStart()), stateData(new HIDStateData()) {
         Serial.println("HIDHandlerController::HIDHandlerController()"); // Debug output to indicate the constructor is called
-        currentState->set_context(this);                                // Set the context for the current state
-        stateData = new HIDStateData();                                 // Initialize the state data object that will travel along with the states.
-        // currentState->set_data(new HIDStateData()); // Initialize the state data object that will travel along with the states.
+
+        currentState->set_context(this);   // Set the context for the current state
+        currentState->set_data(stateData); // Initialize the state data
     }
 
     // Constructor to initialize the state machine with a specific state
@@ -26,8 +33,8 @@ public:
     }
 
     ~HIDHandlerController() {
-        delete currentState; // Clean up the current state
-        delete stateData;    // Clean up  the state data object
+        delete currentState; // Clean up the current state object
+        delete stateData;    // Clean up the state data object
     };
 
     /**
@@ -38,9 +45,7 @@ public:
     void execute() {
         Serial.println("HIDHandlerController::execute()"); // Debug output to indicate the execute method is called
         if (currentState) {
-            Serial.print("now: ");
-            Serial.println(stateData->now); // Debug output to indicate the state is being applied
-            currentState->apply();          // Apply the current state
+            currentState->apply(); // Apply the current state
         }
     };
 

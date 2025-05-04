@@ -17,7 +17,24 @@ public:
             prevKeyData[i] = 0; // Initialize the previous key data to zero
         }
         now = millis();
-        lastHIDsentRep = now; // Set the last HID report time to now
+        lastHIDsentRep = now;                          // Set the last HID report time to now
+        Serial.print(F("HIDStateData initialized: ")); // Debug output
+        output();                                      // Output the state data for debugging purposes
+    }
+
+    void output() {
+        // Output the state data for debugging purposes
+        Serial.print(F("__data= lastHIDsentRep: "));
+        Serial.print(lastHIDsentRep);
+        Serial.print(F(", now: "));
+        Serial.print(now);
+        Serial.print(F(", hasSentNewData: "));
+        Serial.print(hasSentNewData);
+        Serial.print(F(", countTransZeros: "));
+        Serial.print(countTransZeros);
+        Serial.print(F(", countRotZeros: ")); // Updated to use F() macro for string literal
+        Serial.print(countRotZeros);
+        Serial.println();
     }
 
     // State variables - these are used to manage the state(or state transitions) of the HID report sending

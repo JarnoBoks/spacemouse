@@ -20,8 +20,8 @@ private:
 protected:
 public:
     SpaceMouseHID() {
-        Serial.println("SpaceMouseHID::SpaceMouseHID()"); // Debug output to indicate the constructor is called
-        controller_ = new HIDHandlerController();         // Initialize the state machine to the initial state
+        Serial.println(F("Constr.SpaceMouseHID::SpaceMouseHID()")); // Debug output to indicate the constructor is called
+        controller_ = new HIDHandlerController();                   // Initialize the state machine to the initial state
     }
 
     ~SpaceMouseHID() {
@@ -29,7 +29,6 @@ public:
     }
 
     void execute() {
-        Serial.println("SpaceMouseHID::execute()"); // Debug output to indicate the execute method is called
         controller_->execute();
     }
 };

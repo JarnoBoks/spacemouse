@@ -17,12 +17,13 @@ public:
             prevKeyData[i] = 0; // Initialize the previous key data to zero
         }
         now = millis();
-        lastHIDsentRep = now;                          // Set the last HID report time to now
-        Serial.print(F("HIDStateData initialized: ")); // Debug output
-        output();                                      // Output the state data for debugging purposes
+        lastHIDsentRep = now; // Set the last HID report time to now
     }
 
-    void output() {
+    /**
+     * @brief This function prints the current state data for debugging purposes.
+     */
+    void printHIDStateData() {
         // Output the state data for debugging purposes
         Serial.print(F("__data= lastHIDsentRep: "));
         Serial.print(lastHIDsentRep);

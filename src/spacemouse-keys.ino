@@ -127,7 +127,11 @@ void setup() {
     // char buffer[32] = "DEBUG 1";
     // myCommandHandler.handleInput(buffer, 32, 1);
 
+#if 0
     cstmDelay(7500);                       // Debugging: give the user some time to open the serial monitor and start the debugging process
+#endif
+
+    // REVIEW - Can we fall back to a solution without the "new" operator and just setup a 'global' variable?
     mySpaceMouseHID = new SpaceMouseHID(); // Initialize the HID interface
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
@@ -166,7 +170,7 @@ void loop() {
 #endif
 
 #ifdef ARDUINO_ARCH_AVR
-    // FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
+    // REVIEW - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
     mySpaceMouseHID->execute();
 #endif
 

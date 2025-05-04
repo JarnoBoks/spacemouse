@@ -1,6 +1,5 @@
 #pragma once
 #include "config.h"
-#include <stdint.h> // for uint8_t
 
 // Send a HID report every 8 ms (125 Hz)
 #ifndef HIDUPDATERATE_MS

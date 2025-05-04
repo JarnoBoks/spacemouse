@@ -15,8 +15,6 @@ HIDStateStart::~HIDStateStart() {
 };
 
 void HIDStateStart::apply() {
-    Serial.println(F("Current state: HIDStateStart"));
-    data->output(); // Output the state data for debugging purposes
 
     //  Check if there is something to send. If there are zero data packages to send (have to send 3 in total) or if any of the axes has movement,
     //  proceed to the next state. This function is evaluated every time the state is called.

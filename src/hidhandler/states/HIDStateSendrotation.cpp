@@ -16,8 +16,6 @@ HIDStateSendrotation::~HIDStateSendrotation() {
 }
 
 void HIDStateSendrotation::apply() {
-    Serial.println(F("Current state: HIDStateSendrotation"));
-    data->output(); // Output the state data for debugging purposes
 
     if (!isNewHidReportDue()) {
         return;

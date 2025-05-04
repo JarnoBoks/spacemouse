@@ -6,6 +6,11 @@
 #include "states/HIDStateBase.h"  // for HIDStateBase
 #include "states/HIDStateStart.h" // for HIDStateInit
 
+/**
+ * @brief This class handles the HID state machine and manages the current state.
+ * @details It initializes the state machine to the initial state and sets up the context and state data.
+ *          It also provides methods to execute the current state and set a new state.
+ */
 class HIDHandlerController {
 private:
     HIDStateBase *currentState = nullptr; // Pointer to the current HID state
@@ -14,22 +19,11 @@ public:
     /**
      * @brief Constructor to initialize the HID handler controller.
      * @details This constructor initializes the state machine to the initial state and sets up the context and state data.
-     *          It also sets the context for the current state and initializes the state data.
      *          With use of the initializer list the state is set to the 'Start' state.
-     *
      */
     HIDHandlerController() : currentState(new HIDStateStart()), stateData(new HIDStateData()) {
-        Serial.println("HIDHandlerController::HIDHandlerController()"); // Debug output to indicate the constructor is called
-
         currentState->set_context(this);   // Set the context for the current state
         currentState->set_data(stateData); // Initialize the state data
-    }
-
-    // Constructor to initialize the state machine with a specific state
-    HIDHandlerController(HIDStateBase *state) : currentState(state) {
-        Serial.println("HIDHandlerController::HIDHandlerController(HIDStateBase *state)"); // Debug output to indicate the constructor is called
-        currentState->set_context(this);                                                   // Set the context for the current state
-        currentState->set_data(stateData);                                                 // Initialize the state data
     }
 
     ~HIDHandlerController() {
@@ -43,7 +37,6 @@ public:
      *          which performs the action associated with that state.
      */
     void execute() {
-        Serial.println("HIDHandlerController::execute()"); // Debug output to indicate the execute method is called
         if (currentState) {
             currentState->apply(); // Apply the current state
         }

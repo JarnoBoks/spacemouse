@@ -30,9 +30,7 @@ protected:
         data->now = millis(); // Update the current time
         bool ret = (data->now - data->lastHIDsentRep) >= HIDUPDATERATE_MS;
         if (!ret) {
-            Serial.println(F("HIDStateBase::isNewHidReportDue() - not yet due: "));
         } else {
-            Serial.println(F("HIDStateBase::isNewHidReportDue() - due: "));
         }
 
         return ((data->now - data->lastHIDsentRep) >= HIDUPDATERATE_MS);

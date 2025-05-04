@@ -34,34 +34,14 @@ public:
     virtual ~TranslatorKinematicsBase() = default; // Default destructor
 
     virtual void execute() {
-        Serial.println(F("TranslatorKinematicsBase::execute() - ")); // Debug output to indicate the execute method is called
 
         if (idx_start == AxisType_t::UNINITIALIZED || idx_end == AxisType_t::UNINITIALIZED) {
-            Serial.println(F("Base: not initialized"));
             return; // If the start or end index is uninitialized, do nothing
         }
-
-        Serial.print(F("Base: idx_start: "));
-        Serial.print(idx_start); // Debug output for the start index
-        Serial.print(F(", idx_end: "));
-        Serial.print(idx_end); // Debug output for the end index
-        Serial.println(F(" - "));
 
         Kinematics *Kinematics = Kinematics::getInstance();
 
         for (uint8_t i = idx_start; i <= idx_end; i++) {
-            Serial.print(F("Base: proces Axis (i): ")); // Debug output for the index
-            Serial.print(i);                            // Print the index
-            Serial.print(F(", "));
-            Serial.print(F("AxisType_t: "));          // Debug output for the axis type
-            Serial.print(static_cast<AxisType_t>(i)); // Print the axis type
-            Serial.print(F(", "));
-            Serial.print(F("AxisType_t: "));                                          // Debug output for the axis type
-            Serial.print(Kinematics->getAxis(static_cast<AxisType_t>(i))->getName()); // Print the axis name
-            Serial.print(F(", "));
-            Serial.print(F("AxisType_t: "));                                           // Debug output for the axis type
-            Serial.print(Kinematics->getAxis(static_cast<AxisType_t>(i))->getValue()); // Print the axis value
-            Serial.println(F(" - "));                                                  // Debug output for the axis value
             int16_t vel = Kinematics->getAxis(static_cast<AxisType_t>(i))->getValue();
 
             uint8_t i_msg = (i - idx_start) * 2;   // Calculate the index (zero based) in the message array for the current axis
@@ -77,19 +57,13 @@ public:
     }
 
     inline bool areAllAxisZero() const {
-        Serial.println("Checking if all axes are zero..."); // Debug output
         for (uint8_t i = AxisType_t::ROTX; i < AxisType_t::LENGTH; i++) {
             int16_t vel = Kinematics::getInstance()->getAxis(static_cast<AxisType_t>(i))->getValue();
             if (vel != 0) {
-                Serial.print("Axis ");
-                Serial.print(i);
-                Serial.print(" is not zero: ");
-                Serial.print(vel); // Print the non-zero axis value for debugging
-                Serial.println();
                 return false; // If any axis is not zero, return false
             }
         }
-        Serial.println("All axes are zero."); // Debug output
-        return true;                          // All axes are zero
+
+        return true; // All axes are zero
     }
 };

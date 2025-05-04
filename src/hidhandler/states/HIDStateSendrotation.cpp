@@ -2,9 +2,7 @@
 #include <hidhandler/translator/TranslatorKinematicsRotation.h> // for TranslatorKinematicsRotation
 #include <hidhandler/HIDHandlerController.h>                    // For HIDHandlerController (context)
 
-#include "config.h" // for NUMKEYS
-
-// Includes for the target states
+// Includes for the possible target states
 #include "HIDStateStart.h"
 #include "HIDStateSendkeys.h"
 

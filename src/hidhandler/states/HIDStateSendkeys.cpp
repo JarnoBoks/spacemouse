@@ -2,7 +2,7 @@
 #include <hidhandler/translator/TranslatorKeys.h> // for TranslatorKeys
 #include <hidhandler/HIDHandlerController.h>      // For HIDHandlerController (context)
 
-// Includes for the target states
+// Includes for the possible target states
 #include "HIDStateStart.h"
 
 HIDStateSendkeys::HIDStateSendkeys() {

@@ -149,15 +149,15 @@ If you have the joystick TeachingTech recommended:
 ==============================================
 Default assembly when looking from above on top of the space mouse
  *
- *    back(USB)     resulting axis (not from the single sensors)
+ *    back(USB)     resulting axis (top view)                  Key locations
  *
  *      7   6              Y+
- *        |                .
- *   8    |    3           .
- *     ---+---        X-...Z+...X+
- *   9    |    2           .
- *        |                .
- *      0   1              Y-
+ *        |                .                                         |
+ *   8    |    3           .                                         |
+ *     ---+---        X-...Z+...X+                            K2  ---+--- K1
+ *   9    |    2           .                                         |
+ *        |                .                                         |
+ *      0   1              Y-                                        K0
  *
 
 Each sensor is affected by the position of the magnet. If the magnet moves closer to the sensor the output values should decrease.

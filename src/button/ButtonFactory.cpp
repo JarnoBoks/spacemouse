@@ -43,6 +43,11 @@ void ButtonFactory::evaluate() {
     }
 }
 
+/**
+ * @brief Retrieves the button commands for HID
+ * @param cmds Pointer to the array where the commands will be stored
+ * @return The number of commands that have to be sent
+ */
 int8_t ButtonFactory::getButtonCommandsForHID(uint8_t *cmds) {
     uint8_t result_idx = 0; // Index for the result array
     for (int i = 0; i < buttonCount; i++) {
@@ -51,20 +56,32 @@ int8_t ButtonFactory::getButtonCommandsForHID(uint8_t *cmds) {
             continue; // Skip buttons that are not pressed
         }
 
+#if 0
+        Serial.print(F("ButtonFactory::getButtonCommandsForHID() - Button ")); // Debug output to indicate the button state
+        Serial.print(i);
+        Serial.print(F(" State: "));
+        Serial.println(state ? "Pressed" : "Not Pressed");
+#endif
         CommandType cmd = buttons[i]->getCommandType(); // Get the command type for each button
+#if 0
+        Serial.print(F("ButtonFactory::getButtonCommandsForHID() - Command Type: "));
+#endif
+        Serial.println(static_cast<int>(cmd)); // Debug output to indicate the command type
+
         if (cmd == CommandType::NONE || cmd == CommandType::KILLROTATION || cmd == CommandType::KILLTRANSLATION) {
             continue; // Skip buttons without a HID command.
         }
 
         cmds[result_idx++] = static_cast<uint8_t>(cmd); // Store the command type in the result array
     }
-    return result_idx; // Return the number of commands found
+    return result_idx; // Return the number of commands that have to be sent
 }
 
 void ButtonFactory::setupButtons() {
-    // Create buttons based on the configuration
+    // Create buttons based on the configuration in config.h
 
     // Physical keys are created first
+
     // The number of buttons is limited by NUMKEYS.
     // The KEY_PINLIST should contain the Arduino pin numbers for the physical keys.
     int8_t keyPinList[NUMKEYS] = KEY_PINLIST; // Array to hold the key list
@@ -76,11 +93,11 @@ void ButtonFactory::setupButtons() {
         // Set up a physical button.
         ButtonBase *btn = new PhysicalButton(i, keyPinList[i]); // Create a new button instance
 
-        if (i == KILLROT) {
+        if (NUMKILLKEYS > 0 && i == KILLROT) {
             // Attach killrot functionality
             btn->setFunctionality(new KillRotationFunctionality(), CommandType::KILLROTATION);
 
-        } else if (i == KILLTRANS) {
+        } else if (NUMKILLKEYS > 0 && i == KILLTRANS) {
             // Attach killtrans functionality
             btn->setFunctionality(new KillTranslationFunctionality(), CommandType::KILLTRANSLATION);
 

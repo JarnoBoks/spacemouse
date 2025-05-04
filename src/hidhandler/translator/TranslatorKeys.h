@@ -13,6 +13,11 @@ private:
     uint8_t *prevKeyData = nullptr; // Pointer to the previous data (not used in this class)
 protected:
 public:
+    /**
+     * @brief Constructor for TranslatorKeys class
+     * @details This constructor initializes the keyData array and sets up the previous key data pointer.
+     * @param prevKeyData Pointer to the previous key data
+     */
     TranslatorKeys(uint8_t *prevKeyData = nullptr) : prevKeyData(prevKeyData) {
         // Init or empty the keyData array
         for (int i = 0; i < KEYDATASIZE; i++) {

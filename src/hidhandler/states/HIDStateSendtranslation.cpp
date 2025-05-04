@@ -2,7 +2,7 @@
 #include <hidhandler/translator/TranslatorKinematicsTranslation.h> // for TranslatorKinematicsRotation
 #include <hidhandler/HIDHandlerController.h>                       // For HIDHandlerController (context)
 
-// Includes for the target states
+// Includes for the possible target states
 #include "HIDStateSendrotation.h"
 
 HIDStateSendtranslation::HIDStateSendtranslation() {

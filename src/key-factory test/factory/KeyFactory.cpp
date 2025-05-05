@@ -1,35 +1,55 @@
 // KeyFactory.h
 #include "KeyFactory.h"
 
-#include "KeyType.h"
-#include "KeyBase.h"
-#include "PhysicalKey.h"
-#include "RotaryKey.h"
-#include "config.h"
+// Include header files for key functionalities
+#include "../functionality/KillRotationFunctionality.h"    // For KillRotationFunctionality
+#include "../functionality/KillTranslationFunctionality.h" // For KillRotationFunctionality
+#include "../functionality/CommandKeyFunctionality.h"      // For KillSwitchKeyFunctionality
 
-#include "functionality/KillRotationFunctionality.h"    // For KillRotationFunctionality
-#include "functionality/KillTranslationFunctionality.h" // For KillRotationFunctionality
-#include "functionality/CommandKeyFunctionality.h"      // For KillSwitchKeyFunctionality
+void KeyFactory::setupFunctionality(Key *key) {
+    // Get the pinNumber from the config.h object for this key
+    constexpr uint8_t number_of_keys = CFG_NUMBER_OF_KEYS;
+    uint8_t key_CFG[number_of_keys][3] = KEYCFG; // Array to hold the key configuration
+    uint8_t id = key->getId();                   // Get the ID from the key object
 
+    uint8_t rcmd = key_CFG[id][1]; // Get the command type for the physical key
+
+    if (rcmd == KILLROT) {
+        key->setFunctionality(new KillRotationFunctionality(), CommandType::KILLROTATION);
+    } else if (rcmd == KILLTRANS) {
+        // Attach killtrans functionality
+        key->setFunctionality(new KillTranslationFunctionality(), CommandType::KILLTRANSLATION);
+    } else {
+        // Attach 'HID functionality'
+        CommandType cmd = static_cast<CommandType>(rcmd);             // Get the command type from the key list             //FIMXE Just use int variables!
+        key->setFunctionality(new CommandKeyFunctionality(cmd), cmd); // Set the command functionality for the key
+    }
+}
+#if 0
 KeyFactory *KeyFactory::_instance = nullptr; // Initialize the static instance to nullptr
 
-KeyFactory::KeyFactory() : keyCount(0) {}
+KeyFactory::KeyFactory() : m_keyCount(0) {}
 KeyFactory::~KeyFactory() {
-    for (int i = 0; i < keyCount; i++) {
+    for (int i = 0; i < m_keyCount; i++) {
         delete keys[i]; // Delete the key instances to free memory
     }
 }
+#endif
 
+#if 0
 KeyFactory *KeyFactory::getInstance() {
     if (_instance == nullptr) {
         _instance = new KeyFactory(); // Create a new instance of KeyFactory if it doesn't exist
     }
     return _instance;
 }
-#if 0
+#endif
+
+#if 0 // REMOVE - Defined as pure virtual
+
 // Base method to create empty key instances, based on the type of key requested.
-KeyBase *KeyFactory::createKey(KeyType type, KeyConfig *config) {
-    KeyBase *btn = nullptr;
+Key *KeyFactory::createKey(KeyType type, KeyConfig *config) {
+    Key *btn = nullptr;
     if (type == KeyType::PHYSICAL)
         btn = new PhysicalKey();
     else
@@ -39,12 +59,16 @@ KeyBase *KeyFactory::createKey(KeyType type, KeyConfig *config) {
     return btn;
 }
 #endif
+
+#if 0
 void KeyFactory::evaluate() {
-    for (int i = 0; i < keyCount; i++) {
+    for (int i = 0; i < m_keyCount; i++) {
         keys[i]->evaluate();
     }
 }
+#endif
 
+#if 0
 /**
  * @brief Retrieves the key commands for the HID
  * @param cmds Pointer to the array where the commands will be stored
@@ -52,7 +76,7 @@ void KeyFactory::evaluate() {
  */
 int8_t KeyFactory::getKeyCommandsForHID(uint8_t *cmds) {
     uint8_t result_idx = 0; // Index for the result array
-    for (int i = 0; i < keyCount; i++) {
+    for (int i = 0; i < m_keyCount; i++) {
         bool state = keys[i]->getState(); // Get the state of each key
         if (!state) {
             continue; // Skip keys that are not pressed
@@ -78,7 +102,8 @@ int8_t KeyFactory::getKeyCommandsForHID(uint8_t *cmds) {
     }
     return result_idx; // Return the number of commands that have to be sent
 }
-
+#endif
+#if 0
 void KeyFactory::setupKeys() {
     // Create keys based on the configuration in config.h
 
@@ -93,7 +118,7 @@ void KeyFactory::setupKeys() {
     uint8_t idxKeylist = 0;
     for (int i = 0; i < NUMKEYS; i++) {
         // Set up a physical key.
-        KeyBase *key = new PhysicalKey(i, keyPinList[i]); // Create a new key instance
+        Key *key = new PhysicalKey(i, keyPinList[i]); // Create a new key instance
 
         if (NUMKILLKEYS > 0 && i == KILLROT) {
             // Attach killrot functionality
@@ -109,7 +134,7 @@ void KeyFactory::setupKeys() {
             key->setFunctionality(new CommandKeyFunctionality(cmd), cmd);      // Set the command functionality for the key
         }
 
-        keys[keyCount++] = key; // Add the key to the list of keys
+        keys[m_keyCount++] = key; // Add the key to the list of keys
     }
 
     // --- Now we check if there is a rotary encoder and if the encoder is used as a key (ROTARY_KEYS > 0).
@@ -120,7 +145,7 @@ void KeyFactory::setupKeys() {
 
         for (int i = 0; i < 2; i++) {
             // Create a new rotary key instance
-            KeyBase *key = new RotaryKey(i); // Create a new rotary key instance
+            Key *key = new RotaryKey(i); // Create a new rotary key instance
 
             // A Rotary key can only be a command key, not a kill key. Add the command functionality to the key.
             // The command type is taken from the BUTTONLIST, which is defined in config.h.
@@ -129,7 +154,8 @@ void KeyFactory::setupKeys() {
             key->setFunctionality(new CommandKeyFunctionality(cmd), cmd);
 
             // Now setup the functionality for the rotary key
-            keys[keyCount++] = key; // Add the key to the list of keys
+            keys[m_keyCount++] = key; // Add the key to the list of keys
         }
     }
 }
+#endif

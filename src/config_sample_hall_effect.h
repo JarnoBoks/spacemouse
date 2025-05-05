@@ -4,6 +4,13 @@
    Please adjust your settings and save it as --> config.h <-- !
 */
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// NOTE !!IMPORTANT!!
+//
+// The config.h file is backwards compatible with all the previous versions of the code, except for the key configuration.
+// You have to readdress this part of the configuration file.
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 /* Calibration instructions
 ===========================
 
@@ -525,21 +532,23 @@ EXAMPLES
 
 // In order to define which key is assigned to which button, the following list must be entered in the BUTTONLIST below
 // TODO - It is technical possible to configure the button functionality from the Serial monitor. This is not implemented yet.
-#define SM_MENU 0  // Key "Menu"
-#define SM_FIT 1   // Key "Fit"
-#define SM_T 2     // Key "Top"
-#define SM_R 4     // Key "Right"
-#define SM_F 5     // Key "Front"
-#define SM_RCW 8   // Key "Roll 90°CW"
-#define SM_1 12    // Key "1"
-#define SM_2 13    // Key "2"
-#define SM_3 14    // Key "3"
-#define SM_4 15    // Key "4"
-#define SM_ESC 22  // Key "ESC"
-#define SM_ALT 23  // Key "ALT"
-#define SM_SHFT 24 // Key "SHIFT"
-#define SM_CTRL 25 // Key "CTRL"
-#define SM_ROT 26  // Key "Rotate"
+#define SM_MENU 0        // Key "Menu"
+#define SM_FIT 1         // Key "Fit"
+#define SM_T 2           // Key "Top"
+#define SM_R 4           // Key "Right"
+#define SM_F 5           // Key "Front"
+#define SM_RCW 8         // Key "Roll 90°CW"
+#define SM_1 12          // Key "1"
+#define SM_2 13          // Key "2"
+#define SM_3 14          // Key "3"
+#define SM_4 15          // Key "4"
+#define SM_ESC 22        // Key "ESC"
+#define SM_ALT 23        // Key "ALT"
+#define SM_SHFT 24       // Key "SHIFT"
+#define SM_CTRL 25       // Key "CTRL"
+#define SM_ROT 26        // Key "Rotate"
+#define AX_KILLROT 100   // Key "Kill Rotation"
+#define AX_KILLTRANS 101 // Key "Kill Translation"
 
 /* Important: BUTTONLIST must have at least as many elements as specified in NUMHIDKEYS */
 // The keys from KEYLIST or ROTARY_KEYS are assigned to buttons here:
@@ -566,6 +575,20 @@ EXAMPLES
 
 // Time in ms which is needed to allow a new (physical) button press
 #define DEBOUNCE_KEYS_MS 200
+
+#define PHYSICAL 0
+#define ROTARY 1
+#define NA -1
+
+#define CFG_NUMBER_OF_KEYS 3
+#define KEY1 {PHYSICAL, SM_T, 0}
+#define KEY2 {PHYSICAL, SM_R, 1}
+#define KEY3 {PHYSICAL, SM_F, 2}
+#define KEYCFG {KEY1, KEY2, KEY3}
+
+#define KEY4 {PHYSICAL, SM_T, 0}
+#define KEY5 {PHYSICAL, SM_R, 1}
+#define KEY6 {PHYSICAL, SM_F, 2}
 
 /* Encoder Wheel configuration
 ===============================

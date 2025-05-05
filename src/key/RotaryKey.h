@@ -4,6 +4,9 @@
 
 class RotaryKey : public KeyBase {
 public:
+    RotaryKey() : KeyBase() {}
+    RotaryKey(int8_t id) : KeyBase(id) {}
+
     void evaluate() override {
 
     };

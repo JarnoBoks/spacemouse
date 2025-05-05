@@ -27,12 +27,14 @@ KeyFactory *KeyFactory::getInstance() {
     return _instance;
 }
 
+// Base method to create empty key instances, based on the type of key requested.
 KeyBase *KeyFactory::createKey(KeyType type, KeyConfig *config) {
     KeyBase *btn = nullptr;
     if (type == KeyType::PHYSICAL)
         btn = new PhysicalKey();
     else
-        btn = new RotaryKey();
+        btn = new RotaryKey(); // Create a new rotary key with an invalid ID
+
     btn->setConfig(config);
     return btn;
 }
@@ -91,32 +93,43 @@ void KeyFactory::setupKeys() {
     uint8_t idxKeylist = 0;
     for (int i = 0; i < NUMKEYS; i++) {
         // Set up a physical key.
-        KeyBase *btn = new PhysicalKey(i, keyPinList[i]); // Create a new key instance
+        KeyBase *key = new PhysicalKey(i, keyPinList[i]); // Create a new key instance
 
         if (NUMKILLKEYS > 0 && i == KILLROT) {
             // Attach killrot functionality
-            btn->setFunctionality(new KillRotationFunctionality(), CommandType::KILLROTATION);
+            key->setFunctionality(new KillRotationFunctionality(), CommandType::KILLROTATION);
 
         } else if (NUMKILLKEYS > 0 && i == KILLTRANS) {
             // Attach killtrans functionality
-            btn->setFunctionality(new KillTranslationFunctionality(), CommandType::KILLTRANSLATION);
+            key->setFunctionality(new KillTranslationFunctionality(), CommandType::KILLTRANSLATION);
 
         } else {
             // Attach 'HID functionality'
             CommandType cmd = static_cast<CommandType>(btnList[idxKeylist++]); // Get the command type from the key list
-            btn->setFunctionality(new CommandKeyFunctionality(cmd), cmd);      // Set the command functionality for the key
+            key->setFunctionality(new CommandKeyFunctionality(cmd), cmd);      // Set the command functionality for the key
         }
 
-        keys[keyCount++] = btn; // Add the key to the list of keys
+        keys[keyCount++] = key; // Add the key to the list of keys
     }
 
-    // --- Now we check if there is a rotary encoder setup and add it to the list of keys.
-    // If ROTARAY_KEYS > 0, we create rotary keys.
-    for (int i = 0; i < ROTARY_KEYS; i++) {
+    // --- Now we check if there is a rotary encoder and if the encoder is used as a key (ROTARY_KEYS > 0).
+    // If ROTARAY_KEYS == 1, we create two rotary keys.
+    if (ROTARY_KEYS == 1) {
+        // The rotary keys are created as a pair, one for each direction.
+        uint8_t rotaryKeyBtnListIdx[2] = {ROTARY_KEY_IDX_A, ROTARY_KEY_IDX_B}; // Array to hold the rotary key index list
 
-        if (keyCount < NUMKEYS + ROTARY_KEYS) {
+        for (int i = 0; i < 2; i++) {
+            // Create a new rotary key instance
+            KeyBase *key = new RotaryKey(i); // Create a new rotary key instance
 
-            // keys[keyCount++] = createKey(KeyType::ROTARY, new RotaryKeyConfig(i));
+            // A Rotary key can only be a command key, not a kill key. Add the command functionality to the key.
+            // The command type is taken from the BUTTONLIST, which is defined in config.h.
+            uint8_t idx = rotaryKeyBtnListIdx[i];                     // Get the index for the rotary key
+            CommandType cmd = static_cast<CommandType>(btnList[idx]); // Get the command type from the button list
+            key->setFunctionality(new CommandKeyFunctionality(cmd), cmd);
+
+            // Now setup the functionality for the rotary key
+            keys[keyCount++] = key; // Add the key to the list of keys
         }
     }
 }

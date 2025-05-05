@@ -53,6 +53,11 @@ LedRing *Mouse_LEDRing;
 // Include the header file for the button factory
 #include "key/KeyFactory.h"
 
+// Include the header file for the keys (physical or rotary keys)
+#include "key-factory-test/KeyHandler.hpp"
+// Setup the keyhandler object. This will read config.h and create a handler with all the configured keys.
+KeyHandler myKeyhandler;
+
 // Include the header files for the command handler and the commands that can be received through the serial interface
 #include "commandhandler/commandhandler.h"
 #include "commandhandler/debugcommand.h"
@@ -155,12 +160,16 @@ void loop() {
         myCommandHandler.parseSerialMonitorInput();
     }
 
-    Kinematics::getInstance()->processKinematics(); // Process the kinematics of the mouse
+    // Process the kinematics of the mouse
+    Kinematics::getInstance()->processKinematics();
 
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
     // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities
     calcEncoderWheel(Mouse_Kinematics, Mouse_Calibration.GetDebug());
 #endif
+
+    // Evaluate the status of the keys
+    myKeyhandler.evaluate();
 
     KeyFactory::getInstance()->evaluate(); // Process the buttons and send the button status to the HID interface
 

@@ -609,6 +609,7 @@ Axis to replace with encoder
 /* ROTARY_KEYS configuration
 ============================
 You can use the attached encoder to emulate a key stroke by turning the encoder.
+Note: you cannot use the encoder as a 'kill-key'.
 */
 
 // Should the encoder be used as a key? (0 = no, 1 = yes)

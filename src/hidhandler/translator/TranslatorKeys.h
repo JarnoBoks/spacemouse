@@ -1,6 +1,6 @@
 #pragma once
 #include "TranslatorBase.h"
-#include "button/ButtonFactory.h"
+#include "key/KeyFactory.h"
 #include <hidhandler/usbinterface/SpaceMouseUSBInterface.h> // for SpaceMouseUSBInterface
 #include <hidhandler/HIDHandlerConfig.h>
 #include <stdint.h>
@@ -25,7 +25,7 @@ public:
         }
 
         uint8_t cmds[NUMHIDKEYS];
-        int8_t count = ButtonFactory::getInstance()->getButtonCommandsForHID(cmds); // Get the button commands for HID
+        int8_t count = KeyFactory::getInstance()->getKeyCommandsForHID(cmds); // Get the button commands for HID
 
         for (int8_t i = 0; i < count; i++) {
             keyData[(cmds[i] / 8)] = (1 << (cmds[i] % 8));
@@ -43,7 +43,7 @@ public:
         }
 
         uint8_t cmds[NUMHIDKEYS];
-        int8_t count = ButtonFactory::getInstance()->getButtonCommandsForHID(cmds); // Get the button commands for HID
+        int8_t count = KeyFactory::getInstance()->getKeyCommandsForHID(cmds); // Get the button commands for HID
 
         for (int8_t i = 0; i < count; i++) {
             keyData[(cmds[i] / 8)] = (1 << (cmds[i] % 8));

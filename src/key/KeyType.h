@@ -1,6 +1,6 @@
-// ButtonType.h
+// KeyType.h
 #pragma once
-enum class ButtonType {
+enum class KeyType {
     PHYSICAL,
     ROTARY,
 };

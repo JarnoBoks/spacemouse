@@ -51,7 +51,7 @@ LedRing *Mouse_LEDRing;
 #endif
 
 // Include the header file for the button factory
-#include "button/ButtonFactory.h"
+#include "key/KeyFactory.h"
 
 // Include the header files for the command handler and the commands that can be received through the serial interface
 #include "commandhandler/commandhandler.h"
@@ -103,7 +103,7 @@ void setup() {
     SpaceMouseUSBInterface_::getInstance();
 
     // Call the setup function of the button factory. This will setup the buttons and the button configuration.
-    ButtonFactory::getInstance()->setupButtons();
+    KeyFactory::getInstance()->setupKeys(); // Updated from setupButtons() to setupKeys()
 
     // Start the idle calibration of the sensors. This will zero the sensors during the loop.
     // TODO - During setup we aren't interested in the output of the calibration process.
@@ -162,7 +162,7 @@ void loop() {
     calcEncoderWheel(Mouse_Kinematics, Mouse_Calibration.GetDebug());
 #endif
 
-    ButtonFactory::getInstance()->evaluate(); // Process the buttons and send the button status to the HID interface
+    KeyFactory::getInstance()->evaluate(); // Process the buttons and send the button status to the HID interface
 
 #if ROTARY_KEYS > 0
     // The encoder wheel shall be treated as a key.

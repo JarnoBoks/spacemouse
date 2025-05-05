@@ -5,7 +5,7 @@
 class AxisConfig;       // Forward declaration of AxisConfig class
 class SensorConfig;     // Forward declaration of SensorConfig class
 class KinematicsConfig; // Forward declaration of Kinematics class
-class ButtonConfig;     // Forward declaration of ButtonConfig class
+class KeyConfig;        // Forward declaration of KeyConfig class
 
 class EEPROMStore {
 private:
@@ -19,10 +19,10 @@ public:
     static bool loadConfig(AxisConfig &config, const int axisnumber);
     static bool loadConfig(SensorConfig &config, const int sensornumber);
     static bool loadConfig(KinematicsConfig &config);
-    static bool loadConfig(ButtonConfig &config, const int8_t buttonnumber);
+    static bool loadConfig(KeyConfig &config, const int8_t buttonnumber);
 
     static void saveConfig(AxisConfig &config, const int axisnumber);
     static void saveConfig(SensorConfig &config, const int sensornumber);
     static void saveConfig(KinematicsConfig &config);
-    static void saveConfig(ButtonConfig &config, const int8_t buttonnumber);
+    static void saveConfig(KeyConfig &config, const int8_t buttonnumber);
 };

@@ -1,9 +1,9 @@
 // KillTranslationFunctionality.h
 #pragma once
-#include "KillSwitchButtonFunctionality.h"
+#include "KillSwitchFunctionality.h"
 #include "kinematics/kinematics.h"
 
-class KillTranslationFunctionality : public KillSwitchButtonFunctionality {
+class KillTranslationFunctionality : public KillSwitchFunctionality {
 public:
     void onPress() override {
         Kinematics::getInstance()->killTranslation(true); // Set the kill switch for translation axes to true

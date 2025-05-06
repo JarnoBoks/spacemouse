@@ -7,7 +7,7 @@ int8_t Key::getHIDCommand(uint8_t *cmds) {
     }
 
 #if 0
-    Serial.print(F("KeyHandler::getHIDcommands() - Key ")); // Debug output to indicate the key state
+    Serial.print(F("KeyCollection::getHIDcommands() - Key ")); // Debug output to indicate the key state
     Serial.print(i);
     Serial.print(F(" State: "));
     Serial.println(state ? "Pressed" : "Not Pressed");

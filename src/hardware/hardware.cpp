@@ -99,3 +99,10 @@ void Hardware::notifyObservers() {
         observers[i]->update(this); // Notify each observer, with the hardware instance as parameter
     }
 }
+
+void Hardware::clearObservers() {
+    for (int i = 0; i < observerCount; i++) {
+        observers[i] = nullptr;
+    }
+    observerCount = 0;
+}

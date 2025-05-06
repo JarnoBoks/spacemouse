@@ -1,14 +1,15 @@
-// TODO - Rename to HardwareFactory
+// TODO - Rename to HardwareFactory / HardwareCollection
 // NOTE - The software architecture is inspired by https://stackoverflow.com/questions/1820477/c-static-virtual-members
 
 #pragma once
 #define MAX_SENSORS 8
 
 #include "axis/axis.h" // for AxisType enum
-#include "observers/IObserver.hpp"
 #include "sensor/sensor.h"
+#include "observers/IObserver.hpp"
+#include "IObservable.hpp" // For IObservable interface
 
-class Hardware {
+class Hardware : public IObservable {
 private:
     IObserver *observers[MAX_HARDWARE_OBSERVERS] = {nullptr}; // Array of observers
     uint8_t observerCount = 0;
@@ -45,9 +46,10 @@ public:
 
     virtual void setAnalogReference(const bool isDebug = false);
 
-    void attachObserver(IObserver *observer);
-    void detachObserver(IObserver *observer);
-    void notifyObservers(); // Notify all observers of changes
+    void attachObserver(IObserver *observer); // REFACTOR - Move to Interface!
+    void detachObserver(IObserver *observer); // REFACTOR - Move to Interface!
+    void clearObservers();                    // REFACTOR - Move to Interface!
+    void notifyObservers();                   // Notify all observers of changes //REFACTOR - Move to Interface!
 
     Sensor *sensors[MAX_SENSORS] = {nullptr}; // Array of sensor pointers, public defined so it can be used in the observer class
     Sensor *getSensorByName(const char *name) const;

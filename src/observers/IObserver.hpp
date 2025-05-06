@@ -9,6 +9,8 @@
 // Forward declaration of classes that are observed (to avoid circular dependencies)
 class Kinematics;
 class Hardware;
+class KeyCollection;
+class IObservable;
 
 /**
  * @brief Interface for observer classes that respond to updates from observed objects.
@@ -24,4 +26,5 @@ public:
 
     virtual void update(Kinematics *kinematics);
     virtual void update(Hardware *hardware);
+    virtual void update(KeyCollection *keyCollection);
 };

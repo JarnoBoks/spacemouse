@@ -23,8 +23,6 @@ public:
     ~PhysicalKey() override = default; // Destructor
 
     inline void evaluate() override {
-        // Implement logic to read the key status
-        // int8_t pinNumber = static_cast<PhysicalKeyConfig *>(config)->getPin(); // Get the pin number from the configuration
 
         if (m_pinNumber >= 0) {
             m_keyState = (digitalRead(m_pinNumber) == LOW); // Assuming LOW means pressed

@@ -1,4 +1,4 @@
-#include "KeyHandler.hpp"
+#include "KeyCollection.hpp"
 #include <Arduino.h> // Include Arduino library for Serial  function
 
 /**
@@ -6,7 +6,7 @@
  * @param cmds Pointer to the array where the commands will be stored
  * @return The number of commands that have to be sent
  */
-int8_t KeyHandler::getHIDcommands(uint8_t *cmds) {
+int8_t KeyCollection::getHIDcommands(uint8_t *cmds) {
     uint8_t result_idx = 0;
     for (int i = 0; i < m_keyCount; i++) {
         result_idx += keys[i]->getHIDCommand(cmds + result_idx); // Get the HID command for each key
@@ -15,8 +15,13 @@ int8_t KeyHandler::getHIDcommands(uint8_t *cmds) {
     return result_idx; // Return the number of commands that have to be sent
 }
 
-void KeyHandler::evaluate() {
+void KeyCollection::evaluate() {
     for (int i = 0; i < m_keyCount; i++) {
         keys[i]->evaluate();
     }
 }
+
+void attachObserver(IObserver *observer); // REFACTOR - Move to Interface!
+void detachObserver(IObserver *observer); // REFACTOR - Move to Interface!
+void notifyObservers();                   // Notify all observers of changes // REFACTOR - Move to Interface!
+void clearObservers();                    // REFACTOR - Move to Interface!

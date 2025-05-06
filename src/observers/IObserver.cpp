@@ -11,3 +11,8 @@ void IObserver::update(Hardware *hardware) {
     // Doing nothing here, as this is a virtual function to be overridden by derived classes.
     // Additional implementation can be added in derived classes.
 }
+
+void IObserver::update(KeyCollection *keyCollection) {
+    // Doing nothing here, as this is a virtual function to be overridden by derived classes.
+    // Additional implementation can be added in derived classes.
+}

@@ -21,6 +21,7 @@ private:
 
 protected:
     bool isDebugOutputDue(); // Check if a new debug output should be printed
+
 public:
     DebugOutput() = default;  // Default constructor
     virtual ~DebugOutput() {} // Default destructor

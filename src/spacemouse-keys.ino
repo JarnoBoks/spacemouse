@@ -56,7 +56,7 @@ LedRing *Mouse_LEDRing;
 // Include the header file for the keys (physical or rotary keys)
 #include "key-factory-test/KeyHandler.hpp"
 // Setup the keyhandler object. This will read config.h and create a handler with all the configured keys.
-KeyHandler myKeyhandler;
+KeyCollection myKeyhandler;
 
 // Include the header files for the command handler and the commands that can be received through the serial interface
 #include "commandhandler/commandhandler.h"

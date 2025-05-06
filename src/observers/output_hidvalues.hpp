@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ObserverDebugOutput.hpp"
+#include "DebugOutput\DebugOutput.hpp"
 #include "kinematics/kinematics.h"
 
-class Output_HIDValues : public ObserverDebugOutput {
+class Output_HIDValues : public DebugOutput {
 private:
 protected:
     virtual const int getHIDValue(const Axis *axis) const = 0;

@@ -2,8 +2,8 @@
 #include <Arduino.h>
 #include "kinematics/kinematics.h"
 #include "hardware/hardware.h"
-#include "observers/output_axisvalues.h"
-#include "observers/output_sensorvalues.h"
+#include "..\..\observers\DebugOutput\DebugOutputAxesModified.hpp"             // Implementation of the ODebugOutputAxes class
+#include "..\..\observers\DebugOutput\DebugOutputSensorsCenteredNoNewline.hpp" // Implementation of the ODebugOutputSensors class
 
 // Only log to serial if not using Arduino AVR architecture
 #ifndef ARDUINO_ARCH_AVR
@@ -29,15 +29,15 @@ DebugParamSensorAxisInformation::~DebugParamSensorAxisInformation() {
 
 /**
  * @brief Applies the debug parameters by instantiating the observers and attaching them to the hardware & kinematics.
- * @details This method creates instances of the Output_SensorValuesCenteredWithoutNewline and Output_AxisValuesModified classes,
+ * @details This method creates instances of the Output_SensorValuesCenteredWithoutNewline and DebugOutputAxesModified classes,
  *          and attaches them to the hardware and kinematics instances respectively.
  *          This allows for monitoring and reporting of sensor values and axis values during debugging.
  */
 void DebugParamSensorAxisInformation::apply() {
 
     // Instantiate the Observers and attach them to the hardware
-    SensorObserver = new Output_SensorValuesCenteredWithoutNewline();
-    AxisObserver = new Output_AxisValuesModified();
+    SensorObserver = new DebugOutputSensorsCenteredNoNewline();
+    AxisObserver = new DebugOutputAxesModified();
 
     Hardware::getInstance()->attachObserver(SensorObserver);
     Kinematics::getInstance()->attachObserver(AxisObserver);

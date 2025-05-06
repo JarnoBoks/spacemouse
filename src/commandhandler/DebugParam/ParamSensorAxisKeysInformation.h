@@ -1,13 +1,13 @@
 #pragma once
 
 #include "IDebugParam.h"
-#include "observers/output_axisvalues.h"
-#include "observers/output_sensorvalues.h"
+#include "..\..\observers\DebugOutput\DebugOutputAxes.hpp"    // Base class for axes observers       //REVIEW - Can we use the Interface instead of the base class?
+#include "..\..\observers\DebugOutput\DebugOutputSensors.hpp" // Base class for sensor observers     //REVIEW - Can we use the Interface instead of the base class?
 
 class DebugParamSensorAxisKeysInformation : public IDebugParam {
 protected:
-    Output_AxisValues *AxisObserver = nullptr;     // Pointer to the raw sensor observer instance       // REVIEW - Why is this necesar
-    Output_SensorValues *SensorObserver = nullptr; // Pointer to the raw sensor observer instance
+    DebugOutputAxes *AxisObserver = nullptr;      // Pointer to the raw sensor observer instance       // REVIEW - Why is this necesar
+    DebugOutputSensors *SensorObserver = nullptr; // Pointer to the raw sensor observer instance
 public:
     DebugParamSensorAxisKeysInformation() = default; // Constructor
     virtual ~DebugParamSensorAxisKeysInformation();  // Destructor to clean up the observer instance

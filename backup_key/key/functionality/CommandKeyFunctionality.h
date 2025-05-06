@@ -4,7 +4,6 @@
 #include "CommandType.h"
 
 class CommandKeyFunctionality : public IKeyFunctionality {
-private:
     CommandType command;
 
 public:
@@ -12,7 +11,6 @@ public:
     inline void onPress() override {};   // Called when the key is pressed
     inline void onRelease() override {}; // Called when the key is released
 
-    // -- Getters and Setters --
     inline CommandType getCommand() const { return command; }
     inline void setCommand(CommandType cmd) { command = cmd; }
 };

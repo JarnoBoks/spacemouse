@@ -1,8 +1,9 @@
-// Key.h
 #pragma once
+
 #include "IKey.h"
-#include "../functionality/IKeyFunctionality.h"
-#include "../functionality/CommandType.h" // For CommandType enum
+#include "key/functionality/IKeyFunctionality.h"
+#include "key/functionality/CommandType.h" // For CommandType enum
+
 #include <stdint.h>
 /**
  * @brief Base class for keys.

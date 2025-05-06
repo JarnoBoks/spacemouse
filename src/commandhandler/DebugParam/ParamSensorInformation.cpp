@@ -1,11 +1,15 @@
 #include "ParamSensorInformation.h"
-#include <Arduino.h>
-#include "observers/output_sensorvalues.h"
+
+#include "..\..\observers\DebugOutput\DebugOutputSensorsRaw.hpp"
+#include "..\..\observers\DebugOutput\DebugOutputSensorsCentered.hpp"
+#include "..\..\observers\DebugOutput\DebugOutputSensorsFiltered.hpp"
+
 #include "config.h" // For Hardware type
 #include "hardware/hardware_hall.h"
 #include "hardware/hardware_joystick.h"
 
-// Only log to serial if not using Arduino AVR architecture
+#include <Arduino.h>
+
 #ifndef ARDUINO_ARCH_AVR
 #ifndef ESP_PRINT(x)
 #define ESP_PRINT(x) Serial.println(x)
@@ -50,7 +54,7 @@ DebugParamSensorInformationRaw::~DebugParamSensorInformationRaw() {
 void DebugParamSensorInformationRaw::apply() {
 
     // Instantiate the Observer for the RawSensor values and attach it to the hardware
-    SensorObserver = new Output_SensorValuesRaw();
+    SensorObserver = new DebugOutputSensorsRaw();
 
     Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
     hardware->attachObserver(SensorObserver);     // Attach the observer to the hardware
@@ -65,7 +69,7 @@ void DebugParamSensorInformationRaw::report() {
 void DebugParamSensorInformationCentered::apply() {
 
     // Instantiate the Observer for the CenteredSensor values and attach it to the hardware
-    SensorObserver = new Output_SensorValuesCentered();
+    SensorObserver = new DebugOutputSensorsCentered();
 
     Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
     hardware->attachObserver(SensorObserver);     // Attach the observer to the hardware
@@ -80,7 +84,7 @@ void DebugParamSensorInformationCentered::report() {
 void DebugParamSensorInformationFiltered::apply() {
 
     // Instantiate the Observer for the FilteredSensor values and attach it to the hardware
-    SensorObserver = new Output_SensorValuesFiltered();
+    SensorObserver = new DebugOutputSensorsFiltered();
 
     Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
     hardware->attachObserver(SensorObserver);     // Attach the observer to the hardware

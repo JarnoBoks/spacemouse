@@ -1,4 +1,5 @@
-#include "IObserver.hpp"
+#pragma once
+#include "observers/IObserver.hpp"
 #include "config.h" // For STARTDEBUG and DEBUGDELAY
 
 #ifndef STARTDEBUG
@@ -12,17 +13,17 @@
 #endif
 
 /**
- * @brief Base class for observers that output debug information to the Serial monitor.
+ * @brief Base class for observers that output debug information (sensors and/or axes) to the Serial monitor.
  */
-class ObserverDebugOutput : public IObserver {
+class DebugOutput : public IObserver {
 private:
     unsigned long m_lastDebugOutput = 0; // time from millis(), when the last debug output was written to the Serial monitor
 
 protected:
     bool isDebugOutputDue(); // Check if a new debug output should be printed
 public:
-    ObserverDebugOutput() = default;  // Default constructor
-    virtual ~ObserverDebugOutput() {} // Default destructor
+    DebugOutput() = default;  // Default constructor
+    virtual ~DebugOutput() {} // Default destructor
 
     virtual void update(Kinematics *kinematics) override;
     virtual void update(Hardware *hardware) override;

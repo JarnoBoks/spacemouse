@@ -1,6 +1,6 @@
 #pragma once
 #include "TranslatorBase.h"
-#include "key/KeyFactory.h"
+#include "key/factory/KeyFactory.h"
 #include <hidhandler/usbinterface/SpaceMouseUSBInterface.h> // for SpaceMouseUSBInterface
 #include <hidhandler/HIDHandlerConfig.h>
 #include <stdint.h>

@@ -1,7 +1,7 @@
 #include "ParamAxisInformation.h"
 #include <Arduino.h>
 
-#include "observers/output_axisvalues.h"
+#include "..\..\observers\DebugOutput\DebugOutputAxesRaw.hpp"
 
 // Only log to serial if not using Arduino AVR architecture
 #ifndef ARDUINO_ARCH_AVR
@@ -27,7 +27,7 @@ void DebugParamAxisInformation::apply() {
     ESP_PRINT("Debug Axis Information applied");
 
     // Instantiate the Observer for the RawSensor values and attach it to the hardware
-    AxisObserver = new Output_AxisValuesRaw();
+    AxisObserver = new DebugOutputAxesRaw();
     Kinematics::getInstance()->attachObserver(AxisObserver);
 }
 

@@ -1,11 +1,11 @@
 #pragma once
 
 #include "IDebugParam.h"
-#include "observers/output_loopfrequency.h"
+#include "..\..\observers\DebugOutput\DebugOutputLoopFrequency.hpp"
 
 class DebugParamLoopFrequency : public IDebugParam {
 protected:
-    Output_LoopFrequency *AxisObserver = nullptr; // Pointer to the loop frequency observer instance       // REVIEW - Why is this necesar
+    DebugOutputLoopFrequency *AxisObserver = nullptr; // Pointer to the loop frequency observer instance       // REVIEW - Why is this necessary //REVIEW - Can we use the Interface instead of the base class?
 public:
     DebugParamLoopFrequency() = default; // Constructor
     virtual ~DebugParamLoopFrequency();  // Destructor to clean up the observer instance

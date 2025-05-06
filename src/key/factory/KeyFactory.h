@@ -1,8 +1,8 @@
 // KeyFactory.h
 #pragma once
-#include "../keys/Key.h" // Base class for the keys to create
+
+#include "key/keys/Key.h" // Base class for the keys to create          // REVIEW - Should we use the interface instead of the base class?
 #include <stdint.h>
-#include "config.h"
 
 /**
  * @brief KeyFactory class for creating key instances.

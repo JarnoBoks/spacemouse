@@ -1,6 +1,6 @@
 #include "ParamLoopFrequency.h"
+#include "..\..\observers\DebugOutput\DebugOutputLoopFrequency.hpp"
 #include <Arduino.h>
-#include "observers/output_loopfrequency.h"
 
 // Only log to serial if not using Arduino AVR architecture
 #ifndef ARDUINO_ARCH_AVR
@@ -27,7 +27,7 @@ void DebugParamLoopFrequency::apply() {
     ESP_PRINT("Debug Loop Frequency applied");
 
     // Instantiate the Observer for the Loop Frequency values and attach it to the hardware
-    AxisObserver = new Output_LoopFrequency();
+    AxisObserver = new DebugOutputLoopFrequency();
     Kinematics::getInstance()->attachObserver(AxisObserver);
 }
 

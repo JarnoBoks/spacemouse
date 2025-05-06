@@ -1,7 +1,10 @@
 #include "KeyFactoryPhysicalKey.h"
 
 // Include header file for the key to create
-#include "../keys/PhysicalKey.h"
+#include "key/keys/PhysicalKey.h"
+
+// REFACTOR - Config.h access should be moved to the KeyFactory class
+#include "config.h" // Include the configuration header file for key configuration
 
 #define NUMBER_OF_PHYSICAL_KEYS NUMKEYS
 #define PHYSICALKEY_PINLIST KEY_PINLIST

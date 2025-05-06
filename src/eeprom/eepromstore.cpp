@@ -7,7 +7,6 @@
 #include "axis/axisconfig.h"
 #include "sensor/sensorconfig.h"
 #include "kinematics/kinematicsconfig.h"
-#include "key/KeyConfig.h"
 
 /// @brief If the version number defined in the EEPROM is not equal to the version number defined in this file, the EEPROM will be erased and initialized with the default values.
 /// @warning Changing the version number will reset all stored calibration parameters in the EEPROM.
@@ -59,9 +58,6 @@ constexpr int EEPROM_ADDRESS_CFG_AXIS_NCONFIG_END = EEPROM_ADDRESS_CFG_AXIS_NCON
 
 constexpr int EEPROM_ADDRESS_CFG_AXIS_INV_BASE = EEPROM_ADDRESS_CFG_AXIS_NCONFIG_END;                                   // End EEPROM address for the configuration
 constexpr int EEPROM_ADDRESS_CFG_AXIS_INV_END = EEPROM_ADDRESS_CFG_AXIS_INV_BASE + (6 * sizeof(AxisConfig::inversion)); // End EEPROM address for the configuration
-
-constexpr int EEPROM_ADDRESS_CFG_BUTTON_BASE = EEPROM_ADDRESS_CFG_AXIS_INV_END;
-constexpr int EEPROM_ADDRESS_CFG_BUTTON_END = EEPROM_ADDRESS_CFG_BUTTON_BASE + (6 * sizeof(KeyConfig));
 
 // -------------------------- EEPROM ADDRESS TABLE END -------------------------
 
@@ -240,6 +236,8 @@ void EEPROMStore::saveConfig(KinematicsConfig &config) {
     EEPROM.put(EEPROM_ADDRESS_CFG_AXES_BASE + 1, config.switchYZ);
 }
 
+#if 0
+// REMOVE
 bool EEPROMStore::loadConfig(KeyConfig &config, const int8_t buttonnumber) {
     if (isFirstRun()) {
         return false; // EEPROM is not initialized, return false
@@ -253,3 +251,4 @@ bool EEPROMStore::loadConfig(KeyConfig &config, const int8_t buttonnumber) {
 void EEPROMStore::saveConfig(KeyConfig &config, const int8_t buttonnumber) {
     EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + buttonnumber * sizeof(KeyConfig), config); // Store the configuration in the EEPROM
 }
+#endif

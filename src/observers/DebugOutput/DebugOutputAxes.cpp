@@ -1,9 +1,16 @@
-#include "output_axisvalues.hpp"
+#include "DebugOutputAxes.hpp"
 
 #include "kinematics/kinematics.h" // NOTE Included in header file too.
 #include "TextHelper.h"
 
-void Output_AxisValues::update(Kinematics *kinematics) {
+/**
+ * @brief Writes the debug output for the axes, using the getAxisValue function to get the axis value.
+ * @details This function is called by the Kinematics class to output the axis values to the serial monitor.
+ *          The pure virtual getAxisValue function is used to get the axis value, which is  overridden in derived classes.
+ *          The function iterates through all axes and prints their names and values to the serial monitor.
+ * @param kinematics Pointer to the Kinematics object.
+ */
+void DebugOutputAxes::update(Kinematics *kinematics) {
     if (!isDebugOutputDue() || kinematics == nullptr) {
         return; // If the debug output is not due, do nothing
     }

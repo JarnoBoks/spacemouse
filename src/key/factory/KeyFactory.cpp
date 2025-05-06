@@ -1,5 +1,6 @@
 // KeyFactory.h
 #include "KeyFactory.h"
+#include "config.h" // For CFG_NUMBER_OF_KEYS and KEYCFG
 
 // Include header files for key functionalities
 #include "../functionality/KillRotationFunctionality.h"    // For KillRotationFunctionality

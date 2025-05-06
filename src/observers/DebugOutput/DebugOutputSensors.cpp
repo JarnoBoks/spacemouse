@@ -1,10 +1,10 @@
-#include "output_sensorvalues.hpp"
+#include "DebugOutputSensors.hpp"
 #include "hardware/hardware.h"
 #include "TextHelper.h"
 
 // REVIEW - Move to Visitor?
 
-void Output_SensorValues::update(Hardware *hardware) {
+void DebugOutputSensors::update(Hardware *hardware) {
     if (!isDebugOutputDue() || hardware == nullptr) {
         return; // If the debug output is not due, do nothing
     }

@@ -30,13 +30,13 @@ public:
             // The second element contains the button type (SM_T, SM_R, etc.)
             // The third element contains the pin number if applicable.
 
-            if (KEY_CFG_TYPE == PHYSICAL) {
+            if (KEY_CFG_TYPE == KEY_PHYSICAL) {
                 KeyFactoryPhysicalkey factory;                    // Create a factory for physical keys
                 keys[m_keyCount] = factory.createKey(m_keyCount); // Create a new key instance using the factory
                 m_keyCount++;
 
-            } else if (KEY_CFG_TYPE == ROTARY) {
-                KeyFactoryRotarykey factory;                      // Create a factory for physical keys
+            } else if (KEY_CFG_TYPE == KEY_ROTARY) {
+                KeyFactoryRotarykey factory;                      // Create a factory for rotary keys
                 keys[m_keyCount] = factory.createKey(m_keyCount); // Create a new key instance using the factory
                 m_keyCount++;
 

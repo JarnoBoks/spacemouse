@@ -1,5 +1,5 @@
 
-#include "iobserver.h"
+#include "IObserver.hpp"
 
 // FIXME - The update function should be pure virtual, but we need to check if this is possible with the current implementation of the observer pattern.
 void IObserver::update(Kinematics *kinematics) {

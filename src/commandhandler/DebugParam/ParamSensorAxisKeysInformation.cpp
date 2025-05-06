@@ -1,9 +1,11 @@
 #include "ParamSensorAxisKeysInformation.h"
-#include <Arduino.h>
+
 #include "kinematics/kinematics.h"
 #include "hardware/hardware.h"
-#include "observers/output_axisvalues.h"
-#include "observers/output_sensorvalues.h"
+#include "..\..\observers\DebugOutput\DebugOutputAxesModified.hpp"             // Implementation class for axes observer       //REVIEW - Can we use the Interface instead of the base class?
+#include "..\..\observers\DebugOutput\DebugOutputSensorsCenteredNoNewline.hpp" // Implementation class for sensor observers     //REVIEW - Can we use the Interface instead of the base class?
+
+#include <Arduino.h>
 
 // Only log to serial if not using Arduino AVR architecture
 #ifndef ARDUINO_ARCH_AVR
@@ -37,8 +39,8 @@ DebugParamSensorAxisKeysInformation::~DebugParamSensorAxisKeysInformation() {
 void DebugParamSensorAxisKeysInformation::apply() {
 
     // Instantiate the Observers and attach them to the hardware
-    SensorObserver = new Output_SensorValuesCenteredWithoutNewline();
-    AxisObserver = new Output_AxisValuesModified();
+    SensorObserver = new DebugOutputSensorsCenteredNoNewline();
+    AxisObserver = new DebugOutputAxesModified();
 
     Hardware::getInstance()->attachObserver(SensorObserver);
     Kinematics::getInstance()->attachObserver(AxisObserver);

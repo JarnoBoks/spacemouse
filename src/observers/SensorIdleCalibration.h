@@ -1,5 +1,4 @@
-#ifndef SENSORIDLECALIBRATION_H
-#define SENSORIDLECALIBRATION_H
+#pragma once
 
 #include "IObserver.h"
 #include "hardware/hardware.h"
@@ -38,5 +37,3 @@ public:
 
     void update(Hardware *hardware) override;
 };
-
-#endif // SENSORIDLECALIBRATION_H

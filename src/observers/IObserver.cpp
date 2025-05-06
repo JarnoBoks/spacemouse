@@ -1,31 +1,8 @@
 
 #include "iobserver.h"
 
-/**
- * @brief Indicate if a new debug output should be printed.
- *         Used to generate a debug line only every DEBUGDELAY ms, see config.h
- * @see config.h
- * @retval true     debug output is due
- * @retval false    debug output is not due
- */
-bool IObserver::isDebugOutputDue() {
-    lastDebugOutput = 0; // time from millis(), when the last debug output was given
-
-    if (millis() - lastDebugOutput > DEBUGDELAY) {
-        lastDebugOutput = millis();
-        return true;
-    } else {
-        return false;
-    }
-}
-
 // FIXME - The update function should be pure virtual, but we need to check if this is possible with the current implementation of the observer pattern.
 void IObserver::update(Kinematics *kinematics) {
-    // Doing nothing here, as this is a virtual function to be overridden by derived classes.
-    // Additional implementation can be added in derived classes.
-}
-
-void IObserver::update(const Axis *axis) {
     // Doing nothing here, as this is a virtual function to be overridden by derived classes.
     // Additional implementation can be added in derived classes.
 }

@@ -1,18 +1,18 @@
 #pragma once
 
-#include "IObserver.h"
+#include "ObserverDebugOutput.hpp"
 #include "kinematics/kinematics.h"
 
-class Output_AxisValues : public IObserver {
+class Output_AxisValues : public ObserverDebugOutput {
 private:
 protected:
     virtual const int getAxisValue(const Axis *axis) const = 0;
 
 public:
-    Output_AxisValues() {};
-    ~Output_AxisValues() {}; // nothing to do in destructor
+    Output_AxisValues() = default;
+    virtual ~Output_AxisValues() {};
 
-    void update(Kinematics *kinematics) override; // Pure virtual function to be implemented by derived classes
+    void update(Kinematics *kinematics) override;
 };
 
 /**

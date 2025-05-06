@@ -1,5 +1,6 @@
 #include "output_axisvalues.h"
-#include "kinematics/kinematics.h"
+
+#include "kinematics/kinematics.h" // NOTE Included in header file too.
 #include "TextHelper.h"
 
 void Output_AxisValues::update(Kinematics *kinematics) {

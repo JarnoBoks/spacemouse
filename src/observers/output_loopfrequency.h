@@ -1,9 +1,8 @@
-// output_loopfrequency.h
 #pragma once
-#include "IObserver.h"
+#include "ObserverDebugOutput.hpp"
 #include "kinematics/kinematics.h"
 
-class Output_LoopFrequency : public IObserver {
+class Output_LoopFrequency : public ObserverDebugOutput {
 private:
     unsigned long _lastFrequencyUpdate; // time from millis(), when the last debug output was given
     int _iterationsPerSecond;           // number of loop iterations per second

@@ -1,7 +1,7 @@
 #ifndef OUTPUT_SENSORVALUES_H
 #define OUTPUT_SENSORVALUES_H
 
-#include "IObserver.h"
+#include "ObserverDebugOutput.hpp"
 #include "hardware/hardware.h"
 #include "TextHelper.h"
 
@@ -10,7 +10,7 @@ enum SensorOutputValType_t {
     SO_CENTERED,
 };
 
-class Output_SensorValues : public IObserver {
+class Output_SensorValues : public ObserverDebugOutput {
 private:
 protected:
     virtual const int getSensorValue(const Sensor *sensor) const = 0;

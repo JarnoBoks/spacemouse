@@ -1,16 +1,16 @@
-#ifndef SENSORMINMAXCALIBRATION_H
-#define SENSORMINMAXCALIBRATION_H
+#pragma once
 
 #include "IObserver.h"
 #include "hardware/hardware.h"
-// REMOVE #include "TextHelper.h"
 
 // Forward declaration of classes to avoid circular dependencies
 class SensorCalibrationManager;
 
 /**
- * @brief  *
+ * @brief Class to calibrate the minimum and maximum values of the hardware sensors of the spacemouse.
+ * This class inherits from IObserver.
  *
+ * @details The class is an observer of the Hardware class and is instantiated by the SensorCalibrationManager.
  */
 class SensorMinMaxCalibration : public IObserver {
 private:
@@ -29,5 +29,3 @@ public:
 
     void update(Hardware *hardware) override;
 };
-
-#endif // SENSORMINMAXCALIBRATION_H

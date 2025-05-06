@@ -7,9 +7,6 @@
 // Define maximum observers for Kinematics class
 #define MAX_KINEMATICS_OBSERVERS 4
 
-// Define maximum observers for Axis class
-#define MAX_AXIS_OBSERVERS 4 // REMOVE ?
-
 // Define maximum observers for Hardware class
 #define MAX_HARDWARE_OBSERVERS 4
 
@@ -25,7 +22,6 @@
 
 // Forward declaration of classes that are observed (to avoid circular dependencies)
 class Kinematics;
-class Axis; // REMOVE ?
 class Hardware;
 
 // --- DebugMonitor (Observer Pattern) ---
@@ -37,10 +33,10 @@ protected:
     bool isDebugOutputDue(); // Check if a new debug output should be printed
 
 public:
-    IObserver() : lastDebugOutput(0) {} // Constructor
-    virtual ~IObserver() {}             // Destructor
+    IObserver() = default; // Default constructor
+    // NOTE IObserver(const IObserver &) = delete; // Delete copy constructor to prevent copying
+    virtual ~IObserver() {}
 
-    virtual void update(const Axis *axis); // REMOVE?
     virtual void update(Kinematics *kinematics);
     virtual void update(Hardware *hardware);
 };

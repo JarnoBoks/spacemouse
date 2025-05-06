@@ -6,7 +6,6 @@
 #include "factory/KeyFactoryRotarykey.h"
 
 // Defines to retrieve the key configuration from config.h
-
 constexpr uint8_t cNUMBER_OF_KEYS = CFG_NUMBER_OF_KEYS;
 uint8_t cKEY_CONFIGS[cNUMBER_OF_KEYS][3] = KEYCFG; // Array to hold the key configuration
 
@@ -14,9 +13,9 @@ uint8_t cKEY_CONFIGS[cNUMBER_OF_KEYS][3] = KEYCFG; // Array to hold the key conf
 #define KEY_CFG_FUNC cKEY_CONFIGS[i][1] // Button type (SM_T, SM_R, etc.)
 #define KEY_CFG_PINN cKEY_CONFIGS[i][2] // Pin number
 
-/**
- * @brief KeyHandler class for managing keys, based on the configuration in config.h.
- */
+// REFACTOR - The constructor code should be moved to the Collection Factory class, which is not implemented yet.
+// REVIEW - Should the 'main' routine setup the collection?
+
 class KeyHandler {
 private:
     // The length of the array is set by the total number keys in the current hardware setup.

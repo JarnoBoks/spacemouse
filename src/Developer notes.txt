@@ -1,0 +1,5 @@
+Configuration settings kept on a higher abstraction level
+Main, collections & factories have knowledge of the configuration in config.h.
+Other classes should be abstracted from it.
+
+Collections can be responsible for populating their collection.

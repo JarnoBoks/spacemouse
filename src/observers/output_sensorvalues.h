@@ -19,10 +19,6 @@ public:
     Output_SensorValues() {};
     virtual ~Output_SensorValues() {};
 
-    void update(const Axis *axis) override {
-        // Doing nothing here, as this output class is only used for sensors and not for axes.
-    }
-
     virtual void update(Hardware *hardware) override;
 };
 

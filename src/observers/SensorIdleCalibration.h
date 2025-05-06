@@ -9,11 +9,9 @@ class SensorCalibrationManager;
 
 /**
  * @brief Class to calibrate the idle position of the hardware sensors of the spacemouse.
- * This class inherits from DebugMonitor.
+ * This class inherits from IObserver.
  *
- * @details This class is used to calibrate the idle position of the hardware sensors of the spacemouse.
- * It is used to set the idle position of the sensors to the average value of the readings.
- * The class is an observer of the Hardware class and is instantiated by the SensorCalibrationManager.
+ * @details The class is an observer of the Hardware class and is instantiated by the SensorCalibrationManager.
  */
 class SensorIdleCalibration : public IObserver {
 private:
@@ -37,10 +35,6 @@ protected:
 public:
     SensorIdleCalibration(SensorCalibrationManager *calibrationManager, int numiterations); // Constructor
     virtual ~SensorIdleCalibration() {};                                                    // nothing to do in destructor
-
-    void update(const Axis *axis) override {
-        // Doing nothing here, as this class is only used for sensors and not for axes.
-    }
 
     void update(Hardware *hardware) override;
 };

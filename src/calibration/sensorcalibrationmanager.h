@@ -1,9 +1,12 @@
-#ifndef SENSORCALIBRATIONMANAGER_H
-#define SENSORCALIBRATIONMANAGER_H
+#pragma once
+
+// Include local headers
+#include "observers/IObserver.hpp" // For IDebugMonitor class
+
+// Include necessary system headers
 #include <Arduino.h>
 
-#include "observers/IObserver.h" // For IDebugMonitor class
-class Sensor;                    // Forward declaration of Sensor class
+class Sensor; // Forward declaration of Sensor class
 
 class SensorCalibrationManager {
 private:
@@ -20,5 +23,3 @@ public:
     void activateMinMaxCalibration();
     void deactivateMinMaxCalibration(const bool warningsOccurred);
 };
-
-#endif // SENSORCALIBRATIONMANAGER_H

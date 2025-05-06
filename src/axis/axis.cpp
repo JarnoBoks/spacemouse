@@ -3,7 +3,6 @@
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
 #include "config.h"
 #include "axisconfig.h"
-#include "observers/IObserver.h"
 #include "visitors/IPrinterVisitor.h"
 #include "led/lightbehavior.h"
 #include "hardware/hardware.h"

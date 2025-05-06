@@ -1,4 +1,4 @@
-#include "output_axisvalues.h"
+#include "output_axisvalues.hpp"
 
 #include "kinematics/kinematics.h" // NOTE Included in header file too.
 #include "TextHelper.h"

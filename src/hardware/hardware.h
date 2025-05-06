@@ -1,13 +1,11 @@
 // TODO - Rename to HardwareFactory
 // NOTE - The software architecture is inspired by https://stackoverflow.com/questions/1820477/c-static-virtual-members
 
-#ifndef HARDWARE_H
-#define HARDWARE_H
-
+#pragma once
 #define MAX_SENSORS 8
 
 #include "axis/axis.h" // for AxisType enum
-#include "observers/IObserver.h"
+#include "observers/IObserver.hpp"
 #include "sensor/sensor.h"
 
 class Hardware {
@@ -26,8 +24,6 @@ protected:
             observers[i] = nullptr; // Initialize the observers array to nullptr
         }
     };
-
-
 
     virtual Hardware *GetHardwareInstance() = 0;
 
@@ -64,5 +60,3 @@ protected:
         return HardwareType::getInstance();
     }
 };
-
-#endif // HARDWARE_H

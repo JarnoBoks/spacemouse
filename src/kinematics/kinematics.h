@@ -4,7 +4,7 @@
 
 #include "axis/axistype.h" // For AxisType_t
 #include "axis/axis.h"     // For Axis class
-#include "observers/IObserver.h"
+#include "observers/IObserver.hpp"
 
 class KinematicsConfig;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IObserver.h"
+#include "IObserver.hpp"
 #include "hardware/hardware.h"
 
 // Forward declaration of classes to avoid circular dependencies

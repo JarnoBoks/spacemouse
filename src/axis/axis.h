@@ -1,9 +1,8 @@
 // axis.h
 #pragma once
 
-#include "axis/axistype.h"       // For AxisType_t
-#include "modfunctype.h"         // For ModFunc_t
-#include "observers/IObserver.h" // For MAX_AXIS_OBSERVERS
+#include "axis/axistype.h" // For AxisType_t
+#include "modfunctype.h"   // For ModFunc_t
 
 #define AXIS_NAMES {"TX", "TY", "TZ", "RX", "RY", "RZ"} // Axis names for debugging
 

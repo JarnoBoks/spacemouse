@@ -1,5 +1,8 @@
 #include "ObserverDebugOutput.hpp"
 
+// Include system headers
+#include <Arduino.h> // For millis()
+
 /**
  * @brief Indicate if a new debug output should be printed.
  *         Used to generate a debug line only every DEBUGDELAY ms, see config.h

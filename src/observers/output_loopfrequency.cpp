@@ -1,5 +1,5 @@
 // output_loopfrequency.cpp
-#include "output_loopfrequency.h"
+#include "output_loopfrequency.hpp"
 #include "kinematics/kinematics.h"
 
 void Output_LoopFrequency::update(Kinematics *kinematics) {

@@ -1,4 +1,4 @@
-#include "IObserver.h"
+#include "IObserver.hpp"
 #include "config.h" // For STARTDEBUG and DEBUGDELAY
 
 #ifndef STARTDEBUG

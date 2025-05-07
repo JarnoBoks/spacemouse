@@ -1,4 +1,4 @@
-#include "Key.h"     // Include the header file for the Key class
+#include "Key.hpp"   // Include the header file for the Key class
 #include <Arduino.h> // Include Arduino library for Serial function
 
 int8_t Key::getHIDCommand(uint8_t *cmds) {

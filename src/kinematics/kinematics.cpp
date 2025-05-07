@@ -67,7 +67,7 @@ Axis *Kinematics::getAxis(const char *name) {
 }
 
 /**
- * @brief Processes the kinematics for all axes.
+ * @brief Processes the kinematics for all axes and updates their values. Notifies attached observers of these changes.
  * @details This function calculates the values for each axis based on the hardware input and configuration.
  */
 void Kinematics::processKinematics() {

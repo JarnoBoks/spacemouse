@@ -72,7 +72,7 @@ void Hardware::attachObserver(IObserver *observer) {
 void Hardware::detachObserver(IObserver *observer) {
     ESP_DBG(F("Hardware::detachObserver: "));
     // remove the observer from the array by replacing it with the last observer in the array and decrease the count.
-    for (int i = 0; i < observerCount; i++) {
+    for (uint8_t i = 0; i < observerCount; i++) {
         if (observers[i] == observer) {
             observerCount--; // Decrease the observer count
             if (observerCount > 0) {
@@ -95,13 +95,13 @@ void Hardware::detachObserver(IObserver *observer) {
  * @warning Ensure that observers are properly attached before calling this function to avoid null pointer dereferences.
  */
 void Hardware::notifyObservers() {
-    for (int i = 0; i < observerCount; i++) {
+    for (uint8_t i = 0; i < observerCount; i++) {
         observers[i]->update(this); // Notify each observer, with the hardware instance as parameter
     }
 }
 
 void Hardware::clearObservers() {
-    for (int i = 0; i < observerCount; i++) {
+    for (uint8_t i = 0; i < observerCount; i++) {
         observers[i] = nullptr;
     }
     observerCount = 0;

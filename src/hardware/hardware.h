@@ -21,7 +21,7 @@ protected:
 
     // Hardware can only be instantiated by derived classes
     Hardware() : observerCount(0), referenceVoltage(DEFAULT), sensors{nullptr} {
-        for (int i = 0; i < MAX_HARDWARE_OBSERVERS; i++) {
+        for (uint8_t i = 0; i < MAX_HARDWARE_OBSERVERS; i++) {
             observers[i] = nullptr; // Initialize the observers array to nullptr
         }
     };
@@ -33,7 +33,7 @@ public:
 
     // NOTE - Destructor will never be executed, while the static instance is never deleted.
     ~Hardware() {
-        for (int i = 0; i < MAX_SENSORS; i++) {
+        for (uint8_t i = 0; i < MAX_SENSORS; i++) {
             if (sensors[i] != nullptr) {
                 delete sensors[i];
                 sensors[i] = nullptr;

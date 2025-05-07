@@ -1,6 +1,6 @@
 // RotaryKey.h
 #pragma once
-#include "Key.h"
+#include "Key.hpp"
 
 class RotaryKey : public Key {
 private:

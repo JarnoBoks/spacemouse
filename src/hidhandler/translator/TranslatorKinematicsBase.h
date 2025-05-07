@@ -1,6 +1,6 @@
 #pragma once
 #include "stdint.h" // for uint8_t, int16_t
-#include "TranslatorBase.h"
+#include "ITranslator.h"
 #include <kinematics/kinematics.h> // for the SpaceMouseKinematics class
 
 // DEBUG:
@@ -14,7 +14,7 @@
  * @warning Ensure that the message array is properly filled before sending reports.
  * @see TranslatorKinematicsTranslation, TranslatorKinematicsRotation
  */
-class TranslatorKinematicsBase : public TranslatorBase {
+class TranslatorKinematicsBase : public ITranslator {
 private:
     AxisType_t idx_start = AxisType_t::UNINITIALIZED; // Start index for the axis types
     AxisType_t idx_end = AxisType_t::UNINITIALIZED;   // End index for the axis types

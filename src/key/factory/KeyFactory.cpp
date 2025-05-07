@@ -3,9 +3,9 @@
 #include "config.h" // For CFG_NUMBER_OF_KEYS and KEYCFG
 
 // Include header files for key functionalities
-#include "../functionality/KillRotationFunctionality.h"    // For KillRotationFunctionality
-#include "../functionality/KillTranslationFunctionality.h" // For KillRotationFunctionality
-#include "../functionality/CommandKeyFunctionality.h"      // For KillSwitchKeyFunctionality
+#include "key/functionality/KillRotationFunctionality.h"
+#include "key/functionality/KillTranslationFunctionality.h"
+#include "key/functionality/CommandKeyFunctionality.hpp"
 
 void KeyFactory::setupFunctionality(Key *key) {
     // Get the pinNumber from the config.h object for this key
@@ -22,8 +22,8 @@ void KeyFactory::setupFunctionality(Key *key) {
         key->setFunctionality(new KillTranslationFunctionality(), CommandType::KILLTRANSLATION);
     } else {
         // Attach 'HID functionality'
-        CommandType cmd = static_cast<CommandType>(rcmd);             // Get the command type from the key list             //FIMXE Just use int variables!
-        key->setFunctionality(new CommandKeyFunctionality(cmd), cmd); // Set the command functionality for the key
+        CommandType cmd = static_cast<CommandType>(rcmd);             // Get the command type from the key list
+        key->setFunctionality(new CommandKeyFunctionality(key), cmd); // Set the command functionality for the key
     }
 }
 #if 0

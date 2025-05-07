@@ -1,6 +1,6 @@
 #pragma once
-#include "TranslatorBase.h"
-#include "key/factory/KeyFactory.h"
+#include "ITranslator.h"
+#include "key/KeyCollection.hpp"                            // for KeyCollection
 #include <hidhandler/usbinterface/SpaceMouseUSBInterface.h> // for SpaceMouseUSBInterface
 #include <hidhandler/HIDHandlerConfig.h>
 #include <stdint.h>
@@ -8,7 +8,7 @@
 /**
  * @brief Base class to translate the key data to the spacemouse HID interface formats
  */
-class TranslatorKeys : public TranslatorBase {
+class TranslatorKeys : public ITranslator {
 private:
     uint8_t *prevKeyData = nullptr; // Pointer to the previous data (not used in this class)
 protected:

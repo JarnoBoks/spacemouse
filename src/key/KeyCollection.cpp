@@ -9,7 +9,7 @@
 int8_t KeyCollection::getHIDcommands(uint8_t *cmds) {
     uint8_t result_idx = 0;
     for (int i = 0; i < m_keyCount; i++) {
-        result_idx += keys[i]->getHIDCommand(cmds + result_idx); // Get the HID command for each key
+        result_idx += m_keys[i]->getHIDCommand(cmds + result_idx); // Get the HID command for each key
     }
 
     return result_idx; // Return the number of commands that have to be sent
@@ -17,7 +17,7 @@ int8_t KeyCollection::getHIDcommands(uint8_t *cmds) {
 
 void KeyCollection::evaluate() {
     for (int i = 0; i < m_keyCount; i++) {
-        keys[i]->evaluate();
+        m_keys[i]->evaluate();
     }
 }
 

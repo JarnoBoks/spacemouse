@@ -2,10 +2,12 @@
 #include "defaultaxisconfig.h"
 #include "config.h" // Include the config file to know the hardware type
 
-#ifdef HALLEFFECT
-#include "../defaults_hall.h"
-#elif defined(JOYSTICK)
-#include "../defaults_joystick.h"
+#if defined(HW_HALLEFFECT)
+#include "defaults_hall.h"
+#elif defined(HW_JOYSTICK)
+#include "defaults_joystick.h"
+#else
+#error "No hardwaretype defined"
 #endif
 
 // Initialize the static instance pointer to nullptr

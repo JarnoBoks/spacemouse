@@ -22,15 +22,12 @@ SpaceMouseHID *mySpaceMouseHID;
 #include "hardware/hardware_hall.h"
 #include "hardware/hardware_joystick.h"
 
-// FIXME - Something is not going ok with the preprocessor directives. The hardware type is not set correctly in the config.h file. The default values are not used in the hardware setup.
-#ifdef JOYSTICK
-#define HW_TYPE Hardware_JOYSTICK
-// #define DEFAULTS_TYPE "defaults_joystick.h"
-#endif
-
-#ifdef HALLEFFECT
+#if defined(HW_HALLEFFECT)
 #define HW_TYPE Hardware_HALL
-// #define DEFAULTS_TYPE "defaults_hall.h"
+#elif defined(HW_JOYSTICK)
+#define HW_TYPE Hardware_JOYSTICK
+#else
+#error "No hardwaretype defined, define HW_HALLEFFECT or HW_JOYSTICK in config.h"
 #endif
 
 // Header to calculate the kinematics of the mouse
@@ -51,12 +48,13 @@ LedRing *Mouse_LEDRing;
 #endif
 
 // Include the header file for the button factory
-#include "key/KeyFactory.h"
+#include "key/factory/KeyFactory.h"
 
 // Include the header file for the keys (physical or rotary keys)
-#include "key-factory-test/KeyHandler.hpp"
+#include "key/KeyCollection.hpp"
+
 // Setup the keyhandler object. This will read config.h and create a handler with all the configured keys.
-KeyCollection myKeyhandler;
+KeyCollection myKeyCollection;
 
 // Include the header files for the command handler and the commands that can be received through the serial interface
 #include "commandhandler/commandhandler.h"
@@ -108,7 +106,7 @@ void setup() {
     SpaceMouseUSBInterface_::getInstance();
 
     // Call the setup function of the button factory. This will setup the buttons and the button configuration.
-    KeyFactory::getInstance()->setupKeys(); // Updated from setupButtons() to setupKeys()
+    // REVIEW - Not necessary for now: KeyFactory::getInstance()->setupKeys(); // Updated from setupButtons() to setupKeys()
 
     // Start the idle calibration of the sensors. This will zero the sensors during the loop.
     // TODO - During setup we aren't interested in the output of the calibration process.
@@ -131,6 +129,8 @@ void setup() {
     // Use this comamnd to initialize a debug state.
     // char buffer[32] = "DEBUG 1";
     // myCommandHandler.handleInput(buffer, 32, 1);
+
+    // Populate the key collection with the keys that are configured in config.h
 
 #if 0
     cstmDelay(7500);                       // Debugging: give the user some time to open the serial monitor and start the debugging process
@@ -169,9 +169,7 @@ void loop() {
 #endif
 
     // Evaluate the status of the keys
-    myKeyhandler.evaluate();
-
-    KeyFactory::getInstance()->evaluate(); // Process the buttons and send the button status to the HID interface
+    myKeyCollection.evaluate();
 
 #if ROTARY_KEYS > 0
     // The encoder wheel shall be treated as a key.

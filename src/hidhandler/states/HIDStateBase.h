@@ -1,11 +1,11 @@
 #pragma once
 
-#include "IHIDState.h"                            // for IHIDState
-#include "HIDStateData.h"                         // for HIDStateData
-#include "config.h"                               // for ADV_HID_JIGGLE
-#include <hidhandler/HIDHandlerConfig.h>          // for HIDUPDATERATE_MS
-#include <hidhandler/translator/TranslatorBase.h> // for TranslatorBase
-#include <Arduino.h>                              // for millis()
+#include "IHIDState.h"                         // for IHIDState
+#include "HIDStateData.h"                      // for HIDStateData
+#include "config.h"                            // for ADV_HID_JIGGLE
+#include <hidhandler/HIDHandlerConfig.h>       // for HIDUPDATERATE_MS
+#include <hidhandler/translator/ITranslator.h> // for Translator interface
+#include <Arduino.h>                           // for millis()
 
 class HIDHandlerController; // Forward declaration of HIDHandlerController
 
@@ -17,7 +17,7 @@ class HIDHandlerController; // Forward declaration of HIDHandlerController
 class HIDStateBase : public IHIDState {
 protected:
     HIDHandlerController *context = nullptr; // Pointer to the controller instance
-    TranslatorBase *translator = nullptr;    // Pointer to the translator instance
+    ITranslator *translator = nullptr;       // Pointer to the translator instance
     HIDStateData *data = nullptr;            // Pointer to the state data
 
     /**

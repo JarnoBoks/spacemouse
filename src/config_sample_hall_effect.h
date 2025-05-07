@@ -576,19 +576,19 @@ EXAMPLES
 // Time in ms which is needed to allow a new (physical) button press
 #define DEBOUNCE_KEYS_MS 200
 
-#define PHYSICAL 0
-#define ROTARY 1
+#define KEY_PHYSICAL 0
+#define KEY_ROTARY 1
 #define NA -1
 
 #define CFG_NUMBER_OF_KEYS 3
-#define KEY1 {PHYSICAL, SM_T, 0}
-#define KEY2 {PHYSICAL, SM_R, 1}
-#define KEY3 {PHYSICAL, SM_F, 2}
+#define KEY1 {KEY_PHYSICAL, SM_T, 0}
+#define KEY2 {KEY_PHYSICAL, SM_R, 1}
+#define KEY3 {KEY_PHYSICAL, SM_F, 2}
 #define KEYCFG {KEY1, KEY2, KEY3}
 
-#define KEY4 {PHYSICAL, SM_T, 0}
-#define KEY5 {PHYSICAL, SM_R, 1}
-#define KEY6 {PHYSICAL, SM_F, 2}
+#define KEY4 {KEY_PHYSICAL, SM_T, 0}
+#define KEY5 {KEY_PHYSICAL, SM_R, 1}
+#define KEY6 {KEY_PHYSICAL, SM_F, 2}
 
 /* Encoder Wheel configuration
 ===============================

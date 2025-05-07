@@ -3,13 +3,13 @@
 
 #include "KeyType.h"
 #include "KeyBase.h"
-#include "PhysicalKey.h"
-#include "RotaryKey.h"
+#include "key/keys/Key.hpp"
+#include "key/keys/Key.hpp"
 #include "config.h"
 
-#include "functionality/KillRotationFunctionality.h"    // For KillRotationFunctionality
-#include "functionality/KillTranslationFunctionality.h" // For KillRotationFunctionality
-#include "functionality/CommandKeyFunctionality.h"      // For KillSwitchKeyFunctionality
+#include "functionality/KillRotationFunctionality.h"     // For KillRotationFunctionality
+#include "functionality/KillTranslationFunctionality.h"  // For KillRotationFunctionality
+#include "key/functionality/CommandKeyFunctionality.hpp" // For KillSwitchKeyFunctionality
 
 KeyFactory *KeyFactory::_instance = nullptr; // Initialize the static instance to nullptr
 

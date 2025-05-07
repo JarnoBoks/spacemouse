@@ -6,11 +6,22 @@
 // Define maximum observers for Hardware class
 #define MAX_HARDWARE_OBSERVERS 4
 
+// Define maximum observers for KeyCollection class
+#define MAX_KEYCOLLECTION_OBSERVERS CFG_NUMBER_OF_KEYS // TODO - This should be the number of command keys, not the number of keys!
+
+// Simple checks for the configuration above.
+#if MAX_KEYCOLLECTION_OBSERVERS < CFG_NUMBER_OF_KEYS
+#error "The number of observers for KeyCollection is less than the number of keys!"
+#endif
+#if MAX_KINEMATICS_OBSERVERS > 255 || MAX_HARDWARE_OBSERVERS > 255 || MAX_KEYCOLLECTION_OBSERVERS > 255
+#error "The number of observers is too high!"
+#endif
+
 // Forward declaration of classes that are observed (to avoid circular dependencies)
 class Kinematics;
 class Hardware;
 class KeyCollection;
-class IObservable;
+class IObservable; // REVIEW - Can probably be removed, not using the Observable interface in the observer class
 
 /**
  * @brief Interface for observer classes that respond to updates from observed objects.

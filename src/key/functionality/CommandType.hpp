@@ -1,4 +1,3 @@
-// CommandType.h
 #pragma once
 enum class CommandType {
     NONE = -1,             // No command assigned

@@ -1,7 +1,6 @@
-// KeyFactory.h
 #pragma once
 
-#include "key/keys/Key.h" // Base class for the keys to create          // REVIEW - Should we use the interface instead of the base class?
+#include "key/keys/Key.hpp" // Base class for the keys to create          // REVIEW - Should we use the interface instead of the base class?
 #include <stdint.h>
 
 /**

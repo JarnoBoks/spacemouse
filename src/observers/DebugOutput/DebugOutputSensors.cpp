@@ -1,6 +1,6 @@
 #include "DebugOutputSensors.hpp"
 #include "hardware/hardware.h"
-#include "TextHelper.h"
+#include "common/TextHelper.h"
 
 // REVIEW - Move to Visitor?
 

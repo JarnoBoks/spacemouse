@@ -5,6 +5,7 @@
 #include "key/functionality/CommandType.hpp" // For CommandType enum
 
 class KeyCollection; // Forward declaration of KeyCollection class
+class IObservable;   // Forward declaration of IObservable interface
 
 #include <stdint.h>
 /**
@@ -18,11 +19,11 @@ protected:
 
     bool m_keyState = false; // Current state of the key (true = pressed, false = released)
 
-    IObservable *m_context = nullptr; // Pointer to the context (KeyCollection) to which this key belongs
-
     // Configuration settings for all keys
     int8_t m_id = -1;                            // ID of the key, used for identification in f.e. printing
     CommandType commandType = CommandType::NONE; // Command type for the key        //FIXME - This is not part of the common confuguration!
+
+    IObservable *m_context = nullptr; // Pointer to the context (KeyCollection) to which this key belongs       // FIXME - SHoul dthis be IObservable
 
 public:
     // Constructor and destructor

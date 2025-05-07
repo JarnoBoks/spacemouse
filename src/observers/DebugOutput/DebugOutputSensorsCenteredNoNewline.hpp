@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DebugOutputSensors.hpp"
-#include "TextHelper.h" // For TextHelper::printSeparator()
+#include "common/TextHelper.h"
 
 /**
  * @brief Output class for centered sensor values, without a newline (but with a separator).

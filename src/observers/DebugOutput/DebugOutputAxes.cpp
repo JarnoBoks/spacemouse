@@ -1,7 +1,7 @@
 #include "DebugOutputAxes.hpp"
 
 #include "kinematics/kinematics.h" // NOTE Included in header file too.
-#include "TextHelper.h"
+#include "common/TextHelper.h"
 
 /**
  * @brief Writes the debug output for the axes, using the getAxisValue function to get the axis value.

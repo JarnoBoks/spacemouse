@@ -5,7 +5,7 @@
 #include "sensor/sensorconfig.h"
 #include "hardware/hardware.h"
 #include "kinematics/kinematicsconfig.h"
-#include "TextHelper.h"
+#include "common/TextHelper.h"
 
 class IdlePositionPrinter : public IPrinterVisitor {
 private:

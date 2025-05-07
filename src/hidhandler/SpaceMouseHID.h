@@ -16,7 +16,6 @@ class HIDHandlerController; // Forward declaration of HIDHandlerController class
 class SpaceMouseHID {
 private:
     HIDHandlerController *controller_ = nullptr; // Pointer to the state machine instance
-
 protected:
 public:
     SpaceMouseHID() {

@@ -2,9 +2,13 @@
 #pragma once
 #include "config.h" // for ADV_HID_JIGGLE
 
+// Include the state header files
 #include "states/HIDStateData.h"  // for HIDStateData
 #include "states/HIDStateBase.h"  // for HIDStateBase
 #include "states/HIDStateStart.h" // for HIDStateInit
+
+// Include the translator header files
+#include "translator/TranslatorKeys.h" // for TranslatorKeys
 
 /**
  * @brief This class handles the HID state machine and manages the current state.
@@ -14,14 +18,20 @@
 class HIDHandlerController {
 private:
     HIDStateBase *currentState = nullptr; // Pointer to the current HID state
-    HIDStateData *stateData = nullptr;    // Pointer to the state data object - public for states to access
+    HIDStateData *stateData = nullptr;    // Pointer to the state data object
+
+    // Interfaces for the HID state machine
+    TranslatorKeys *m_TranslatorKeys = nullptr; // Translator for key data
+
 public:
     /**
      * @brief Constructor to initialize the HID handler controller.
      * @details This constructor initializes the state machine to the initial state and sets up the context and state data.
      *          With use of the initializer list the state is set to the 'Start' state.
      */
-    HIDHandlerController() : currentState(new HIDStateStart()), stateData(new HIDStateData()) {
+    HIDHandlerController() : currentState(new HIDStateStart()),
+                             stateData(new HIDStateData()),
+                             m_TranslatorKeys(new TranslatorKeys()) {
         currentState->set_context(this);   // Set the context for the current state
         currentState->set_data(stateData); // Initialize the state data
     }
@@ -29,6 +39,7 @@ public:
     ~HIDHandlerController() {
         delete currentState; // Clean up the current state object
         delete stateData;    // Clean up the state data object
+        delete m_TranslatorKeys;
     };
 
     /**
@@ -62,4 +73,6 @@ public:
      * @return Pointer to the current HID state.
      */
     HIDStateBase *getState() const { return currentState; }
+
+    TranslatorKeys *getTranslator() const { return m_TranslatorKeys; } // Get the translator for key data
 };

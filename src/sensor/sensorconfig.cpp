@@ -4,6 +4,15 @@
 #include "eeprom/eepromstore.h"       // To load and save the sensor configuration to EEPROM
 #include <math.h>                     // For abs() function
 #include "visitors/IPrinterVisitor.h" // For IPrinterVisitor interface
+#include "config.h"                   // Include the config file to know the hardware type
+
+#if defined(HW_HALLEFFECT)
+#include "defaults_hall.h"
+#elif defined(HW_JOYSTICK)
+#include "defaults_joystick.h"
+#else
+#error "No hardwaretype defined"
+#endif
 
 /**
  * @brief Default constructor for SensorConfig.

@@ -1,4 +1,9 @@
+#pragma once
+
 #include "config.h" // Allowed here while this is a Collection Factory class.
+#include <stdint.h>
+// Defines to retrieve the key configuration from config.h
+constexpr uint8_t cNUMBER_OF_KEYS = CFG_NUMBER_OF_KEYS;
 
 #include "hardware/IObservable.hpp" // Include the IObservable interface header file
 #include "observers/IObserver.hpp"  // Include the IObserver interface header file
@@ -7,16 +12,6 @@
 
 #include "factory/KeyFactoryPhysicalkey.h" // TODO - Move to cpp
 #include "factory/KeyFactoryRotarykey.h"   // TODO - Move to cpp
-
-// Defines to retrieve the key configuration from config.h
-constexpr uint8_t cNUMBER_OF_KEYS = CFG_NUMBER_OF_KEYS;
-uint8_t cKEY_CONFIGS[cNUMBER_OF_KEYS][3] = KEYCFG; // Array to hold the key configuration
-
-#define KEY_CFG_TYPE cKEY_CONFIGS[i][0] // Type of key (PHYSICAL or ROTARY)
-#define KEY_CFG_FUNC cKEY_CONFIGS[i][1] // Button type (SM_T, SM_R, etc.)
-#define KEY_CFG_PINN cKEY_CONFIGS[i][2] // Pin number
-
-#include <stdint.h>
 
 // REFACTOR - The constructor code should be moved to the Collection Factory class, which is not implemented yet.
 // REVIEW - Should the 'main' routine setup the collection?
@@ -31,31 +26,7 @@ private:
     uint8_t m_observerCount = 0;                                     // Number of observers attached
 
 public:
-    KeyCollection() {
-
-        for (int i = 0; i < cNUMBER_OF_KEYS; i++) {
-            // The first element of each key contains the type of key (PHYSICAL or ROTARY).
-            // The second element contains the button type (SM_T, SM_R, etc.)
-            // The third element contains the pin number if applicable.
-
-            if (KEY_CFG_TYPE == KEY_PHYSICAL) {
-                KeyFactoryPhysicalkey factory;                      // Create a factory for physical keys
-                m_keys[m_keyCount] = factory.createKey(m_keyCount); // Create a new key instance using the factory
-
-            } else if (KEY_CFG_TYPE == KEY_ROTARY) {
-                KeyFactoryRotarykey factory;                        // Create a factory for rotary keys
-                m_keys[m_keyCount] = factory.createKey(m_keyCount); // Create a new key instance using the factory
-
-            } else {
-                // Invalid key type, handle error or skip
-                continue; // Skip to the next iteration if the key type is not recognized
-            }
-
-            m_keys[m_keyCount]->setContext(this); // Set the context of the key instance to this KeyCollection instance
-            m_keyCount++;
-        }
-    };
-
+    KeyCollection();
     ~KeyCollection() {
         for (int i = 0; i < m_keyCount; i++) {
             delete m_keys[i]; // Delete each key instance to free memory
@@ -63,7 +34,11 @@ public:
         }
     } // TODO - Should the constructor code be moved to the main routine?
 
-    void evaluate();
+    inline void evaluate() {
+        for (int i = 0; i < m_keyCount; i++) {
+            m_keys[i]->evaluate();
+        }
+    }
 
     int8_t getHIDcommands(uint8_t *cmds);
 

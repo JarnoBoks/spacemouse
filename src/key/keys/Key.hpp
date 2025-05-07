@@ -4,6 +4,8 @@
 #include "key/functionality/IKeyFunctionality.h"
 #include "key/functionality/CommandType.hpp" // For CommandType enum
 
+#include "hidhandler/commands/ICommand.hpp" // For Command interface
+
 class KeyCollection; // Forward declaration of KeyCollection class
 class IObservable;   // Forward declaration of IObservable interface
 
@@ -34,13 +36,21 @@ public:
     virtual ~Key() {
         delete functionality; // Delete the functionality instance to free memory
     }
-
+#if 0
     // Getters and setters for key properties
     inline IKeyFunctionality *getFunctionality() const { return functionality; }
     inline void setFunctionality(IKeyFunctionality *func, CommandType cmd) {
         delete functionality; // Delete any previous functionality instance
         functionality = func;
         commandType = cmd;
+    }
+#endif
+    // Getters and setters for key properties
+    inline IKeyFunctionality *getFunctionality() const { return functionality; }
+    inline void setFunctionality(IKeyFunctionality *func) {
+        delete functionality; // Delete any previous functionality instance
+        functionality = func;
+        // REMOVE commandType = cmd;
     }
 
     inline int8_t getId() const { return m_id; } // Get the ID of the key

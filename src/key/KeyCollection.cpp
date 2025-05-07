@@ -1,6 +1,37 @@
 #include "KeyCollection.hpp"
 #include <Arduino.h> // Include Arduino library for Serial  function
 
+constexpr uint8_t cKEY_CONFIGS[cNUMBER_OF_KEYS][3] = KEYCFG; // Array to hold the key configuration
+
+#define KEY_CFG_TYPE cKEY_CONFIGS[i][0] // Type of key (PHYSICAL or ROTARY)
+#define KEY_CFG_FUNC cKEY_CONFIGS[i][1] // Button type (SM_T, SM_R, etc.)
+#define KEY_CFG_PINN cKEY_CONFIGS[i][2] // Pin number
+
+KeyCollection::KeyCollection() {
+
+    for (int i = 0; i < cNUMBER_OF_KEYS; i++) {
+        // The first element of each key contains the type of key (PHYSICAL or ROTARY).
+        // The second element contains the button type (SM_T, SM_R, etc.)
+        // The third element contains the pin number if applicable.
+
+        if (cKEY_CONFIGS[i][0] == KEY_PHYSICAL) {
+            KeyFactoryPhysicalkey factory;                      // Create a factory for physical keys
+            m_keys[m_keyCount] = factory.createKey(m_keyCount); // Create a new key instance using the factory
+
+        } else if (cKEY_CONFIGS[i][0] == KEY_ROTARY) {
+            KeyFactoryRotarykey factory;                        // Create a factory for rotary keys
+            m_keys[m_keyCount] = factory.createKey(m_keyCount); // Create a new key instance using the factory
+
+        } else {
+            // Invalid key type, handle error or skip
+            continue; // Skip to the next iteration if the key type is not recognized
+        }
+
+        m_keys[m_keyCount]->setContext(this); // Set the context of the key instance to this KeyCollection instance
+        m_keyCount++;
+    }
+};
+
 /**
  * @brief Retrieves the key commands for the HID
  * @param cmds Pointer to the array where the commands will be stored
@@ -15,13 +46,22 @@ int8_t KeyCollection::getHIDcommands(uint8_t *cmds) {
     return result_idx; // Return the number of commands that have to be sent
 }
 
-void KeyCollection::evaluate() {
-    for (int i = 0; i < m_keyCount; i++) {
-        m_keys[i]->evaluate();
+void KeyCollection::addKey(Key *key) {
+    if (m_keyCount < cNUMBER_OF_KEYS) {
+        m_keys[m_keyCount++] = key; // Add the key to the list of keys
     }
 }
 
-void attachObserver(IObserver *observer); // REFACTOR - Move to Interface!
-void detachObserver(IObserver *observer); // REFACTOR - Move to Interface!
-void notifyObservers();                   // Notify all observers of changes // REFACTOR - Move to Interface!
-void clearObservers();                    // REFACTOR - Move to Interface!
+void KeyCollection::removeKey(Key *key) {
+    for (int i = 0; i < m_keyCount; i++) {
+        if (m_keys[i] == key) {
+            m_keyCount--; // Decrease the key count
+            if (m_keyCount > 0) {
+                // Move the last key to the current position
+                m_keys[i] = m_keys[m_keyCount];
+            }
+            m_keys[m_keyCount] = nullptr;
+            break;
+        }
+    }
+}

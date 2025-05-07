@@ -13,8 +13,8 @@ protected:
     void setupFunctionality(Key *key);
 
 public:
-    KeyFactory();
-    virtual ~KeyFactory();
+    KeyFactory() = default; // Default constructor
+    virtual ~KeyFactory() {};
 
     virtual Key *createKey(const uint8_t id) = 0; // Pure virtual function to create a key instance.
     // REVIEW virtual void evaluate() = 0;                  // Abstract from the evaluate() method in Key -> forwarded to the key.

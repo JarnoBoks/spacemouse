@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h> // Include for uint8_t type
 class IObserver;    // Forward declaration of IObserver class
 

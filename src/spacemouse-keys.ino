@@ -56,6 +56,12 @@ LedRing *Mouse_LEDRing;
 // Setup the keyhandler object. This will read config.h and create a handler with all the configured keys.
 KeyCollection myKeyCollection;
 
+// Include the header files for the HID commands
+#include "hidhandler/commands/HIDCommandSendKey.hpp"
+
+// Include the header files for the Translators between the commands send by the axis and keys towards the HID interface
+#include "hidhandler/translator/TranslatorKeys.h"
+
 // Include the header files for the command handler and the commands that can be received through the serial interface
 #include "commandhandler/commandhandler.h"
 #include "commandhandler/debugcommand.h"
@@ -112,6 +118,8 @@ void setup() {
     // TODO - During setup we aren't interested in the output of the calibration process.
     // TODO - We do not want to send output to the HID while the calibration isn't finished.
     SensorCalibrationManager::getInstance()->activateIdleCalibration(500); // Start the idle calibration with 500 iterations
+
+    // Setup the keys and the key collection.
 
     //  Setup the Command Handler and register the commands that can be handled via the serial interface
     myCommandHandler.registerCommand(new DebugCommand());

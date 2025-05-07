@@ -33,7 +33,7 @@ public:
 
     virtual ~TranslatorKinematicsBase() = default; // Default destructor
 
-    virtual void execute() {
+    virtual void sendData() override {
 
         if (idx_start == AxisType_t::UNINITIALIZED || idx_end == AxisType_t::UNINITIALIZED) {
             return; // If the start or end index is uninitialized, do nothing
@@ -50,6 +50,11 @@ public:
 
             isAllZero &= (vel == 0); // Check if all values are zero, if one value is not zero, the flag will be false.
         }
+    }
+
+    void storeDataToSend() override {
+        // This function is not used in this class, but it is required by the interface.
+        // It can be implemented in derived classes if needed.
     }
 
     inline bool isAllZeroValues() const {

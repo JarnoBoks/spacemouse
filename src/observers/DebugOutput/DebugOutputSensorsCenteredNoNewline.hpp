@@ -21,4 +21,5 @@ public:
         DebugOutputSensors::update(hardware); // Call the base class update method
         TextHelper::printSeparator();         // Print a separator after the sensors values
     }
+    inline void update(Kinematics *kinematics) override {}; // No implementation needed for this class
 };

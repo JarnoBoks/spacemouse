@@ -12,5 +12,8 @@ public:
     ITranslator() = default;          // Corrected constructor name
     virtual ~ITranslator() = default; // Default destructor
 
-    virtual void execute() = 0; // Pure virtual function to be implemented by derived classes
+    virtual void sendData() = 0; // Pure virtual function to be implemented by derived classes
+
+    virtual void storeDataToSend() = 0;             // REMOVE After all derived classes are updated.
+    virtual void storeDataToSend(ICommand *cmd) {}; // TODO - Make Pure virtual function to store data in the derived class
 };

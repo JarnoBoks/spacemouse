@@ -3,6 +3,7 @@
 #include "key/KeyCollection.hpp"                            // for KeyCollection
 #include <hidhandler/usbinterface/SpaceMouseUSBInterface.h> // for SpaceMouseUSBInterface
 #include <hidhandler/HIDHandlerConfig.h>
+#include <hidhandler/commands/HIDCommandSendKey.hpp>
 #include <stdint.h>
 
 /**
@@ -25,8 +26,8 @@ public:
         }
 
         uint8_t cmds[NUMHIDKEYS];
-        int8_t count = KeyFactory::getInstance()->getKeyCommandsForHID(cmds); // Get the button commands for HID
-
+        // FIXME int8_t count = KeyFactory::getInstance()->getKeyCommandsForHID(cmds); // Get the button commands for HID
+        int8_t count = 0; // FIXME - This should be replaced with the actual count of commands
         for (int8_t i = 0; i < count; i++) {
             keyData[(cmds[i] / 8)] = (1 << (cmds[i] % 8));
         }
@@ -43,7 +44,8 @@ public:
         }
 
         uint8_t cmds[NUMHIDKEYS];
-        int8_t count = KeyFactory::getInstance()->getKeyCommandsForHID(cmds); // Get the button commands for HID
+        // FIXME int8_t count = KeyFactory::getInstance()->getKeyCommandsForHID(cmds); // Get the button commands for HID
+        int8_t count = 0; // FIXME - This should be replaced with the actual count of commands
 
         for (int8_t i = 0; i < count; i++) {
             keyData[(cmds[i] / 8)] = (1 << (cmds[i] % 8));
@@ -61,10 +63,18 @@ public:
         }
     }
 
-    virtual void execute() {
+    void sendData() override {
         SpaceMouseUSBInterface_ *usbInterface = SpaceMouseUSBInterface_::getInstance(); // Get the USB interface instance
         usbInterface->SendReport(3, keyData, KEYDATASIZE);
         memcpy(prevKeyData, keyData, KEYDATASIZE); // Copy the current key data to the previous key data
+    }
+
+    void storeDataToSend(ICommand *cmd) override {
+        HIDCommandSendKey *cmdKey = static_cast<HIDCommandSendKey *>(cmd); // Cast the command to HIDCommandSendKey
+        if (cmdKey == nullptr) {
+            return; // If the command is not a HIDCommandSendKey, return without doing anything
+        }
+        uint8_t rawcmd = cmdKey
     }
 
     virtual bool isAnythingChanged() {

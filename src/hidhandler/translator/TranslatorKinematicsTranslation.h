@@ -8,10 +8,10 @@ public:
         : TranslatorKinematicsBase(TRANSX, TRANSZ) {}
     virtual ~TranslatorKinematicsTranslation() = default; // Default destructor
 
-    inline virtual void execute() override {
+    inline virtual void sendData() override {
 
-        // Call the base class execute method to fill the message array for the translation axes
-        TranslatorKinematicsBase::execute();
+        // Call the base class sendData method to fill the message array for the translation axes
+        TranslatorKinematicsBase::sendData();
 
         // Send new translational values
         SpaceMouseUSBInterface_ *usbInterface = SpaceMouseUSBInterface_::getInstance(); // Get the USB interface instance

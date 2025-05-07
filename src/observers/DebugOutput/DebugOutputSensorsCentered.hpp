@@ -19,4 +19,5 @@ public:
         DebugOutputSensors::update(hardware); // Call the base class update method
         Serial.println();
     }
+    inline void update(Kinematics *kinematics) override {}; // No implementation needed for this class
 };

@@ -25,7 +25,7 @@ void HIDStateSendtranslation::apply() {
 #endif
 
     //  Send new translational values
-    translator->execute();
+    translator->sendData();
 
     // Increment or reset the zero counter
     // It is safe to assume the translator is executed and is of type TranslatorKinematicsRotation.

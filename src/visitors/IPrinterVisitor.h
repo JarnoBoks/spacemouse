@@ -1,14 +1,13 @@
 #pragma once
-// This Visitor interfacee is used to implement the Visitor pattern for the Sensor and Hardware classes.
-// It allows for different types of visitors to be applied to the Sensor and Hardware classes without modifying their code.
 
-// We have to add all the classes that we want to visit here
-// - Sensor (for the sensor names)
-// - SensorConfig (for the sensor configuration)
-// - Hardware (for the hardware type and version)
-// - Axis (for the axis type and name)
-// - AxisConfig (for the axis configuration)
-
+/**
+ * @brief Interface for the Printer Visitor pattern.
+ * @details This interface defines the methods that must be implemented by any class that wants to visit the Sensor, SensorConfig, Hardware, Axis, AxisConfig, and KinematicsConfig classes.
+ *          This visitor is used to implement the (singular) Serial monitor output for various classes. Concrete Printers classes will output settings or values of the classes they visit
+ *          to the Serial monitor.
+ * @note    Additional visitor methods (ie. additional classes to visit) can be added as needed for future extensions.
+ * @note    This pattern is used for singular output, as opposed to the Observer pattern, which is used for multiple outputs (each loop).
+ */
 class Sensor;
 class SensorConfig;
 class Hardware;

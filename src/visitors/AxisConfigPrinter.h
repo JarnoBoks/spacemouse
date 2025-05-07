@@ -16,16 +16,11 @@
 
 class AxisConfigPrinter : public IPrinterVisitor {
 private:
-    void PrintConfig();
     void _helper_PrintConfig(const char *name, const float posval, const float negval, const boolean printseparator, const char *typeprefix, const uint8_t precision, const int8_t minwidth);
     size_t _helper_PrintItem(const char *separator, const char *typeprefix, const char *name, const char *sign);
 
 public:
-    AxisConfigPrinter() {
-        // Constructor to initialize the AxisConfigPrinter object
-        // Print the header for the min/max output
-        // Serial.println(F("        Min |  Max | Rnge | Warning"));
-    }
+    AxisConfigPrinter() {}
 
     inline void visit(Axis &axis) override {
 

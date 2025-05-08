@@ -6,10 +6,12 @@
 #include "key/functionality/KillRotationFunctionality.h"
 #include "key/functionality/KillTranslationFunctionality.h"
 #include "key/functionality/CommandKeyFunctionality.hpp"
-#include "key/functionality/CommandKeyFunctionalityRevised.hpp" // For CommandKeyFunctionalityRevised
 
 // Include header files for the commands that the keys can send
-#include "..\..\hidhandler\commands\HIDCommandStoreKeyPress.hpp"
+#include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
+
+// Include header files for the command targets for the keys
+#include "hidhandler/translator/TranslatorKeys.h"
 
 void KeyFactory::setupFunctionality(Key *key) {
     // Get the pinNumber from the config.h object for this key.
@@ -18,28 +20,32 @@ void KeyFactory::setupFunctionality(Key *key) {
     // Retrieve the key index from the key object we are working with.
     // Finally the command type is retrieved from the key_CFG array using the key index.
     constexpr uint8_t number_of_keys = CFG_NUMBER_OF_KEYS;
-    uint8_t key_CFG[number_of_keys][3] = KEYCFG; // Array to hold the key configuration
-    uint8_t id = key->getId();                   // Get the ID from the key object
+    constexpr uint8_t key_CFG[number_of_keys][3] = KEYCFG; // Array to hold the key configuration
+    uint8_t id = key->getId();                             // Get the ID from the key object
+    Serial.print(F("KeyFactory::setupFunctionality() - Key ID: "));
+    Serial.println(id); // Debug output to indicate the key ID
+
     uint8_t rcmd = key_CFG[id][1];
+    Serial.print(F("KeyFactory::setupFunctionality() - Command Type: "));
+    Serial.println(rcmd); // Debug output to indicate the command type
 
     // TODO - What happens if the key is not in the key_CFG array?
     // TODO - What happens if the rcmd is not in the CommandType enum?
+
     // Store the command type in the key object
     key->setCommandType(static_cast<CommandType>(rcmd)); // Set the command type for the key
 
-    // Process the command type for the key
-    if (rcmd == KILLROT) {
+    // Set strategy for the key based on the command type
+    if (rcmd == AX_KILLROT) {
         // FIXME key->setFunctionality(new KillRotationFunctionality(), CommandType::KILLROTATION);
-    } else if (rcmd == KILLTRANS) {
+    } else if (rcmd == AX_KILLTRANS) {
         // Attach killtrans functionality
         // FIXME key->setFunctionality(new KillTranslationFunctionality(), CommandType::KILLTRANSLATION);
     } else {
-
-        // Attach 'HID functionality'
-        // Setup the command object for a CommandKey. This is a command that will be sent to the HID interface.
-        ICommand *HIDSK = new HIDCommandStoreKeyPress(key, nullptr);            // Create a new command that the key will send
-        IKeyFunctionality *cmdFunc = new CommandKeyFunctionalityRevised(HIDSK); // Create a new command functionality object
-        key->setFunctionality(cmdFunc);                                         // Set the command functionality for the key
+        // Setup the command object for a CommandKey. This is a command that will be sent to the HID translator.
+        ICommand *HIDSK = new HIDCommandStoreKeyPress(key, nullptr);     // Create a new command that the key will send
+        IKeyFunctionality *cmdFunc = new CommandKeyFunctionality(HIDSK); // KeyStrategy instance that wraps the command to send.
+        key->setStrategy(cmdFunc);                                       // Set the command functionality for the key
     }
 }
 

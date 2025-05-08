@@ -13,15 +13,15 @@ private:
     ITranslator *translator_receiver; // Pointer to the HID translator for key functionality
 
 public:
-    HIDCommandStoreKeyPress() = delete; // Default constructor is deleted to prevent instantiation without parameters
+    Key *m_CommandInvoker; // Pointer to the Key instance that invoked the command - command parameter and thus public
+
+    // REVIEW HIDCommandStoreKeyPress() = delete; // Default constructor is deleted to prevent instantiation without parameters
 
     /// @brief Constructor to initialize the HID command with a key and translator.
     HIDCommandStoreKeyPress(Key *key, ITranslator *translator)
         : translator_receiver(translator),
           m_CommandInvoker(key) {
     }
-
-    Key *m_CommandInvoker; // Pointer to the Key instance that invoked the command - command parameter and thus public
 
     ///@brief Destructor to clean up resources.
     ~HIDCommandStoreKeyPress() override {

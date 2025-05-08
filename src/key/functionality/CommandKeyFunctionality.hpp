@@ -1,48 +1,27 @@
-#if 0 // REMOVE
 #pragma once
 #include "IKeyFunctionality.h"
-#include "key/keys/Key.hpp" // Include the Key class to get the key functionality
-#include "hardware/IObservable.hpp"
-#include "observers/HIDProcessorKey.hpp" // Include the HID processor header for key functionality
-#include "observers/IObserverInitializer.hpp"
+#include "hidhandler/commands/ICommand.hpp" // For Command interface
 
-class CommandKeyFunctionality : public IKeyFunctionality, public IObserverInitializer {
-    // This class implements the command key functionality for a key.
-    // It is responsible for handling the key press and release events and notifying the HID processor.
+/**
+ * @brief CommandKeyFunctionality class handles the execution of commands on key press and release events.
+ * @details This class implements the IKeyFunctionality interface and provides the functionality to execute a command when a key is pressed or released.
+ *          It is used in conjunction with the KeyContext class to manage key events and their associated commands.
+ */
+class CommandKeyFunctionality : public IKeyFunctionality {
 private:
-    Key *m_keyContext; // Pointer to the key instance that this functionality is associated with. Always initialized in the constructor.
-
-    void _onChange() {
-        // Key is pressed, we have to inform the HID handler that we have a command to send.
-        // Attach a key HID observer to the keyCollection.
-        if (m_keyContext) {
-            // Get the keyCollection from the context of the key object
-            IObservable *obsvbl = m_keyContext->getContext();
-            if (obsvbl) {
-                // Attach the HID processor observer to the KeyCollection, but only if it is not already attached.
-                // FIXME - Only when there isn't a HID observer attached for this key yet!
-                obsvbl->attachObserver(new HIDProcessorKey(this));
-            }
-        }
-    }
-
-    /* New idea: Use command pattern:
-        - Create a request object that contains the command, the receiver and the parameters.
-        - The strategy does not need to know about the exact receiver
-        - Each command has an excecute() method that will be called by the strategy (Interface)
-        - The concrete command accepts the receiver and the parameters in the constructor.
-    */
+    ICommand *m_Command = nullptr; // Pointer to the command object associated with this key functionality
 
 public:
-    CommandKeyFunctionality() = delete; // Default constructor not allowed, keycontext needs to be initialized
-    CommandKeyFunctionality(Key *key) : m_keyContext(key) {}
+    CommandKeyFunctionality() = delete; // Default constructor not allowed, m_Command needs to be initialized
+    CommandKeyFunctionality(ICommand *cmd) : m_Command(cmd) {}
 
     inline void onPress() override {
-        _onChange();
+        Serial.println(F("CommandKeyFunctionality::onPress()"));
+        m_Command->execute();
     };
 
     inline void onRelease() override {
-        _onChange();
+        Serial.println(F("CommandKeyFunctionality::onRelease()"));
+        m_Command->execute();
     };
 };
-#endif // REMOVE

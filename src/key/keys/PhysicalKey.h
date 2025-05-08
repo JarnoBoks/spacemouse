@@ -6,7 +6,9 @@
 // Include Arduino library for digitalRead and pinMode functions
 #include <Arduino.h>
 
-#define DEBOUNCE_TIME 200 // Default debounce time for physical key in milliseconds
+#ifndef DEBOUNCE_KEYS_MS
+#define DEBOUNCE_KEYS_MS 100 // Default debounce time for physical key in milliseconds
+#endif
 
 /**
  * @brief Class representing a physical key with debounce functionality.
@@ -16,7 +18,7 @@ private:
     int m_pinNumber = -1; // Pin number for the physical key
 
     // Physical keys have a debounce feature to prevent multiple triggers.
-    bool m_lastKeyState = false;          // Last state of the key, necessary for debouncing
+    bool m_previousKeyRawState = false;   // Last state of the key, necessary for debouncing
     unsigned long m_lastDebounceTime = 0; // Last time the key state was changed.
 
 public:
@@ -29,27 +31,37 @@ public:
 
     inline void evaluate() override {
 
+        bool keyRawState = false; // Variable to store the raw state of the key
         if (m_pinNumber >= 0) {
-            m_keyState = (digitalRead(m_pinNumber) == LOW); // Assuming LOW means pressed
+            keyRawState = (digitalRead(m_pinNumber) == LOW); // Assuming LOW means pressed
         }
 
-        if (m_keyState != m_lastKeyState) {
-            // If the key state has changed, update the debounce time
+        // If the key state has changed from the last reading, restart the debounce period
+        if (keyRawState != m_previousKeyRawState) {
             m_lastDebounceTime = millis();
+            m_previousKeyRawState = keyRawState; // Update the last key state
+            return;
         }
 
-        if ((millis() - m_lastDebounceTime) > DEBOUNCE_TIME) {
-            // If the key state is stable for the debounce time, update the key state
-            if (m_keyState != m_lastKeyState) {
-                m_lastKeyState = m_keyState;
-            }
+        // If the key raw state is stable for the debounce time and the RawValue differs from the KeyState,
+        // update the key state and call the appropriate functionality.
+        if ((millis() - m_lastDebounceTime) > DEBOUNCE_KEYS_MS && m_keyState != keyRawState) {
 
-            if (functionality) {
-                // Call the appropriate functionality based on the key state
+            m_keyState = keyRawState;
+
+            Serial.print(F("PhysicalKey::evaluate() - Key ")); // Debug output to indicate the key state
+            Serial.print(m_id);
+            Serial.print(F(" State: "));
+            Serial.println(m_keyState ? "Pressed" : "Not Pressed");
+
+            if (m_keystrategy != nullptr) {
+                Serial.print(F("PhysicalKey::evaluate() - Functionality: ")); // Debug output to indicate the functionality
                 if (m_keyState) {
-                    functionality->onPress(); // Call press() if the key is pressed
+                    Serial.println(F("Pressed"));
+                    m_keystrategy->onPress();
                 } else {
-                    functionality->onRelease(); // Call release() if the key is released
+                    Serial.println(F("Released"));
+                    m_keystrategy->onRelease();
                 }
             }
         }

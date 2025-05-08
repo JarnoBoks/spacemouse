@@ -2,7 +2,7 @@
 #pragma once
 #include "CommandBase.h"
 
-#define MAX_COMMANDS 10
+#define MAX_COMMANDS 11
 
 class CommandHandler {
 private:

@@ -3,7 +3,8 @@
 #include "config.h" // Allowed here while this is a Collection Factory class.
 #include <stdint.h>
 // Defines to retrieve the key configuration from config.h
-constexpr uint8_t cNUMBER_OF_KEYS = CFG_NUMBER_OF_KEYS;
+
+constexpr uint8_t cNUMBER_OF_KEYS = CFG_NUMBER_OF_KEYS; // Number of keys as defined in config.h
 
 #include "hardware/IObservable.hpp" // Include the IObservable interface header file
 #include "observers/IObserver.hpp"  // Include the IObserver interface header file
@@ -16,16 +17,22 @@ constexpr uint8_t cNUMBER_OF_KEYS = CFG_NUMBER_OF_KEYS;
 // REFACTOR - The constructor code should be moved to the Collection Factory class, which is not implemented yet.
 // REVIEW - Should the 'main' routine setup the collection?
 
+/**
+ * @brief Class representing a collection of keys for the SpaceMouse.
+ * @details This class manages the keys, their states, and observers.
+ *          It provides methods to evaluate the keys, get HID commands, and manage observers.
+ */
 class KeyCollection : IObservable {
 private:
     // The length of the array is set by the total number keys in the current hardware setup.
-    Key *m_keys[cNUMBER_OF_KEYS] = {nullptr}; // Array of key pointers, length is the total number of keys
-    uint8_t m_keyCount = 0;                   // Number of keys created
+    Key *m_keys[cNUMBER_OF_KEYS]; // Array of key pointers, length is the total number of keys
+    uint8_t m_keyCount = 0;       // Number of keys created
 
-    IObserver *m_observers[MAX_KEYCOLLECTION_OBSERVERS] = {nullptr}; // Array of observers
-    uint8_t m_observerCount = 0;                                     // Number of observers attached
+    IObserver *m_observers[MAX_KEYCOLLECTION_OBSERVERS]; // Array of observers
+    uint8_t m_observerCount = 0;                         // Number of observers attached
 
 public:
+    /// @brief Constructor for empty KeyCollection
     KeyCollection();
     ~KeyCollection() {
         for (int i = 0; i < m_keyCount; i++) {
@@ -34,12 +41,15 @@ public:
         }
     } // TODO - Should the constructor code be moved to the main routine?
 
-    inline void evaluate() {
+    void setupKeys(); // Initialize the key collection and set up the keys based on the configuration
+
+    void evaluate() {
         for (int i = 0; i < m_keyCount; i++) {
             m_keys[i]->evaluate();
         }
     }
 
+    /// @deprecated
     int8_t getHIDcommands(uint8_t *cmds);
 
     void addKey(Key *key);

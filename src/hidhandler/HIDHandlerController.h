@@ -72,7 +72,7 @@ public:
      * @brief Retrieves the current state of the HID handler controller.
      * @return Pointer to the current HID state.
      */
-    HIDStateBase *getState() const { return currentState; }
+    inline HIDStateBase *getState() const { return currentState; }
 
-    TranslatorKeys *getTranslator() const { return m_TranslatorKeys; } // Get the translator for key data
+    inline TranslatorKeys *getKeyTranslator() const { return m_TranslatorKeys; } // Get the translator for key data
 };

@@ -17,7 +17,7 @@ class IObservable;   // Forward declaration of IObservable interface
  */
 class Key : public IKey {
 protected:
-    IKeyFunctionality *functionality = nullptr; // Pointer to the key functionality
+    IKeyFunctionality *m_keystrategy = nullptr; // Pointer to the key functionality
 
     bool m_keyState = false; // Current state of the key (true = pressed, false = released)
 
@@ -34,7 +34,7 @@ public:
     Key(int8_t id, IObservable *context) : m_id(id), m_context(context) {} // Constructor with ID and context
 
     virtual ~Key() {
-        delete functionality; // Delete the functionality instance to free memory
+        delete m_keystrategy; // Delete the m_keystrategy instance to free memory
     }
 #if 0
     // Getters and setters for key properties
@@ -45,12 +45,15 @@ public:
         commandType = cmd;
     }
 #endif
+
     // Getters and setters for key properties
-    inline IKeyFunctionality *getFunctionality() const { return functionality; }
-    inline void setFunctionality(IKeyFunctionality *func) {
-        delete functionality; // Delete any previous functionality instance
-        functionality = func;
-        // REMOVE commandType = cmd;
+    inline IKeyFunctionality *getStrategy() const { return m_keystrategy; }
+
+    void setStrategy(IKeyFunctionality *strategy) {
+        if (m_keystrategy != nullptr) {
+            delete m_keystrategy; // Delete any previous functionality instance
+        }
+        m_keystrategy = strategy;
     }
 
     inline int8_t getId() const { return m_id; } // Get the ID of the key

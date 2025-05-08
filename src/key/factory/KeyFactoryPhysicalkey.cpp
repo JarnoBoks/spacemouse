@@ -16,6 +16,7 @@ Key *KeyFactoryPhysicalkey::createKey(uint8_t id) {
     uint8_t key_CFG[number_of_keys][3] = KEYCFG; // Array to hold the key configuration
 
     Key *newKey = new PhysicalKey(id, key_CFG[id][2]); // Create a new physical key instance
+    setupFunctionality(newKey);                        // Set up the functionality for the new key
 
     return newKey; // Return the new key instance
 }

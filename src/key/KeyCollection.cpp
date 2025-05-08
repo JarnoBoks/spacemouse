@@ -8,7 +8,16 @@ constexpr uint8_t cKEY_CONFIGS[cNUMBER_OF_KEYS][3] = KEYCFG; // Array to hold th
 #define KEY_CFG_PINN cKEY_CONFIGS[i][2] // Pin number
 
 KeyCollection::KeyCollection() {
+    // Constructor for KeyCollection class
+    for (uint8_t i = 0; i < cNUMBER_OF_KEYS; i++) {
+        m_keys[i] = nullptr; // Initialize each key pointer to nullptr
+    }
+    for (uint8_t i = 0; i < MAX_KEYCOLLECTION_OBSERVERS; i++) {
+        m_observers[i] = nullptr; // Initialize each key pointer to nullptr
+    }
+}
 
+void KeyCollection::setupKeys() {
     for (int i = 0; i < cNUMBER_OF_KEYS; i++) {
         // The first element of each key contains the type of key (PHYSICAL or ROTARY).
         // The second element contains the button type (SM_T, SM_R, etc.)
@@ -31,7 +40,6 @@ KeyCollection::KeyCollection() {
         m_keyCount++;
     }
 };
-
 /**
  * @brief Retrieves the key commands for the HID
  * @param cmds Pointer to the array where the commands will be stored

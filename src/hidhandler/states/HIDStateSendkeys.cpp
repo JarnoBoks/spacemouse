@@ -13,7 +13,7 @@ HIDStateSendkeys::~HIDStateSendkeys() {
 }
 
 void HIDStateSendkeys::apply() {
-    TranslatorKeys *translator = context->getTranslator(); // Get the Key translator instance from the context
+    TranslatorKeys *translator = context->getKeyTranslator(); // Get the Key translator instance from the context
 
 #if 0
     // Check if there is something to send. If nothing is to be sent, go to the start state

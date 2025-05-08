@@ -22,10 +22,11 @@ SpaceMouseHID *mySpaceMouseHID;
 #include "hardware/hardware_hall.h"
 #include "hardware/hardware_joystick.h"
 
-#if defined(HW_HALLEFFECT)
-#define HW_TYPE Hardware_HALL
+#if defined(HW_JOYSTICK)
+#define HW_TYPE Hardware_JOYSTICK // REFACTOR - Change casing /naming convention to match the other files
 #elif defined(HW_JOYSTICK)
-#define HW_TYPE Hardware_JOYSTICK
+#elif defined(HW_HALLEFFECT)
+#define HW_TYPE Hardware_HALL // REFACTOR - Change casing /naming convention to match the other files
 #else
 #error "No hardwaretype defined, define HW_HALLEFFECT or HW_JOYSTICK in config.h"
 #endif
@@ -61,9 +62,12 @@ KeyCollection myKeyCollection;
 
 // Include the header files for the Translators between the commands send by the axis and keys towards the HID interface
 #include "hidhandler/translator/TranslatorKeys.h"
+TranslatorKeys myTranslatorKeys; // Translator object to translate the commands from the keys to the HID interface
 
-// Include the header files for the command handler and the commands that can be received through the serial interface
+// Include the header files for the command handler that will handle the commands send by the serial interface
 #include "commandhandler/commandhandler.h"
+
+// Include the header files for the commands that can be received through the serial interface
 #include "commandhandler/debugcommand.h"
 #include "commandhandler/idlecommand.h"
 #include "commandhandler/minmaxcommand.h"
@@ -74,6 +78,7 @@ KeyCollection myKeyCollection;
 #include "commandhandler/showcommand.h"
 #include "commandhandler/exclusivecommand.h"
 #include "commandhandler/switchyzcommand.h"
+#include "commandhandler/bootloadercommand.h"
 CommandHandler myCommandHandler; // Command handler object to handle the commands from the serial interface
 
 // Include the header file for the sensor calibration manager
@@ -121,7 +126,7 @@ void setup() {
 
     // Setup the keys and the key collection.
 
-    //  Setup the Command Handler and register the commands that can be handled via the serial interface
+    //  Setup the Command Handler and register the commands that can be handled via the serial interface.
     myCommandHandler.registerCommand(new DebugCommand());
     myCommandHandler.registerCommand(new IdleCommand());
     myCommandHandler.registerCommand(new MinMaxCommand());
@@ -132,6 +137,7 @@ void setup() {
     myCommandHandler.registerCommand(new ShowCommand());
     myCommandHandler.registerCommand(new ExclusiveCommand());
     myCommandHandler.registerCommand(new SwitchYZCommand());
+    myCommandHandler.registerCommand(new BootloaderCommand());
 
     // When debugging with SimAVR thorugh PlatformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
     // Use this comamnd to initialize a debug state.
@@ -139,11 +145,12 @@ void setup() {
     // myCommandHandler.handleInput(buffer, 32, 1);
 
     // Populate the key collection with the keys that are configured in config.h
+    myKeyCollection.setupKeys(); // Setup the keys for the key collection, based on the configuration in config.h
 
 #if 0
-    cstmDelay(7500);                       // Debugging: give the user some time to open the serial monitor and start the debugging process
+    cstmDelay(7500); // Debugging: give the user some time to open the serial monitor and start the debugging process
+    KeyCollection tstCollection;
 #endif
-
     // REVIEW - Can we fall back to a solution without the "new" operator and just setup a 'global' variable?
     mySpaceMouseHID = new SpaceMouseHID(); // Initialize the HID interface
 

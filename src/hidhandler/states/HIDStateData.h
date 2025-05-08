@@ -3,7 +3,7 @@
 
 #include <stdint.h>                      // for uint8_t
 #include <Arduino.h>                     // for millis()
-#include <hidhandler/HIDHandlerConfig.h> // for KEYDATASIZE
+#include <hidhandler/HIDHandlerConfig.h> // for HIDKEYDATASIZE
 
 /**
  * @brief This class is used to store the state data for the HID state machine. It contains
@@ -13,7 +13,7 @@ class HIDStateData {
 public:
     HIDStateData() {
         // Constructor to initialize the state data
-        for (int i = 0; i < KEYDATASIZE; i++) {
+        for (int i = 0; i < HIDKEYDATASIZE; i++) {
             prevKeyData[i] = 0; // Initialize the previous key data to zero
         }
         now = millis();
@@ -46,7 +46,7 @@ public:
     uint8_t countTransZeros = 0; // Counter for the number of Translation zero data packages sent
     uint8_t countRotZeros = 0;   // Counter for the number of Rotation zero data packages sent
 
-    uint8_t prevKeyData[KEYDATASIZE] = {0}; // Array to hold the previous key state
+    uint8_t prevKeyData[HIDKEYDATASIZE] = {0}; // Array to hold the previous key state
 #ifdef ADV_HID_JIGGLE
     bool toggleValue = false; // Variable to track if values shall be jiggled or not
 #endif

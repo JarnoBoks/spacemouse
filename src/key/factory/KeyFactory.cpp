@@ -9,7 +9,7 @@
 #include "key/functionality/CommandKeyFunctionalityRevised.hpp" // For CommandKeyFunctionalityRevised
 
 // Include header files for the commands that the keys can send
-#include "hidhandler/commands/HIDCommandSendKey.hpp"
+#include "..\..\hidhandler\commands\HIDCommandStoreKeyPress.hpp"
 
 void KeyFactory::setupFunctionality(Key *key) {
     // Get the pinNumber from the config.h object for this key.
@@ -37,7 +37,7 @@ void KeyFactory::setupFunctionality(Key *key) {
 
         // Attach 'HID functionality'
         // Setup the command object for a CommandKey. This is a command that will be sent to the HID interface.
-        ICommand *HIDSK = new HIDCommandSendKey(key, nullptr);                  // Create a new command that the key will send
+        ICommand *HIDSK = new HIDCommandStoreKeyPress(key, nullptr);            // Create a new command that the key will send
         IKeyFunctionality *cmdFunc = new CommandKeyFunctionalityRevised(HIDSK); // Create a new command functionality object
         key->setFunctionality(cmdFunc);                                         // Set the command functionality for the key
     }

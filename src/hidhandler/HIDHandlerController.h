@@ -20,7 +20,7 @@ private:
     HIDStateBase *currentState = nullptr; // Pointer to the current HID state
     HIDStateData *stateData = nullptr;    // Pointer to the state data object
 
-    // Interfaces for the HID state machine
+    // Known interfaces for the HID state machine
     TranslatorKeys *m_TranslatorKeys = nullptr; // Translator for key data
 
 public:

@@ -57,7 +57,7 @@ LedRing *Mouse_LEDRing;
 KeyCollection myKeyCollection;
 
 // Include the header files for the HID commands
-#include "hidhandler/commands/HIDCommandSendKey.hpp"
+#include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
 
 // Include the header files for the Translators between the commands send by the axis and keys towards the HID interface
 #include "hidhandler/translator/TranslatorKeys.h"

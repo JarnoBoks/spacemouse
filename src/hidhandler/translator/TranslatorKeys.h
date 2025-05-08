@@ -1,9 +1,10 @@
 #pragma once
 #include "ITranslator.h"
 #include "key/KeyCollection.hpp"                            // for KeyCollection
-#include <hidhandler/usbinterface/SpaceMouseUSBInterface.h> // for SpaceMouseUSBInterface
-#include <hidhandler/HIDHandlerConfig.h>
-#include <hidhandler/commands/HIDCommandSendKey.hpp>
+#include "hidhandler/usbinterface/SpaceMouseUSBInterface.h" // for SpaceMouseUSBInterface
+#include "hidhandler/HIDHandlerConfig.h"                    // for HIDKEYDATASIZE
+#include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
+
 #include <stdint.h>
 
 /**
@@ -11,45 +12,54 @@
  */
 class TranslatorKeys : public ITranslator {
 private:
-    uint8_t *prevKeyData = nullptr; // Pointer to the previous data (not used in this class)
+    // REMOVE uint8_t *prevKeyData = nullptr; // Pointer to the previous data (not used in this class)
+    boolean isDataStaged = false;
+
 protected:
 public:
-    /**
-     * @brief Constructor for TranslatorKeys class
-     * @details This constructor initializes the keyData array and sets up the previous key data pointer.
-     * @param prevKeyData Pointer to the previous key data
-     */
-    TranslatorKeys(uint8_t *prevKeyData = nullptr) : prevKeyData(prevKeyData) {
+    /// @brief Constructor for TranslatorKeys class
+    /// @details This constructor initializes the keyData array and sets up the previous key data pointer.
+    /// @param prevKeyData Pointer to the previous key data
+    /// @deprecated //REMOVE
+    // REMOVE TranslatorKeys(uint8_t *prevKeyData = nullptr) : prevKeyData(prevKeyData) {
+    TranslatorKeys() {
         // Init or empty the keyData array
-        for (int i = 0; i < KEYDATASIZE; i++) {
+        for (int i = 0; i < HIDKEYDATASIZE; i++) {
             keyData[i] = 0;
-        }
-
-        uint8_t cmds[NUMHIDKEYS];
-        // FIXME int8_t count = KeyFactory::getInstance()->getKeyCommandsForHID(cmds); // Get the button commands for HID
-        int8_t count = 0; // FIXME - This should be replaced with the actual count of commands
-        for (int8_t i = 0; i < count; i++) {
-            keyData[(cmds[i] / 8)] = (1 << (cmds[i] % 8));
         }
     }
 
     virtual ~TranslatorKeys() = default;
 
-    uint8_t keyData[KEYDATASIZE] = {0}; // Array to hold the key state
+    uint8_t keyData[HIDKEYDATASIZE] = {0}; // Array to hold the key data to send
 
-    virtual void prepareMessage() {
-        // Init or empty the keyData array
-        for (int i = 0; i < KEYDATASIZE; i++) {
-            keyData[i] = 0;
+    void sendData() override {
+        if (!isDataStaged) {
+            return; // If no data has been staged, return without sending anything
+        }
+        SpaceMouseUSBInterface_ *usbInterface = SpaceMouseUSBInterface_::getInstance(); // Get the USB interface instance
+        usbInterface->SendReport(3, keyData, HIDKEYDATASIZE);
+        // REMOVE memcpy(prevKeyData, keyData, HIDKEYDATASIZE); // Copy the current key data to the previous key data
+        isDataStaged = false; // Reset the staged flag to indicate that data has been sent
+    }
+
+    void stageDataToSend(ICommand *cmd) override {
+        HIDCommandStoreKeyPress *KeyPressCommand = static_cast<HIDCommandStoreKeyPress *>(cmd); // ICommand parameter casted to HIDCommandStoreKeyPress
+        if (KeyPressCommand == nullptr || KeyPressCommand->m_CommandInvoker == nullptr) {
+            return; // If the command is not a HIDCommandStoreKeyPress, return without doing anything
         }
 
-        uint8_t cmds[NUMHIDKEYS];
-        // FIXME int8_t count = KeyFactory::getInstance()->getKeyCommandsForHID(cmds); // Get the button commands for HID
-        int8_t count = 0; // FIXME - This should be replaced with the actual count of commands
+        // Get the raw command from the key that send the command
+        uint8_t rawcmd = static_cast<uint8_t>(KeyPressCommand->m_CommandInvoker->getCommandType()); // Raw command data (one of the command types defined in CommandType enum)
 
-        for (int8_t i = 0; i < count; i++) {
-            keyData[(cmds[i] / 8)] = (1 << (cmds[i] % 8));
-#if 0
+        // Translate the rawcommand to the keyData array to store it for the next transmission
+        keyData[(rawcmd / 8)] = (1 << (rawcmd % 8));
+
+        // Set the staged flag to true to indicate that data has been staged for sending
+        isDataStaged = true;
+
+        // Debug output for the raw key bit numbers
+#if 0 // TODO - create debugoutput for the raw key bitnumbers
         if (debug == 9) {
             // debug the key board outputs
             Serial.print(F("bitnumber: "));
@@ -60,25 +70,13 @@ public:
             Serial.println(keyData[(bitNumber[i] / 8)], HEX);
         }
 #endif
-        }
     }
 
-    void sendData() override {
-        SpaceMouseUSBInterface_ *usbInterface = SpaceMouseUSBInterface_::getInstance(); // Get the USB interface instance
-        usbInterface->SendReport(3, keyData, KEYDATASIZE);
-        memcpy(prevKeyData, keyData, KEYDATASIZE); // Copy the current key data to the previous key data
-    }
-
-    void storeDataToSend(ICommand *cmd) override {
-        HIDCommandSendKey *cmdKey = static_cast<HIDCommandSendKey *>(cmd); // Cast the command to HIDCommandSendKey
-        if (cmdKey == nullptr) {
-            return; // If the command is not a HIDCommandSendKey, return without doing anything
-        }
-        uint8_t rawcmd = cmdKey
-    }
-
-    virtual bool isAnythingChanged() {
-        // Check if there is something to send. If nothing is to be sent, go to the start state
-        return (memcmp(keyData, prevKeyData, KEYDATASIZE) != 0);
+    virtual bool hasStagedData() {
+#if 0 // REMOVE
+      // Check if there is something to send. If nothing is to be sent, go to the start state
+        return (memcmp(keyData, prevKeyData, HIDKEYDATASIZE) != 0);
+#endif
+        return isDataStaged; // Return true if data has been staged for sending, false otherwise
     }
 };

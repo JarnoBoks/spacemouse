@@ -10,4 +10,4 @@
 #define HIDMAXBUTTONS 32 // must be multiple of 8!
 #endif
 
-constexpr uint8_t KEYDATASIZE = HIDMAXBUTTONS / 8; // Size of the key data array
+constexpr uint8_t HIDKEYDATASIZE = HIDMAXBUTTONS / 8; // Size of the key data array

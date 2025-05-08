@@ -1,13 +1,12 @@
 #pragma once
-#include "stdint.h" // for uint8_t, int16_t
-#include "ITranslator.h"
-#include <kinematics/kinematics.h> // for the SpaceMouseKinematics class
 
-// DEBUG:
-#include <Arduino.h> // for Serial
+#include "ITranslator.h"
+#include "kinematics/kinematics.h" // for the SpaceMouseKinematics class
+
+#include <stdint.h> // for uint8_t, int16_t
 
 /**
- * @brief Class to translate the kinematics data to the spacemouse HID interface formats
+ * @brief Base class to translate the kinematics data to the spacemouse HID interface formats
  * @details This class is used to translate the kinematics data to the spacemouse HID interface formats.
  *          It is a base class and should be inherited by other classes that implement the execute() method.
  * @note This class also manages the message array and checks if the values that will be sent are all zero.
@@ -52,7 +51,7 @@ public:
         }
     }
 
-    void storeDataToSend() override {
+    void stageDataToSend() override {
         // This function is not used in this class, but it is required by the interface.
         // It can be implemented in derived classes if needed.
     }

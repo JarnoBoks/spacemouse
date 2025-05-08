@@ -42,25 +42,8 @@ public:
 
     int8_t getHIDcommands(uint8_t *cmds);
 
-    inline void addKey(Key *key) {
-        if (m_keyCount < cNUMBER_OF_KEYS) {
-            m_keys[m_keyCount++] = key; // Add the key to the list of keys
-        }
-    }
-
-    inline void removeKey(Key *key) {
-        for (int i = 0; i < m_keyCount; i++) {
-            if (m_keys[i] == key) {
-                m_keyCount--; // Decrease the key count
-                if (m_keyCount > 0) {
-                    // Move the last key to the current position
-                    m_keys[i] = m_keys[m_keyCount];
-                }
-                m_keys[m_keyCount] = nullptr;
-                break;
-            }
-        }
-    }
+    void addKey(Key *key);
+    void removeKey(Key *key);
 
     void attachObserver(IObserver *observer) { // REFACTOR - Move to Interface!
         if (m_observerCount >= MAX_KEYCOLLECTION_OBSERVERS) {

@@ -1,7 +1,6 @@
-#ifndef SENSOR_H
-#define SENSOR_H
+#pragma once
 
-#include <Arduino.h>
+#include <stdint.h> // Include the standard integer types header for fixed-width integer types
 
 class SensorConfig;    // Forward declaration of SensorConfig class
 class IPrinterVisitor; // Forward declaration of IPrinterVisitor class
@@ -44,5 +43,3 @@ public:
 
     void accept(IPrinterVisitor &visitor);
 };
-
-#endif // SENSOR_H

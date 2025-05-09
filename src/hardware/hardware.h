@@ -5,7 +5,7 @@
 #define MAX_SENSORS 8
 
 #include "axis/Axis.hpp" // for AxisType enum
-#include "sensor/sensor.h"
+#include "..\sensor\sensor.hpp"
 #include "observers/IObserver.hpp"
 #include "IObservable.hpp" // For IObservable interface
 

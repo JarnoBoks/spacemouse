@@ -1,8 +1,5 @@
-#ifndef SENSORCONFIG_H
-#define SENSORCONFIG_H
-
-#include <Arduino.h>
-
+#pragma once
+#include <stdint.h>
 class IPrinterVisitor; // Forward declaration of IPrinterVisitor class
 
 class SensorConfig {
@@ -16,8 +13,6 @@ private:
     void _maxWarning(bool *warning) const;
 
 public:
-    // FIXME: Inlines should be moved to the cpp file for better readability and maintainability
-
     /** Constructor with no arguments - not used*/
     SensorConfig();
 
@@ -48,5 +43,3 @@ public:
 
     void accept(IPrinterVisitor &visitor);
 };
-
-#endif // SENSORCONFIG_H

@@ -5,7 +5,7 @@
 
 // Header files for the objects that will be stored in the EEPROM)
 #include "axis/config/AxisConfig.hpp" // For AxisConfig class
-#include "sensor/sensorconfig.h"
+#include "sensor/config/SensorConfig.h"
 #include "kinematics/kinematicsconfig.h"
 
 /// @brief If the version number defined in the EEPROM is not equal to the version number defined in this file, the EEPROM will be erased and initialized with the default values.

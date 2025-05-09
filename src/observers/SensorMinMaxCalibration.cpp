@@ -1,7 +1,7 @@
 #include "SensorMinMaxCalibration.h"
-#include "hardware/hardware.h"   // For Hardware class - necessary to retrieve the sensors.
-#include "sensor/sensor.h"       // For Sensor class
-#include "sensor/sensorconfig.h" // For SensorConfig class
+#include "hardware/hardware.h"          // For Hardware class - necessary to retrieve the sensors.
+#include "sensor/sensor.hpp"            // For Sensor class
+#include "sensor/config/SensorConfig.h" // For SensorConfig class
 #include "calibration/sensorcalibrationmanager.h"
 #include "visitors/MinMaxPrinter.h" // For MinMaxPrinter class
 

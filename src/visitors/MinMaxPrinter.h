@@ -1,10 +1,8 @@
 #pragma once
-#ifndef MINMAXPRINTER_H
-#define MINMAXPRINTER_H
 
 #include "IPrinterVisitor.h"
-#include "sensor/sensor.h"
-#include "sensor/sensorconfig.h"
+#include "sensor/sensor.hpp"
+#include "sensor/config/SensorConfig.h"
 #include "hardware/hardware.h"
 #include "kinematics/kinematicsconfig.h"
 #include "common/TextHelper.h"
@@ -17,12 +15,12 @@ public:
         Serial.println(F("        Min |  Max | Rnge | Warning"));
     }
 
-    inline void visit(Sensor &sensor) override {
+    void visit(Sensor &sensor) override {
         Serial.print(sensor.getName());
         Serial.print(F(":  "));
     }
 
-    inline void visit(SensorConfig &config) override {
+    void visit(SensorConfig &config) override {
         // Initialize the flags for min-, max- and workingrange warnings
         bool warningsOccurred = false, minWarning = false, maxWarning = false, rangeWarning = false;
 
@@ -75,5 +73,3 @@ public:
     inline void visit(AxisConfig &config) override {};
     inline void visit(KinematicsConfig &config) override {}
 };
-
-#endif // MINMAXPRINTER_H

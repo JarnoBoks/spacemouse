@@ -1,6 +1,8 @@
-#include "sensor.h"
-#include "sensorconfig.h"
+#include "sensor.hpp"
+#include "config/SensorConfig.h"
 #include "visitors/IPrinterVisitor.h"
+
+#include <wiring_private.h> // for analogRead & map function
 
 /**
  * @brief Constructor for Sensor.

@@ -1,8 +1,8 @@
 
-#include "defaultsensorconfig.h"
-#include "sensor/sensorconfig.h" // Include the SensorConfig class to get the default values
-#include "config.h"              // Include the config file to know the hardware type
-#include "hardware/hardware.h"   // Include the hardware class to get the number of sensors (MAX_SENSORS)
+#include "DefaultSensorConfig.hpp"
+#include "SensorConfig.h"      // Include the SensorConfig class to get the default values
+#include "config.h"            // Include the config file to know the hardware type
+#include "hardware/hardware.h" // Include the hardware class to get the number of sensors (MAX_SENSORS)
 
 #if defined(HW_HALLEFFECT)
 #include "defaults_hall.h"

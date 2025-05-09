@@ -1,7 +1,7 @@
 #ifndef SENSOR_JOYSTICK_H
 #define SENSOR_JOYSTICK_H
 
-#include "sensor.h"
+#include "sensor.hpp"
 
 // -- Calibration warning levels for the joystick sensors --
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "IPrinterVisitor.h"
-#include "sensor/sensor.h"
-#include "sensor/sensorconfig.h"
+#include "sensor/sensor.hpp"
+#include "sensor/config/SensorConfig.h"
 #include "hardware/hardware.h"
 #include "kinematics/kinematicsconfig.h"
 #include "common/TextHelper.h"
@@ -19,7 +19,7 @@ public:
     inline void visit(Hardware &hardware) override {}
     inline void visit(Axis &axis) override {};
     inline void visit(AxisConfig &config) override {};
-    inline void visit(KinematicsConfig &config) override {
+    void visit(KinematicsConfig &config) override {
         bool exclusiveMode = config.exclusiveMode; // Get the minimum value from the sensor configuration
         Serial.print(exclusiveMode);
         TextHelper::printBooleanDescription(exclusiveMode);

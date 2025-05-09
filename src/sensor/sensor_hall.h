@@ -1,7 +1,7 @@
 #ifndef SENSOR_HALL_H
 #define SENSOR_HALL_H
 
-#include "sensor.h"
+#include "sensor.hpp"
 
 #define HALL_SENSOR_NAMES {"HES0", "HES1", "HES2", "HES3", "HES6", "HES7", "HES8", "HES9"}
 

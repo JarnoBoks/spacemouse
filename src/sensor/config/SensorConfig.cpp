@@ -1,10 +1,11 @@
 
-#include "sensorconfig.h"
-#include "defaultsensorconfig.h"
+#include "SensorConfig.h"
+#include "config.h" // Include the config file to know the hardware type
+#include "DefaultSensorConfig.hpp"
 #include "eeprom/eepromstore.h"       // To load and save the sensor configuration to EEPROM
-#include <math.h>                     // For abs() function
 #include "visitors/IPrinterVisitor.h" // For IPrinterVisitor interface
-#include "config.h"                   // Include the config file to know the hardware type
+
+#include <math.h> // For abs() function
 
 #if defined(HW_HALLEFFECT)
 #include "defaults_hall.h"

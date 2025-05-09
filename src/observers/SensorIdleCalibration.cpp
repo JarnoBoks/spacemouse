@@ -1,6 +1,6 @@
 #include "SensorIdleCalibration.h"
-#include "hardware/hardware.h" // For Hardware class - necessary to retrieve the sensors.
-#include "sensor/sensor.h"     // For Sensor class
+#include "hardware/hardware.h"  // For Hardware class - necessary to retrieve the sensors.
+#include "..\sensor\sensor.hpp" // For Sensor class
 #include "calibration/sensorcalibrationmanager.h"
 #include "visitors/IdlePositonPrinter.h" // For IdlePositionPrinter class
 

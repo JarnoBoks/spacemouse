@@ -1,8 +1,8 @@
 #pragma once
 
 #include "IPrinterVisitor.h"
-#include "sensor/sensor.h"
-#include "sensor/sensorconfig.h"
+#include "sensor/sensor.hpp"
+#include "sensor/config/SensorConfig.h"
 #include "hardware/hardware.h"
 #include "kinematics/kinematicsconfig.h"
 #include "common/TextHelper.h"
@@ -25,7 +25,7 @@ public:
         deadzone = dz;  // Set the deadzone value
     }
 
-    inline void visit(Sensor &sensor) override {
+    void visit(Sensor &sensor) override {
         // name
         Serial.print(sensor.getName());
         Serial.print(F(": "));

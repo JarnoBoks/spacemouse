@@ -1,7 +1,7 @@
 #include "MinMaxCommand.h"
 #include "calibration/sensorcalibrationmanager.h"
 #include "hardware/hardware.h" // For Hardware class - necessary to retrieve the sensors.
-#include "sensor/sensorconfig.h"
+#include "sensor/config/SensorConfig.h"
 #include "visitors/MinMaxPrinter.h"
 
 // Only log to serial if not using Arduino AVR architecture

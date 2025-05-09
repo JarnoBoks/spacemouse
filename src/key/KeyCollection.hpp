@@ -1,97 +1,31 @@
 #pragma once
 
-#include "config.h" // Allowed here while this is a Collection Factory class.
+#include "common/Collection.hpp" // Include the ICollection interface header file
+#include "common/Observable.hpp" // Include the ICollection interface header file
+#include "config.h"              // Include the configuration header file, to retrieve the number of keys (allowed while this is a collection class)
 #include <stdint.h>
 
-// Defines to retrieve the key configuration from config.h
+/// @brief Number of keys that will be added to the collection.
+/// @details This is a constant value that defines the maximum number of keys that can be added to the collection. The value is defined in the config.h file.
 constexpr uint8_t cNUMBER_OF_KEYS = CFG_NUMBER_OF_KEYS; // Number of keys as defined in config.h
 
-#include "..\common\IObservable.hpp" // Include the IObservable interface header file
-#include "observers/IObserver.hpp"   // Include the IObserver interface header file
+/// @brief Number of observers that can be added to this collection.
+/// @details This is a constant value that defines the maximum number of observers that can be added to the collection.
+constexpr uint8_t c_MAX_KEYCOLLECTION_OBSERVERS = cNUMBER_OF_KEYS + 4; // Maximum number of observers for the sensor collection
 
-#include "keys/Key.hpp" // Include the Key class header file
-
-#include "factory\KeyFactoryPhysicalkey.hpp" // TODO - Move to cpp
-#include "factory\KeyFactoryRotarykey.hpp"   // TODO - Move to cpp
-
-// REFACTOR - The constructor code should be moved to the Collection Factory class, which is not implemented yet.
 // REVIEW - Should the 'main' routine setup the collection?
 
-// REFACTOR - Inherit from ICollection instead of implementing the interface directly. This will allow for a more consistent design and easier maintenance.
 /**
  * @brief Class representing a collection of keys for the SpaceMouse.
  * @details This class manages the keys, their states, and observers.
  *          It provides methods to evaluate the keys, get HID commands, and manage observers.
  */
-class KeyCollection : public IObservable {
-private:
-    // The length of the array is set by the total number keys in the current hardware setup.
-    Key *m_keys[cNUMBER_OF_KEYS]; // Array of key pointers, length is the total number of keys
-    uint8_t m_keyCount = 0;       // Number of keys created
-
-    IObserver *m_observers[MAX_KEYCOLLECTION_OBSERVERS]; // Array of observers
-    uint8_t m_observerCount = 0;                         // Number of observers attached
+class KeyCollection : public Collection, public Observable {
 
 public:
     /// @brief Constructor for empty KeyCollection
-    KeyCollection();
-    ~KeyCollection() {
-        for (int i = 0; i < m_keyCount; i++) {
-            delete m_keys[i]; // Delete each key instance to free memory
-            m_keyCount = 0;
-        }
-    }
+    KeyCollection() : Collection(CFG_NUMBER_OF_KEYS), Observable(c_MAX_KEYCOLLECTION_OBSERVERS) {};
+    ~KeyCollection() {}
 
     void setup();
-
-    void evaluate() {
-        for (int i = 0; i < m_keyCount; i++) {
-            m_keys[i]->evaluate();
-        }
-    }
-
-    void add(Key *key);
-    void remove(Key *key);
-
-    void attachObserver(IObserver *observer) { // REFACTOR - Move to Interface!
-        if (m_observerCount >= MAX_KEYCOLLECTION_OBSERVERS) {
-            // TODO - Handle the case when the observer array is full. Print a message on the serial monitor?
-            return;
-        }
-
-        // Check if the observer is already attached
-        for (uint8_t i = 0; i < m_observerCount; i++) {
-            if (m_observers[i] == observer) {
-                return; // Observer already attached, do nothing
-            }
-        }
-
-        m_observers[m_observerCount++] = observer; // Attach the observer to the collection
-    }
-
-    void detachObserver(IObserver *observer) { // REFACTOR - Move to Interface!
-        // remove the observer from the array by replacing it with the last observer in the array and decrease the count.
-        for (uint8_t i = 0; i < m_observerCount; i++) {
-            if (m_observers[i] == observer) {
-                m_observerCount--; // Decrease the observer count
-                if (m_observerCount > 0) {
-                    // Move the last observer to the current position
-                    m_observers[i] = m_observers[m_observerCount];
-                }
-                m_observers[m_observerCount] = nullptr;
-                break;
-            }
-        }
-    }
-    void notifyObservers() { // Notify all observers of changes // REFACTOR - Move to Interface!
-        for (uint8_t i = 0; i < m_observerCount; i++) {
-            m_observers[i]->update(this); // Notify each observer, with the hardware instance as parameter
-        }
-    }
-    void clearObservers() { // REFACTOR - Move to Interface!
-        for (uint8_t i = 0; i < m_observerCount; i++) {
-            m_observers[i] = nullptr;
-        }
-        m_observerCount = 0;
-    }
 };

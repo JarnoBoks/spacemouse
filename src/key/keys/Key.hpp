@@ -1,6 +1,8 @@
 #pragma once
 
 #include "IKey.h"
+#include "common/ICollectable.hpp"
+
 #include "key/functionality/IKeyFunctionality.h"
 #include "key/functionality/CommandType.hpp" // For CommandType enum
 
@@ -17,7 +19,9 @@ class IObservable;   // Forward declaration of IObservable interface
  * @note The Key class is designed to be inherited by specific key types, such as PhysicalKey or RotaryKey.
  *        It provides functionality for managing key states and executing associated commands.
  */
-class Key : public IKey {
+class Key : public IKey, public ICollectable {
+    // The Key class is a base class for different types of keys (e.g., physical keys, rotary keys).
+    // It implements the IKey interface and provides functionality for managing key states and executing associated commands.
 protected:
     IKeyFunctionality *m_keystrategy = nullptr; // Pointer to the key functionality
 
@@ -27,7 +31,7 @@ protected:
     int8_t m_id = -1;                            // ID of the key, used for identification in f.e. printing
     CommandType commandType = CommandType::NONE; // Command type for the key        //FIXME - This is not part of the common confuguration!
 
-    IObservable *m_context = nullptr; // Pointer to the context (KeyCollection) to which this key belongs       // FIXME - SHoul dthis be IObservable
+    IObservable *m_context = nullptr; // Pointer to the context (KeyCollection) to which this key belongs       // FIXME - Should this be IObservable
 
 public:
     // Constructor and destructor
@@ -74,4 +78,7 @@ public:
     virtual void evaluate() override = 0; // Pure virtual function to evaluate the key state and call the appropriate functionality
 
     virtual int8_t getHIDCommand(uint8_t *cmds); // Pure virtual function to send the HID command for the key         // TODO - This should be in the interface!
+
+    // NOTE: isCurrent is not used for this collection, but is part of the ICollectable interface.
+    const bool isCurrent(const char *name) const override { return false; };
 };

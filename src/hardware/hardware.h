@@ -10,6 +10,10 @@
 #include "observers/IObserver.hpp"
 #include "sensor/SensorCollection.hpp" // For SensorCollection class
 
+/// @brief Number of observers that can be added to this object
+/// @details This is a constant value that defines the maximum number of observers that can be added to the collection.
+constexpr uint8_t c_MAX_HARDWARE_OBSERVERS = 4; // Maximum number of observers for the axis collection
+
 class Hardware : public Observable {
 protected:
     static Hardware *_instance; // Singleton instance - contains the derived hardware class
@@ -19,7 +23,7 @@ protected:
     uint8_t referenceVoltage = DEFAULT;
 
     // Hardware can only be instantiated by derived classes
-    Hardware() : Observable(MAX_HARDWARE_OBSERVERS), m_sensorCollection(new SensorCollection()) {
+    Hardware() : Observable(c_MAX_HARDWARE_OBSERVERS), m_sensorCollection(new SensorCollection()) {
         m_sensorCollection->setup(); // Set up the sensor collection
     };
 

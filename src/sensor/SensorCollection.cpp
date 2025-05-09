@@ -13,7 +13,7 @@
  * @see config.h for sensor configuration details.
  */
 void SensorCollection::setup() {
-    for (int i = 0; i < cHW_MAX_SENSORS; i++) {
+    for (uint8_t i = 0; i < cHW_MAX_SENSORS; i++) {
 #ifdef HW_HALLEFFECT
         SensorFactoryHall factory; // Create a factory for Hall effect sensors
 #else

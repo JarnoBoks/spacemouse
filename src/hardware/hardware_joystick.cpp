@@ -3,19 +3,8 @@
 #include "sensor/sensors/JoystickSensor.hpp" // Include the JoystickSensor header file
 #include "config.h"                          // For PINLIST
 
-Hardware_Joystick::Hardware_Joystick() {
-#if 0 // REMOVE
-    // Initialize the sensors
-    const uint8_t sensorPins[JoystickSensorsId_t::JS_LENGTH] = PINLIST; // Pins for the sensors, as defined in config.h
-
-    for (uint8_t i = 0; i < JoystickSensorsId_t::JS_LENGTH; i++) {
-        sensors[i] = new JoystickSensor(sensorPins[i], static_cast<JoystickSensorsId_t>(i)); // Create new JoystickSensor objects
-    }
-#endif
-}
-
 // Define a macro to simplify the access to the sensor values
-#define VAL(x) static_cast<Sensor *>(m_sensorCollection->getItem(x))->getFilteredValue()
+#define VAL(x) value(x)
 int16_t Hardware_Joystick::calculateRawValue(AxisType_t axistype) {
 
     evaluateSensorCollection();

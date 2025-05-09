@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Observable.hpp" // For IObservable interface & Base class
+
 #define MAX_AXES 6
 
 #include "..\axis\axes\axistype.h" // For AxisType_t
@@ -7,18 +9,19 @@
 #include "observers/IObserver.hpp"
 #include "axis/AxisCollection.hpp"
 
+/// @brief Number of observers that can be added to this object
+/// @details This is a constant value that defines the maximum number of observers that can be added to the collection.
+constexpr uint8_t c_MAX_KINEMATICS_OBSERVERS = 4; // Maximum number of observers for the axis collection
+
 class KinematicsConfig;
 
 // --- Kinematics Singleton ---
-class Kinematics {
+class Kinematics : public Observable {
 private:
     static Kinematics *instance;
     AxisCollection *m_axisCollection = nullptr; // Pointer to the axis collection
 
     KinematicsConfig *config = nullptr;
-
-    IObserver *observers[MAX_KINEMATICS_OBSERVERS] = {nullptr}; // Array of observers
-    uint8_t observerCount = 0;
 
     Kinematics();
 
@@ -43,10 +46,6 @@ public:
     };
 
     inline KinematicsConfig *getConfig() const { return config; } // Getter for config
-
-    void attachObserver(IObserver *observer);
-    void detachObserver(IObserver *observer);
-    void notifyObservers(); // Notify all observers of changes
 
     void processKinematics();
     const AxisType_t getMainAxis(Axis *axis); // Get the main and secondary axis for the kinematics

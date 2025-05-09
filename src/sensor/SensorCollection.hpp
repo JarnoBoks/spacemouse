@@ -11,7 +11,6 @@ constexpr uint8_t cHW_MAX_SENSORS = 8;
 
 /// @brief Number of observers that can be added to this collection.
 /// @details This is a constant value that defines the maximum number of observers that can be added to the collection.
-/// @note This value is defined in the IObserver interface header file.
 constexpr uint8_t c_MAX_SENSORCOLLECTION_OBSERVERS = 4; // Maximum number of observers for the sensor collection
 
 /**
@@ -24,8 +23,7 @@ class SensorCollection : public Collection, public Observable {
 public:
     /// @brief Constructor for empty SensorCollection
     SensorCollection() : Collection(cHW_MAX_SENSORS), Observable(c_MAX_SENSORCOLLECTION_OBSERVERS) {}
-    ~SensorCollection() {
-    }
+    ~SensorCollection() {}
 
     /**
      * @brief Set up the sensor collection based on the configuration.

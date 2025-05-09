@@ -18,10 +18,6 @@ SpaceMouseHID *mySpaceMouseHID;
 // FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
 #endif // ARDUINO_ARCH_AVR
 
-// Definitions & Header for the various hardware types
-#include "hardware/hardware_hall.h"
-#include "hardware/hardware_joystick.h"
-
 #if defined(HW_JOYSTICK)
 #define HW_TYPE Hardware_JOYSTICK // REFACTOR - Change casing /naming convention to match the other files
 #elif defined(HW_JOYSTICK)
@@ -56,7 +52,17 @@ KeyCollection myKeyCollection; // Key collection object to hold the keys and the
 // Include the header file for the sensor factory & collection
 #include "sensor/factory/SensorFactory.hpp" // Include the sensor factory header file
 #include "sensor/SensorCollection.hpp"      // Include the sensor collection header file
-// FIXME SensorCollection mySensorCollection;        // Sensor collection object to hold the sensors and the sensor configuration (initialized empty)
+SensorCollection mySensorCollection;        // Sensor collection object to hold the sensors and the sensor configuration (initialized empty)
+
+// Include the header file for the Hardware objects (Interface between sensors and the axis collection)
+
+#ifdef HW_HALLEFFECT
+#include "hardware/hardware_hall.h"
+Hardware *myHardware = Hardware_HALL::getInstance(); // Create a hardware object for the Hall effect sensors
+#else
+#include "hardware/hardware_joystick.h"
+Hardware *myHardware = Hardware_JOYSTICK::getInstance(); // Create a hardware object for the joystick sensors
+#endif
 
 // Include the header files for the HID commands
 #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"

@@ -1,10 +1,9 @@
-// axis.h
 #pragma once
 
-#include "axis/axistype.h" // For AxisType_t
-#include "modfunctype.h"   // For ModFunc_t
+#include "axis/axistype.h"        // For AxisType_t
+#include "modifier\modfunctype.h" // For ModFunc_t
 
-#define AXIS_NAMES {"TX", "TY", "TZ", "RX", "RY", "RZ"} // Axis names for debugging
+#define AXIS_NAMES {"TX", "TY", "TZ", "RX", "RY", "RZ"} // Axis names for serial output
 
 // Forward declaration of classes to avoid circular dependencies
 class AxisConfig;
@@ -21,11 +20,11 @@ private:
     int16_t value = 0; // The value of the axis after reading from the hardware and applying all axis & kinematics configurations.
 
     /// @brief The value of the axis after reading from the hardware and applying the sensitivity configuration.
-    /// @details This value is stored for debugging purposes.
+    /// @details This value is stored for one of the debugging strategies.
     int16_t modifiedValue = 0; // The value of the axis after reading from the hardware and just applying the sensiti
 
     /// @brief The value of the axis after reading from the hardware and applying the sensitivity configuration.
-    /// @details This value is stored for debugging purposes.
+    /// @details This value is stored forone of the debugging strategies
     int16_t rawValue = 0;
 
     AxisConfig *config = nullptr;

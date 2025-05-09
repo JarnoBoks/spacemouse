@@ -2,9 +2,9 @@
 #include "axiscalibrationmanager.h"
 #include "kinematics/kinematics.h"
 
-#include "axis/axis.h"
-#include "axis/axisconfig.h"
-#include "axis/directionconfig.h"
+#include "axis/Axis.hpp"
+#include "axis/config/AxisConfig.hpp"
+#include "axis/config/AxisDirectionConfig.hpp"
 
 AxisCalibrationManager::AxisCalibrationManager() {
     // Constructor implementation (if needed)
@@ -15,13 +15,13 @@ AxisCalibrationManager::~AxisCalibrationManager() {
 }
 
 void AxisCalibrationManager::calibrateGate(Axis *axis, bool isPositive, int gate) {
-    DirectionConfig *axisConfig = (isPositive) ? &axis->getConfig()->posConfig : &axis->getConfig()->negConfig;
+    AxisDirectionConfig *axisConfig = (isPositive) ? &axis->getConfig()->posConfig : &axis->getConfig()->negConfig;
     axisConfig->gate = gate;
     axis->getConfig()->persist(axis->getType()); // Save the updated configuration to EEPROM
 }
 
 void AxisCalibrationManager::calibrateSensitivity(Axis *axis, bool isPositive, float sensitivity) {
-    DirectionConfig *axisConfig = (isPositive) ? &axis->getConfig()->posConfig : &axis->getConfig()->negConfig;
+    AxisDirectionConfig *axisConfig = (isPositive) ? &axis->getConfig()->posConfig : &axis->getConfig()->negConfig;
     axisConfig->sensitivity = sensitivity;
     axis->getConfig()->persist(axis->getType()); // Save the updated configuration to EEPROM
 }
@@ -32,7 +32,7 @@ void AxisCalibrationManager::calibrateInvert(Axis *axis, bool invert) {
 }
 
 void AxisCalibrationManager::calibrateModifier(Axis *axis, bool isPositive, ModFunc_t modifier) {
-    DirectionConfig *axisConfig = (isPositive) ? &axis->getConfig()->posConfig : &axis->getConfig()->negConfig;
+    AxisDirectionConfig *axisConfig = (isPositive) ? &axis->getConfig()->posConfig : &axis->getConfig()->negConfig;
     axisConfig->setModfunc(modifier);            // Set the modifier function type
     axis->getConfig()->persist(axis->getType()); // Save the updated configuration to EEPROM
 }

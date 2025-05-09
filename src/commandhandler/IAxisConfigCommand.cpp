@@ -1,7 +1,7 @@
 #include "IAxisConfigCommand.h"
 
 #include "kinematics/kinematics.h"
-#include "axis/axisconfig.h"
+#include "axis/config/AxisConfig.hpp"
 #include "visitors/AxisConfigPrinter.h"
 
 // Only log to serial if not using Arduino AVR architecture

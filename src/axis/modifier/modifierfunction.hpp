@@ -1,6 +1,4 @@
 #pragma once
-#ifndef MODIFIERFUNCTION_H
-#define MODIFIERFUNCTION_H
 
 #include <Arduino.h>
 
@@ -35,5 +33,3 @@ class CubedTangentModifier : public ModifierStrategy {
 public:
     int16_t modify(int16_t input) override;
 };
-
-#endif // MODIFIERFUNCTION_H

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "IPrinterVisitor.h"
-#include "axis/axis.h"
-#include "axis/axisconfig.h"
+#include "axis/Axis.hpp"
+#include "axis/config/AxisConfig.hpp"
 #include "hardware/hardware.h"
 #include "kinematics/kinematicsconfig.h"
 

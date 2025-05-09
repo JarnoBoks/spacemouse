@@ -3,7 +3,7 @@
 #define MAX_AXES 6
 
 #include "axis/axistype.h" // For AxisType_t
-#include "axis/axis.h"     // For Axis class
+#include "axis/Axis.hpp"   // For Axis class
 #include "observers/IObserver.hpp"
 
 class KinematicsConfig;

@@ -1,5 +1,5 @@
 
-#include "defaultaxisconfig.h"
+#include "DefaultAxisConfig.hpp"
 #include "config.h" // Include the config file to know the hardware type
 
 #if defined(HW_HALLEFFECT)

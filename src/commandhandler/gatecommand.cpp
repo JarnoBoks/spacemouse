@@ -1,5 +1,5 @@
 #include "gatecommand.h"
-#include "axis/axisconfig.h"
+#include "axis/config/AxisConfig.hpp"
 
 // Only log to serial if not using Arduino AVR architecture
 #ifndef ARDUINO_ARCH_AVR

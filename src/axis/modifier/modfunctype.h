@@ -1,7 +1,7 @@
-// modfunctype.h
 #pragma once
 #include <Arduino.h>
 
+// REFACTOR - Make enum class instead of enum
 enum ModFunc_t : int8_t {
     mfUNINITIALIZED = -1,
     mfLINEAR = 0,

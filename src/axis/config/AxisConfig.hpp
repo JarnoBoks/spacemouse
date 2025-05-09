@@ -1,16 +1,15 @@
-#ifndef AXISCONFIG_H
-#define AXISCONFIG_H
+#pragma once
 
-#include "directionconfig.h" // For the DirectionConfig class
-#include "axis.h"            // For AxisType_t enum
+#include "AxisDirectionConfig.hpp" // For the DirectionConfig class
+#include "..\Axis.hpp"             // For AxisType_t enum
 
 // Forward declaration of classes to avoid circular dependencies
 class IPrinterVisitor;
 
 class AxisConfig {
 public:
-    DirectionConfig posConfig;
-    DirectionConfig negConfig;
+    AxisDirectionConfig posConfig;
+    AxisDirectionConfig negConfig;
     bool inversion;
 
     /** Constructor with no arguments - not used*/
@@ -33,5 +32,3 @@ public:
 
     void accept(IPrinterVisitor &visitor);
 };
-
-#endif // AXISCONFIG_H

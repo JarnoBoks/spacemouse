@@ -4,7 +4,7 @@
 #pragma once
 #define MAX_SENSORS 8
 
-#include "axis/axis.h" // for AxisType enum
+#include "axis/Axis.hpp" // for AxisType enum
 #include "sensor/sensor.h"
 #include "observers/IObserver.hpp"
 #include "IObservable.hpp" // For IObservable interface

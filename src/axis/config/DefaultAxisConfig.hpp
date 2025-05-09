@@ -1,7 +1,5 @@
-#ifndef DEFAULTAXISCONFIG_H
-#define DEFAULTAXISCONFIG_H
-
-#include "axisconfig.h"
+#pragma once
+#include "AxisConfig.hpp"
 
 /**
  * @brief Singleton class for default axis configuration.
@@ -17,5 +15,3 @@ public:
     static DefaultAxisConfig &getInstance();
     AxisConfig getDefaultConfig(AxisType_t type);
 };
-
-#endif // DEFAULTAXISCONFIG_H

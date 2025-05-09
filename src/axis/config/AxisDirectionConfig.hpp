@@ -2,13 +2,13 @@
 #define DIRECTIONCONFIG_H
 
 #include <Arduino.h>
-#include "modfunctype.h"
+#include "axis/modifier/modfunctype.h" // For ModFunc_t
 
-class DirectionConfig {
+class AxisDirectionConfig {
 public:
-    DirectionConfig();
-    DirectionConfig(float sensitivity, uint8_t gate, ModFunc_t modFuncType);
-    ~DirectionConfig();
+    AxisDirectionConfig();
+    AxisDirectionConfig(float sensitivity, uint8_t gate, ModFunc_t modFuncType);
+    ~AxisDirectionConfig();
 
     float sensitivity = 1.0f;         // Sensitivity for this axis & direction
     uint8_t gate = 0;                 // Gate for this axis & direction

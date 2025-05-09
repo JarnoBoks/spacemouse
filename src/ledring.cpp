@@ -6,7 +6,7 @@
 #ifdef LEDRING
 #include "ledring.h"
 #include "kinematics/kinematics.h"
-#include "axis/axisconfig.h"
+#include "axis/config/AxisConfig.hpp"
 
 LedRing::LedRing() {
     FastLED.addLeds<WS2811, LEDpin, GRB>(_leds, LEDRING);

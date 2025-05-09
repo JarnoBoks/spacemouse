@@ -1,8 +1,6 @@
-#ifndef AXISCALIBRATIONMANAGER_H
-#define AXISCALIBRATIONMANAGER_H
+#pragma once
 
-#include <Arduino.h>
-#include "axis/modfunctype.h"
+#include "axis/modifier/modfunctype.h"
 
 // Forward declaration of classes to avoid circular dependencies
 class Axis;
@@ -17,5 +15,3 @@ public:
     void calibrateInvert(Axis *axis, bool invert);
     void calibrateModifier(Axis *axis, bool isPositive, ModFunc_t modifier);
 };
-
-#endif // AXISCALIBRATIONMANAGER_H

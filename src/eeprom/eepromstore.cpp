@@ -4,7 +4,7 @@
 #include "config.h" // Include the config.h file for EEPROM_VERSION
 
 // Header files for the objects that will be stored in the EEPROM)
-#include "axis/axisconfig.h"
+#include "axis/config/AxisConfig.hpp" // For AxisConfig class
 #include "sensor/sensorconfig.h"
 #include "kinematics/kinematicsconfig.h"
 
@@ -50,11 +50,11 @@ constexpr int EEPROM_ADDRESS_CFG_SENSORS_END = EEPROM_ADDRESS_CFG_SENSORS_BASE +
 constexpr int EEPROM_ADDRESS_CFG_KINEMATICS_BASE = EEPROM_ADDRESS_CFG_SENSORS_END;        // Base address for the kinematics configuration
 constexpr int EEPROM_ADDRESS_CFG_KINEMATICS_END = EEPROM_ADDRESS_CFG_KINEMATICS_BASE + 2; // End EEPROM address for kinematics configuration - Stores two booleans
 
-constexpr int EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE = EEPROM_ADDRESS_CFG_KINEMATICS_END;                                   // End EEPROM address for the configuration
-constexpr int EEPROM_ADDRESS_CFG_AXIS_PCONFIG_END = EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + (6 * sizeof(DirectionConfig)); // End EEPROM address for the configuration
+constexpr int EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE = EEPROM_ADDRESS_CFG_KINEMATICS_END;                                       // End EEPROM address for the configuration
+constexpr int EEPROM_ADDRESS_CFG_AXIS_PCONFIG_END = EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + (6 * sizeof(AxisDirectionConfig)); // End EEPROM address for the configuration
 
-constexpr int EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE = EEPROM_ADDRESS_CFG_AXIS_PCONFIG_END;                                 // End EEPROM address for the configuration
-constexpr int EEPROM_ADDRESS_CFG_AXIS_NCONFIG_END = EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE + (6 * sizeof(DirectionConfig)); // End EEPROM address for the configuration
+constexpr int EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE = EEPROM_ADDRESS_CFG_AXIS_PCONFIG_END;                                     // End EEPROM address for the configuration
+constexpr int EEPROM_ADDRESS_CFG_AXIS_NCONFIG_END = EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE + (6 * sizeof(AxisDirectionConfig)); // End EEPROM address for the configuration
 
 constexpr int EEPROM_ADDRESS_CFG_AXIS_INV_BASE = EEPROM_ADDRESS_CFG_AXIS_NCONFIG_END;                                   // End EEPROM address for the configuration
 constexpr int EEPROM_ADDRESS_CFG_AXIS_INV_END = EEPROM_ADDRESS_CFG_AXIS_INV_BASE + (6 * sizeof(AxisConfig::inversion)); // End EEPROM address for the configuration
@@ -148,9 +148,9 @@ bool EEPROMStore::loadConfig(AxisConfig &config, const int axisnumber) {
         return false; // EEPROM is not initialized, return false
     }
 
-    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + axisnumber * sizeof(DirectionConfig), config.posConfig);   // Store the configuration in the EEPROM
-    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE + axisnumber * sizeof(DirectionConfig), config.negConfig);   // Store the configuration in the EEPROM
-    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_INV_BASE + axisnumber * sizeof(AxisConfig::inversion), config.inversion); // Store the configuration in the EEPROM
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + axisnumber * sizeof(AxisDirectionConfig), config.posConfig); // Store the configuration in the EEPROM
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE + axisnumber * sizeof(AxisDirectionConfig), config.negConfig); // Store the configuration in the EEPROM
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_INV_BASE + axisnumber * sizeof(AxisConfig::inversion), config.inversion);   // Store the configuration in the EEPROM
 
     // FIXME return true; // Return true while the configuration was loaded successfully
     return false;
@@ -162,9 +162,9 @@ bool EEPROMStore::loadConfig(AxisConfig &config, const int axisnumber) {
  * @param address The EEPROM address to store the configuration.
  */
 void EEPROMStore::saveConfig(AxisConfig &config, const int axisnumber) {
-    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + axisnumber * sizeof(DirectionConfig), config.posConfig);   // Store the configuration in the EEPROM
-    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE + axisnumber * sizeof(DirectionConfig), config.negConfig);   // Store the configuration in the EEPROM
-    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_INV_BASE + axisnumber * sizeof(AxisConfig::inversion), config.inversion); // Store the configuration in the EEPROM
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + axisnumber * sizeof(AxisDirectionConfig), config.posConfig); // Store the configuration in the EEPROM
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE + axisnumber * sizeof(AxisDirectionConfig), config.negConfig); // Store the configuration in the EEPROM
+    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_INV_BASE + axisnumber * sizeof(AxisConfig::inversion), config.inversion);   // Store the configuration in the EEPROM
 }
 #endif
 

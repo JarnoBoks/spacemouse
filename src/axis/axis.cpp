@@ -1,11 +1,10 @@
-#include "axis.h"
+#include "Axis.hpp"
+#include "config/AxisConfig.hpp"
+#include "visitors/IPrinterVisitor.h"
+#include "hardware/hardware.h"
+
 #include <math.h>
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
-#include "config.h"
-#include "axisconfig.h"
-#include "visitors/IPrinterVisitor.h"
-#include "led/lightbehavior.h"
-#include "hardware/hardware.h"
 
 // The Axis instantiates the hardware class and the AxisConfig class.
 // The AxisConfig class is used to configure the axis, including the sensitivity, gate, and function type.
@@ -43,7 +42,7 @@ void Axis::calculateValue(int16_t hwvalue) {
         return;
     }
 
-    DirectionConfig *dconfig = (value > 0) ? &this->config->posConfig : &this->config->negConfig; // Get the config for the current axis and direction
+    AxisDirectionConfig *dconfig = (value > 0) ? &this->config->posConfig : &this->config->negConfig; // Get the config for the current axis and direction
 
     // Apply the sensitivity for this axis & direction
     value = dconfig->sensitivity * value; // Apply the sensitivity for this axis & direction

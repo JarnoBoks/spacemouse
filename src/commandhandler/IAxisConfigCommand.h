@@ -1,9 +1,8 @@
-// IAxisConfigCommand.h
 #pragma once
 
 #include "CommandBase.h"
 
-class DirectionConfig;
+class AxisDirectionConfig;
 class Axis;
 
 /**
@@ -15,7 +14,7 @@ class Axis;
 class IAxisConfigCommand : public CommandBase {
 private:
 protected:
-    DirectionConfig *_directionConfig;
+    AxisDirectionConfig *_directionConfig;
     Axis *_axis;
     float _requestedValue = 0;
 

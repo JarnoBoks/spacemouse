@@ -1,8 +1,8 @@
-#include "directionconfig.h"
+#include "AxisDirectionConfig.hpp"
 
-DirectionConfig::DirectionConfig() : sensitivity(1.0f), gate(0), modFuncType(mfLINEAR) {}
+AxisDirectionConfig::AxisDirectionConfig() : sensitivity(1.0f), gate(0), modFuncType(mfLINEAR) {}
 
-DirectionConfig::DirectionConfig(float sensitivity, uint8_t gate, ModFunc_t type)
+AxisDirectionConfig::AxisDirectionConfig(float sensitivity, uint8_t gate, ModFunc_t type)
     : sensitivity(sensitivity), gate(gate), modFuncType(type) {
 #if 0
     this->setModfunc(type); // Initialize the modifier function based on the provided type
@@ -14,7 +14,7 @@ DirectionConfig::DirectionConfig(float sensitivity, uint8_t gate, ModFunc_t type
  * @details Cleans up the old modifier function and creates a new one based on the specified type.
  * @param mfType The type of the modifier function to be set.
  */
-void DirectionConfig::setModfunc(ModFunc_t type) {
+void AxisDirectionConfig::setModfunc(ModFunc_t type) {
 
     // Update the modifier function type
     this->modFuncType = type;
@@ -47,7 +47,7 @@ void DirectionConfig::setModfunc(ModFunc_t type) {
 #endif
 }
 
-DirectionConfig::~DirectionConfig() {
+AxisDirectionConfig::~AxisDirectionConfig() {
 #if 0
     delete modifier; // Clean up the modifier function
 #endif

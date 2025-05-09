@@ -22,5 +22,6 @@ public:
             _iterationsPerSecond = 0;        // reset iteration counter
         }
     }
-    inline void update(Hardware *hardware) override {}; // No implementation needed for this class
+
+    inline void update(SensorCollection *sensorCollection) override {}; // No implementation needed for this class
 };

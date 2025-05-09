@@ -1,5 +1,5 @@
 #include "IdleCommand.h"
-#include "calibration/sensorcalibrationmanager.h"
+#include "..\sensor\calibration\SensorCalibrationManagerIdle.hpp"
 
 /**
  * @brief Executes the idle command to start calibration.
@@ -10,5 +10,6 @@
  * @param paramCount Number of parameters passed.
  */
 void IdleCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
-    SensorCalibrationManager::getInstance()->activateIdleCalibration(2000); // Start the idle calibration with 2000 iterations
+    SensorCalibrationManagerIdle *m_SensorCalibrationManager = new SensorCalibrationManagerIdle(m_SensorCollection); // Create a new instance of the sensor calibration manager
+    m_SensorCalibrationManager->activate(2000);                                                                      // Start the idle calibration with 2000 iterations
 }

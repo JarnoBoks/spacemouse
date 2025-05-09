@@ -18,9 +18,9 @@ private:
     const int8_t id = -1;           // Default id value to indicate uninitialized state
     SensorConfig *config = nullptr; // REVIEW const?
 
-    int rawvalue = 0;
-    int centered = 0;
-    int filtered = 0;
+    int m_rawValue = 0; // Sensor raw value as read from the AD converter
+    int m_cntValue = 0; // Sensor value after centering is applied
+    int m_finValue = 0; // Sensor value after deadzone correction and mapping is applied (final value).
     int idleposition = 0;
 
     void readValue();
@@ -42,13 +42,17 @@ public:
     virtual bool setIdlePosition(int val);
     virtual bool idlePositionWarning(const int val) const = 0; // Pure virtual function to be implemented by derived classes
 
-    inline int getFilteredValue() const { return filtered; }
-    inline int getRawValue() const { return rawvalue; }
-    inline int getCenteredValue() const { return centered; }
+    inline int getRawValue() const { return m_rawValue; }
+    inline int getCntValue() const { return m_cntValue; }
+    inline int getFinValue() const { return m_finValue; }
 
     inline const char *getName() const { return name; }
     inline const uint8_t getId() const { return static_cast<uint8_t>(id); };
 
+    /**
+     * @brief Evaluate the sensor value and apply calibration.
+     * @details This function reads the sensor value and applies calibration to it.
+     */
     void evaluate() override {
         readValue();        // Call the readValue function to update the sensor value
         applyCalibration(); // Call the applyCalibration function to process the sensor value

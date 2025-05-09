@@ -4,8 +4,8 @@
 
 #define MAX_AXES 6
 
-#include "..\axis\axes\axistype.h" // For AxisType_t
-#include "..\axis\axes\Axis.hpp"   // For Axis class
+#include "axis/axes/axistype.h" // For AxisType_t
+#include "axis/axes/Axis.hpp"   // For Axis class
 #include "observers/IObserver.hpp"
 #include "axis/AxisCollection.hpp"
 
@@ -38,13 +38,18 @@ private:
 public:
     static Kinematics *getInstance();
 
+    inline void setAxisCollection(AxisCollection *axisCollection) {
+        m_axisCollection = axisCollection; // Set the axis collection
+    };
+
+    // TODO - REMOVE
     inline Axis *getAxis(const AxisType_t type) {
         return static_cast<Axis *>(m_axisCollection->getItem(type)); // Get the axis from the collection
     };
+    // TODO - REMOVE
     inline Axis *getAxis(const char *name) {
         return static_cast<Axis *>(m_axisCollection->getItem(name)); // Get the axis from the collection
     };
-
     inline KinematicsConfig *getConfig() const { return config; } // Getter for config
 
     void processKinematics();

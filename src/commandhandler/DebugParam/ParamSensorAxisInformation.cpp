@@ -1,18 +1,15 @@
-#include "ParamSensorAxisInformation.h"
-#include <Arduino.h>
-#include "kinematics/kinematics.h"
-#include "hardware/hardware.h"
-#include "..\..\observers\DebugOutput\DebugOutputAxesModified.hpp"             // Implementation of the ODebugOutputAxes class
-#include "..\..\observers\DebugOutput\DebugOutputSensorsCenteredNoNewline.hpp" // Implementation of the ODebugOutputSensors class
+#include "ParamSensorAxisInformation.hpp"
 
-// Only log to serial if not using Arduino AVR architecture
-#ifndef ARDUINO_ARCH_AVR
-#ifndef ESP_PRINT(x)
-#define ESP_PRINT(x) Serial.println(x)
-#endif
-#else
-#define ESP_PRINT(x)
-#endif
+// Observable classes that are used in this file
+#include "kinematics/kinematics.h"
+#include "sensor/SensorCollection.hpp" // For SensorCollection class
+
+// Observers that are used in this file.
+#include "observers/DebugOutput/DebugOutputAxesModified.hpp"             // Implementation of the ODebugOutputAxes class
+#include "observers/DebugOutput/DebugOutputSensorsCenteredNoNewline.hpp" // Implementation of the ODebugOutputSensors class
+
+#include <common/esp_print.h> // For ESP_PRINT
+#include <Arduino.h>
 
 /**
  * @brief Destructor to clean up the observer instance
@@ -21,9 +18,11 @@
  *          This ensures that the observer is properly cleaned up and does not cause memory leaks.
  */
 DebugParamSensorAxisInformation::~DebugParamSensorAxisInformation() {
-    Hardware::getInstance()->detachObserver(SensorObserver);
-    Kinematics::getInstance()->detachObserver(AxisObserver);
+
+    m_Context->getSensorCollection()->detachObserver(SensorObserver); // Detach the sensor observer from the sensor collection
     delete SensorObserver;
+
+    Kinematics::getInstance()->detachObserver(AxisObserver);
     delete AxisObserver;
 }
 
@@ -35,11 +34,11 @@ DebugParamSensorAxisInformation::~DebugParamSensorAxisInformation() {
  */
 void DebugParamSensorAxisInformation::apply() {
 
-    // Instantiate the Observers and attach them to the hardware
+    // Instantiate the Observers and attach them to the Observable classes
     SensorObserver = new DebugOutputSensorsCenteredNoNewline();
-    AxisObserver = new DebugOutputAxesModified();
+    m_Context->getSensorCollection()->attachObserver(SensorObserver);
 
-    Hardware::getInstance()->attachObserver(SensorObserver);
+    AxisObserver = new DebugOutputAxesModified();
     Kinematics::getInstance()->attachObserver(AxisObserver);
 }
 

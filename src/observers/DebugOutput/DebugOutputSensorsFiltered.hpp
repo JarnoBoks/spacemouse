@@ -1,6 +1,9 @@
 #pragma once
 
 #include "DebugOutputSensors.hpp"
+#include "sensor/sensors/Sensor.hpp"
+
+#include <Arduino.h> // For Serial
 
 /**
  * @brief Output class for filtered sensor values.
@@ -11,12 +14,13 @@ class DebugOutputSensorsFiltered : public DebugOutputSensors {
 private:
 protected:
     inline const int getSensorValue(const Sensor *sensor) const override {
-        return sensor->getFilteredValue(); // Get the filtered value from the sensor
+        return sensor->getFinValue(); // Get the filtered value from the sensor
     }
 
 public:
-    inline void update(Hardware *hardware) override {
-        DebugOutputSensors::update(hardware); // Call the base class update method
+    void update(SensorCollection *sensorCollection) {
+        // Call the base class update method
+        DebugOutputSensors::update(sensorCollection);
         Serial.println();
     }
 

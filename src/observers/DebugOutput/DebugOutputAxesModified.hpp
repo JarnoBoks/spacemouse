@@ -12,7 +12,7 @@ class DebugOutputAxesModified : public DebugOutputAxes {
 private:
 protected:
     inline const int getAxisValue(const Axis *axis) const override {
-        return axis->getModifiedValue(); // Get the axis value
+        return axis->getModValue(); // Get the axis value
     }
 
 public:
@@ -20,5 +20,7 @@ public:
         DebugOutputAxes::update(kinematics); // Call the base class update method
         Serial.println();
     }
-    inline void update(Hardware *hardware) override {}; // No implementation needed for this class
+
+    // TODO - Necessary?
+    inline void update(SensorCollection *sensorCollection) override {}; // No implementation needed for this class
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IObserver.hpp"
-#include "hardware/hardware.h"
+#include "sensor/SensorCollection.hpp" // For cHW_MAX_SENSORS
 
 // Forward declaration of classes to avoid circular dependencies
 class SensorCalibrationManager;
@@ -14,26 +14,26 @@ class SensorCalibrationManager;
  */
 class SensorIdleCalibration : public IObserver {
 private:
-    int requestedIterations = 500;          // Number of remaining iterations for the idle calibration
-    int processedIterations = 0;            // Number of processed iterations for the idle calibration
-    unsigned long startCalibrationTime = 0; // Time from millis(), when the calibration was started
+    int m_requestedIterations = 500;          // Number of remaining iterations for the idle calibration
+    int m_processedIterations = 0;            // Number of processed iterations for the idle calibration
+    unsigned long m_startCalibrationTime = 0; // Time from millis(), when the calibration was started
 
-    bool warningsOccurred = false;
-    uint8_t maxDeadZone = 0; // Maximum dead zone value (of all sensors)
+    bool m_warningsOccurred = false;
+    uint8_t m_maxDeadZone = 0; // Maximum dead zone value (of all sensors)
 
-    uint32_t sumReads[MAX_SENSORS]; // Array to store sum of reads, necessaru for the average calculation
-    int minIdleValue[MAX_SENSORS];  // Array to store minimum idle values for each sensor
-    int maxIdleValue[MAX_SENSORS];  // Array to store maximum idle values for each sensor
+    uint32_t m_sumReads[cHW_MAX_SENSORS]; // Array to store sum of reads, necessaru for the average calculation
+    int m_minIdleValue[cHW_MAX_SENSORS];  // Array to store minimum idle values for each sensor
+    int m_maxIdleValue[cHW_MAX_SENSORS];  // Array to store maximum idle values for each sensor
 
     // REVIEW - SessorCalibrationManager is a singleton. Is it necessary to store the pointer here? (Uses some memory).
-    SensorCalibrationManager *CalibrationManager = nullptr; // Pointer to the calibration manager
+    SensorCalibrationManager *m_CalibrationManager = nullptr; // Pointer to the calibration manager
 
-    void finish(Hardware *hardware); // Finish the calibration process
+    void finish(SensorCollection *sensorCollection); // Finish the calibration process
 
 protected:
 public:
-    SensorIdleCalibration(SensorCalibrationManager *calibrationManager, int numiterations); // Constructor
-    virtual ~SensorIdleCalibration() {};                                                    // nothing to do in destructor
+    SensorIdleCalibration(SensorCalibrationManager *calibrationManager, int numiterations);
+    virtual ~SensorIdleCalibration() {};
 
-    void update(Hardware *hardware) override;
+    void update(SensorCollection *sensorCollection) override;
 };

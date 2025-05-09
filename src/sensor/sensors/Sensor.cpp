@@ -39,10 +39,10 @@ const bool Sensor::isCurrent(const char *name) const {
  *          If a configuration is set, it adjusts the centered value based on the idle position.
  */
 void Sensor::readValue() {
-    rawvalue = analogRead(pin);
+    m_rawValue = analogRead(pin);
 
     if (config) {
-        centered = rawvalue - idleposition;
+        m_cntValue = m_rawValue - idleposition;
     }
 }
 
@@ -62,16 +62,16 @@ bool Sensor::setIdlePosition(int val) {
  */
 #define TOTALSENSITIVITY 350
 void Sensor::applyCalibration() {
-    filtered = centered;
+    m_finValue = m_cntValue;
 
     if (config) {
         uint8_t _deadzone = config->getDeadzone(); // Get the deadzone value from the configuration
-        if (abs(centered) < _deadzone) {
-            filtered = 0;
-        } else if (centered > _deadzone) {
-            filtered = map(centered, _deadzone, config->getMax(), 0, TOTALSENSITIVITY);
+        if (abs(m_cntValue) < _deadzone) {
+            m_finValue = 0;
+        } else if (m_cntValue > _deadzone) {
+            m_finValue = map(m_cntValue, _deadzone, config->getMax(), 0, TOTALSENSITIVITY);
         } else { // if the value is smaller than -DEADZONE
-            filtered = map(centered, config->getMin(), (-1 * _deadzone), -TOTALSENSITIVITY, 0);
+            m_finValue = map(m_cntValue, config->getMin(), (-1 * _deadzone), -TOTALSENSITIVITY, 0);
         }
     }
 }

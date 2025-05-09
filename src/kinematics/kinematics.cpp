@@ -1,8 +1,8 @@
 #include "kinematics.h"
-#include "hardware/hardware.h"
 #include "config.h"
 #include "KinematicsConfig.h"
-#include "KinematicsConfig.h"
+#include "axis/AxisCollection.hpp" // Include the header file for the AxisCollection class
+#include "axis/axes/Axis.hpp"      // Include the header file for the Axis class
 
 // Static pointer for the Singleton instance of Kinematics
 // This pointer is initialized to nullptr, indicating that the instance has not been created yet.
@@ -26,18 +26,15 @@ Kinematics *Kinematics::getInstance() {
  * @note   This constructor sets up all the axes for the Spacemouse functionality.
  */
 Kinematics::Kinematics() : Observable(c_MAX_KINEMATICS_OBSERVERS),
-                           m_axisCollection(new AxisCollection()),
                            config(new KinematicsConfig()) {
-    m_axisCollection->setup(); // Set up the axis collection based on the configuration
 }
 
+#if 0 // REMOVE
 /**
  * @brief Processes the kinematics for all axes and updates their values. Notifies attached observers of these changes.
  * @details This function calculates the values for each axis based on the hardware input and configuration.
  */
 void Kinematics::processKinematics() {
-    Hardware *hardware = Hardware::getInstance();
-    hardware->evaluateSensorCollection(); // Update the sensor values from the hardware
     for (int i = 0; i < AxisType_t::LENGTH; i++) {
         int16_t raw = hardware->calculateRawValue(static_cast<AxisType_t>(i));  // Get the raw value from the hardware
         static_cast<Axis *>(m_axisCollection->getItem(i))->calculateValue(raw); // Calculate the value for each axis
@@ -45,10 +42,11 @@ void Kinematics::processKinematics() {
     hardware->notifyObservers(); // Notify observers of changes in the hardware
     notifyObservers();           // Notify observers of changes in the kinematics
 }
+#endif
 
 // REVIEW - This should be a decorator function for the axis class, but we need to check if we can use the same function for both classes.
 // Define a macro to simplify the access to the sensor values
-#define ABSVAL(x) abs(static_cast<Axis *>(m_axisCollection->getItem(x))->getValue())
+#define ABSVAL(x) abs(static_cast<Axis *>(m_axisCollection->getItem(x))->getFinValue())
 void Kinematics::_applyExclusiveMode() {
     if (config != nullptr && config->exclusiveMode) {
         uint16_t totalRot = ABSVAL(ROTX) + ABSVAL(ROTY) + ABSVAL(ROTZ);         // Total rotation value
@@ -67,7 +65,7 @@ void Kinematics::_applyExclusiveMode() {
         }
 
         for (int i = startAxis; i <= endAxis; i++) {
-            static_cast<Axis *>(m_axisCollection->getItem(i))->setValue(0); // Set translation axes to 0
+            static_cast<Axis *>(m_axisCollection->getItem(i))->setFinValue(0); // Set translation axes to 0
         }
     }
 }
@@ -75,22 +73,22 @@ void Kinematics::_applyExclusiveMode() {
 
 // REVIEW - What is the order of the exclusive mode and switch YZ?
 // REVIEW - Can we switch the entire axis at once in the array?
-#define ATRANSY static_cast<Axis *>(m_axisCollection->getItem(TRANSY))
-#define ATRANSZ static_cast<Axis *>(m_axisCollection->getItem(TRANSZ))
-#define AROTY static_cast<Axis *>(m_axisCollection->getItem(ROTY))
-#define AROTZ static_cast<Axis *>(m_axisCollection->getItem(ROTZ))
+#define ATRANSY m_axisCollection->getAxis(TRANSY)
+#define ATRANSZ m_axisCollection->getAxis(TRANSZ)
+#define AROTY m_axisCollection->getAxis(ROTY)
+#define AROTZ m_axisCollection->getAxis(ROTZ)
 
 void Kinematics::_applySwitchYZ() {
     if (config != nullptr && config->switchYZ) {
         int16_t tmp = 0;
-        tmp = ATRANSY->getValue();
+        tmp = ATRANSY->getFinValue();
 
-        ATRANSY->setValue(ATRANSZ->getValue());
-        ATRANSZ->setValue(tmp);
+        ATRANSY->setFinValue(ATRANSZ->getFinValue());
+        ATRANSZ->setFinValue(tmp);
 
-        tmp = AROTY->getValue();
-        AROTY->setValue(AROTZ->getValue());
-        AROTZ->setValue(tmp);
+        tmp = AROTY->getFinValue();
+        AROTY->setFinValue(AROTZ->getFinValue());
+        AROTZ->setFinValue(tmp);
     }
 }
 #undef ATRANSY
@@ -115,7 +113,7 @@ const AxisType_t Kinematics::getMainAxis(Axis *axis) {
 
     // Loop through all axes to find the one with the biggest velocity
     for (int i = 0; i < AxisType_t::LENGTH; i++) {
-        int16_t absvalue = abs(static_cast<Axis *>(m_axisCollection->getItem(i))->getValue()); // Get the value of the axis
+        int16_t absvalue = abs(m_axisCollection->getAxis(i)->getFinValue()); // Get the value of the axis
 
         // Is the value of this axis greater than deadzone and greater than any of the axis before?
         if ((absvalue > maximumVelocity) && (absvalue > VELOCITYDEADZONEFORLED)) {

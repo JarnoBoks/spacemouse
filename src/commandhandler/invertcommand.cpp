@@ -1,32 +1,29 @@
 #include "invertcommand.h"
+#include "axis/axes/Axis.hpp"
 #include "axis/config/AxisConfig.hpp"
 
-// Only log to serial if not using Arduino AVR architecture
-#ifndef ARDUINO_ARCH_AVR
-#ifndef ESP_PRINT(x)
-#define ESP_PRINT(x) Serial.println(x)
-#endif
-#else
-#define ESP_PRINT(x)
-#endif
+#include <common/esp_print.h> // For ESP_PRINT
 
 /**
- * @brief Executes the gate command based on the provided parameters.
+ * @brief Executes the invert command based on the provided parameters.
+ * @note This function extends the functionality of the base class IAxisConfigCommand::execute(...).
  * @param param1 First parameter
  * @param param2 Second parameter
  * @param paramCount Number of parameters provided.
  */
 void InvertCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     ESP_PRINT(F("InvertCommand executed"));
+
     // Call the base class execute function to handle common functionality
     IAxisConfigCommand::execute(param1, param2, paramCount); // Call the base class execute function
 
     // Check if the directionfig is valid
-    if (_directionConfig == nullptr) {
+    if (m_DirectionConfig == nullptr) {
         ESP_PRINT(F("InvertCommand::execute: No direction config available"));
         return; // No direction config available, exit the function
     }
-    AxisConfig *axisConfig = _axis->getConfig(); // Get the axis configuration instance
-    axisConfig->inversion = _requestedValue;     // Set the inversion value to the requested value
-    axisConfig->persist(_axis->getType());       // Store the value in the EEPROM
+
+    AxisConfig *axisConfig = m_Axis->getConfig(); // Get the axis configuration instance
+    axisConfig->inversion = m_requestedValue;     // Set the inversion value to the requested value
+    axisConfig->persist(m_Axis->getAxisType());   // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
 }

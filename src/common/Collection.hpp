@@ -52,7 +52,13 @@ public:
         }
     }
 
-    void evaluate() override {
+    /**
+     * @brief Evaluate all items in the collection.
+     * @details This function iterates through all items in the collection and calls their evaluate method.
+     *          This allows each item to perform its own evaluation and update its state accordingly.
+     * @note Derived classes are allowed to override this method to provide custom evaluation logic.
+     */
+    virtual void evaluate() override {
         for (int i = 0; i < m_itemCount; i++) {
             m_items[i]->evaluate(); // Evaluate the axes collection
         }

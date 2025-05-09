@@ -19,7 +19,6 @@ class IPrinterVisitor {
 public:
     virtual void visit(Sensor &sensor) = 0;
     virtual void visit(SensorConfig &config) = 0;
-    virtual void visit(Hardware &hardware) = 0;
     virtual void visit(Axis &axis) = 0;
     virtual void visit(AxisConfig &config) = 0;
     virtual void visit(KinematicsConfig &config) = 0;

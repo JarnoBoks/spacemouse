@@ -50,19 +50,23 @@ LedRing *Mouse_LEDRing;
 KeyCollection myKeyCollection; // Key collection object to hold the keys and the key configuration (initialized empty)
 
 // Include the header file for the sensor factory & collection
-#include "sensor/factory/SensorFactory.hpp" // Include the sensor factory header file
-#include "sensor/SensorCollection.hpp"      // Include the sensor collection header file
-SensorCollection mySensorCollection;        // Sensor collection object to hold the sensors and the sensor configuration (initialized empty)
+// REVIEW #include "sensor/factory/SensorFactory.hpp" // Include the sensor factory header file
+#include "sensor/SensorCollection.hpp" // Include the sensor collection header file
+SensorCollection mySensorCollection;   // Sensor collection object to hold the sensors and the sensor configuration (initialized empty)
 
 // Include the header file for the Hardware objects (Interface between sensors and the axis collection)
-
 #ifdef HW_HALLEFFECT
-#include "hardware/hardware_hall.h"
-Hardware *myHardware = Hardware_HALL::getInstance(); // Create a hardware object for the Hall effect sensors
+#include "sensorscalculator/SensorsCalculatorHall.hpp"         // Include the header file for the Hall effect sensors
+SensorsCalculatorHall mySensorCalculator(&mySensorCollection); // Sensor calculator object to calculate the sensor values
 #else
-#include "hardware/hardware_joystick.h"
-Hardware *myHardware = Hardware_JOYSTICK::getInstance(); // Create a hardware object for the joystick sensors
+#include "sensorscalculator/SensorsCalculatorJoystick.hpp" // Include the header file for the joystick sensors
+SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection); // Sensor calculator object to calculate the sensor values
 #endif
+
+// Include the header file for the axis collection
+#include "axis/AxisCollection.hpp" // Include the axis collection header file
+#include "axis/axes/Axis.hpp"      // Include the axis collection header file
+AxisCollection myAxisCollection;   // Axis collection object to hold the axes and the axis configuration (initialized empty)
 
 // Include the header files for the HID commands
 #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
@@ -88,8 +92,9 @@ TranslatorKeys myTranslatorKeys; // Translator object to translate the commands 
 #include "commandhandler/bootloadercommand.h"
 CommandHandler myCommandHandler; // Command handler object to handle the commands from the serial interface
 
-// Include the header file for the sensor calibration manager
-#include "calibration/sensorcalibrationmanager.h"
+// Include the header file for the calibration manager (used to calibrate center position of the sensors on startup)
+#include "sensor/calibration/SensorCalibrationManagerIdle.hpp" // Include the sensor calibration manager header file
+SensorCalibrationManagerIdle *mySensorCalibrationManagerIdle;  // Sensor calibration manager object to handle the calibration of the sensors
 
 void cstmDelay(unsigned long ms) {
     // This function is used to delay the program for a certain amount of time.
@@ -112,16 +117,17 @@ void setup() {
     cstmDelay(100);       // Wait for the serial interface to be ready
     Serial.setTimeout(2); // The serial interface will look for new commands and it will only wait 2ms
 
-    // Setup the Sesnor collection. This will setup the sensors and the sensor configuration.
-    // FIXME mySensorCollection.setup(); // Setup the sensor collection, based on the configuration in config.h
+    // Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
+    mySensorCollection.setup();
 
-    // Setup the Hardware object. This will setup the hardware and sensors of the mouse. The hardware type is defined in config.h
-    HW_TYPE::getInstance();
+    // Setup the Axis collection. This will setup the axes and the axis configuration.
+    myAxisCollection.setup(&mySensorCalculator); // Setup the axis collection with the sensor calculator
 
     // Setup the Kinematics object. This will setup the kinematic axes of the mouse.
     // The setup will check the EEPROM for the configuration of the sensors and the axes.
     // If the configuration is not available, the default values as set in config.h will be used (and stored in the EEPROM)
-    Kinematics::getInstance();
+    // FIXME - Kinematics should be removed
+    Kinematics::getInstance()->setAxisCollection(&myAxisCollection); // Set the axis collection for the kinematics object
 
     // FIXME - For now a manual start. Should be done automatically.
     SpaceMouseUSBInterface_::getInstance();
@@ -132,14 +138,14 @@ void setup() {
     // Start the idle calibration of the sensors. This will zero the sensors during the loop.
     // TODO - During setup we aren't interested in the output of the calibration process.
     // TODO - We do not want to send output to the HID while the calibration isn't finished.
-    SensorCalibrationManager::getInstance()->activateIdleCalibration(500); // Start the idle calibration with 500 iterations
-
-    // Setup the keys and the key collection.
+    // FIXME - Cleanup the calibration manager when the calibration is finished.
+    mySensorCalibrationManagerIdle = new SensorCalibrationManagerIdle(&mySensorCollection); // Initialize the sensor calibration manager
+    mySensorCalibrationManagerIdle->activate();                                             // Start the idle calibration with 500 iterations
 
     //  Setup the Command Handler and register the commands that can be handled via the serial interface.
-    myCommandHandler.registerCommand(new DebugCommand());
+    myCommandHandler.registerCommand(new DebugCommand(&mySensorCollection));
     myCommandHandler.registerCommand(new IdleCommand());
-    myCommandHandler.registerCommand(new MinMaxCommand());
+    myCommandHandler.registerCommand(new MinMaxCommand(&mySensorCollection));
     myCommandHandler.registerCommand(new SensCommand());
     myCommandHandler.registerCommand(new GateCommand());
     myCommandHandler.registerCommand(new ModFuncCommand());
@@ -150,7 +156,7 @@ void setup() {
     myCommandHandler.registerCommand(new BootloaderCommand());
 
     // When debugging with SimAVR thorugh PlatformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
-    // Use this comamnd to initialize a debug state.
+    // Use this command to initialize a debug state.
     // char buffer[32] = "DEBUG 1";
     // myCommandHandler.handleInput(buffer, 32, 1);
 
@@ -185,8 +191,11 @@ void loop() {
         myCommandHandler.parseSerialMonitorInput();
     }
 
-    // Process the kinematics of the mouse
-    Kinematics::getInstance()->processKinematics();
+    // Update all the sensor values & apply the calibration to the read sensor values & notify collection observers
+    mySensorCollection.evaluate();
+
+    // Calculate from sensor data and apply all config- & calibration settings to the axis values
+    myAxisCollection.evaluate();
 
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
     // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities

@@ -3,6 +3,8 @@
 
 // #define CF(x) ((const __FlashStringHelper *)x)
 
+class SensorCollection; // Forward declaration of SensorCollection class
+
 class CommandBase {
 private:
     const char *name; // Contains command 'name' as a PROGMEM char *
@@ -11,9 +13,12 @@ protected:
     const bool convertWordNumber(const char *str, long *value) const;
     const bool convertWordFloat(const char *str, float *value) const;
 
+    SensorCollection *m_SensorCollection = nullptr; // Pointer to the sensor collection
+
 public:
-    CommandBase() : name(nullptr) {}                    // Default constructor to initialize empty command name
-    CommandBase(const char *cmdName) : name(cmdName) {} // Constructor to initialize command name
+    CommandBase() : name(nullptr) {}                                                                                              // Default constructor to initialize empty command name
+    CommandBase(const char *cmdName) : name(cmdName) {}                                                                           // Constructor to initialize command name
+    CommandBase(const char *cmdName, SensorCollection *sensorCollection) : name(cmdName), m_SensorCollection(sensorCollection) {} // Constructor to initialize command name and sensor collection
     virtual ~CommandBase() = default;
 
     inline const bool isCommand(const char *cmdName) const {
@@ -22,6 +27,8 @@ public:
         //       It is assumed that the second parameter ('name')  is stored in program memory (PROGMEM) to save RAM space.
         return (strcmp_P(cmdName, name) == 0); // Compare command name with the provided name
     }
+
+    inline SensorCollection *getSensorCollection() const { return m_SensorCollection; }
 
     virtual void execute(const char *param1, const char *param2, const uint8_t paramCount) = 0;
     virtual void stop() {}; // Stop the command execution (if applicable)

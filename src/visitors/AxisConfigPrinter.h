@@ -1,9 +1,8 @@
 #pragma once
 
 #include "IPrinterVisitor.h"
-#include "..\axis\axes\Axis.hpp"
+#include "axis/axes/Axis.hpp"
 #include "axis/config/AxisConfig.hpp"
-#include "hardware/hardware.h"
 #include "kinematics/kinematicsconfig.h"
 
 #define FMT_NOCOMMA false
@@ -39,7 +38,6 @@ public:
     }
 
     inline void visit(AxisConfig &config) override {}
-    inline void visit(Hardware &hardware) override {}
     inline void visit(Sensor &sensor) override {}
     inline void visit(SensorConfig &config) override {}
     inline void visit(KinematicsConfig &config) override {}

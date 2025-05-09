@@ -5,6 +5,9 @@
 
 #include <stdint.h>
 
+class ISensorsCalculator; // Forward declaration of the SensorsCalculator class
+class Axis;               // Forward declaration of the Axis class
+
 /// @brief Number of axes that can be added to the collection.
 /// @details This is a constant value that defines the maximum number of axes that can be added to the collection.
 /// @note As long as the specific hardware options for the SpaceMouse all have the same number of axes, this is a good solution.
@@ -29,9 +32,23 @@ public:
     }
 
     /**
-     * @brief Set up the sensor collection based on the configuration.
-     * @details This function initializes the sensor collection and sets up the axes based on the configuration.
-     *          It creates instances of the axes and configures them according to the provided configuration.     *
+     * @brief Set up the axis collection based on the configuration.
+     * @details This function initializes the axis collection and sets up the axes based on the configuration.
+     *          It creates instances of the axes and configures them according to the provided configuration.
      */
-    void setup();
+    void setup(ISensorsCalculator *sensorsCalculator);
+
+    Axis *getAxis(const uint8_t id) const;
+    Axis *getAxis(const char *name) const;
+
+    /**
+     * @brief Evaluate all items in the collection and notify observers of the changes.
+     * @details This function iterates through all items in the collection and calls their evaluate method.
+     *          This allows each item to perform its own evaluation and update its state accordingly.
+     * @note Derived classes are allowed to override this method to provide custom evaluation logic.
+     */
+    void evaluate() override {
+        Collection::evaluate();        // Evaluate the axes in the collection
+        Observable::notifyObservers(); // Notify observers of changes in the axis collection
+    };
 };

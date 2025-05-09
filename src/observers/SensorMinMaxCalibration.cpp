@@ -1,15 +1,17 @@
 #include "SensorMinMaxCalibration.h"
-#include "hardware/hardware.h"          // For Hardware class - necessary to retrieve the sensors.
-#include "..\sensor\sensors\Sensor.hpp" // For Sensor class
+
+#include "sensor/SensorCollection.hpp"  // For SensorCollection class
+#include "sensor/sensors/Sensor.hpp"    // For Sensor class
 #include "sensor/config/SensorConfig.h" // For SensorConfig class
-#include "calibration/sensorcalibrationmanager.h"
+#include "..\sensor\calibration\SensorCalibrationManager.hpp"
+
 #include "visitors/MinMaxPrinter.h" // For MinMaxPrinter class
 
 #define MINMAXDURATION 15 // Duration for min/max calibration in seconds
 
 SensorMinMaxCalibration::SensorMinMaxCalibration(SensorCalibrationManager *calmgr)
-    : CalibrationManager(calmgr) {
-    startCalibrationTime = millis();
+    : m_CalibrationManager(calmgr) {
+    m_startCalibrationTime = millis();
 
     // Initialize the calibration process    // Initialize the calibration process
     Serial.print(F("Move the spacemouse for "));
@@ -17,22 +19,22 @@ SensorMinMaxCalibration::SensorMinMaxCalibration(SensorCalibrationManager *calmg
     Serial.println(F(" sec."));
 }
 
-void SensorMinMaxCalibration::finish(Hardware *hardware) {
+void SensorMinMaxCalibration::finish(SensorCollection *sensorCollection) {
     bool warningsOccurred = false; // Flag to track if any warnings occurred during calibration
 
     MinMaxPrinter printer;
 
     // REVIEW - Should this loop be moved to hardware?
-    for (uint8_t id = 0; id < MAX_SENSORS; id++) {
+    for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
 
-        Sensor *sensor = hardware->getSensor(id); // REFACTOR - Use sensorCollection instead of hardware
+        Sensor *sensor = sensorCollection->getSensor(id);
         if (sensor == nullptr) {
             continue; // Skip if the sensor is not available
         }
 
         SensorConfig *sensorcfg = sensor->getConfig(); // Get the sensor configuration to update
-        sensorcfg->setMin(minValue[id]);               // Set the minimum value in the sensor configuration
-        sensorcfg->setMax(maxValue[id]);               // Set the maximum value in the sensor configuration
+        sensorcfg->setMin(m_minValue[id]);             // Set the minimum value in the sensor configuration
+        sensorcfg->setMax(m_maxValue[id]);             // Set the maximum value in the sensor configuration
 
         // Save the sensor configuration to EEPROM
         sensorcfg->persist(sensor->getId()); // Save the updated configuration to EEPROM
@@ -41,26 +43,26 @@ void SensorMinMaxCalibration::finish(Hardware *hardware) {
         sensorcfg->accept(printer); // Accept the printer visitor to print the sensor configuration values
     }
 
-    CalibrationManager->deactivateMinMaxCalibration(warningsOccurred); // Finish the calibration process
+    m_CalibrationManager->deactivate(warningsOccurred); // Finish the calibration process
 }
 
-void SensorMinMaxCalibration::update(Hardware *hardware) {
+void SensorMinMaxCalibration::update(SensorCollection *sensorCollection) {
     // Finish the calibration process if the configured time has elapsed iterations are reached
-    if (millis() - startCalibrationTime > (MINMAXDURATION * 1000)) {
-        finish(hardware); // Finish the calibration process
+    if (millis() - m_startCalibrationTime > (MINMAXDURATION * 1000)) {
+        finish(sensorCollection); // Finish the calibration process
         return;
     }
 
-    for (uint8_t id = 0; id < MAX_SENSORS; id++) {
-        Sensor *sensor = hardware->getSensor(id); // REFACTOR - Use sensorCollection instead of hardware
+    for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
+        Sensor *sensor = sensorCollection->getSensor(id);
         if (sensor == nullptr) {
             continue; // Skip if the sensor is not available
         }
 
         // Update the minimum and maximum values
-        const int centeredVal = sensor->getCenteredValue(); // Get the centered value from the sensor
+        const int centeredVal = sensor->getCntValue(); // Get the centered value from the sensor
 
-        minValue[id] = (centeredVal < minValue[id]) ? centeredVal : minValue[id]; // Update the minimum value
-        maxValue[id] = (centeredVal > maxValue[id]) ? centeredVal : maxValue[id]; // Update the maximum value
+        m_minValue[id] = (centeredVal < m_minValue[id]) ? centeredVal : m_minValue[id]; // Update the minimum value
+        m_maxValue[id] = (centeredVal > m_maxValue[id]) ? centeredVal : m_maxValue[id]; // Update the maximum value
     }
 }

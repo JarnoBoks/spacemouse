@@ -24,3 +24,23 @@ void SensorCollection::setup() {
         m_itemCount++;
     }
 };
+
+/**
+ * @brief Get the sensor at the specified index.
+ * @param id Index of the sensor to retrieve.
+ * @return Pointer to the sensor at the specified index, or nullptr if the index is out of bounds.
+ * @note The base class Collection::getItem() can be used too, but it returns a pointer to the ICollectable interface.
+ */
+Sensor *SensorCollection::getSensor(uint8_t id) const {
+    return static_cast<Sensor *>(getItem(id)); // Return the sensor with the specified id
+}
+
+/**
+ * @brief Get the sensor with the specified name.
+ * @param name Name of the sensor to retrieve.
+ * @return Pointer to the sensor with the specified name, or nullptr if not found.
+ * @note The base class Collection::getItem() can be used too, but it returns a pointer to the ICollectable interface.
+ */
+Sensor *SensorCollection::getSensor(const char *name) const {
+    return static_cast<Sensor *>(getItem(name)); // Return the sensor with the specified name
+}

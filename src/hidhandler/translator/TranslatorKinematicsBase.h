@@ -41,7 +41,7 @@ public:
         Kinematics *Kinematics = Kinematics::getInstance();
 
         for (uint8_t i = idx_start; i <= idx_end; i++) {
-            int16_t vel = Kinematics->getAxis(static_cast<AxisType_t>(i))->getValue();
+            int16_t vel = Kinematics->getAxis(static_cast<AxisType_t>(i))->getFinValue();
 
             uint8_t i_msg = (i - idx_start) * 2;   // Calculate the index (zero based) in the message array for the current axis
             message[i_msg] = (byte)vel & 0xFF;     // Store the lower byte of the velocity
@@ -62,7 +62,7 @@ public:
 
     inline bool areAllAxisZero() const {
         for (uint8_t i = AxisType_t::ROTX; i < AxisType_t::LENGTH; i++) {
-            int16_t vel = Kinematics::getInstance()->getAxis(static_cast<AxisType_t>(i))->getValue();
+            int16_t vel = Kinematics::getInstance()->getAxis(static_cast<AxisType_t>(i))->getFinValue();
             if (vel != 0) {
                 return false; // If any axis is not zero, return false
             }

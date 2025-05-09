@@ -1,7 +1,9 @@
 #pragma once
 
 #include "DebugOutput.hpp"
-#include "hardware/hardware.h"
+
+class Sensor;
+class SensorCollection;
 
 class DebugOutputSensors : public DebugOutput {
 private:
@@ -12,6 +14,6 @@ public:
     DebugOutputSensors() {};
     virtual ~DebugOutputSensors() {};
 
-    virtual void update(Hardware *hardware) override = 0;     // Pure virtual function to be implemented by derived classes
-    virtual void update(Kinematics *kinematics) override = 0; // No implementation needed for this class
+    virtual void update(Kinematics *kinematics) override = 0;             // No implementation needed for this class
+    virtual void update(SensorCollection *sensorCollection) override = 0; // Pure virtual function to be implemented by derived classes
 };

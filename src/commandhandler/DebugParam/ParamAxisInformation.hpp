@@ -1,9 +1,9 @@
 #pragma once
 
-#include "IDebugParam.h"
-#include "..\..\observers\DebugOutput\DebugOutputAxes.hpp"
+#include "DebugParam.hpp"
+#include "observers\DebugOutput\DebugOutputAxes.hpp"
 
-class DebugParamAxisInformation : public IDebugParam {
+class DebugParamAxisInformation : public DebugParam {
 protected:
     DebugOutputAxes *AxisObserver = nullptr; // Pointer to the raw sensor observer instance       // REVIEW - Why is this necessary //REVIEW - Can we use the Interface instead of the base class?
 public:

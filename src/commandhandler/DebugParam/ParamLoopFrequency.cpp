@@ -1,15 +1,8 @@
-#include "ParamLoopFrequency.h"
+#include "ParamLoopFrequency.hpp"
 #include "..\..\observers\DebugOutput\DebugOutputLoopFrequency.hpp"
-#include <Arduino.h>
 
-// Only log to serial if not using Arduino AVR architecture
-#ifndef ARDUINO_ARCH_AVR
-#ifndef ESP_PRINT(x)
-#define ESP_PRINT(x) Serial.println(x)
-#endif
-#else
-#define ESP_PRINT(x)
-#endif
+#include <common/esp_print.h> // For ESP_PRINT
+#include <Arduino.h>
 
 /**
  * @brief Destructor to clean up the observer instance

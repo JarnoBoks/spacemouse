@@ -13,5 +13,5 @@ public:
     virtual ~DebugOutputAxes() {};
 
     void update(Kinematics *kinematics) override;
-    inline void update(Hardware *hardware) override {}; // No implementation needed for this class
+    inline void update(SensorCollection *sensorCollection) override {}; // No implementation needed for this class
 };

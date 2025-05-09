@@ -1,18 +1,17 @@
 #include "DebugOutputSensors.hpp"
-#include "hardware/hardware.h"
+#include "sensor/SensorCollection.hpp"
+#include "sensor/sensors/Sensor.hpp"
 #include "common/TextHelper.h"
 
-// REVIEW - Move to Visitor?
-
-void DebugOutputSensors::update(Hardware *hardware) {
-    if (!isDebugOutputDue() || hardware == nullptr) {
+void DebugOutputSensors::update(SensorCollection *sensorCollection) {
+    if (!isDebugOutputDue() || sensorCollection == nullptr) {
         return; // If the debug output is not due, do nothing
     }
 
-    for (uint8_t id = 0; id < MAX_SENSORS; id++) {
+    for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
         TextHelper::printLeadingComma(id); // Print a komma if it's not the first sensor
 
-        Sensor *sensor = hardware->getSensor(id); // Pointer to the sensor      //REFACTOR - Use sensorCollection instead of hardware
+        Sensor *sensor = sensorCollection->getSensor(id); // Pointer to the sensor
 
         Serial.print(sensor->getName()); // Print the sensor name
         Serial.print(F(":"));

@@ -5,7 +5,7 @@
 
 #include "common/Observable.hpp" // For IObservable interface & Base class
 
-#include "axis/Axis.hpp" // for AxisType enum
+#include "..\axis\axes\Axis.hpp" // for AxisType enum
 #include "sensor/sensors/Sensor.hpp"
 #include "observers/IObserver.hpp"
 #include "sensor/SensorCollection.hpp" // For SensorCollection class

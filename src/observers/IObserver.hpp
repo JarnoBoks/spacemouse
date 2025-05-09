@@ -14,6 +14,10 @@
 // FIXME - Replaces the MAX_HARDWARE_OBSERVERS definition
 constexpr uint8_t cOBSV_MAX_SENSORCOLLECTION_OBSERVERS = 4;
 
+// Define maximum observers for AxisCollection class
+// FIXME - Replaces the MAX_KINEMATICS_OBSERVERS definition
+constexpr uint8_t cOBSV_MAX_AXISCOLLECTION_OBSERVERS = 4;
+
 // Simple checks for the configuration above.
 #if MAX_KEYCOLLECTION_OBSERVERS < CFG_NUMBER_OF_KEYS
 #error "The number of observers for KeyCollection is less than the number of keys!"

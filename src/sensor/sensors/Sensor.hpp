@@ -34,7 +34,7 @@ public:
     Sensor(const int8_t pin, const int8_t id);
     virtual ~Sensor(); // Destructor;
 
-    const bool isCurrentSensor(const char *name) const; // REVIEW - Necessary?
+    const bool isCurrentSensor(const char *name) const; // REFACTOR - Move to Collectable interface/class
 
     inline SensorConfig *getConfig() const { return config; };
 

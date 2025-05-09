@@ -2,9 +2,10 @@
 
 #define MAX_AXES 6
 
-#include "axis/axistype.h" // For AxisType_t
-#include "axis/Axis.hpp"   // For Axis class
+#include "..\axis\axes\axistype.h" // For AxisType_t
+#include "..\axis\axes\Axis.hpp"   // For Axis class
 #include "observers/IObserver.hpp"
+#include "axis/AxisCollection.hpp"
 
 class KinematicsConfig;
 
@@ -12,7 +13,7 @@ class KinematicsConfig;
 class Kinematics {
 private:
     static Kinematics *instance;
-    Axis *axes[AxisType_t::LENGTH];
+    AxisCollection *m_axisCollection = nullptr; // Pointer to the axis collection
 
     KinematicsConfig *config = nullptr;
 
@@ -27,15 +28,19 @@ private:
     void _applyKillSwitch(const AxisType_t start, const AxisType_t end, const bool killSwitchActive) {
         // Set strategy for the rotation axes to kill switch
         for (uint8_t i = start; i <= end; i++) {
-            axes[i]->setKillSwitchActive(killSwitchActive); // Set the kill switch state for the axis
+            m_axisCollection->getAxis(i)->setKillSwitchActive(killSwitchActive); // Set the kill switch state for the axis
         }
     };
 
 public:
     static Kinematics *getInstance();
 
-    Axis *getAxis(const AxisType_t type);
-    Axis *getAxis(const char *name);
+    inline Axis *getAxis(const AxisType_t type) {
+        return m_axisCollection->getAxis(type); // Get the axis from the collection
+    };
+    inline Axis *getAxis(const char *name) {
+        return m_axisCollection->getAxis(name); // Get the axis from the collection by name
+    };
 
     inline KinematicsConfig *getConfig() const { return config; } // Getter for config
 

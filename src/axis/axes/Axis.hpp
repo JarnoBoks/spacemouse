@@ -1,7 +1,8 @@
 #pragma once
 
-#include "axis/axistype.h"        // For AxisType_t
-#include "modifier\modfunctype.h" // For ModFunc_t
+#include "common/ICollectable.hpp"     // For ICollectable interface
+#include "axistype.h"                  // For AxisType_t
+#include "axis/modifier/modfunctype.h" // For ModFunc_t
 
 #define AXIS_NAMES {"TX", "TY", "TZ", "RX", "RY", "RZ"} // Axis names for serial output
 
@@ -11,7 +12,7 @@ class Hardware;
 class LightBehavior;
 class IPrinterVisitor;
 
-class Axis {
+class Axis : public ICollectable {
 private:
     AxisType_t type = AxisType_t::UNINITIALIZED;
     const char *name;
@@ -38,6 +39,8 @@ public:
     Axis(AxisType_t type); // Constructor with axis type
 
     void setKillSwitchActive(bool active) { isKillSwitchActive = active; } // Setter for kill switch state
+
+    const bool isCurrentAxis(const char *name) const; // REFACTOR - Move to Collectable interface/class
 
     inline int16_t getValue() const { return value; }                 // Getter for value           // REVIEW - Same asa Sensor class, but we need to check if we can use the same function for both classes.
     inline int16_t getRawValue() const { return rawValue; }           // Getter for rawValue

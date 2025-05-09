@@ -1,5 +1,5 @@
 #include "Axis.hpp"
-#include "config/AxisConfig.hpp"
+#include "axis/config/AxisConfig.hpp"
 #include "visitors/IPrinterVisitor.h"
 #include "hardware/hardware.h"
 
@@ -32,6 +32,13 @@ Axis::Axis(AxisType_t type) : type(type) {
 
     light = nullptr;
     value = 0;
+}
+
+const bool Axis::isCurrentAxis(const char *name) const {
+    if (this->name != nullptr) {
+        return (strcmp(this->name, name) == 0); // Compare the name of the axis with the provided name
+    }
+    return false; // Return false if the name is not set or does not match
 }
 
 void Axis::calculateValue(int16_t hwvalue) {

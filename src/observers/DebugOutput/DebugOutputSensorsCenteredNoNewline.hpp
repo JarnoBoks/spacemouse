@@ -1,7 +1,10 @@
 #pragma once
 
 #include "DebugOutputSensors.hpp"
+#include "sensor/sensors/Sensor.hpp"
 #include "common/TextHelper.h"
+
+#include <Arduino.h> // For Serial
 
 /**
  * @brief Output class for centered sensor values, without a newline (but with a separator).
@@ -17,9 +20,10 @@ protected:
     }
 
 public:
-    inline void update(Hardware *hardware) override {
-        DebugOutputSensors::update(hardware); // Call the base class update method
-        TextHelper::printSeparator();         // Print a separator after the sensors values
+    void update(SensorCollection *sensorCollection) {
+        // Call the base class update method
+        DebugOutputSensors::update(sensorCollection);
+        TextHelper::printSeparator();
     }
     inline void update(Kinematics *kinematics) override {}; // No implementation needed for this class
 };

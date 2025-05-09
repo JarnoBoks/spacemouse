@@ -1,4 +1,4 @@
-#include "ParamLoopFrequency.h"
+#include "ParamLoopFrequency.hpp"
 #include "..\..\observers\DebugOutput\DebugOutputLoopFrequency.hpp"
 #include <Arduino.h>
 

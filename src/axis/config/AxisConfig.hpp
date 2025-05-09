@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AxisDirectionConfig.hpp" // For the DirectionConfig class
-#include "..\axes\Axis.hpp"        // For AxisType_t enum
+#include "axis/axes/axistype.h"    // For AxisType_t enum
 
 // Forward declaration of classes to avoid circular dependencies
 class IPrinterVisitor;

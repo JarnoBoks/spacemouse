@@ -4,8 +4,8 @@
 
 #define MAX_AXES 6
 
-#include "..\axis\axes\axistype.h" // For AxisType_t
-#include "..\axis\axes\Axis.hpp"   // For Axis class
+#include "axis/axes/axistype.h" // For AxisType_t
+#include "axis/axes/Axis.hpp"   // For Axis class
 #include "observers/IObserver.hpp"
 #include "axis/AxisCollection.hpp"
 

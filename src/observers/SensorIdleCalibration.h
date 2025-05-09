@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IObserver.hpp"
-#include "hardware/hardware.h"
+#include "sensor/SensorCollection.hpp" // For cHW_MAX_SENSORS
 
 // Forward declaration of classes to avoid circular dependencies
 class SensorCalibrationManager;
@@ -21,9 +21,9 @@ private:
     bool warningsOccurred = false;
     uint8_t maxDeadZone = 0; // Maximum dead zone value (of all sensors)
 
-    uint32_t sumReads[MAX_SENSORS]; // Array to store sum of reads, necessaru for the average calculation
-    int minIdleValue[MAX_SENSORS];  // Array to store minimum idle values for each sensor
-    int maxIdleValue[MAX_SENSORS];  // Array to store maximum idle values for each sensor
+    uint32_t sumReads[cHW_MAX_SENSORS]; // Array to store sum of reads, necessaru for the average calculation
+    int minIdleValue[cHW_MAX_SENSORS];  // Array to store minimum idle values for each sensor
+    int maxIdleValue[cHW_MAX_SENSORS];  // Array to store maximum idle values for each sensor
 
     // REVIEW - SessorCalibrationManager is a singleton. Is it necessary to store the pointer here? (Uses some memory).
     SensorCalibrationManager *CalibrationManager = nullptr; // Pointer to the calibration manager

@@ -50,19 +50,23 @@ LedRing *Mouse_LEDRing;
 KeyCollection myKeyCollection; // Key collection object to hold the keys and the key configuration (initialized empty)
 
 // Include the header file for the sensor factory & collection
-#include "sensor/factory/SensorFactory.hpp" // Include the sensor factory header file
-#include "sensor/SensorCollection.hpp"      // Include the sensor collection header file
-SensorCollection mySensorCollection;        // Sensor collection object to hold the sensors and the sensor configuration (initialized empty)
+// REVIEW #include "sensor/factory/SensorFactory.hpp" // Include the sensor factory header file
+#include "sensor/SensorCollection.hpp" // Include the sensor collection header file
+SensorCollection mySensorCollection;   // Sensor collection object to hold the sensors and the sensor configuration (initialized empty)
 
 // Include the header file for the Hardware objects (Interface between sensors and the axis collection)
-
 #ifdef HW_HALLEFFECT
-#include "hardware/hardware_hall.h"
-Hardware *myHardware = Hardware_HALL::getInstance(); // Create a hardware object for the Hall effect sensors
+#include "sensorscalculator/SensorsCalculatorHall.hpp"         // Include the header file for the Hall effect sensors
+SensorsCalculatorHall mySensorCalculator(&mySensorCollection); // Sensor calculator object to calculate the sensor values
 #else
-#include "hardware/hardware_joystick.h"
-Hardware *myHardware = Hardware_JOYSTICK::getInstance(); // Create a hardware object for the joystick sensors
+#include "sensorscalculator/SensorsCalculatorJoystick.hpp" // Include the header file for the joystick sensors
+SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection); // Sensor calculator object to calculate the sensor values
 #endif
+
+// Include the header file for the axis collection
+#include "axis/AxisCollection.hpp" // Include the axis collection header file
+#include "axis/axes/Axis.hpp"      // Include the axis collection header file
+AxisCollection myAxisCollection;   // Axis collection object to hold the axes and the axis configuration (initialized empty)
 
 // Include the header files for the HID commands
 #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
@@ -113,10 +117,15 @@ void setup() {
     Serial.setTimeout(2); // The serial interface will look for new commands and it will only wait 2ms
 
     // Setup the Sesnor collection. This will setup the sensors and the sensor configuration.
-    // FIXME mySensorCollection.setup(); // Setup the sensor collection, based on the configuration in config.h
+    mySensorCollection.setup(); // Setup the sensor collection, based on the configuration in config.h
 
-    // Setup the Hardware object. This will setup the hardware and sensors of the mouse. The hardware type is defined in config.h
-    HW_TYPE::getInstance();
+    // Setup the Axis collection. This will setup the axes and the axis configuration.
+    myAxisCollection.add(new Axis(TRANSX, mySensorCalculator)); // Add the translation X axis to the axis collection
+    myAxisCollection.add(new Axis(TRANSY, mySensorCalculator)); // Add the translation Y axis to the axis collection
+    myAxisCollection.add(new Axis(TRANSZ, mySensorCalculator)); // Add the translation Z axis to the axis collection
+    myAxisCollection.add(new Axis(ROTX, mySensorCalculator));   // Add the rotation X axis to the axis collection
+    myAxisCollection.add(new Axis(ROTY, mySensorCalculator));   // Add the rotation Y axis to the axis collection
+    myAxisCollection.add(new Axis(ROTZ, mySensorCalculator));   // Add the rotation Z axis to the axis collection
 
     // Setup the Kinematics object. This will setup the kinematic axes of the mouse.
     // The setup will check the EEPROM for the configuration of the sensors and the axes.
@@ -184,6 +193,12 @@ void loop() {
     if (Serial.available()) {
         myCommandHandler.parseSerialMonitorInput();
     }
+
+    // Update all the sensor values & apply the calibration to the read sensor values
+    mySensorCollection.evaluate();
+
+    // Update the axis values & apply the calibration to the read axis values
+    myAxisCollection.evaluate();
 
     // Process the kinematics of the mouse
     Kinematics::getInstance()->processKinematics();

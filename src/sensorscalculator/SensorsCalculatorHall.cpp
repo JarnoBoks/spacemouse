@@ -1,26 +1,14 @@
-#include "hardware_hall.h"
+#include "SensorsCalculatorHall.hpp"
 #include "sensor/sensors/HallSensor.hpp" // Include the header file for the Hall sensor
-#include "config.h"                      // For PINLIST
+#include "..\axis\axes\Axis.hpp"         // Include the header file for the Axis class
+#include "axis/axes/axistype.h"          // Include the header file for the AxisType_t enum
 
-Hardware_HALL::Hardware_HALL() {
-#if 0 // REMOVE
-    // Initialize the sensors
-    const uint8_t sensorPins[HallSensorsId_t::HALL_LENGTH] = PINLIST; // Pins for the sensors, as defined in config.h
-
-    for (uint8_t i = 0; i < HallSensorsId_t::HALL_LENGTH; i++) {
-        sensors[i] = new HallSensor(sensorPins[i], static_cast<HallSensorsId_t>(i)); // Create new HallSensor objects
-    }
-
-    // Set the ADC Prescaler to 16 in order to read the ADC much faster.
-    // NOTE: Maybe this is relevant for the Joystick hardware as well, but cannot test it.
-    ADCSRA = (ADCSRA & B11111000) | 4; // Set prescaler to 16 for ADC
-#endif
-
+SensorsCalculatorHall::SensorsCalculatorHall() {
     // Set the analog reference voltage for the sensors
     setAnalogReference(INTERNAL);
 }
 
-void Hardware_HALL::setAnalogReference(const bool isDebug) {
+void SensorsCalculatorHall::setAnalogReference(const bool isDebug) {
     referenceVoltage = (isDebug) ? DEFAULT : INTERNAL; // Set the default reference voltage to DEFAULT or INTERNAL based on isDebug
 #ifdef ARDUINO_ARCH_AVR
     // REVIEW analogReference(referenceVoltage); // Set the analog reference voltage to DEFAULT
@@ -34,14 +22,13 @@ void Hardware_HALL::setAnalogReference(const bool isDebug) {
 
 // Define a macro to simplify the access to the sensor values
 #define VAL(x) value(x)
-int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
-    if (!m_sensorCollection) {
-        return 0; // Return 0 if the sensor collection is not initialized
-    }
+void SensorsCalculatorHall::calculate(Axis *axis) {
+    if (!m_sensorCollection)
+        return;
 
-    int16_t retval = 0; // Initialize the value to 0
+    int16_t retval = 0;
 
-    switch (axistype) {
+    switch (axis->getAxisType()) {
     case AxisType_t::TRANSX:
         // calculate sensors transX
         retval = (VAL(HES1) - VAL(HES0) + VAL(HES6) - VAL(HES7)) / 2;
@@ -69,6 +56,6 @@ int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
         // Handle invalid axis type if necessary - nothing to do - retval is already 0
         break;
     }
-    return retval; // Default return value if no valid axis type is found
+    axis->setSensorValue(retval);
 }
 #undef VAL

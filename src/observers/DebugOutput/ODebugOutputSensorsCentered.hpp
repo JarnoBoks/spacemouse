@@ -1,6 +1,9 @@
 #pragma once
 
 #include "DebugOutputSensors.hpp"
+#include "sensor/sensors/Sensor.hpp"
+
+#include <Arduino.h> // For Serial
 
 /**
  * @brief Output class for centered sensor values.
@@ -15,8 +18,8 @@ protected:
     }
 
 public:
-    inline void update(Hardware *hardware) override {
-        DebugOutputSensors::update(hardware); // Call the base class update method
+    void update(SensorCollection *sensorCollection) {
+        DebugOutputSensors::update(sensorCollection); // Call the base class update method
         Serial.println();
     }
 };

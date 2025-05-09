@@ -52,6 +52,9 @@ public:
         }
     }
 
+    /**
+     * @brief Evaluate all items in the collection.
+     */
     void evaluate() override {
         for (int i = 0; i < m_itemCount; i++) {
             m_items[i]->evaluate(); // Evaluate the axes collection

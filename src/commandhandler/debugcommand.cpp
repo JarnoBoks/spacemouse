@@ -1,31 +1,13 @@
 #include "DebugCommand.h"
 
 // Include necessary headers for the Debug states
-#include "DebugParam/ParamOff.h"
+#include "DebugParam\ParamOff.hpp"
 #include "DebugParam/ParamSensorInformation.h"
-#include "DebugParam/ParamAxisInformation.h"
-#include "DebugParam/ParamSensorAxisInformation.h"
-#include "DebugParam/ParamSensorAxisKeysInformation.h"
-#include "DebugParam/ParamLoopFrequency.h"
+#include "DebugParam\ParamAxisInformation.hpp"
+#include "DebugParam\ParamSensorAxisInformation.hpp"
+#include "DebugParam\ParamSensorAxisKeysInformation.hpp"
+#include "DebugParam\ParamLoopFrequency.hpp"
 // ...include other debug states...
-
-/**
- * @brief This class handles the debug commands and manages the current debug state.
- * @details The class allows switching between different debug states and executing commands related to debugging.
- * It uses the IDebugState interface to define the behavior of different debug states.
- * The class also provides methods to set the current debug state and execute commands based on the parameters provided.
- * This class is essential for managing the debugging process and ensuring that the correct state is applied during operation. *
- */
-
-DebugCommand::DebugCommand() : CommandBase(CMD_DEBUG), currentParam(new DebugParamOff()) {}
-
-/**
- * @brief Destructor for the DebugCommand class.
- * @details Cleans up the current debug state by deleting it.
- */
-DebugCommand::~DebugCommand() {
-    delete currentParam;
-}
 
 /**
  * @brief Sets the current debug state.
@@ -33,17 +15,17 @@ DebugCommand::~DebugCommand() {
  * @details Deletes the previous state and applies the new state.
  */
 void DebugCommand::setState(IDebugParam *state) {
-    delete currentParam;
+    delete currentState;
 
-    currentParam = state;
-    currentParam->apply();
+    currentState = state;
+    currentState->apply();
 }
 
 /**
  * @brief Gets the current debug state.
  * @return Pointer to the current debug state.
  */
-IDebugParam *DebugCommand::getState() const { return currentParam; }
+IDebugParam *DebugCommand::getState() const { return currentState; }
 
 /**
  * @brief Stops the current debug command execution.
@@ -71,7 +53,7 @@ void DebugCommand::stop() {
  */
 void DebugCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     if (paramCount == 0) {
-        currentParam->report();
+        currentState->report();
         return;
     }
 

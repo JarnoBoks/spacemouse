@@ -1,13 +1,10 @@
 #include "SensorIdleCalibration.h"
-#include "hardware/hardware.h"       // For Hardware class - necessary to retrieve the sensors.
 #include "sensor/sensors/Sensor.hpp" // For Sensor class
 #include "calibration/sensorcalibrationmanager.h"
-#include "visitors/IdlePositonPrinter.h" // For IdlePositionPrinter class
+#include "..\visitors\IdlePositionPrinter.h" // For IdlePositionPrinter class
 
 #define DEADZONEWARNING 10 // Define a threshold for dead zone warning
 // NOTE - At the moment the dead zone warning threshold is non hardware type specific. This could be changed in the future.
-
-// TODO - move texts to text.h
 
 /**
  * @brief Constructor for SensorIdleCalibration class *
@@ -18,7 +15,7 @@ SensorIdleCalibration::SensorIdleCalibration(SensorCalibrationManager *calmgr, c
     : requestedIterations(numiterations), processedIterations(0), startCalibrationTime(millis()), CalibrationManager(calmgr) {
     Serial.println(F("Starting calibration..."));
 
-    for (uint8_t id = 0; id < MAX_SENSORS; id++) {
+    for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
         sumReads[id] = 0;
         minIdleValue[id] = 1023;
         maxIdleValue[id] = 0;
@@ -35,7 +32,7 @@ void SensorIdleCalibration::finish(Hardware *hardware) {
     IdlePositionPrinter printer;
 
     // Calculating average position by dividing the sum of all readings by the number of iterations
-    for (uint8_t id = 0; id < MAX_SENSORS; id++) {
+    for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
 
         // Calculate the dead zone for the sensor
         int sensorDZ = maxIdleValue[id] - minIdleValue[id];
@@ -79,7 +76,7 @@ void SensorIdleCalibration::update(Hardware *hardware) {
         return;
     }
 
-    for (uint8_t id = 0; id < MAX_SENSORS; id++) {
+    for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
         // Get the sensor by ID
         Sensor *sensor = hardware->getSensor(id); // REFACTOR - Use sensorCollection instead of hardware
         if (sensor == nullptr) {

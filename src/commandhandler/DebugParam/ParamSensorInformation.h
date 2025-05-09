@@ -1,5 +1,5 @@
 #pragma once
-#include "IDebugParam.h"
+#include "IDebugParam.hpp"
 #include "..\..\observers\DebugOutput\DebugOutputSensors.hpp" // Base class for sensor observers       //REVIEW - Can we use the Interface instead of the base class?
 
 // REFACTOR - Split this file into multiple class files.

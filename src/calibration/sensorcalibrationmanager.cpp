@@ -1,8 +1,8 @@
 #include "sensorcalibrationmanager.h"
-#include "config.h"                     // For hardware type
-#include "hardware/hardware.h"          // For Hardware class - necessary to retrieve the sensors.
-#include "hardware/hardware_hall.h"     // For Hardware class - necessary to retrieve the sensors.
-#include "hardware/hardware_joystick.h" // For Hardware class - necessary to retrieve the sensors.
+// REMOVE #include "config.h"                     // For hardware type
+// REMOVE #include "hardware/hardware.h"          // For Hardware class - necessary to retrieve the sensors.
+// REMOVE #include "hardware/hardware_hall.h"     // For Hardware class - necessary to retrieve the sensors.
+// REMOVE #include "hardware/hardware_joystick.h" // For Hardware class - necessary to retrieve the sensors.
 
 #include "observers/SensorIdleCalibration.h"   // For SensorIdleCalibration class
 #include "observers/SensorMinMaxCalibration.h" // For SensorMinMaxCalibration class

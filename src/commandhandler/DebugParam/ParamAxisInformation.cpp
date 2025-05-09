@@ -1,4 +1,4 @@
-#include "ParamAxisInformation.h"
+#include "ParamAxisInformation.hpp"
 #include <Arduino.h>
 
 #include "..\..\observers\DebugOutput\DebugOutputAxesRaw.hpp"

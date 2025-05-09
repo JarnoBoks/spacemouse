@@ -1,7 +1,10 @@
 #pragma once
 
 #include "DebugOutputSensors.hpp"
+#include "sensor/sensors/Sensor.hpp"
+#include "common/TextHelper.h"
 
+#include <Arduino.h> // For Serial
 /**
  * @brief Output class for centered sensor values.
  * @details This class inherits from DebugOutputSensors and overrides the getSensorValue method to return the centered value of the sensor.
@@ -15,8 +18,9 @@ protected:
     }
 
 public:
-    inline void update(Hardware *hardware) override {
-        DebugOutputSensors::update(hardware); // Call the base class update method
+    void update(SensorCollection *sensorCollection) {
+        // Call the base class update method
+        DebugOutputSensors::update(sensorCollection);
         Serial.println();
     }
     inline void update(Kinematics *kinematics) override {}; // No implementation needed for this class

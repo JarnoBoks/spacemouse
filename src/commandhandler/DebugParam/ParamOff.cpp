@@ -1,4 +1,4 @@
-#include "ParamOff.h"
+#include "ParamOff.hpp"
 #include <Arduino.h>
 
 // Only log to serial if not using Arduino AVR architecture

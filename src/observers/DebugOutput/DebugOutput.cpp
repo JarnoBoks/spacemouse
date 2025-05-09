@@ -1,7 +1,7 @@
 #include "DebugOutput.hpp"
 
 // Include system headers
-#include <Arduino.h> // For millis()
+#include <wiring_private.h> // For millis()
 
 /**
  * @brief       Indicate if a new debug output should be printed.

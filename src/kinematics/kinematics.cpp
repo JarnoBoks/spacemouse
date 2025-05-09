@@ -36,8 +36,6 @@ Kinematics::Kinematics() : Observable(c_MAX_KINEMATICS_OBSERVERS),
  * @details This function calculates the values for each axis based on the hardware input and configuration.
  */
 void Kinematics::processKinematics() {
-    Hardware *hardware = Hardware::getInstance();
-    hardware->evaluateSensorCollection(); // Update the sensor values from the hardware
     for (int i = 0; i < AxisType_t::LENGTH; i++) {
         int16_t raw = hardware->calculateRawValue(static_cast<AxisType_t>(i));  // Get the raw value from the hardware
         static_cast<Axis *>(m_axisCollection->getItem(i))->calculateValue(raw); // Calculate the value for each axis

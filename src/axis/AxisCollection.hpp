@@ -29,9 +29,9 @@ public:
     }
 
     /**
-     * @brief Set up the sensor collection based on the configuration.
-     * @details This function initializes the sensor collection and sets up the axes based on the configuration.
-     *          It creates instances of the axes and configures them according to the provided configuration.     *
+     * @brief Set up the axis collection based on the configuration.
+     * @details This function initializes the axis collection and sets up the axes based on the configuration.
+     *          It creates instances of the axes and configures them according to the provided configuration.
      */
     void setup();
 };

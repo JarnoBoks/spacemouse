@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IObserver.hpp"
-#include "hardware/hardware.h"
+#include "sensor/SensorCollection.hpp" // For cHW_MAX_SENSORS
 
 // Forward declaration of classes to avoid circular dependencies
 class SensorCalibrationManager;
@@ -16,16 +16,16 @@ class SensorMinMaxCalibration : public IObserver {
 private:
     unsigned long startCalibrationTime = 0; // Time from millis(), when the calibration was started
 
-    int minValue[MAX_SENSORS] = {1023};  // Array to store minimum values for each sensor, all items set to maximum possible value
-    int maxValue[MAX_SENSORS] = {-1023}; // Array to store maximum values for each sensor, all items set to minimum possible value
+    int minValue[cHW_MAX_SENSORS] = {1023};  // Array to store minimum values for each sensor, all items set to maximum possible value
+    int maxValue[cHW_MAX_SENSORS] = {-1023}; // Array to store maximum values for each sensor, all items set to minimum possible value
 
-    // REVIEW - SessorCalibrationManager is a singleton. Is it necessary to store the pointer here? (Uses some memory).
     SensorCalibrationManager *CalibrationManager = nullptr; // Pointer to the calibration manager
 
-    void finish(Hardware *hardware); // Finish the calibration process
-public:
-    SensorMinMaxCalibration(SensorCalibrationManager *calibrationManager); // Constructor
-    virtual ~SensorMinMaxCalibration() {};                                 // nothing to do in destructor
+    void finish(SensorCollection *sensorCollection);
 
-    void update(Hardware *hardware) override;
+public:
+    SensorMinMaxCalibration(SensorCalibrationManager *calibrationManager);
+    virtual ~SensorMinMaxCalibration() {};
+
+    void update(SensorCollection *sensorCollection) override;
 };

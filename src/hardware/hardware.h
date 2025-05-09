@@ -19,11 +19,13 @@ protected:
     uint8_t referenceVoltage = DEFAULT;
 
     // Hardware can only be instantiated by derived classes
-    Hardware() : Observable(MAX_HARDWARE_OBSERVERS), m_sensorCollection{new SensorCollection()} {
+    Hardware() : Observable(MAX_HARDWARE_OBSERVERS), m_sensorCollection(new SensorCollection()) {
         m_sensorCollection->setup(); // Set up the sensor collection
     };
 
     virtual Hardware *GetHardwareInstance() = 0;
+
+    const int value(uint8_t const id) const;
 
 public:
     static Hardware *getInstance();
@@ -42,10 +44,10 @@ public:
     virtual void setAnalogReference(const bool isDebug = false);
 
     inline Sensor *getSensor(const char *name) const {
-        return (m_sensorCollection) ? m_sensorCollection->getSensor(name) : nullptr;
+        return (m_sensorCollection) ? static_cast<Sensor *>(m_sensorCollection->getItem(name)) : nullptr;
     }
     inline Sensor *getSensor(uint8_t id) const {
-        return (m_sensorCollection) ? m_sensorCollection->getSensor(id) : nullptr;
+        return (m_sensorCollection) ? static_cast<Sensor *>(m_sensorCollection->getItem(id)) : nullptr;
     }
 };
 

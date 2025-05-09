@@ -33,9 +33,12 @@ void Hardware_HALL::setAnalogReference(const bool isDebug) {
 }
 
 // Define a macro to simplify the access to the sensor values
-#define VAL(x) m_sensorCollection->getSensor(x)->getFilteredValue()
-
+#define VAL(x) value(x)
 int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
+    if (!m_sensorCollection) {
+        return 0; // Return 0 if the sensor collection is not initialized
+    }
+
     int16_t retval = 0; // Initialize the value to 0
 
     switch (axistype) {
@@ -66,7 +69,6 @@ int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
         // Handle invalid axis type if necessary - nothing to do - retval is already 0
         break;
     }
-
     return retval; // Default return value if no valid axis type is found
 }
 #undef VAL

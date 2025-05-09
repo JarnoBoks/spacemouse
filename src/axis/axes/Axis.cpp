@@ -34,7 +34,7 @@ Axis::Axis(AxisType_t type) : type(type) {
     value = 0;
 }
 
-const bool Axis::isCurrentAxis(const char *name) const {
+const bool Axis::isCurrent(const char *name) const {
     if (this->name != nullptr) {
         return (strcmp(this->name, name) == 0); // Compare the name of the axis with the provided name
     }

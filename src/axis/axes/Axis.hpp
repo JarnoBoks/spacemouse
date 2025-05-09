@@ -40,7 +40,7 @@ public:
 
     void setKillSwitchActive(bool active) { isKillSwitchActive = active; } // Setter for kill switch state
 
-    const bool isCurrentAxis(const char *name) const; // REFACTOR - Move to Collectable interface/class
+    const bool isCurrent(const char *name) const override; // REFACTOR - Move to Collectable interface/class
 
     inline int16_t getValue() const { return value; }                 // Getter for value           // REVIEW - Same asa Sensor class, but we need to check if we can use the same function for both classes.
     inline int16_t getRawValue() const { return rawValue; }           // Getter for rawValue

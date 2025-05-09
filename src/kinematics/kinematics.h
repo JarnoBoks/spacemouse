@@ -28,7 +28,7 @@ private:
     void _applyKillSwitch(const AxisType_t start, const AxisType_t end, const bool killSwitchActive) {
         // Set strategy for the rotation axes to kill switch
         for (uint8_t i = start; i <= end; i++) {
-            m_axisCollection->getAxis(i)->setKillSwitchActive(killSwitchActive); // Set the kill switch state for the axis
+            static_cast<Axis *>(m_axisCollection->getItem(i))->setKillSwitchActive(killSwitchActive); // Set the kill switch state for the axis
         }
     };
 
@@ -36,10 +36,10 @@ public:
     static Kinematics *getInstance();
 
     inline Axis *getAxis(const AxisType_t type) {
-        return m_axisCollection->getAxis(type); // Get the axis from the collection
+        return static_cast<Axis *>(m_axisCollection->getItem(type)); // Get the axis from the collection
     };
     inline Axis *getAxis(const char *name) {
-        return m_axisCollection->getAxis(name); // Get the axis from the collection by name
+        return static_cast<Axis *>(m_axisCollection->getItem(name)); // Get the axis from the collection
     };
 
     inline KinematicsConfig *getConfig() const { return config; } // Getter for config

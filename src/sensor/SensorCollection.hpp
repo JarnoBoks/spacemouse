@@ -2,7 +2,8 @@
 
 #include "config.h" // Allowed here, while this is a Collection class.
 
-#include "common/ICollection.hpp"  // Include the ICollection interface header file
+#include "common/Collection.hpp"   // Include the ICollection interface header file
+#include "common/Observable.hpp"   // Include the ICollection interface header file
 #include "observers/IObserver.hpp" // Include the IObserver interface header file
 
 #include "sensor/sensors/Sensor.hpp" // Include the Key class header file
@@ -24,22 +25,25 @@ constexpr uint8_t c_MAX_SENSORCOLLECTION_OBSERVERS = cOBSV_MAX_SENSORCOLLECTION_
  *          It allows adding, removing, and notifying observers of changes in the sensor collection.
  * @note The SensorCollection class is designed to manage a fixed number of sensors and their associated observers.
  */
-class SensorCollection : public ICollection {
+class SensorCollection : public Collection, public Observable {
 private:
+#if 0 // REMOVE - Implemented by the base classes Collection & Observable
     // The length of the array is set by the total number keys in the current hardware setup.
     Sensor *m_sensors[cHW_MAX_SENSORS]; // Array of sensor pointers, length is the total number of sensors
     uint8_t m_SensorCount = 0;          // Number of sensor created
 
     IObserver *m_observers[c_MAX_SENSORCOLLECTION_OBSERVERS]; // Array of observers
     uint8_t m_observerCount = 0;                              // Number of observers attached
-
+#endif
 public:
     /// @brief Constructor for empty SensorCollection
-    SensorCollection();
+    SensorCollection() : Collection(cHW_MAX_SENSORS), Observable(c_MAX_SENSORCOLLECTION_OBSERVERS) {}
     ~SensorCollection() {
+#if 0 // REMOVE - Implemented by the base classes Collection & Observable
         for (int i = 0; i < m_SensorCount; i++) {
             delete m_sensors[i]; // Delete each sensor instance to free memory
         }
+#endif
     }
 
     /**
@@ -50,11 +54,12 @@ public:
     void setup();
 
     void evaluate() {
-        for (int i = 0; i < m_SensorCount; i++) {
-            m_sensors[i]->evaluate();
+        for (int i = 0; i < m_itemCount; i++) {
+            m_items[i]->evaluate(); // Evaluate the axes collection
         }
     }
 
+#if 0   // REMOVE - Implemented by the base classes Collection & Observable
     // --- Collection management functions --------------------
 
     void add(ICollectable *sensor) override;
@@ -108,4 +113,5 @@ public:
         }
         m_observerCount = 0;
     }
+#endif; // REMOVE
 };

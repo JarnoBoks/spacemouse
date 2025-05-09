@@ -27,6 +27,5 @@ public:
     virtual void attachObserver(IObserver *observer) override;
     virtual void detachObserver(IObserver *observer) override;
     virtual void clearObservers() override;
-
     virtual void notifyObservers() override;
 };

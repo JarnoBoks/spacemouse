@@ -1,5 +1,6 @@
 #include "AxisCollection.hpp"
 
+#if 0 // REMOVE - Implemented by the base classes Collection & Observable
 /**
  * @brief Constructor for AxisCollection class.
  * @details This constructor initializes an empty axis collection.
@@ -13,6 +14,7 @@ AxisCollection::AxisCollection() {
         m_observers[i] = nullptr;
     }
 }
+#endif
 
 /**
  * @brief Setup the axis collection according to the configuration.
@@ -20,14 +22,15 @@ AxisCollection::AxisCollection() {
  *          It creates instances of the axes and sets their context to this AxisCollection instance.
  */
 void AxisCollection::setup() {
-    m_axes[TRANSX] = new Axis(TRANSX);
-    m_axes[TRANSY] = new Axis(TRANSY);
-    m_axes[TRANSZ] = new Axis(TRANSZ);
-    m_axes[ROTX] = new Axis(ROTX);
-    m_axes[ROTY] = new Axis(ROTY);
-    m_axes[ROTZ] = new Axis(ROTZ);
+    m_items[TRANSX] = new Axis(TRANSX);
+    m_items[TRANSY] = new Axis(TRANSY);
+    m_items[TRANSZ] = new Axis(TRANSZ);
+    m_items[ROTX] = new Axis(ROTX);
+    m_items[ROTY] = new Axis(ROTY);
+    m_items[ROTZ] = new Axis(ROTZ);
 };
 
+#if 0 // REMOVE - Implemented by the base classes Collection & Observable
 void AxisCollection::add(ICollectable *axis) {
     if (m_AxisCount < cHW_MAX_AXES) {
         m_axes[m_AxisCount++] = static_cast<Axis *>(axis);
@@ -63,3 +66,4 @@ Axis *AxisCollection::getAxis(const char *name) const {
     }
     return nullptr; // Return nullptr if no matching sensor is found
 };
+#endif

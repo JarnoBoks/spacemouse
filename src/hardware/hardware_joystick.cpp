@@ -15,8 +15,7 @@ Hardware_Joystick::Hardware_Joystick() {
 }
 
 // Define a macro to simplify the access to the sensor values
-#define VAL(x) m_sensorCollection->getSensor(x)->getFilteredValue()
-
+#define VAL(x) static_cast<Sensor *>(m_sensorCollection->getItem(x))->getFilteredValue()
 int16_t Hardware_Joystick::calculateRawValue(AxisType_t axistype) {
 
     evaluateSensorCollection();

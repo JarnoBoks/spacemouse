@@ -2,7 +2,8 @@
 
 #include "config.h" // Allowed here, while this is a Collection class.
 
-#include "common/ICollection.hpp"  // Include the ICollection interface header file
+#include "common/Collection.hpp"   // Include the ICollection interface header file
+#include "common/Observable.hpp"   // Include the ICollection interface header file
 #include "observers/IObserver.hpp" // Include the IObserver interface header file
 
 #include "axis/axes/Axis.hpp" // Include the Key class header file
@@ -16,7 +17,7 @@ constexpr uint8_t cHW_MAX_AXES = 6;
 /// @brief Number of observers that can be added to this collection.
 /// @details This is a constant value that defines the maximum number of observers that can be added to the collection.
 /// @note This value is defined in the IObserver interface header file.
-constexpr uint8_t c_MAX_AXISCOLLECTION_OBSERVERS = cOBSV_MAX_AXISCOLLECTION_OBSERVERS; // Maximum number of observers for the axis collection
+constexpr uint8_t c_MAX_AXISCOLLECTION_OBSERVERS = cOBSV_MAX_AXISCOLLECTION_OBSERVERS; // Maximum number of observers for the axis collection   // REFACTOR - Number should be set here!
 
 /**
  * @brief Class representing a collection of axes for the SpaceMouse.
@@ -24,22 +25,25 @@ constexpr uint8_t c_MAX_AXISCOLLECTION_OBSERVERS = cOBSV_MAX_AXISCOLLECTION_OBSE
  *          It allows adding, removing, and notifying observers of changes in the sensor collection.
  * @note The AxisCollection class is designed to manage a fixed number of axes and their associated observers.
  */
-class AxisCollection : public ICollection {
+class AxisCollection : public Collection, public Observable {
 private:
+#if 0 // REMOVE - Implemented by the base classes Collection & Observable
     // The length of the array is set by the total number keys in the current hardware setup.
     Axis *m_axes[cHW_MAX_AXES]; // Array of sensor pointers, length is the total number of axes
     uint8_t m_AxisCount = 0;    // Number of sensor created
 
     IObserver *m_observers[c_MAX_AXISCOLLECTION_OBSERVERS]; // Array of observers
     uint8_t m_observerCount = 0;                            // Number of observers attached
-
+#endif
 public:
     /// @brief Constructor for empty AxisCollection
-    AxisCollection();
+    AxisCollection() : Collection(cHW_MAX_AXES), Observable(c_MAX_AXISCOLLECTION_OBSERVERS) {}
     ~AxisCollection() {
+#if 0 // REMOVE - Implemented by the base classes Collection & Observable
         for (int i = 0; i < m_AxisCount; i++) {
             delete m_axes[i]; // Delete each sensor instance to free memory
         }
+#endif
     }
 
     /**
@@ -49,19 +53,19 @@ public:
      */
     void setup();
 
-    void evaluate() {
-        for (int i = 0; i < m_AxisCount; i++) {
-            // TODO m_axes[i]->evaluate();
+    inline void evaluate() {
+        for (int i = 0; i < m_itemCount; i++) {
+            m_items[i]->evaluate(); // Evaluate the axes collection
         }
     }
 
+#if 0 // REMOVE - Implemented by the base classes Collection & Observable
     // --- Collection management functions --------------------
 
     void add(ICollectable *axis) override;
     void remove(ICollectable *axis) override;
 
     // --- Addressing items  ---------------------------------
-
     Axis *getAxis(const uint8_t id) const;
     Axis *getAxis(const char *name) const;
 
@@ -108,4 +112,5 @@ public:
         }
         m_observerCount = 0;
     }
+#endif
 };

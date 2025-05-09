@@ -26,7 +26,7 @@ Sensor::~Sensor() {
  * @param name The name to compare against the sensor's name.
  * @return True if the names match, false otherwise.
  */
-const bool Sensor::isCurrentSensor(const char *name) const {
+const bool Sensor::isCurrent(const char *name) const {
     if (this->name != nullptr) {
         return (strcmp(this->name, name) == 0);
     }

@@ -42,7 +42,7 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         // REVIEW - Move this to the hardware class
         Hardware *hardware = Hardware::getInstance(); // Get the hardware instance
         for (uint8_t id = 0; id < MAX_SENSORS; id++) {
-            Sensor *sensor = hardware->sensors[id]; // Pointer to the sensor
+            Sensor *sensor = hardware->getSensor(id); // Pointer to the sensor              //REFACTOR - Use sensorCollection instead of hardware
             if (sensor == nullptr) {
                 continue; // Skip if the sensor is not available
             }
@@ -86,8 +86,8 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         char direction = param1[0]; // Get the first character of the first parameter
 
         // Get the sensor from the sensorname (fe. HES0 = 1, HES1 = 2, etc.)
-        char *reqSensorName = (char *)param1 + 1;                                 // Get the sensor name (skip the first character)
-        Sensor *sensor = Hardware::getInstance()->getSensorByName(reqSensorName); // Get the sensor by its name
+        char *reqSensorName = (char *)param1 + 1;                           // Get the sensor name (skip the first character)
+        Sensor *sensor = Hardware::getInstance()->getSensor(reqSensorName); // Get the sensor by its name           // REFACTOR - Use sensorCollection instead of hardware
 
         // REVIEW - Failsafe: Sensor not found can be removed from Arduino.
         if (sensor == nullptr) {

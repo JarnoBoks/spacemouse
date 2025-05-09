@@ -2,27 +2,28 @@
 
 #include "config.h" // Allowed here while this is a Collection Factory class.
 #include <stdint.h>
-// Defines to retrieve the key configuration from config.h
 
+// Defines to retrieve the key configuration from config.h
 constexpr uint8_t cNUMBER_OF_KEYS = CFG_NUMBER_OF_KEYS; // Number of keys as defined in config.h
 
-#include "hardware/IObservable.hpp" // Include the IObservable interface header file
-#include "observers/IObserver.hpp"  // Include the IObserver interface header file
+#include "..\common\IObservable.hpp" // Include the IObservable interface header file
+#include "observers/IObserver.hpp"   // Include the IObserver interface header file
 
 #include "keys/Key.hpp" // Include the Key class header file
 
-#include "factory/KeyFactoryPhysicalkey.h" // TODO - Move to cpp
-#include "factory/KeyFactoryRotarykey.h"   // TODO - Move to cpp
+#include "factory\KeyFactoryPhysicalkey.hpp" // TODO - Move to cpp
+#include "factory\KeyFactoryRotarykey.hpp"   // TODO - Move to cpp
 
 // REFACTOR - The constructor code should be moved to the Collection Factory class, which is not implemented yet.
 // REVIEW - Should the 'main' routine setup the collection?
 
+// REFACTOR - Inherit from ICollection instead of implementing the interface directly. This will allow for a more consistent design and easier maintenance.
 /**
  * @brief Class representing a collection of keys for the SpaceMouse.
  * @details This class manages the keys, their states, and observers.
  *          It provides methods to evaluate the keys, get HID commands, and manage observers.
  */
-class KeyCollection : IObservable {
+class KeyCollection : public IObservable {
 private:
     // The length of the array is set by the total number keys in the current hardware setup.
     Key *m_keys[cNUMBER_OF_KEYS]; // Array of key pointers, length is the total number of keys
@@ -39,9 +40,9 @@ public:
             delete m_keys[i]; // Delete each key instance to free memory
             m_keyCount = 0;
         }
-    } // TODO - Should the constructor code be moved to the main routine?
+    }
 
-    void setupKeys(); // Initialize the key collection and set up the keys based on the configuration
+    void setup();
 
     void evaluate() {
         for (int i = 0; i < m_keyCount; i++) {
@@ -49,11 +50,8 @@ public:
         }
     }
 
-    /// @deprecated
-    int8_t getHIDcommands(uint8_t *cmds);
-
-    void addKey(Key *key);
-    void removeKey(Key *key);
+    void add(Key *key);
+    void remove(Key *key);
 
     void attachObserver(IObserver *observer) { // REFACTOR - Move to Interface!
         if (m_observerCount >= MAX_KEYCOLLECTION_OBSERVERS) {

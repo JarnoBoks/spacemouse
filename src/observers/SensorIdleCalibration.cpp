@@ -1,6 +1,6 @@
 #include "SensorIdleCalibration.h"
-#include "hardware/hardware.h"  // For Hardware class - necessary to retrieve the sensors.
-#include "..\sensor\sensor.hpp" // For Sensor class
+#include "hardware/hardware.h"       // For Hardware class - necessary to retrieve the sensors.
+#include "sensor/sensors/Sensor.hpp" // For Sensor class
 #include "calibration/sensorcalibrationmanager.h"
 #include "visitors/IdlePositonPrinter.h" // For IdlePositionPrinter class
 
@@ -45,7 +45,7 @@ void SensorIdleCalibration::finish(Hardware *hardware) {
 
         // Update the idlePosition for each sensor (returns true if the idle position is in the predefined normal zone)
         // Secondary check: Check if the dead zone is above the warning threshold.
-        Sensor *sensor = hardware->sensors[id];
+        Sensor *sensor = hardware->getSensor(id); // REFACTOR - Use sensorCollection instead of hardware
         bool positionWarning = !(sensor->setIdlePosition(sumReads[id] / processedIterations));
         warningsOccurred = warningsOccurred || positionWarning || (sensorDZ > DEADZONEWARNING);
 
@@ -81,7 +81,7 @@ void SensorIdleCalibration::update(Hardware *hardware) {
 
     for (uint8_t id = 0; id < MAX_SENSORS; id++) {
         // Get the sensor by ID
-        Sensor *sensor = hardware->sensors[id];
+        Sensor *sensor = hardware->getSensor(id); // REFACTOR - Use sensorCollection instead of hardware
         if (sensor == nullptr) {
             continue; // Skip if the sensor is not available
         }

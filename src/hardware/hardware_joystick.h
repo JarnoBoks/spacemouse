@@ -1,5 +1,4 @@
-#ifndef HARDWARE_JOYSTICK_H
-#define HARDWARE_JOYSTICK_H
+#pragma once
 
 #include <Arduino.h>
 #include "hardware.h"
@@ -20,5 +19,3 @@ public:
 
     int16_t calculateRawValue(AxisType_t axistype) override;
 };
-
-#endif // HARDWARE_JOYSTICK_H

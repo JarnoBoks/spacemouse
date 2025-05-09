@@ -12,7 +12,7 @@ void DebugOutputSensors::update(Hardware *hardware) {
     for (uint8_t id = 0; id < MAX_SENSORS; id++) {
         TextHelper::printLeadingComma(id); // Print a komma if it's not the first sensor
 
-        Sensor *sensor = hardware->sensors[id]; // Pointer to the sensor
+        Sensor *sensor = hardware->getSensor(id); // Pointer to the sensor      //REFACTOR - Use sensorCollection instead of hardware
 
         Serial.print(sensor->getName()); // Print the sensor name
         Serial.print(F(":"));

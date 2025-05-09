@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IPrinterVisitor.h"
-#include "sensor/sensor.hpp"
+#include "..\sensor\sensors\Sensor.hpp"
 #include "sensor/config/SensorConfig.h"
 #include "hardware/hardware.h"
 #include "kinematics/kinematicsconfig.h"

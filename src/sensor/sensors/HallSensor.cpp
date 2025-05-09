@@ -1,4 +1,4 @@
-#include "sensor_hall.h"
+#include "HallSensor.hpp"
 #include "defaults_hall.h" // For the HALL_SENSOR_NAMES macro
 
 /**

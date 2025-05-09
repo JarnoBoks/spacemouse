@@ -1,7 +1,7 @@
 #pragma once
 
 #include "key/keys/Key.hpp" // Base class for the keys to create          // REVIEW - Should we use the interface instead of the base class?
-#include "hidhandler/translator/ITranslator.h"
+// FIXME #include "hidhandler/translator/ITranslator.h"
 #include <stdint.h>
 
 /**
@@ -14,10 +14,10 @@ protected:
     void setupFunctionality(Key *key);
 
 public:
-    KeyFactory() = default; // Default constructor
+    KeyFactory() = default;
     virtual ~KeyFactory() {};
 
-    virtual Key *createKey(const uint8_t id) = 0; // Pure virtual function to create a key instance.
+    virtual Key *create(const uint8_t id) = 0; // Pure virtual function to create a key instance.
 
     // REVIEW virtual void evaluate() = 0;                  // Abstract from the evaluate() method in Key -> forwarded to the key.
 };

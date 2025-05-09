@@ -1,5 +1,5 @@
 
-#include "sensor_joystick.h"
+#include "JoystickSensor.hpp"
 #include "defaults_joystick.h" // For the Warning levels
 
 JoystickSensor::JoystickSensor(const int8_t pin, JoystickSensorsId_t id) : Sensor(pin, id) {

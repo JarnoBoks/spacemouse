@@ -12,6 +12,10 @@
 
 /**
  * @brief Class representing a physical key with debounce functionality.
+ * @details This class inherits from the Key class and implements the evaluate method to handle the key state changes.
+ *          It uses a pin number to read the key state and includes a debounce feature to prevent multiple triggers.
+ * @note The PhysicalKey class is designed to manage the physical interaction of keys, ensuring reliable state changes.
+ * @warning Ensure that the pin number is correctly configured to avoid unexpected behavior.
  */
 class PhysicalKey : public Key {
 private:

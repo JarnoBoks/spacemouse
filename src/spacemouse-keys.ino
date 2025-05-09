@@ -48,14 +48,15 @@ void lightSimpleLED(boolean light);
 LedRing *Mouse_LEDRing;
 #endif
 
-// Include the header file for the button factory
-#include "key/factory/KeyFactory.h"
-
-// Include the header file for the keys (physical or rotary keys)
+// Include the header file for the key factory & collection
+#include "key/factory/KeyFactory.hpp"
 #include "key/KeyCollection.hpp"
+KeyCollection myKeyCollection; // Key collection object to hold the keys and the key configuration (initialized empty)
 
-// Setup the keyhandler object. This will read config.h and create a handler with all the configured keys.
-KeyCollection myKeyCollection;
+// Include the header file for the sensor factory & collection
+#include "sensor/factory/SensorFactory.hpp" // Include the sensor factory header file
+#include "sensor/SensorCollection.hpp"      // Include the sensor collection header file
+// FIXME SensorCollection mySensorCollection;        // Sensor collection object to hold the sensors and the sensor configuration (initialized empty)
 
 // Include the header files for the HID commands
 #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
@@ -105,6 +106,9 @@ void setup() {
     cstmDelay(100);       // Wait for the serial interface to be ready
     Serial.setTimeout(2); // The serial interface will look for new commands and it will only wait 2ms
 
+    // Setup the Sesnor collection. This will setup the sensors and the sensor configuration.
+    // FIXME mySensorCollection.setup(); // Setup the sensor collection, based on the configuration in config.h
+
     // Setup the Hardware object. This will setup the hardware and sensors of the mouse. The hardware type is defined in config.h
     HW_TYPE::getInstance();
 
@@ -145,7 +149,7 @@ void setup() {
     // myCommandHandler.handleInput(buffer, 32, 1);
 
     // Populate the key collection with the keys that are configured in config.h
-    myKeyCollection.setupKeys(); // Setup the keys for the key collection, based on the configuration in config.h
+    myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
 
 #if 0
     cstmDelay(7500); // Debugging: give the user some time to open the serial monitor and start the debugging process

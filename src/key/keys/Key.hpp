@@ -10,10 +10,12 @@ class KeyCollection; // Forward declaration of KeyCollection class
 class IObservable;   // Forward declaration of IObservable interface
 
 #include <stdint.h>
+
 /**
- * @brief Base class for keys.
- * @details This class provides a common interface for different types of keys (e.g., physical, rotary).
- *
+ * @brief Base class representing a key, implementing the ICollectable interface.
+ * @details This class provides a common interface for different types of keys. It provides functionality for managing key states and executing associated commands.
+ * @note The Key class is designed to be inherited by specific key types, such as PhysicalKey or RotaryKey.
+ *        It provides functionality for managing key states and executing associated commands.
  */
 class Key : public IKey {
 protected:

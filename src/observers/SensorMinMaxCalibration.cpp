@@ -1,6 +1,6 @@
 #include "SensorMinMaxCalibration.h"
 #include "hardware/hardware.h"          // For Hardware class - necessary to retrieve the sensors.
-#include "sensor/sensor.hpp"            // For Sensor class
+#include "..\sensor\sensors\Sensor.hpp" // For Sensor class
 #include "sensor/config/SensorConfig.h" // For SensorConfig class
 #include "calibration/sensorcalibrationmanager.h"
 #include "visitors/MinMaxPrinter.h" // For MinMaxPrinter class
@@ -25,7 +25,7 @@ void SensorMinMaxCalibration::finish(Hardware *hardware) {
     // REVIEW - Should this loop be moved to hardware?
     for (uint8_t id = 0; id < MAX_SENSORS; id++) {
 
-        Sensor *sensor = hardware->sensors[id]; // Pointer to the sensor
+        Sensor *sensor = hardware->getSensor(id); // REFACTOR - Use sensorCollection instead of hardware
         if (sensor == nullptr) {
             continue; // Skip if the sensor is not available
         }
@@ -52,7 +52,7 @@ void SensorMinMaxCalibration::update(Hardware *hardware) {
     }
 
     for (uint8_t id = 0; id < MAX_SENSORS; id++) {
-        Sensor *sensor = hardware->sensors[id]; // Pointer to the sensor
+        Sensor *sensor = hardware->getSensor(id); // REFACTOR - Use sensorCollection instead of hardware
         if (sensor == nullptr) {
             continue; // Skip if the sensor is not available
         }

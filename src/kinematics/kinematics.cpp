@@ -72,7 +72,7 @@ Axis *Kinematics::getAxis(const char *name) {
  */
 void Kinematics::processKinematics() {
     Hardware *hardware = Hardware::getInstance();
-    hardware->updateSensorValues(); // Update the sensor values from the hardware
+    hardware->evaluateSensorCollection(); // Update the sensor values from the hardware
     for (int i = 0; i < AxisType_t::LENGTH; i++) {
         int16_t raw = hardware->calculateRawValue(static_cast<AxisType_t>(i)); // Get the raw value from the hardware
         axes[i]->calculateValue(raw);                                          // Calculate the value for each axis

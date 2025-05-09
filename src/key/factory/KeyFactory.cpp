@@ -1,5 +1,5 @@
 // KeyFactory.h
-#include "KeyFactory.h"
+#include "KeyFactory.hpp"
 #include "config.h" // For CFG_NUMBER_OF_KEYS and KEYCFG
 
 // Include header files for key functionalities

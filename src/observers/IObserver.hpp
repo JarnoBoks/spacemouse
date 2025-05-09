@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 // Define maximum observers for Kinematics class
 #define MAX_KINEMATICS_OBSERVERS 4
@@ -8,6 +9,10 @@
 
 // Define maximum observers for KeyCollection class
 #define MAX_KEYCOLLECTION_OBSERVERS CFG_NUMBER_OF_KEYS // TODO - This should be the number of command keys, not the number of keys!
+
+// Define maximum observers for SensorCollection class
+// FIXME - Replaces the MAX_HARDWARE_OBSERVERS definition
+constexpr uint8_t cOBSV_MAX_SENSORCOLLECTION_OBSERVERS = 4;
 
 // Simple checks for the configuration above.
 #if MAX_KEYCOLLECTION_OBSERVERS < CFG_NUMBER_OF_KEYS
@@ -38,4 +43,6 @@ public:
     virtual void update(Kinematics *kinematics);
     virtual void update(Hardware *hardware);
     virtual void update(KeyCollection *keyCollection);
+    virtual void update(IObservable *observable) {}; // Default implementation for IObservable, can be overridden by derived classes
+    // TODO virtual void update(IObservable *observable) {}; // Default implementation for IObservable, can be overridden by derived classes
 };

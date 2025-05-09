@@ -1,4 +1,4 @@
-#include "KeyFactoryPhysicalkey.h"
+#include "KeyFactoryPhysicalkey.hpp"
 
 // Include header file for the key to create
 #include "key/keys/PhysicalKey.h"
@@ -9,7 +9,7 @@
 #define NUMBER_OF_PHYSICAL_KEYS NUMKEYS
 #define PHYSICALKEY_PINLIST KEY_PINLIST
 
-Key *KeyFactoryPhysicalkey::createKey(uint8_t id) {
+Key *KeyFactoryPhysicalkey::create(uint8_t id) {
 
     // Get the pinNumber from the config.h object for this key
     constexpr uint8_t number_of_keys = CFG_NUMBER_OF_KEYS;

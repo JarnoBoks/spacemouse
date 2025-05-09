@@ -1,8 +1,9 @@
 #include "hardware_hall.h"
-#include "sensor/sensor_hall.h"
-#include "config.h" // For PINLIST
+#include "sensor/sensors/HallSensor.hpp" // Include the header file for the Hall sensor
+#include "config.h"                      // For PINLIST
 
 Hardware_HALL::Hardware_HALL() {
+#if 0 // REMOVE
     // Initialize the sensors
     const uint8_t sensorPins[HallSensorsId_t::HALL_LENGTH] = PINLIST; // Pins for the sensors, as defined in config.h
 
@@ -13,13 +14,13 @@ Hardware_HALL::Hardware_HALL() {
     // Set the ADC Prescaler to 16 in order to read the ADC much faster.
     // NOTE: Maybe this is relevant for the Joystick hardware as well, but cannot test it.
     ADCSRA = (ADCSRA & B11111000) | 4; // Set prescaler to 16 for ADC
+#endif
 
     // Set the analog reference voltage for the sensors
     setAnalogReference(INTERNAL);
 }
 
 void Hardware_HALL::setAnalogReference(const bool isDebug) {
-    // REMOVE Serial.println(F("Set analog reference voltage")); // Debug message to indicate the reference voltage settings
     referenceVoltage = (isDebug) ? DEFAULT : INTERNAL; // Set the default reference voltage to DEFAULT or INTERNAL based on isDebug
 #ifdef ARDUINO_ARCH_AVR
     // REVIEW analogReference(referenceVoltage); // Set the analog reference voltage to DEFAULT
@@ -32,7 +33,7 @@ void Hardware_HALL::setAnalogReference(const bool isDebug) {
 }
 
 // Define a macro to simplify the access to the sensor values
-#define VAL(X) sensors[X]->getFilteredValue()
+#define VAL(x) m_sensorCollection->getSensor(x)->getFilteredValue()
 
 int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
     int16_t retval = 0; // Initialize the value to 0
@@ -66,7 +67,6 @@ int16_t Hardware_HALL::calculateRawValue(AxisType_t axistype) {
         break;
     }
 
-    // notifyObservers();
     return retval; // Default return value if no valid axis type is found
 }
 #undef VAL

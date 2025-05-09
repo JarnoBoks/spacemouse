@@ -30,15 +30,6 @@ Kinematics::Kinematics()
       config(new KinematicsConfig()) {
 
     m_axisCollection->setup(); // Set up the axis collection based on the configuration
-#if 0                          // REMOVE
-    // Initialize the axes with their respective configurations and hardware
-    axes[TRANSX] = new Axis(TRANSX);
-    axes[TRANSY] = new Axis(TRANSY);
-    axes[TRANSZ] = new Axis(TRANSZ);
-    axes[ROTX] = new Axis(ROTX);
-    axes[ROTY] = new Axis(ROTY);
-    axes[ROTZ] = new Axis(ROTZ);
-#endif
 }
 
 /**

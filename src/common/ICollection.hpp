@@ -12,6 +12,7 @@ public:
 
     virtual void add(ICollectable *collectable) = 0;
     virtual void remove(ICollectable *collectable) = 0;
+    virtual void evaluate() = 0;
 
     virtual ICollectable *getItem(uint8_t id) const = 0;
     virtual ICollectable *getItem(const char *name) const = 0;

@@ -52,6 +52,12 @@ public:
         }
     }
 
+    void evaluate() override {
+        for (int i = 0; i < m_itemCount; i++) {
+            m_items[i]->evaluate(); // Evaluate the axes collection
+        }
+    }
+
     // --- Addressing items  ---------------------------------
     ICollectable *getItem(const uint8_t id) const override {
         if (id < m_itemCount) {

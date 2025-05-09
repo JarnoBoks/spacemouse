@@ -10,10 +10,6 @@
 // Define maximum observers for KeyCollection class
 #define MAX_KEYCOLLECTION_OBSERVERS CFG_NUMBER_OF_KEYS // TODO - This should be the number of command keys, not the number of keys!
 
-// Define maximum observers for SensorCollection class
-// FIXME - Replaces the MAX_HARDWARE_OBSERVERS definition
-constexpr uint8_t cOBSV_MAX_SENSORCOLLECTION_OBSERVERS = 4;
-
 // Define maximum observers for AxisCollection class
 // FIXME - Replaces the MAX_KINEMATICS_OBSERVERS definition
 constexpr uint8_t cOBSV_MAX_AXISCOLLECTION_OBSERVERS = 4;

@@ -1,19 +1,29 @@
 #pragma once
 
 #include "common/ICollectable.hpp"
+#include "common/Observable.hpp"
 #include "axistype.h"                  // Include the header file for AxisType_t enum
 #include "axis/config/AxisConfig.hpp"  // Include the header file for AxisConfig class
 #include "axis/modifier/modfunctype.h" // Include the header file for ModFunc_t enum
-#include "visitors/IPrinterVisitor.h"  // Include the header file for IPrinterVisitor interface
+#include "visitors/IPrinterVisitor.h"  // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Move to cpp
 
 class SensorCollection;
 class ISensorsCalculator;
+class IPrinterVisitor;
 
-constexpr const char *c_AXIS_NAMES[] = {"TX", "TY", "TZ", "RX", "RY", "RZ"}; // Axis names for serial output        // REFACTOR - Move to PROGMEM
+constexpr const char *c_AXIS_NAMES[] = {"TX", "TY", "TZ", "RX", "RY", "RZ"}; // Axis names for serial output        // TODO - Move to PROGMEM
 
-class Axis : public ICollectable {
-    // This class represents an axis in the system. It inherits from ICollectable and provides functionality for managing the axis configuration and state.
-    // The class contains methods for evaluating the axis state and checking if the axis is current based on its name.
+/// @brief Number of observers that can be added to a axis
+/// @details This is a constant value that defines the maximum number of observers that can be added to the axis.
+/// @note This value is set to 1, as the axis is only having the HID Event buffer as observer.
+constexpr uint8_t c_MAX_AXIS_OBSERVERS = 1;
+
+/**
+ * @brief Class representing an axis in the system.
+ * @details This class implements the ICollectable interface and provides functionality for managing the axis configuration and state.
+ *          It allows evaluating the axis state and checking if the axis is current based on its name.
+ */
+class Axis : public ICollectable, public Observable {
 private:
     ISensorsCalculator *m_sensorsCalculator = nullptr;       // Pointer to the sensor calculator
     const AxisType_t m_axisType = AxisType_t::UNINITIALIZED; // Type of the axis
@@ -30,9 +40,11 @@ private:
 
     void modifier(ModFunc_t type);
 
+protected:
 public:
-    Axis() = default;
-    Axis(const AxisType_t axisType, ISensorsCalculator *sensorsCalculator) : m_sensorsCalculator(sensorsCalculator),
+    Axis() = delete;
+    Axis(const AxisType_t axisType, ISensorsCalculator *sensorsCalculator) : Observable(c_MAX_AXIS_OBSERVERS),
+                                                                             m_sensorsCalculator(sensorsCalculator),
                                                                              m_axisType(axisType),
                                                                              m_name(c_AXIS_NAMES[static_cast<int>(axisType)]),
                                                                              m_AxisConfig(new AxisConfig(axisType)) {};

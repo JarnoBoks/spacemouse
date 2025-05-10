@@ -1,9 +1,9 @@
 #include "SensorMinMaxCalibration.h"
 
-#include "sensor/SensorCollection.hpp"  // For SensorCollection class
-#include "sensor/sensors/Sensor.hpp"    // For Sensor class
-#include "sensor/config/SensorConfig.h" // For SensorConfig class
-#include "..\sensor\calibration\SensorCalibrationManager.hpp"
+#include "sensor/SensorCollection.hpp"                           // For SensorCollection class
+#include "sensor/sensors/Sensor.hpp"                             // For Sensor class
+#include "sensor/config/SensorConfig.h"                          // For SensorConfig class
+#include "Sensor/calibration/SensorCalibrationManagerMinMax.hpp" // For SensorCalibrationManager class
 
 #include "visitors/MinMaxPrinter.h" // For MinMaxPrinter class
 

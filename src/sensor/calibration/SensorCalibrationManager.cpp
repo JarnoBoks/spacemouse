@@ -1,5 +1,6 @@
 #include "SensorCalibrationManager.hpp"
 #include "sensor/SensorCollection.hpp"
+#include "observers/IObserver.hpp"
 
 #include <Arduino.h> // For PROGMEM
 

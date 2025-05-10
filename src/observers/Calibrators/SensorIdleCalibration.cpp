@@ -2,8 +2,8 @@
 
 #include "SensorIdleCalibration.h"
 #include "sensor/sensors/Sensor.hpp" // For Sensor class
-#include "..\sensor\calibration\SensorCalibrationManager.hpp"
-#include "..\visitors\IdlePositionPrinter.h" // For IdlePositionPrinter class
+#include "sensor/calibration/SensorCalibrationManager.hpp"
+#include "visitors/IdlePositionPrinter.h" // For IdlePositionPrinter class
 
 #define DEADZONEWARNING 10 // Define a threshold for dead zone warning
 // NOTE - At the moment the dead zone warning threshold is non hardware type specific. This could be changed in the future.

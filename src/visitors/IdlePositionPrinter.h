@@ -2,9 +2,6 @@
 
 #include "IPrinterVisitor.h"
 #include "..\sensor\sensors\Sensor.hpp"
-// REMOVE #include "sensor/config/SensorConfig.h"
-// REMOVE  #include "hardware/hardware.h"
-// REMOVE #include "kinematics/kinematicsconfig.h"
 #include "common/TextHelper.h"
 
 class IdlePositionPrinter : public IPrinterVisitor {

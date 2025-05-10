@@ -2,8 +2,11 @@
 #include "IKeyFunctionality.h"
 #include "hidhandler/commands/ICommand.hpp" // For Command interface
 
+#include <Arduino.h> // For Serial communication
+// REMOVE - ENTIRE FILE IS OBSOLETE
+
 /**
- * @brief CommandKeyFunctionality class handles the execution of commands on key press and release events.
+ * @brief CommandKeyFunctionality class handles the execution of HID commands on key press and release events.
  * @details This class implements the IKeyFunctionality interface and provides the functionality to execute a command when a key is pressed or released.
  *          It is used in conjunction with the KeyContext class to manage key events and their associated commands.
  */

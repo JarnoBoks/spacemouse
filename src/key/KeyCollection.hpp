@@ -11,9 +11,9 @@ constexpr uint8_t cNUMBER_OF_KEYS = CFG_NUMBER_OF_KEYS; // Number of keys as def
 
 /// @brief Number of observers that can be added to this collection.
 /// @details This is a constant value that defines the maximum number of observers that can be added to the collection.
-constexpr uint8_t c_MAX_KEYCOLLECTION_OBSERVERS = cNUMBER_OF_KEYS + 4; // Maximum number of observers for the sensor collection
+constexpr uint8_t c_MAX_KEYCOLLECTION_OBSERVERS = cNUMBER_OF_KEYS + 4;
 
-// REVIEW - Should the 'main' routine setup the collection?
+class Key;
 
 /**
  * @brief Class representing a collection of keys for the SpaceMouse.
@@ -26,6 +26,20 @@ public:
     /// @brief Constructor for empty KeyCollection
     KeyCollection() : Collection(CFG_NUMBER_OF_KEYS), Observable(c_MAX_KEYCOLLECTION_OBSERVERS) {};
     ~KeyCollection() {}
+
+    Key *getKey(const uint8_t id) const;
+    Key *getKey(const char *name) const { return nullptr; } // Names are not used in this collection
+
+    /**
+     * @brief Evaluate all items in the collection and notify observers of the changes.
+     * @details This function iterates through all items in the collection and calls their evaluate method.
+     *          This allows each item to perform its own evaluation and update its state accordingly.
+     * @note Derived classes are allowed to override this method to provide custom evaluation logic.
+     */
+    void evaluate() override {
+        Collection::evaluate();        // Evaluate the keys in the collection
+        Observable::notifyObservers(); // Notify observers of changes in the key collection
+    };
 
     void setup();
 };

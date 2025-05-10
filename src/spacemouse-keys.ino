@@ -15,17 +15,8 @@
 #include <hidhandler/SpaceMouseHID.h> // Include the HID interface header
 SpaceMouseHID *mySpaceMouseHID;
 #else
-// FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
+// TODO - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
 #endif // ARDUINO_ARCH_AVR
-
-#if defined(HW_JOYSTICK)
-#define HW_TYPE Hardware_JOYSTICK // REFACTOR - Change casing /naming convention to match the other files
-#elif defined(HW_JOYSTICK)
-#elif defined(HW_HALLEFFECT)
-#define HW_TYPE Hardware_HALL // REFACTOR - Change casing /naming convention to match the other files
-#else
-#error "No hardwaretype defined, define HW_HALLEFFECT or HW_JOYSTICK in config.h"
-#endif
 
 // Header to calculate the kinematics of the mouse
 #include "kinematics/kinematics.h"
@@ -96,6 +87,12 @@ CommandHandler myCommandHandler; // Command handler object to handle the command
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp" // Include the sensor calibration manager header file
 SensorCalibrationManagerIdle *mySensorCalibrationManagerIdle;  // Sensor calibration manager object to handle the calibration of the sensors
 
+// Include the header file for the HID Event Buffer (used as interface between Axis & Keys and the HID Handler)
+#include "observers/HIDEventBuffer.hpp"
+HIDEventBuffer myHIDEventBuffer; // HID event buffer observer object to stage the values from the axis and keys for the HIDHandler
+
+#include "common/freeRAM.h" // Include the free RAM header file
+
 void cstmDelay(unsigned long ms) {
     // This function is used to delay the program for a certain amount of time.
     // It is used to wait for the serial interface to be ready.
@@ -117,11 +114,20 @@ void setup() {
     cstmDelay(100);       // Wait for the serial interface to be ready
     Serial.setTimeout(2); // The serial interface will look for new commands and it will only wait 2ms
 
+    cstmDelay(7000); // Wait for the serial interface to be ready
     // Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();
 
     // Setup the Axis collection. This will setup the axes and the axis configuration.
     myAxisCollection.setup(&mySensorCalculator); // Setup the axis collection with the sensor calculator
+
+    // Populate the key collection with the keys that are configured in config.h
+    myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
+
+    // Add the HID event buffer as an observer to the axes in the Axis collection and as an observer to the keys in the Key collection
+    myAxisCollection.attachAxesObserver(&myHIDEventBuffer);
+    FreeRAM::display_freeram();
+    // FIXME myKeyCollection.attachKeyObserver(&myHIDEventBuffer);
 
     // Setup the Kinematics object. This will setup the kinematic axes of the mouse.
     // The setup will check the EEPROM for the configuration of the sensors and the axes.
@@ -160,9 +166,6 @@ void setup() {
     // char buffer[32] = "DEBUG 1";
     // myCommandHandler.handleInput(buffer, 32, 1);
 
-    // Populate the key collection with the keys that are configured in config.h
-    myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
-
 #if 0
     cstmDelay(7500); // Debugging: give the user some time to open the serial monitor and start the debugging process
     KeyCollection tstCollection;
@@ -191,10 +194,11 @@ void loop() {
         myCommandHandler.parseSerialMonitorInput();
     }
 
+    Serial.println(F("Free RAM: "));
     // Update all the sensor values & apply the calibration to the read sensor values & notify collection observers
     mySensorCollection.evaluate();
 
-    // Calculate from sensor data and apply all config- & calibration settings to the axis values
+    // Calculate from sensor data and apply all config- & calibration settings to the axis values & notify collection observers
     myAxisCollection.evaluate();
 
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
@@ -202,8 +206,8 @@ void loop() {
     calcEncoderWheel(Mouse_Kinematics, Mouse_Calibration.GetDebug());
 #endif
 
-    // Evaluate the status of the keys
-    myKeyCollection.evaluate();
+    // Evaluate the status of the keys & notify collection observers
+    // FIXME myKeyCollection.evaluate();
 
 #if ROTARY_KEYS > 0
     // The encoder wheel shall be treated as a key.
@@ -211,7 +215,6 @@ void loop() {
 #endif
 
 #ifdef ARDUINO_ARCH_AVR
-    // REVIEW - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
     mySpaceMouseHID->execute();
 #endif
 

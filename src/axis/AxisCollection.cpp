@@ -1,5 +1,6 @@
 #include "AxisCollection.hpp"
-#include "axes\Axis.hpp" // Include the header file for the Axis class
+#include "axes/AxisRotation.hpp"
+#include "axes/AxisTranslation.hpp"
 
 /**
  * @brief Setup the axis collection according to the configuration.
@@ -7,12 +8,12 @@
  *          It creates instances of the axes and sets their context to this AxisCollection instance.
  */
 void AxisCollection::setup(ISensorsCalculator *sensorsCalculator) {
-    m_items[TRANSX] = new Axis(TRANSX, sensorsCalculator);
-    m_items[TRANSY] = new Axis(TRANSY, sensorsCalculator);
-    m_items[TRANSZ] = new Axis(TRANSZ, sensorsCalculator);
-    m_items[ROTX] = new Axis(ROTX, sensorsCalculator);
-    m_items[ROTY] = new Axis(ROTY, sensorsCalculator);
-    m_items[ROTZ] = new Axis(ROTZ, sensorsCalculator);
+    m_items[TRANSX] = new AxisRotation(TRANSX, sensorsCalculator);
+    m_items[TRANSY] = new AxisRotation(TRANSY, sensorsCalculator);
+    m_items[TRANSZ] = new AxisRotation(TRANSZ, sensorsCalculator);
+    m_items[ROTX] = new AxisRotation(ROTX, sensorsCalculator);
+    m_items[ROTY] = new AxisRotation(ROTY, sensorsCalculator);
+    m_items[ROTZ] = new AxisRotation(ROTZ, sensorsCalculator);
 };
 
 /**
@@ -34,3 +35,15 @@ Axis *AxisCollection::getAxis(uint8_t id) const {
 Axis *AxisCollection::getAxis(const char *name) const {
     return static_cast<Axis *>(getItem(name)); // Return the axis with the specified name
 }
+
+/**
+ * @brief Attach an observer to all axes in the collection.
+ * @details This function iterates through all axes in the collection and attaches the provided observer to each axis.
+ *          This allows the observer to receive updates from all axes in the collection.
+ * @param observer Pointer to the observer to be attached.
+ */
+void AxisCollection::attachAxesObserver(IObserver *observer) {
+    for (int i = 0; i < m_itemCount; i++) {
+        static_cast<Axis *>(m_items[i])->attachObserver(observer); // Attach the observer to each axis in the collection
+    }
+};

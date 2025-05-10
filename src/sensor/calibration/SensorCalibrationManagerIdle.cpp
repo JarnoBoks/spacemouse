@@ -1,5 +1,5 @@
 #include "SensorCalibrationManagerIdle.hpp"
-#include "observers/SensorIdleCalibration.h" // For SensorIdleCalibration class
+#include "..\..\observers\Calibrators\SensorIdleCalibration.h" // For SensorIdleCalibration class
 
 #include <Arduino.h> // For PROGMEM
 

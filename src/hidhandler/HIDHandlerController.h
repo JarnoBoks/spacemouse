@@ -10,6 +10,8 @@
 // Include the translator header files
 #include "translator/TranslatorKeys.h" // for TranslatorKeys
 
+class HIDEventBuffer; // Forward declaration of HIDEventBuffer
+
 /**
  * @brief This class handles the HID state machine and manages the current state.
  * @details It initializes the state machine to the initial state and sets up the context and state data.
@@ -20,8 +22,11 @@ private:
     HIDStateBase *currentState = nullptr; // Pointer to the current HID state
     HIDStateData *stateData = nullptr;    // Pointer to the state data object
 
-    // Known interfaces for the HID state machine
+    // Known interfaces for the HID state machine //REFACTOR - Remove this in favor of the HIDEventBuffer
     TranslatorKeys *m_TranslatorKeys = nullptr; // Translator for key data
+
+    // Known interfaces for the HID event buffer
+    HIDEventBuffer *m_HIDEventBuffer = nullptr; // Pointer to the HID event buffer
 
 public:
     /**
@@ -32,6 +37,19 @@ public:
     HIDHandlerController() : currentState(new HIDStateStart()),
                              stateData(new HIDStateData()),
                              m_TranslatorKeys(new TranslatorKeys()) {
+        currentState->set_context(this);   // Set the context for the current state
+        currentState->set_data(stateData); // Initialize the state data
+    }
+
+    /**
+     * @brief Constructor to initialize the HID handler controller.
+     * @details This constructor initializes the state machine to the initial state and sets up the context and state data.
+     *          With use of the initializer list the state is set to the 'Start' state.
+     */
+    HIDHandlerController(HIDEventBuffer *eventBuffer) : currentState(new HIDStateStart()),
+                                                        stateData(new HIDStateData()),
+                                                        m_TranslatorKeys(new TranslatorKeys()),
+                                                        m_HIDEventBuffer(eventBuffer) {
         currentState->set_context(this);   // Set the context for the current state
         currentState->set_data(stateData); // Initialize the state data
     }
@@ -74,5 +92,7 @@ public:
      */
     inline HIDStateBase *getState() const { return currentState; }
 
-    inline TranslatorKeys *getKeyTranslator() const { return m_TranslatorKeys; } // Get the translator for key data
+    inline TranslatorKeys *getKeyTranslator() const { return m_TranslatorKeys; } // Get the translator for key data     //REMOVE - REFACTOR - Remove this in favor of the HIDEventBuffer
+
+    inline HIDEventBuffer *getHIDEventBuffer() const { return m_HIDEventBuffer; } // Get the HID event buffer
 };

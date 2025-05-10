@@ -24,11 +24,6 @@ private:
     IDebugParam *currentState = nullptr; // Pointer to the current debug parameter state
 
 public:
-#if 0 // REMOVE
-    DebugCommand()
-        : CommandBase(CMD_DEBUG),
-          currentState(new DebugParamOff()) {}
-#endif
     DebugCommand() = delete; // Default constructor is deleted
 
     /**

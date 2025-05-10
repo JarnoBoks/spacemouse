@@ -19,14 +19,6 @@ public:
     SensorCalibrationManager() = delete;           // Delete the default constructor
     virtual ~SensorCalibrationManager() = default; // Default destructor
 
-    virtual void activate() = 0;
+    virtual void activate() = 0; // Pure virtual function to activate the calibration
     virtual void deactivate(const bool warningsOccurred);
-
-#if 0 // REMOVE
-    void activateIdleCalibration(const int iterations = 500);
-    void deactivateIdleCalibration(const bool warningsOccurred);
-
-    void activateMinMaxCalibration();
-    void deactivateMinMaxCalibration(const bool warningsOccurred);
-#endif
 };

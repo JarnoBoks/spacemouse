@@ -5,7 +5,8 @@
 // Include header files for key functionalities
 #include "key/functionality/KillRotationFunctionality.h"
 #include "key/functionality/KillTranslationFunctionality.h"
-#include "key/functionality/CommandKeyFunctionality.hpp"
+// REMOVE #include "key/functionality/CommandKeyFunctionality.hpp"
+#include "..\functionality\StrategyCommandKey.hpp" // For CommandKeyStrategy class
 
 // Include header files for the commands that the keys can send
 #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
@@ -42,12 +43,18 @@ void KeyFactory::setupFunctionality(Key *key) {
         // Attach killtrans functionality
         // FIXME key->setFunctionality(new KillTranslationFunctionality(), CommandType::KILLTRANSLATION);
     } else {
+#if 0
         // Setup the command object for a CommandKey. This is a command that will be sent to the HID translator.
         ICommand *HIDSK = new HIDCommandStoreKeyPress(key, nullptr);     // Create a new command that the key will send
         IKeyFunctionality *cmdFunc = new CommandKeyFunctionality(HIDSK); // KeyStrategy instance that wraps the command to send.
         key->setStrategy(cmdFunc);                                       // Set the command functionality for the key
+#endif
+        IKeyFunctionality *strategy = new StrategyCommandKey(key); // KeyStrategy instance that wraps the command to send.
+        key->setStrategy(strategy);                               // Set the command functionality for the key
     }
 }
+
+// REMOVE - Remainder of the file is obsolete
 
 #if 0
 KeyFactory *KeyFactory::_instance = nullptr; // Initialize the static instance to nullptr

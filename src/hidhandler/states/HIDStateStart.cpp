@@ -1,24 +1,24 @@
 #include "HIDStateStart.h"
-#include <hidhandler/translator/TranslatorKinematicsBase.h> // for TranslatorKinematicsBase
-#include <hidhandler/HIDHandlerController.h>                // For HIDHandlerController (context)
+// REMOVE #include <hidhandler/translator/TranslatorKinematicsBase.h> // for TranslatorKinematicsBase
+#include <hidhandler/HIDHandlerController.h> // For HIDHandlerController (context)
+#include <observers/HIDEventBuffer.hpp>      // For HIDEventBuffer
 
 // Includes for the possible target states
 #include "HIDStateSendtranslation.h"
 #include "HIDStateCheckkeys.h"
 
 HIDStateStart::HIDStateStart() {
-    translator = new TranslatorKinematicsBase(); // Initialize the translator for translation data
+    // REMOVE translator = new TranslatorKinematicsBase(); // Initialize the translator for translation data
 }
 
 HIDStateStart::~HIDStateStart() {
-    delete translator; // Clean up the translator instance
+    // REMOVE delete translator;
 };
 
 void HIDStateStart::apply() {
 
-    // Check if there is kinematics data to be send:
     // Are there zero data packages to send (have to send 3 in total) or do any of the axes have movement
-    if (data->countTransZeros < 3 || data->countRotZeros < 3 || static_cast<TranslatorKinematicsBase *>(translator)->areAllAxisZero()) {
+    if (context->getHIDEventBuffer()->isRotationStaged() || context->getHIDEventBuffer()->isTranslationStaged() || data->countTransZeros < 3 || data->countRotZeros < 3) {
         context->setState(new HIDStateSendtranslation());
 
     } else {

@@ -26,7 +26,7 @@ private:
     unsigned long m_lastDebounceTime = 0; // Last time the key state was changed.
 
 public:
-    PhysicalKey() = default; // Default constructor
+    PhysicalKey() = delete;
     PhysicalKey(int8_t id, int8_t pin) : Key(id), m_pinNumber(pin) {
         // Constructor to initialize the physical key with an ID and pin number
         pinMode(m_pinNumber, INPUT_PULLUP); // Set the pin mode to input with pull-up resistor

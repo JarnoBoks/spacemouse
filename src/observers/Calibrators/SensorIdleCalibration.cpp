@@ -5,6 +5,8 @@
 #include "sensor/calibration/SensorCalibrationManager.hpp"
 #include "visitors/IdlePositionPrinter.h" // For IdlePositionPrinter class
 
+#include "common/freeRAM.h"
+
 #define DEADZONEWARNING 10 // Define a threshold for dead zone warning
 // NOTE - At the moment the dead zone warning threshold is non hardware type specific. This could be changed in the future.
 
@@ -15,6 +17,8 @@
  */
 SensorIdleCalibration::SensorIdleCalibration(SensorCalibrationManager *calmgr, const int numiterations)
     : m_requestedIterations(numiterations), m_processedIterations(0), m_startCalibrationTime(millis()), m_CalibrationManager(calmgr) {
+
+    FreeRAM::display_freeram(); // Display the free RAM at the start of the calibration process
     Serial.println(F("Starting calibration..."));
 
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {

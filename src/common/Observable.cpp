@@ -10,7 +10,7 @@
  */
 // REFACTOR - Can we add consts to the function parameters?
 void Observable::attachObserver(IObserver *observer) {
-    if (observerCount < maxObservers) {
+    if (observerCount < maxObservers && observer != nullptr) {
         // insert the observer into the array, at position observerCount and increase the count after inserting.
         observers[observerCount++] = observer;
     } else {

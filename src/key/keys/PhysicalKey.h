@@ -56,7 +56,7 @@ public:
             Serial.print(F("PhysicalKey::evaluate() - Key ")); // Debug output to indicate the key state
             Serial.print(m_id);
             Serial.print(F(" State: "));
-            Serial.println(m_keyState ? "Pressed" : "Not Pressed");
+            Serial.println(m_keyState ? F("Pressed") : F("Not Pressed"));
 
             if (m_keystrategy != nullptr) {
                 Serial.print(F("PhysicalKey::evaluate() - Functionality: ")); // Debug output to indicate the functionality

@@ -7,6 +7,8 @@
 static const char CMD_MINMAX[] PROGMEM = "MINMAX";
 
 class SensorCalibrationManager;
+class CollectionIdentifier;
+
 class MinMaxCommand : public CommandBase {
 private:
     SensorCalibrationManager *m_SensorCalibrationManager = nullptr; // Pointer to the sensor calibration manager
@@ -15,10 +17,10 @@ public:
 
     /**
      * @brief Constructor for the MinMaxCommand class.
-     * @param sensorCollection Pointer to the SensorCollection instance.
+     * @param collectionIdentifier Pointer to the CollectionIdentifier instance.
      * @details Initializes the command with the CMD_MINMAX command name.
      */
-    MinMaxCommand(SensorCollection *sensorCollection) : CommandBase(CMD_MINMAX, sensorCollection) {}
+    MinMaxCommand(CollectionIdentifier *collectionIdentifier) : CommandBase(CMD_MINMAX, collectionIdentifier) {}
 
     /**
      * @brief Destructor for the MinMaxCommand class.

@@ -1,8 +1,9 @@
 #include "ParamSensorAxisInformation.hpp"
+#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
 
 // Observable classes that are used in this file
-#include "kinematics/kinematics.h"
 #include "sensor/SensorCollection.hpp" // For SensorCollection class
+#include "axis/AxisCollection.hpp"     // For AxisCollection class
 
 // Observers that are used in this file.
 #include "observers/DebugOutput/DebugOutputAxesModified.hpp"             // Implementation of the ODebugOutputAxes class
@@ -19,11 +20,11 @@
  */
 DebugParamSensorAxisInformation::~DebugParamSensorAxisInformation() {
 
-    m_Context->getSensorCollection()->detachObserver(SensorObserver); // Detach the sensor observer from the sensor collection
-    delete SensorObserver;
+    m_Context->getCollectionIdentifier()->getSensorCollection()->detachObserver(m_SensorObserver); // Detach the observer from the sensor collection
+    delete m_SensorObserver;
 
-    Kinematics::getInstance()->detachObserver(AxisObserver);
-    delete AxisObserver;
+    m_Context->getCollectionIdentifier()->getAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
+    delete m_AxisObserver;
 }
 
 /**
@@ -35,11 +36,11 @@ DebugParamSensorAxisInformation::~DebugParamSensorAxisInformation() {
 void DebugParamSensorAxisInformation::apply() {
 
     // Instantiate the Observers and attach them to the Observable classes
-    SensorObserver = new DebugOutputSensorsCenteredNoNewline();
-    m_Context->getSensorCollection()->attachObserver(SensorObserver);
+    m_SensorObserver = new DebugOutputSensorsCenteredNoNewline();
+    m_Context->getCollectionIdentifier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
 
-    AxisObserver = new DebugOutputAxesModified();
-    Kinematics::getInstance()->attachObserver(AxisObserver);
+    m_AxisObserver = new DebugOutputAxesModified();
+    m_Context->getCollectionIdentifier()->getAxisCollection()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
 }
 
 void DebugParamSensorAxisInformation::report() {

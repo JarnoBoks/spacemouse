@@ -1,6 +1,5 @@
 #pragma once
 #include "DebugOutput.hpp"
-#include "kinematics/kinematics.h"
 
 class DebugOutputLoopFrequency : public DebugOutput {
 private:
@@ -12,7 +11,7 @@ public:
     };
     virtual ~DebugOutputLoopFrequency() {}; // nothing to do in destructor
 
-    void update(Kinematics *kinematics) override {
+    void update(IObservable *axisCollection) override {
         _iterationsPerSecond++;
         if (millis() - _lastFrequencyUpdate > 1000) { // if one second has past: report frequency
             Serial.print(F("Freq: "));
@@ -22,6 +21,4 @@ public:
             _iterationsPerSecond = 0;        // reset iteration counter
         }
     }
-
-    inline void update(SensorCollection *sensorCollection) override {}; // No implementation needed for this class
 };

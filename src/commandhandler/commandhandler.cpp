@@ -26,7 +26,6 @@ bool CommandHandler::registerCommand(CommandBase *cmd) {
  * @param bytesRead The number of bytes read from the input.
  */
 void CommandHandler::handleInput(char input[], const uint8_t inputsize, const int8_t bytesRead) {
-    Serial.print(F("handleInput: ")); // Print a message indicating that the input is being handled
     if (bytesRead == 0) {
         return; // No input received, exit the function
     }
@@ -72,8 +71,7 @@ void CommandHandler::handleInput(char input[], const uint8_t inputsize, const in
  *          The input is terminated by a newline character or when the buffer is full.
  */
 void CommandHandler::parseSerialMonitorInput() {
-    Serial.print(F("parseSerialMonitorInput: ")); // Print a message indicating that the serial is available
-    char inputBuffer[MAX_INPUT_SIZE] = "";        // Buffer to store the input command
+    char inputBuffer[MAX_INPUT_SIZE] = ""; // Buffer to store the input command
     uint8_t bytesRead = 0;
     // Read the input into the buffer until a newline character or buffer limit
     while (Serial.available() > 0 && bytesRead < sizeof(inputBuffer) - 1) {

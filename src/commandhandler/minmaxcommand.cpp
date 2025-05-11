@@ -1,5 +1,7 @@
 #include "MinMaxCommand.h"
-#include "..\sensor\calibration\SensorCalibrationManagerMinMax.hpp"
+#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
+
+#include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
 #include "sensor/SensorCollection.hpp"
 #include "sensor/config/SensorConfig.h"
 #include "visitors/MinMaxPrinter.h"
@@ -13,19 +15,25 @@
  * @param paramCount Number of parameters provided.
  */
 void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
+
+    if (getCollectionIdentifier() == nullptr) {
+        ESP_PRINT(F("MinMaxCommand::execute: No collection identifier available"));
+        return; // No collection identifier available, exit the function
+    }
+    if (getCollectionIdentifier()->getSensorCollection() == nullptr) {
+        ESP_PRINT(F("MinMaxCommand::execute: No sensor collection available"));
+        return; // No sensor collection available, exit the function
+    }
+    SensorCollection *sensorCollection = getCollectionIdentifier()->getSensorCollection();
+
     if (paramCount == 0) {
         // No params provided, show config
         ESP_PRINT(F("MinMaxCommand::execute: Show config"));
 
-        if (m_SensorCollection == nullptr) {
-            ESP_PRINT(F("MinMaxCommand::execute: No sensor collection available"));
-            return; // No sensor collection available, exit the function
-        }
-
         MinMaxPrinter Printer;
 
         for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
-            Sensor *sensor = m_SensorCollection->getSensor(id); // Pointer to the sensor
+            Sensor *sensor = sensorCollection->getSensor(id); // Pointer to the sensor
             if (sensor == nullptr) {
                 continue; // Skip if the sensor is not available
             }
@@ -43,7 +51,7 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
 
         ESP_PRINT(F("MinMaxCommand::execute: MinMax calibration requested: "));
         ESP_PRINT(requestedCalibration);
-        m_SensorCalibrationManager = new SensorCalibrationManagerMinMax(m_SensorCollection); // Create a new instance of the sensor calibration manager
+        m_SensorCalibrationManager = new SensorCalibrationManagerMinMax(sensorCollection); // Create a new instance of the sensor calibration manager
         if (requestedCalibration == 0) {
             ESP_PRINT(F("MinMaxCommand::execute: Start minmax calibration"));
             m_SensorCalibrationManager->activate();
@@ -69,8 +77,8 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         char direction = param1[0]; // Get the first character of the first parameter
 
         // Get the sensor from the sensorname (fe. HES0 = 1, HES1 = 2, etc.)
-        char *reqSensorName = (char *)param1 + 1;                      // Get the sensor name (skip the first character)
-        Sensor *sensor = m_SensorCollection->getSensor(reqSensorName); // Get the sensor by its name
+        char *reqSensorName = (char *)param1 + 1;                    // Get the sensor name (skip the first character)
+        Sensor *sensor = sensorCollection->getSensor(reqSensorName); // Get the sensor by its name
 
         // REVIEW - Failsafe: Sensor not found can be removed from Arduino.
         if (sensor == nullptr) {

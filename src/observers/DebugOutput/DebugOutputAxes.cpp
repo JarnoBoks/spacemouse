@@ -1,6 +1,6 @@
 #include "DebugOutputAxes.hpp"
-
-#include "kinematics/kinematics.h" // NOTE Included in header file too.
+#include "axis/AxisCollection.hpp"
+#include "axis/axes/Axis.hpp"
 #include "common/TextHelper.h"
 
 /**
@@ -10,15 +10,15 @@
  *          The function iterates through all axes and prints their names and values to the serial monitor.
  * @param kinematics Pointer to the Kinematics object.
  */
-void DebugOutputAxes::update(Kinematics *kinematics) {
-    if (!isDebugOutputDue() || kinematics == nullptr) {
+void DebugOutputAxes::update(IObservable *axisCollection) {
+    if (!isDebugOutputDue() || axisCollection == nullptr) {
         return; // If the debug output is not due, do nothing
     }
 
     for (uint8_t id = 0; id < AxisType_t::LENGTH; id++) {
         TextHelper::printLeadingComma(id); // Print a komma if it's not the first axis
 
-        Axis *axis = kinematics->getAxis(static_cast<AxisType_t>(id)); // Pointer to the axis
+        Axis *axis = static_cast<AxisCollection *>(axisCollection)->getAxis(static_cast<AxisType_t>(id)); // Pointer to the axis
 
         Serial.print(axis->getName()); // Print the sensor name
         Serial.print(F(":"));

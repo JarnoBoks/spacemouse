@@ -5,14 +5,14 @@
 
 class Observable : public IObservable {
 private:
-    IObserver **observers;     // Array of pointers to observers
+    IObserver *observers[8];   // Array of pointers to observers        // FIXME - Create a template for the observers
     uint8_t observerCount = 0; // Number of observers attached
     uint8_t maxObservers;
 
 public:
     Observable() = delete; // Delete the default constructor to prevent instantiation without parameters
     Observable(uint8_t maxObservers) : maxObservers(maxObservers) {
-        observers = new IObserver *[maxObservers]; // Allocate memory for the observers array
+        // observers = new IObserver *[maxObservers]; // Allocate memory for the observers array
 
         for (uint8_t i = 0; i < maxObservers; i++) {
             observers[i] = nullptr; // Initialize the observers array to nullptr
@@ -21,7 +21,7 @@ public:
 
     virtual ~Observable() {
         clearObservers(); // Clear the observers when the observable is destroyed
-        delete[] observers;
+        // delete[] observers;
     }
 
     virtual void attachObserver(IObserver *observer) override;

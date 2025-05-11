@@ -17,7 +17,8 @@ private:
     SensorCalibrationManager *m_SensorCalibrationManager = nullptr;
 
 public:
-    IdleCommand() : CommandBase(CMD_IDLE) {}
+    IdleCommand() = delete;
+    IdleCommand(CollectionIdentifier *collectionIdentifier) : CommandBase(CMD_IDLE, collectionIdentifier) {}
     ~IdleCommand() {
         delete m_SensorCalibrationManager; // Clean up the sensor calibration manager instance when switching to another debug state
     }

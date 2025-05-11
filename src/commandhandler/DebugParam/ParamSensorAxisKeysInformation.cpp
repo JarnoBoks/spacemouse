@@ -1,16 +1,15 @@
 #include "ParamSensorAxisKeysInformation.hpp"
 
+#include "ParamSensorAxisInformation.hpp"
+#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
+
 // Observable classes that are used in this file
-#include "kinematics/kinematics.h"
 #include "sensor/SensorCollection.hpp" // For SensorCollection class
+#include "axis/AxisCollection.hpp"     // For AxisCollection class
 
 // Observers that are used in this file.
-#include "observers/DebugOutput/DebugOutputAxesModified.hpp"             // Implementation class for axes observer       //REVIEW - Can we use the Interface instead of the base class?
-#include "observers/DebugOutput/DebugOutputSensorsCenteredNoNewline.hpp" // Implementation class for sensor observers     //REVIEW - Can we use the Interface instead of the base class?
-
-#include <common/esp_print.h> // For ESP_PRINT
-
-#include <Arduino.h>
+#include "observers/DebugOutput/DebugOutputAxesModified.hpp"             // Implementation of the ODebugOutputAxes class
+#include "observers/DebugOutput/DebugOutputSensorsCenteredNoNewline.hpp" // Implementation of the ODebugOutputSensors class
 
 /**
  * @brief Destructor to clean up the observer instance
@@ -19,22 +18,23 @@
  *          This ensures that the observer is properly cleaned up and does not cause memory leaks.
  */
 DebugParamSensorAxisKeysInformation::~DebugParamSensorAxisKeysInformation() {
-    Kinematics::getInstance()->detachObserver(AxisObserver);          // Detach the observer from the hardware
-    delete AxisObserver;                                              // Clean up the observer instance
-    m_Context->getSensorCollection()->detachObserver(SensorObserver); // Detach the sensor observer from the sensor collection
-    delete SensorObserver;                                            // Clean up the observer instance
+
+    m_Context->getCollectionIdentifier()->getSensorCollection()->detachObserver(m_SensorObserver); // Detach the observer from the sensor collection
+    delete m_SensorObserver;
+
+    m_Context->getCollectionIdentifier()->getAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
+    delete m_AxisObserver;
 }
 
 void DebugParamSensorAxisKeysInformation::apply() {
 
     // Instantiate the Observers and attach them to the hardware
-    SensorObserver = new DebugOutputSensorsCenteredNoNewline();
-    AxisObserver = new DebugOutputAxesModified();
+    m_SensorObserver = new DebugOutputSensorsCenteredNoNewline();
+    m_AxisObserver = new DebugOutputAxesModified();
 
-    m_Context->getSensorCollection()->attachObserver(SensorObserver); // Attach the sensor observer to the sensor collection
-    Kinematics::getInstance()->attachObserver(AxisObserver);
+    m_Context->getCollectionIdentifier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
+    m_Context->getCollectionIdentifier()->getAxisCollection()->attachObserver(m_AxisObserver);     // Attach the axis observer to the axis collection
 }
 
 void DebugParamSensorAxisKeysInformation::report() {
-    ESP_PRINT("Debug Axis Information:");
 }

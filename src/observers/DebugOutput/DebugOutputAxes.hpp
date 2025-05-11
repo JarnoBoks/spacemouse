@@ -1,7 +1,8 @@
 #pragma once
 
 #include "DebugOutput.hpp"
-#include "kinematics/kinematics.h"
+
+class Axis;
 
 class DebugOutputAxes : public DebugOutput {
 private:
@@ -12,6 +13,5 @@ public:
     DebugOutputAxes() = default;
     virtual ~DebugOutputAxes() {};
 
-    void update(Kinematics *kinematics) override;
-    inline void update(SensorCollection *sensorCollection) override {}; // No implementation needed for this class
+    void update(IObservable *axisCollection) override;
 };

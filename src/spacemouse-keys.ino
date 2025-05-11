@@ -37,7 +37,7 @@ LedRing *Mouse_LEDRing;
 // Include the header file for the key factory & collection
 #include "key/factory/KeyFactory.hpp"
 #include "key/KeyCollection.hpp"
-// FIXME KeyCollection myKeyCollection; // Key collection object to hold the keys and the key configuration (initialized empty)
+KeyCollection myKeyCollection; // Key collection object to hold the keys and the key configuration (initialized empty)
 
 // Include the header file for the sensor factory & collection
 // REVIEW #include "sensor/factory/SensorFactory.hpp" // Include the sensor factory header file
@@ -61,12 +61,15 @@ AxisCollection myAxisCollection;   // Axis collection object to hold the axes an
 // Include the header files for the HID commands
 #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
 
+#if 0 // REMOVE
 // Include the header files for the Translators between the commands send by the axis and keys towards the HID interface
 #include "hidhandler/translator/TranslatorKeys.h"
 // FIXME TranslatorKeys myTranslatorKeys; // Translator object to translate the commands from the keys to the HID interface
+#endif
 
 // Include the header files for the command handler that will handle the commands send by the serial interface
 #include "commandhandler/commandhandler.h"
+#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
 
 // Include the header files for the commands that can be received through the serial interface
 #include "commandhandler/debugcommand.h"
@@ -80,7 +83,8 @@ AxisCollection myAxisCollection;   // Axis collection object to hold the axes an
 #include "commandhandler/exclusivecommand.h"
 #include "commandhandler/switchyzcommand.h"
 #include "commandhandler/bootloadercommand.h"
-CommandHandler myCommandHandler; // Command handler object to handle the commands from the serial interface
+CommandHandler myCommandHandler;                                                              // Command handler object to handle the commands from the serial interface
+CollectionIdentifier myCollections(&mySensorCollection, &myAxisCollection, &myKeyCollection); // Collection identifier object to identify the collection of the command
 
 // Include the header file for the calibration manager (used to calibrate center position of the sensors on startup)
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp" // Include the sensor calibration manager header file
@@ -113,8 +117,8 @@ void setup() {
     cstmDelay(100);       // Wait for the serial interface to be ready
     Serial.setTimeout(2); // The serial interface will look for new commands and it will only wait 2ms
 
-    cstmDelay(7000); // Wait for the serial interface to be ready
-    // Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
+    // cstmDelay(7000); // Wait for the serial interface to be ready
+    //  Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();
 
     // Setup the Axis collection. This will setup the axes and the axis configuration.
@@ -124,7 +128,7 @@ void setup() {
     // FIXME myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
 
     // Add the HID event buffer as an observer to the axes in the Axis collection and as an observer to the keys in the Key collection
-    myAxisCollection.attachAxesObserver(&myHIDEventBuffer);
+    // myAxisCollection.attachAxesObserver(&myHIDEventBuffer);
 
     // FIXME myKeyCollection.attachKeyObserver(&myHIDEventBuffer);
 
@@ -152,11 +156,10 @@ void setup() {
 
     Serial.println(F("Sensor calibration manager started."));
     //  Setup the Command Handler and register the commands that can be handled via the serial interface.
-    myCommandHandler.registerCommand(new DebugCommand(&mySensorCollection));
-    myCommandHandler.registerCommand(new IdleCommand());
-    myCommandHandler.registerCommand(new MinMaxCommand(&mySensorCollection));
+    myCommandHandler.registerCommand(new DebugCommand(&myCollections));
+    myCommandHandler.registerCommand(new IdleCommand(&myCollections));
+    myCommandHandler.registerCommand(new MinMaxCommand(&myCollections));
     myCommandHandler.registerCommand(new SensCommand());
-    FreeRAM::display_freeram();
     myCommandHandler.registerCommand(new GateCommand());
     myCommandHandler.registerCommand(new ModFuncCommand());
     myCommandHandler.registerCommand(new InvertCommand());
@@ -165,10 +168,12 @@ void setup() {
     myCommandHandler.registerCommand(new SwitchYZCommand());
     myCommandHandler.registerCommand(new BootloaderCommand());
 
-    // When debugging with SimAVR thorugh PlatformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
+#if SIMULATOR_DEBUGGING
+    // When debugging with SimAVR through PlatformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
     // Use this command to initialize a debug state.
-    // char buffer[32] = "DEBUG 1";
-    // myCommandHandler.handleInput(buffer, 32, 1);
+    char buffer[32] = "DEBUG 1";
+    myCommandHandler.handleInput(buffer, 32, 1);
+#endif
 
 #if 0
     cstmDelay(7500); // Debugging: give the user some time to open the serial monitor and start the debugging process
@@ -193,8 +198,6 @@ void setup() {
 }
 
 void loop() {
-    FreeRAM::display_freeram(); // Display the free RAM at the start of the loop
-
     // Check if the user entered a command through the Serial monitor
     if (Serial.available()) {
         Serial.println(F("Serial available."));

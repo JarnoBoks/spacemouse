@@ -43,7 +43,7 @@ void Observable::detachObserver(IObserver *observer) {
  */
 void Observable::notifyObservers() {
     for (uint8_t i = 0; i < observerCount; i++) {
-        observers[i]->update(this); // Notify each observer, with the hardware instance as parameter
+        observers[i]->update(this); // Notify each observer, with the observable instance as parameter
     }
 }
 

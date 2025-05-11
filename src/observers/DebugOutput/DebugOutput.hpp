@@ -14,6 +14,8 @@
 
 /**
  * @brief Base class for observers that output debug information (sensors and/or axes) to the Serial monitor.
+ * @details This class implements the IObserver interface and provides a mechanism to check if debug output is due.
+ *          It is used as a base class for specific debug output observers that will be derived from it.
  */
 class DebugOutput : public IObserver {
 private:
@@ -26,6 +28,6 @@ public:
     DebugOutput() = default;  // Default constructor
     virtual ~DebugOutput() {} // Default destructor
 
-    virtual void update(Kinematics *kinematics) override = 0;             // Pure virtual function to be implemented by derived classes
-    virtual void update(SensorCollection *sensorCollection) override = 0; // Pure virtual function to be implemented by derived classes
+    // virtual void update(Kinematics *kinematics) override = 0;             // Pure virtual function to be implemented by derived classes
+    // virtual void update(SensorCollection *sensorCollection) override = 0; // Pure virtual function to be implemented by derived classes
 };

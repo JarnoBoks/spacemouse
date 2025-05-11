@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DebugOutputAxes.hpp"
+#include "axis/axes/Axis.hpp"
 
 /**
  * @brief Output class for modified axes values.

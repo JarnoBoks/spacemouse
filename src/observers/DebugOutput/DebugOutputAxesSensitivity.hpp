@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DebugOutputAxes.hpp"
-#include "kinematics/kinematics.h"
+#include "axis/axes/Axis.hpp"
 
 /**
  * @brief Output class for axis values with sensitivity applied.
@@ -16,10 +16,8 @@ protected:
     }
 
 public:
-    inline void update(Kinematics *kinematics) override {
-        DebugOutputAxes::update(kinematics); // Call the base class update method
+    inline void update(IObservable *axisCollection) override {
+        DebugOutputAxes::update(axisCollection); // Call the base class update method
         Serial.println();
     }
-
-    inline void update(SensorCollection *sensorCollection) override {}; // No implementation needed for this class
 };

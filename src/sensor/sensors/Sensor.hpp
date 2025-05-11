@@ -6,6 +6,9 @@
 class SensorConfig;    // Forward declaration of SensorConfig class
 class IPrinterVisitor; // Forward declaration of IPrinterVisitor class
 
+// FOR DEBUGGING: //REMOVE
+#include <Arduino.h> // Include Arduino library for Serial communication & PROGMEM
+
 /**
  * @brief Base class representing a sensor, implementing the ICollectable interface.
  * @details This class is a base class for different types of sensors. It provides common functionality for reading and processing sensor values.

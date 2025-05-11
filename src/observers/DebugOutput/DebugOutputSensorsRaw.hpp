@@ -18,10 +18,11 @@ protected:
     }
 
 public:
-    void update(SensorCollection *sensorCollection) {
+    DebugOutputSensorsRaw() {};
+
+    void update(IObservable *sensorCollection) override {
         // Call the base class update method
         DebugOutputSensors::update(sensorCollection);
         Serial.println();
     }
-    inline void update(Kinematics *kinematics) override {}; // No implementation needed for this class
 };

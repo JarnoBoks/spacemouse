@@ -3,7 +3,8 @@
 #include "sensor/sensors/Sensor.hpp"
 #include "common/TextHelper.h"
 
-void DebugOutputSensors::update(SensorCollection *sensorCollection) {
+// void DebugOutputSensors::update(SensorCollection *sensorCollection) {
+void DebugOutputSensors::update(IObservable *sensorCollection) {
     if (!isDebugOutputDue() || sensorCollection == nullptr) {
         return; // If the debug output is not due, do nothing
     }
@@ -11,7 +12,7 @@ void DebugOutputSensors::update(SensorCollection *sensorCollection) {
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
         TextHelper::printLeadingComma(id); // Print a komma if it's not the first sensor
 
-        Sensor *sensor = sensorCollection->getSensor(id); // Pointer to the sensor
+        Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id); // Pointer to the sensor
 
         Serial.print(sensor->getName()); // Print the sensor name
         Serial.print(F(":"));

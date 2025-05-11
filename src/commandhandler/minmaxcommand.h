@@ -22,13 +22,7 @@ public:
      */
     MinMaxCommand(CollectionIdentifier *collectionIdentifier) : CommandBase(CMD_MINMAX, collectionIdentifier) {}
 
-    /**
-     * @brief Destructor for the MinMaxCommand class.
-     * @details Cleans up the sensor calibration manager instance when switching to another debug state.
-     */
-    virtual ~MinMaxCommand() {
-        delete m_SensorCalibrationManager;
-    }
+    virtual ~MinMaxCommand();
 
     void execute(const char *param1, const char *param2, uint8_t paramCount) override;
 };

@@ -9,6 +9,14 @@
 #include <common/esp_print.h> // For ESP_PRINT
 
 /**
+ * @brief Destructor for the MinMaxCommand class.
+ * @details Cleans up the sensor calibration manager instance when switching to another debug state.
+ */
+MinMaxCommand::~MinMaxCommand() {
+    delete m_SensorCalibrationManager;
+}
+
+/**
  * @brief Executes the minmax command based on the provided parameters.
  * @param param1 First parameter
  * @param param2 Second parameter

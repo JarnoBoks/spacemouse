@@ -7,9 +7,12 @@
 
 // ----------------- RAW SENSORS ----------------
 
-DebugParamSensorInformationRaw::DebugParamSensorInformationRaw() {
+#if 0
+DebugParamSensorInformationRaw::DebugParamSensorInformationRaw(DebugCommand *context) : DebugParamSensorInformation(context) {
+    Serial.println(F("DebugParamSensorInformationRaw::DebugParamSensorInformationRaw()")); // Debug message to indicate the constructor call
     // FIXME Hardware::getInstance()->setAnalogReference(true);
 }
+#endif
 DebugParamSensorInformationRaw::~DebugParamSensorInformationRaw() {
     // FIXME Hardware::getInstance()->setAnalogReference(false);
 }
@@ -19,6 +22,7 @@ void DebugParamSensorInformationRaw::apply() {
     // Instantiate the Observer for the RawSensor values and attach it to the hardware
     m_SensorObserver = new DebugOutputSensorsRaw();
     m_Context->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
+    m_SensorObserver->update(m_Context->getSensorCollection());         // Update the observer with the sensor collection
 }
 
 void DebugParamSensorInformationRaw::report() {

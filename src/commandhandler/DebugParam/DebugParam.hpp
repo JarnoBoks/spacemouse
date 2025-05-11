@@ -10,7 +10,7 @@ class DebugParam : public IDebugParam {
 protected:
     DebugCommand *m_Context = nullptr; // Pointer to the command context
 public:
-    DebugParam() = default;                                   // Constructor
+    DebugParam() = delete;                                    // Constructor
     DebugParam(DebugCommand *context) : m_Context(context) {} // Constructor to initialize the command context
     virtual ~DebugParam() {};                                 // Destructor to clean up the observer instance
 

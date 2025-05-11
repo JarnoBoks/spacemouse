@@ -76,43 +76,43 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
         break;
     case 1:
         // Raw sensors
-        setState(new DebugParamSensorInformationRaw());
+        setState(new DebugParamSensorInformationRaw(this));
         break;
     case 2:
         // Centered sensors
-        setState(new DebugParamSensorInformationCentered());
+        setState(new DebugParamSensorInformationCentered(this));
         break;
     case 3:
         // Filtered sensors
-        setState(new DebugParamSensorInformationFiltered());
+        setState(new DebugParamSensorInformationFiltered(this));
         break;
     case 4:
-        // Translation and rotation values - withoud modifier function, inversion, YZ switching nor Exclusivemode applied
-        setState(new DebugParamAxisInformation());
+        // Translation and rotation values - without modifier function, inversion, YZ switching nor Exclusivemode applied
+        setState(new DebugParamAxisInformation(this));
         break;
     case 5:
         // Centered values (2nd debug) and translation & rotation values side by side for direct reference. Modifier function and inversion are applied. Any configured YZ switching or Exclusivemode is not applied.
-        setState(new DebugParamSensorAxisInformation());
+        setState(new DebugParamSensorAxisInformation(this));
         break;
     case 6:
         // Debug 5 and the key state after applying the kill-key functionality
-        setState(new DebugParamSensorAxisKeysInformation());
+        setState(new DebugParamSensorAxisKeysInformation(this));
         break;
     case 7:
         // Centered values, translation & rotation, keystate (with kill switch) and exclusive mode applied
-        // TODO setState(new DebugParamSensorInformationCentered());
+        // TODO setState(new DebugParamSensorInformationCentered(this));
         break;
     case 8:
         // Report the frequency of the loop()
-        setState(new DebugParamLoopFrequency());
+        setState(new DebugParamLoopFrequency(this));
         break;
     case 9:
         // Report the bits and bytes send as button codes
-        // TODO setState(new DS_ButtonCodesInformation());
+        // TODO setState(new DS_ButtonCodesInformation(this));
         break;
     case 10:
         // Report details about the encoder wheel, if ROTARY_AXIS > 0 or ROTARY_KEYS>0
-        // TODO setState(new DS_EncoderWheelInformation());
+        // TODO setState(new DS_EncoderWheelInformation(this));
         break;
     default:
         // Handle unknown debug level

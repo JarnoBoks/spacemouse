@@ -1,5 +1,7 @@
 #include "SensorCollection.hpp"
 
+#include "config.h" // Include the configuration header file for deducting the hardware ie sensor type
+
 // Include the header file for the sensors that can be added to the Sensor Collection
 #include "factory/SensorFactoryHall.hpp"
 #include "factory/SensorFactoryJoystick.hpp"

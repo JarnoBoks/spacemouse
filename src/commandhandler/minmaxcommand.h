@@ -13,7 +13,7 @@ class MinMaxCommand : public CommandBase {
 private:
     SensorCalibrationManager *m_SensorCalibrationManager = nullptr; // Pointer to the sensor calibration manager
 public:
-    MinMaxCommand() = delete;
+    MinMaxCommand() = delete; // Delete the default constructor
 
     /**
      * @brief Constructor for the MinMaxCommand class.

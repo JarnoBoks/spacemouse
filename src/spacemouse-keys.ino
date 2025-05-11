@@ -35,12 +35,10 @@ LedRing *Mouse_LEDRing;
 #endif
 
 // Include the header file for the key factory & collection
-#include "key/factory/KeyFactory.hpp"
 #include "key/KeyCollection.hpp"
 KeyCollection myKeyCollection; // Key collection object to hold the keys and the key configuration (initialized empty)
 
 // Include the header file for the sensor factory & collection
-// REVIEW #include "sensor/factory/SensorFactory.hpp" // Include the sensor factory header file
 #include "sensor/SensorCollection.hpp" // Include the sensor collection header file
 SensorCollection mySensorCollection;   // Sensor collection object to hold the sensors and the sensor configuration (initialized empty)
 

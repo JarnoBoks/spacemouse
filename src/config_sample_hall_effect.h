@@ -100,11 +100,10 @@ Debug Modes:
 
 /// The hardware that is used for the spacemouse. This is used to select the correct hardware library.
 /// This setting can only be changed in the config.h file.
-/// @note Valid values are "#define HALLEFFECT" or "#define JOYSTICK"
+/// @note Valid values are "HW_HALLEFFECT" or "HW_JOYSTICK"
 
-// Hardware uses HallEffect sensors instead of joystick sensors
-#define HW_HALLEFFECT
-// #define HW_JOYSTICK // Hardware definition for the joystick version - does not apply to the Hall effect version
+// Define the version of the hardware you are using
+#define HW_HALLEFFECT // or HW_JOYSTICK
 
 #ifdef HW_JOYSTICK // Hardware definition for the joystick version - does not apply to the Hall effect version
 /* First Calibration: Joystick axis pin assignment

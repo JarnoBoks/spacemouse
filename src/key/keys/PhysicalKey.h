@@ -1,14 +1,10 @@
 
-// PhysicalKey.h
 #pragma once
 #include "Key.hpp"
+#include "config_physicalkey.h"
 
 // Include Arduino library for digitalRead and pinMode functions
 #include <Arduino.h>
-
-#ifndef DEBOUNCE_KEYS_MS
-#define DEBOUNCE_KEYS_MS 100 // Default debounce time for physical key in milliseconds
-#endif
 
 /**
  * @brief Class representing a physical key with debounce functionality.

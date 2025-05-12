@@ -1,18 +1,17 @@
 #include "HIDStateSendKeys.h"
-#include <hidhandler/translator/TranslatorKeys.h> // for TranslatorKeys
-#include <hidhandler/HIDHandlerController.h>      // For HIDHandlerController (context)
+#include <hidhandler/HIDHandlerController.h> // For HIDHandlerController (context)
 
 // Includes for the possible target states
 #include "HIDStateStart.h"
 
-HIDStateSendkeys::HIDStateSendkeys() {
-    // REMOVE translator = new TranslatorKeys(data->prevKeyData); // Initialize the translator for key data  // FIXME: Test if this is working correctly (does the entire array is passed to the constructor or only the first element?)
-}
-HIDStateSendkeys::~HIDStateSendkeys() {
-    // REMOVE delete translator; // Clean up the translator instance
-}
-
 void HIDStateSendkeys::apply() {
+    Serial.println(F("HIDStateSendtranslation::apply()"));
+    // Check if the HID report is due
+    if (!isNewHidReportDue()) {
+        return; // if no new HID report is due, return
+    }
+
+#if 0 // REFACTOR -
     TranslatorKeys *translator = context->getKeyTranslator(); // Get the Key translator instance from the context
 
 #if 0
@@ -28,10 +27,12 @@ void HIDStateSendkeys::apply() {
         return; // if no new HID report is due, return
     }
 
-    translator->sendData();                                                                        // Send the key data
+    translator->sendData();
+    context->getHIDEventBufferTranslation()->clearStaged(); // Clear the staged key data                                                                     // Send the key data
     memcpy(data->prevKeyData, static_cast<TranslatorKeys *>(translator)->keyData, HIDKEYDATASIZE); // Copy the current key data to the previous key data
 
     data->lastHIDsentRep += HIDUPDATERATE_MS;
     data->hasSentNewData = true;            // return value
+#endif
     context->setState(new HIDStateStart()); // Go back to start state
 }

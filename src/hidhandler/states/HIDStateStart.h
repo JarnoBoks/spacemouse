@@ -10,9 +10,8 @@
 class HIDStateStart : public HIDStateBase {
 protected:
 public:
-    HIDStateStart();
-    virtual ~HIDStateStart();
+    HIDStateStart() = default;
+    ~HIDStateStart() = default;
 
-    void apply() override;
-    inline void report() override {};
+    void apply() override final;
 };

@@ -9,13 +9,26 @@
  */
 void AxisCollection::setup(ISensorsCalculator *sensorsCalculator) {
     // REFACTOR - Create an 'add' function that allows for direct adressing the index.
-    m_items[TRANSX] = new AxisRotation(TRANSX, sensorsCalculator);
-    m_items[TRANSY] = new AxisRotation(TRANSY, sensorsCalculator);
-    m_items[TRANSZ] = new AxisRotation(TRANSZ, sensorsCalculator);
+    m_items[TRANSX] = new AxisTranslation(TRANSX, sensorsCalculator);
+    m_items[TRANSY] = new AxisTranslation(TRANSY, sensorsCalculator);
+    m_items[TRANSZ] = new AxisTranslation(TRANSZ, sensorsCalculator);
     m_items[ROTX] = new AxisRotation(ROTX, sensorsCalculator);
     m_items[ROTY] = new AxisRotation(ROTY, sensorsCalculator);
     m_items[ROTZ] = new AxisRotation(ROTZ, sensorsCalculator);
     m_itemCount = 6;
+};
+
+void AxisCollection::setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation) {
+    // Call the setup function to initialize the axes
+    setup(sensorsCalculator);
+
+    // Attach the HIDEventBuffer to the axes
+    static_cast<AxisTranslation *>(m_items[TRANSX])->attachObserver(hidEventBufferTranslation);
+    static_cast<AxisTranslation *>(m_items[TRANSY])->attachObserver(hidEventBufferTranslation);
+    static_cast<AxisTranslation *>(m_items[TRANSZ])->attachObserver(hidEventBufferTranslation);
+    static_cast<AxisRotation *>(m_items[ROTX])->attachObserver(hidEventBufferRotation);
+    static_cast<AxisRotation *>(m_items[ROTY])->attachObserver(hidEventBufferRotation);
+    static_cast<AxisRotation *>(m_items[ROTZ])->attachObserver(hidEventBufferRotation);
 };
 
 /**
@@ -43,6 +56,7 @@ Axis *AxisCollection::getAxis(const char *name) const {
  * @details This function iterates through all axes in the collection and attaches the provided observer to each axis.
  *          This allows the observer to receive updates from all axes in the collection.
  * @param observer Pointer to the observer to be attached.
+ * @deprecated This function is not used in the current implementation and may be removed in future versions.
  */
 void AxisCollection::attachAxesObserver(IObserver *observer) {
     for (int i = 0; i < m_itemCount; i++) {

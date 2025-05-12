@@ -8,9 +8,11 @@
 #include "states/HIDStateStart.h" // for HIDStateInit
 
 // Include the translator header files
-#include "translator/TranslatorKeys.h" // for TranslatorKeys
+#include "translator/TranslatorKeys.h" // for TranslatorKeys        // REMOVE
 
-class HIDEventBuffer; // Forward declaration of HIDEventBuffer
+class HIDEventBufferKeys;        // forward declaration
+class HIDEventBufferRotation;    // forward declaration
+class HIDEventBufferTranslation; // forward declaration
 
 /**
  * @brief This class handles the HID state machine and manages the current state.
@@ -26,7 +28,9 @@ private:
     TranslatorKeys *m_TranslatorKeys = nullptr; // Translator for key data
 
     // Known interfaces for the HID event buffer
-    HIDEventBuffer *m_HIDEventBuffer = nullptr; // Pointer to the HID event buffer
+    HIDEventBufferKeys *m_HIDEventBufferKeys = nullptr;               // Pointer to the HID event buffer
+    HIDEventBufferRotation *m_HIDEventBufferRotation = nullptr;       // Pointer to the HID event buffer
+    HIDEventBufferTranslation *m_HIDEventBufferTranslation = nullptr; // Pointer to the HID event buffer
 
 public:
     /**
@@ -46,10 +50,13 @@ public:
      * @details This constructor initializes the state machine to the initial state and sets up the context and state data.
      *          With use of the initializer list the state is set to the 'Start' state.
      */
-    HIDHandlerController(HIDEventBuffer *eventBuffer) : currentState(new HIDStateStart()),
-                                                        stateData(new HIDStateData()),
-                                                        m_TranslatorKeys(new TranslatorKeys()),
-                                                        m_HIDEventBuffer(eventBuffer) {
+    HIDHandlerController(HIDEventBufferKeys *eventBufferKeys, HIDEventBufferRotation *eventBufferRotation, HIDEventBufferTranslation *eventBufferTranslation)
+        : currentState(new HIDStateStart()),
+          stateData(new HIDStateData()),
+          m_TranslatorKeys(new TranslatorKeys()),
+          m_HIDEventBufferKeys(eventBufferKeys),
+          m_HIDEventBufferRotation(eventBufferRotation),
+          m_HIDEventBufferTranslation(eventBufferTranslation) {
         currentState->set_context(this);   // Set the context for the current state
         currentState->set_data(stateData); // Initialize the state data
     }
@@ -58,7 +65,7 @@ public:
         delete currentState; // Clean up the current state object
         delete stateData;    // Clean up the state data object
         delete m_TranslatorKeys;
-    };
+    }
 
     /**
      * @brief Executes the current state of the HID handler controller.
@@ -92,7 +99,11 @@ public:
      */
     inline HIDStateBase *getState() const { return currentState; }
 
-    inline TranslatorKeys *getKeyTranslator() const { return m_TranslatorKeys; } // Get the translator for key data     //REMOVE - REFACTOR - Remove this in favor of the HIDEventBuffer
+    inline HIDEventBufferKeys *getHIDEventBufferKeys() const { return m_HIDEventBufferKeys; }                      // Get the HID event buffer for the keys
+    inline HIDEventBufferRotation *getHIDEventBufferRotation() const { return m_HIDEventBufferRotation; }          // Get the HID event buffer for the rotation
+    inline HIDEventBufferTranslation *getHIDEventBufferTranslation() const { return m_HIDEventBufferTranslation; } // Get the HID event buffer for the translation
 
-    inline HIDEventBuffer *getHIDEventBuffer() const { return m_HIDEventBuffer; } // Get the HID event buffer
+    inline void setHIDEventBufferKeys(HIDEventBufferKeys *eventBufferKeys) { m_HIDEventBufferKeys = eventBufferKeys; }                                    // Set the HID event buffer for the keys
+    inline void setHIDEventBufferRotation(HIDEventBufferRotation *eventBufferRotation) { m_HIDEventBufferRotation = eventBufferRotation; }                // Set the HID event buffer for the rotation
+    inline void setHIDEventBufferTranslation(HIDEventBufferTranslation *eventBufferTranslation) { m_HIDEventBufferTranslation = eventBufferTranslation; } // Set the HID event buffer for the translation
 };

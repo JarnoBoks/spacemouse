@@ -7,6 +7,7 @@
 
 class ISensorsCalculator; // Forward declaration of the SensorsCalculator class
 class Axis;               // Forward declaration of the Axis class
+class HIDEventBuffer;     // Forward declaration of the HIDEventBuffer class
 
 /// @brief Number of axes that can be added to the collection.
 /// @details This is a constant value that defines the maximum number of axes that can be added to the collection.
@@ -37,6 +38,7 @@ public:
      *          It creates instances of the axes and configures them according to the provided configuration.
      */
     void setup(ISensorsCalculator *sensorsCalculator);
+    void setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation);
 
     Axis *getAxis(const uint8_t id) const;
     Axis *getAxis(const char *name) const;

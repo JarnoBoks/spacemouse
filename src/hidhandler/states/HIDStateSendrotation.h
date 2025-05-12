@@ -5,9 +5,8 @@
 class HIDStateSendrotation : public HIDStateBase {
 protected:
 public:
-    HIDStateSendrotation();
-    virtual ~HIDStateSendrotation();
+    HIDStateSendrotation() = default;
+    ~HIDStateSendrotation() = default;
 
-    void apply() override;
-    inline void report() override {}
+    void apply() override final;
 };

@@ -4,9 +4,8 @@
 class HIDStateSendtranslation : public HIDStateBase {
 protected:
 public:
-    HIDStateSendtranslation();
-    virtual ~HIDStateSendtranslation();
+    HIDStateSendtranslation() = default;
+    ~HIDStateSendtranslation() = default;
 
-    void apply() override;
-    inline void report() override {}
+    void apply() override final;
 };

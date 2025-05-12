@@ -15,19 +15,22 @@ class HIDHandlerController; // Forward declaration of HIDHandlerController class
 
 class SpaceMouseHID {
 private:
-    HIDHandlerController *controller_ = nullptr; // Pointer to the state machine instance
+    HIDHandlerController *m_controller = nullptr; // Pointer to the state machine instance
 protected:
 public:
     SpaceMouseHID() {
-        Serial.println(F("Constr.SpaceMouseHID::SpaceMouseHID()")); // Debug output to indicate the constructor is called
-        controller_ = new HIDHandlerController();                   // Initialize the state machine to the initial state
+        m_controller = new HIDHandlerController(); // Initialize the state machine to the initial state
     }
 
     ~SpaceMouseHID() {
-        delete controller_;
+        delete m_controller;
     }
 
-    void execute() {
-        controller_->execute();
+    inline void execute() {
+        m_controller->execute();
+    }
+
+    inline HIDHandlerController *getController() const {
+        return m_controller;
     }
 };

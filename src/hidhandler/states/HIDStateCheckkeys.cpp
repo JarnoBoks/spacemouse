@@ -6,18 +6,13 @@
 #include "HIDStateSendkeys.h"
 #include "HIDStateStart.h"
 
-HIDStateCheckKeys::HIDStateCheckKeys() {
-    // REMOVE translator = new TranslatorKeys(data->prevKeyData); // Initialize the translator for key data  // FIXME: Test if this is working correctly (does the entire array is passed to the constructor or only the first element?)
-}
-
-HIDStateCheckKeys::~HIDStateCheckKeys() {
-    // REMOVE delete translator; // Clean up the translator instance
-};
-
 void HIDStateCheckKeys::apply() {
+    Serial.println(F("HIDStateCheckKeys::apply()"));
 
     // Check if there is something to send.
     // If any of the keys has changed, proceed to the 'send keys' state, other wise go back to the start state.
+    context->setState(new HIDStateStart()); // Set the next state to translation
+#if 0                                       // REFACTOR
     if (static_cast<TranslatorKeys *>(translator)->hasStagedData()) {
         context->setState(new HIDStateSendkeys()); // Set the next state to send keys
     } else {
@@ -25,7 +20,8 @@ void HIDStateCheckKeys::apply() {
 
         if (isNewHidReportDue()) {
             // Keep the timestamp for the last sent package nearby.
-            data->lastHIDsentRep = data->now - HIDUPDATERATE_MS;
+            m_data->lastHIDsentRep = m_data->now - HIDUPDATERATE_MS;
         }
     }
+#endif
 };

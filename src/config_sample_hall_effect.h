@@ -578,9 +578,11 @@ EXAMPLES
 // Time in ms which is needed to allow a new (physical) button press
 #define DEBOUNCE_KEYS_MS 200
 
+/* Definitions for easier key configuration, do not change this */
 #define KEY_PHYSICAL 0
 #define KEY_ROTARY 1
 #define NA -1
+// End of definitions for easier key configuration
 
 #define CFG_NUMBER_OF_KEYS 3
 #define KEY1 {KEY_PHYSICAL, SM_T, 0}

@@ -2,7 +2,7 @@
 
 #include "hidhandler/sender/HIDSender.hpp"                  // for HIDSender
 #include "hidhandler/usbinterface/SpaceMouseUSBInterface.h" // for SpaceMouseUSBInterface
-#include "observers/HIDEventBuffer.hpp"                     // for HID_MESSAGE_SIZE
+#include <observers/HIDEventBuffer/HIDEventBuffer.hpp>      // for HID_MESSAGE_SIZE
 
 /**
  * @brief Class is responsible for sending rotation data to the USB HID interface of the connected computer.
@@ -15,7 +15,7 @@ public:
     HIDSenderRotation(const uint8_t *msg) : HIDSender(msg) {} // Corrected constructor name
     virtual ~HIDSenderRotation() = default;                   // Default destructor
 
-    virtual void sendData() override {
+    void sendData() override final {
         // Send new rotational values
         SpaceMouseUSBInterface_ *usbInterface = SpaceMouseUSBInterface_::getInstance(); // Get the USB interface instance
         usbInterface->SendReport(REPORTID_ROT, getMessage(), HID_MESSAGE_SIZE);         // send new rotational values

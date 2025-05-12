@@ -5,17 +5,10 @@
 // Then follow along on github, how we reached this state of the source code.
 
 #include <Arduino.h>
+
 // The user specific settings, like pin mappings or special configuration variables and sensitivities are stored in config.h.
 // Please open config_sample.h, adjust your settings and save it as config.h
 #include "config.h"
-
-#ifdef ARDUINO_ARCH_AVR
-// Include header files for the HID interface
-#include <hidhandler/SpaceMouseHID.h> // Include the HID interface header
-// FIXME SpaceMouseHID *mySpaceMouseHID;
-#else
-// TODO - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
-#endif // ARDUINO_ARCH_AVR
 
 // Header to calculate the kinematics of the mouse
 #include "kinematics/kinematics.h"
@@ -42,7 +35,7 @@ KeyCollection myKeyCollection; // Key collection object to hold the keys and the
 #include "sensor/SensorCollection.hpp" // Include the sensor collection header file
 SensorCollection mySensorCollection;   // Sensor collection object to hold the sensors and the sensor configuration (initialized empty)
 
-// Include the header file for the calculation between sensors (hardware specific) and the axes.
+// Include the header file for the calculation from sensors to the axes, this is hardware specific.
 #ifdef HW_HALLEFFECT
 #include "sensorscalculator/SensorsCalculatorHall.hpp"
 SensorsCalculatorHall mySensorCalculator(&mySensorCollection);
@@ -51,19 +44,12 @@ SensorsCalculatorHall mySensorCalculator(&mySensorCollection);
 SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection);
 #endif
 
-// Include the header file for the axis collection
+// Include the header file for the Axis and the Axis collection
 #include "axis/AxisCollection.hpp" // Include the axis collection header file
-#include "axis/axes/Axis.hpp"      // Include the axis collection header file
 AxisCollection myAxisCollection;   // Axis collection object to hold the axes and the axis configuration (initialized empty)
 
 // Include the header files for the HID commands
 #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
-
-#if 0 // REMOVE
-// Include the header files for the Translators between the commands send by the axis and keys towards the HID interface
-#include "hidhandler/translator/TranslatorKeys.h"
-// FIXME TranslatorKeys myTranslatorKeys; // Translator object to translate the commands from the keys to the HID interface
-#endif
 
 // Include the header files for the command handler that will handle the commands send by the serial interface
 #include "commandhandler/commandhandler.h"
@@ -80,7 +66,7 @@ AxisCollection myAxisCollection;   // Axis collection object to hold the axes an
 #include "commandhandler/showcommand.h"
 #include "commandhandler/exclusivecommand.h"
 #include "commandhandler/switchyzcommand.h"
-// REVIEW #include "commandhandler/bootloadercommand.h"
+// NOTE  #include "commandhandler/bootloadercommand.h"
 CommandHandler myCommandHandler;                                                              // Command handler object to handle the commands from the serial interface
 CollectionIdentifier myCollections(&mySensorCollection, &myAxisCollection, &myKeyCollection); // Collection identifier object to identify the collection of the command
 
@@ -89,44 +75,40 @@ CollectionIdentifier myCollections(&mySensorCollection, &myAxisCollection, &myKe
 SensorCalibrationManagerIdle *mySensorCalibrationManagerIdle;  // Sensor calibration manager object to handle the calibration of the sensors
 
 // Include the header file for the HID Event Buffer (used as interface between Axis & Keys and the HID Handler)
-#include "observers/HIDEventBuffer.hpp"
-HIDEventBuffer myHIDEventBuffer; // HID event buffer observer object to stage the values from the axis and keys for the HIDHandler
+#include "observers/HIDEventBuffer/HIDEventBufferKeys.hpp"
+#include "observers/HIDEventBuffer/HIDEventBufferRotation.hpp"
+#include "observers/HIDEventBuffer/HIDEventBufferTranslation.hpp"
+HIDEventBufferKeys myHIDEventBufferKeys;
+HIDEventBufferRotation myHIDEventBufferRotation;
+HIDEventBufferTranslation myHIDEventBufferTranslation;
 
-#include "common/freeRAM.h" // Include the free RAM header file
+#include "hidhandler/usbinterface/SpaceMouseUSBInterface.h"
+#include "hidhandler/HIDHandlerController.h"
+#include "hidhandler/SpaceMouseHID.h"
+SpaceMouseHID mySpaceMouseHID;
 
-void cstmDelay(unsigned long ms) {
-    // This function is used to delay the program for a certain amount of time.
-    // It is used to wait for the serial interface to be ready.
-    // We could use delay(ms), but this costs another 100bytes in the program size.
-    unsigned long now = millis(); // Get the current time
-    while (millis() - now < ms) {
-        // Wait for the specified amount of time
-    }
-}
+#include "common/CustomDelay.h" // Include the custom delay header
 
-#include "hidhandler/usbinterface/SpaceMouseUSBInterface.h" // Include the HID interface header
 // #include <ArduinoShrink.h>
 void setup() {
 
-    cstmDelay(100); // Wait for the serial interface to be ready
+    CustomDelay::delay(100); // Wait for the serial interface to be ready
 
     // Begin Serial for debugging or calibration
     Serial.begin(250000);
-    cstmDelay(100);       // Wait for the serial interface to be ready
-    Serial.setTimeout(2); // The serial interface will look for new commands and it will only wait 2ms
+    CustomDelay::delay(100); // Wait for the serial interface to be ready
+    Serial.setTimeout(2);    // The serial interface will look for new commands and it will only wait 2ms
 
-    cstmDelay(7000); // Wait for the serial interface to be ready
+    CustomDelay::delay(7000); // Wait for the serial interface to be ready
     //  Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();
 
-    // Setup the Axis collection. This will setup the axes and the axis configuration.
-    myAxisCollection.setup(&mySensorCalculator); // Setup the axis collection with the sensor calculator
+    // Setup the Axis collection. This will setup the axes and the axis configuration, and attaches the HID event buffers.
+    // TODO - Create a AxisFactory that will create the axes based on the configuration.
+    myAxisCollection.setup(&mySensorCalculator, &myHIDEventBufferTranslation, &myHIDEventBufferRotation); // Setup the axis collection with the sensor calculator
 
     // Populate the key collection with the keys that are configured in config.h
     myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
-
-    // Add the HID event buffer as an observer to the axes in the Axis collection and as an observer to the keys in the Key collection
-    // myAxisCollection.attachAxesObserver(&myHIDEventBuffer);
 
     // FIXME myKeyCollection.attachKeyObserver(&myHIDEventBuffer);
 
@@ -135,10 +117,9 @@ void setup() {
     // If the configuration is not available, the default values as set in config.h will be used (and stored in the EEPROM)
     // FIXME - Kinematics should be removed
     // FIXME Kinematics::getInstance()->setAxisCollection(&myAxisCollection); // Set the axis collection for the kinematics object
-    Serial.println(F("Kinematics setup done."));
+
     // FIXME - For now a manual start. Should be done automatically.
-    // FIXME SpaceMouseUSBInterface_::getInstance();
-    Serial.println(F("HIDEventBuffer attached to AxisCollection"));
+    SpaceMouseUSBInterface_::getInstance();
 
     // Call the setup function of the button factory. This will setup the buttons and the button configuration.
     // REVIEW - Not necessary for now: KeyFactory::getInstance()->setupKeys(); // Updated from setupButtons() to setupKeys()
@@ -148,10 +129,8 @@ void setup() {
     // TODO - We do not want to send output to the HID while the calibration isn't finished.
     // FIXME - Cleanup the calibration manager when the calibration is finished.
     mySensorCalibrationManagerIdle = new SensorCalibrationManagerIdle(&mySensorCollection); // Initialize the sensor calibration manager
-    Serial.println(F("Sensor calibration manager initialized."));
-    mySensorCalibrationManagerIdle->activate(); // Start the idle calibration with 500 iterations
+    mySensorCalibrationManagerIdle->activate();                                             // Start the idle calibration with 500 iterations
 
-    Serial.println(F("Sensor calibration manager started."));
     //  Setup the Command Handler and register the commands that can be handled via the serial interface.
     // NOTE: Memory wise is is allowed to allocate memory Dynamically, while the commands will never be deleted.
     // REVIEW - The entire commmand handler uses ~450 bytes of RAM, mainly due to the vtables for the command & command parameter classes.
@@ -166,19 +145,18 @@ void setup() {
     myCommandHandler.registerCommand(new ExclusiveCommand());
     myCommandHandler.registerCommand(new SwitchYZCommand());
     // REVIEW myCommandHandler.registerCommand(new BootloaderCommand());
+
 #if SIMULATOR_DEBUGGING
-    // When debugging with SimAVR through PlatformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
-    // Use this command to initialize a debug state.
+    // When debugging with SimAVR through PlatformIO the serial monitor is not available.
+    // Use this line to initialize a debug state if necessary and the corresponding output.
     char buffer[32] = "DEBUG 1";
     myCommandHandler.handleInput(buffer, 32, 1);
 #endif
 
-#if 0
-    cstmDelay(7500); // Debugging: give the user some time to open the serial monitor and start the debugging process
-    KeyCollection tstCollection;
-#endif
-    // REVIEW - Can we fall back to a solution without the "new" operator and just setup a 'global' variable?
-    // FIXME  mySpaceMouseHID = new SpaceMouseHID(); // Initialize the HID interface
+    // Connect the HID interface to the axes and keys
+    mySpaceMouseHID.getController()->setHIDEventBufferKeys(&myHIDEventBufferKeys);               // Connect the HID event buffer to the HID interface
+    mySpaceMouseHID.getController()->setHIDEventBufferRotation(&myHIDEventBufferRotation);       // Connect the HID event buffer to the HID interface
+    mySpaceMouseHID.getController()->setHIDEventBufferTranslation(&myHIDEventBufferTranslation); // Connect the HID event buffer to the HID interface
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
     initEncoderWheel();
@@ -220,9 +198,7 @@ void loop() {
     calcEncoderAsKey(Keys, Mouse_Calibration.GetDebug());
 #endif
 
-#ifdef ARDUINO_ARCH_AVR
-    // FIXME mySpaceMouseHID->execute();
-#endif
+    mySpaceMouseHID.execute();
 
     // Check for the LED state by calling updateLEDState.
     // This empties the USB input buffer and checks for the corresponding report.

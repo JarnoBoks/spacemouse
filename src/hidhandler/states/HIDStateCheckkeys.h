@@ -4,9 +4,8 @@
 class HIDStateCheckKeys : public HIDStateBase {
 protected:
 public:
-    HIDStateCheckKeys();
-    virtual ~HIDStateCheckKeys();
+    HIDStateCheckKeys() = default;
+    virtual ~HIDStateCheckKeys() = default;
 
-    void apply() override;
-    inline void report() override {};
+    void apply() override final;
 };

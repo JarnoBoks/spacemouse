@@ -19,7 +19,7 @@ constexpr const char *c_AXIS_NAMES[] = {"TX", "TY", "TZ", "RX", "RY", "RZ"}; // 
 constexpr uint8_t c_MAX_AXIS_OBSERVERS = 1;
 
 /**
- * @brief Class representing an axis in the system.
+ * @brief   Class representing an axis in the system.
  * @details This class implements the ICollectable interface and provides functionality for managing the axis configuration and state.
  *          It allows evaluating the axis state and checking if the axis is current based on its name.
  */

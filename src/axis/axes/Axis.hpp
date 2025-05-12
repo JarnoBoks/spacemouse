@@ -48,7 +48,7 @@ public:
                                                                              m_axisType(axisType),
                                                                              m_name(c_AXIS_NAMES[static_cast<int>(axisType)]),
                                                                              m_AxisConfig(new AxisConfig(axisType)) {};
-    ~Axis() { delete m_AxisConfig; } // Destructor
+    ~Axis() { delete m_AxisConfig; } // Destructor (not used in normal SpaceMouse operation)
 
     void evaluate() override;
     const bool isCurrent(const char *name) const override { return false; }; // TODO - Write this function

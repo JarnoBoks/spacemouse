@@ -1,7 +1,11 @@
 #pragma once
-
 class IObserver; // Forward declaration of IObserver class
 
+// REFACTOR - Remove this class
+/**
+ * @brief Interface for observable objects that can have observers attached.
+ * @deprecated
+ */
 class IObservable {
 public:
     virtual void attachObserver(IObserver *observer) = 0;

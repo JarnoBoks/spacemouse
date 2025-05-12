@@ -15,7 +15,7 @@ private:
     uint8_t m_maxItems = 0; // Maximum number of items in the collection
 protected:
     ICollectable **m_items;
-    uint8_t m_itemCount = 0; // Number of sensor created
+    uint8_t m_itemCount = 0; // Number of items created
 public:
     /// @brief Constructor for empty Collection
     Collection() = delete; // Delete the default constructor to prevent instantiation without parameters
@@ -38,6 +38,7 @@ public:
             m_items[m_itemCount++] = item; // Add the key to the list of keys
         }
     };
+
     void remove(ICollectable *item) override {
         for (int i = 0; i < m_itemCount; i++) {
             if (m_items[i] == item) {
@@ -66,7 +67,7 @@ public:
 
     // --- Addressing items  ---------------------------------
     ICollectable *getItem(const uint8_t id) const override {
-        if (id < m_itemCount) {
+        if (id < m_maxItems) {
             return m_items[id]; // Return the sensor at the specified index
         }
         return nullptr; // Return nullptr if the index is out of bounds
@@ -80,4 +81,6 @@ public:
         }
         return nullptr; // Return nullptr if no matching sensor is found
     };
+
+    inline uint8_t getItemCount() const { return m_itemCount; } // Get the number of items in the collection
 };

@@ -21,11 +21,11 @@ private:
 
     SensorCalibrationManager *m_CalibrationManager = nullptr; // Pointer to the calibration manager
 
-    void finish(SensorCollection *sensorCollection);
+    void finish(IObservable *sensorCollection);
 
 public:
     SensorMinMaxCalibration(SensorCalibrationManager *calibrationManager);
     virtual ~SensorMinMaxCalibration() {};
 
-    void update(SensorCollection *sensorCollection) override;
+    void update(IObservable *sensorCollection) override;
 };

@@ -28,12 +28,12 @@ private:
     // REVIEW - SessorCalibrationManager is a singleton. Is it necessary to store the pointer here? (Uses some memory).
     SensorCalibrationManager *m_CalibrationManager = nullptr; // Pointer to the calibration manager
 
-    void finish(SensorCollection *sensorCollection); // Finish the calibration process
+    void finish(IObservable *sensorCollection); // Finish the calibration process
 
 protected:
 public:
     SensorIdleCalibration(SensorCalibrationManager *calibrationManager, int numiterations);
     virtual ~SensorIdleCalibration() {};
 
-    void update(SensorCollection *sensorCollection) override;
+    void update(IObservable *sensorCollection) override;
 };

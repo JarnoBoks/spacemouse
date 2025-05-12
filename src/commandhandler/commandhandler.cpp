@@ -94,10 +94,10 @@ void CommandHandler::parseSerialMonitorInput() {
 
     inputBuffer[bytesRead] = '\0'; // Null-terminate the string
 
-    // #ifndef ARDUINO_ARCH_AVR
+#ifndef ARDUINO_ARCH_AVR
     Serial.print(F("---- Received: ")); // Print the input string
     Serial.println(inputBuffer);        // Print the input string
-                                        // #endif
+#endif
 
     handleInput(inputBuffer, sizeof(inputBuffer), bytesRead); // Call the handleInput function to process the input
 }

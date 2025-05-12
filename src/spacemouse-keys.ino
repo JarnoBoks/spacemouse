@@ -42,13 +42,13 @@ KeyCollection myKeyCollection; // Key collection object to hold the keys and the
 #include "sensor/SensorCollection.hpp" // Include the sensor collection header file
 SensorCollection mySensorCollection;   // Sensor collection object to hold the sensors and the sensor configuration (initialized empty)
 
-// Include the header file for the Hardware objects (Interface between sensors and the axis collection)
+// Include the header file for the calculation between sensors (hardware specific) and the axes.
 #ifdef HW_HALLEFFECT
-#include "sensorscalculator/SensorsCalculatorHall.hpp"         // Include the header file for the Hall effect sensors
-SensorsCalculatorHall mySensorCalculator(&mySensorCollection); // Sensor calculator object to calculate the sensor values
+#include "sensorscalculator/SensorsCalculatorHall.hpp"
+SensorsCalculatorHall mySensorCalculator(&mySensorCollection);
 #else
-#include "sensorscalculator/SensorsCalculatorJoystick.hpp" // Include the header file for the joystick sensors
-SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection); // Sensor calculator object to calculate the sensor values
+#include "sensorscalculator/SensorsCalculatorJoystick.hpp"
+SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection);
 #endif
 
 // Include the header file for the axis collection
@@ -115,15 +115,15 @@ void setup() {
     cstmDelay(100);       // Wait for the serial interface to be ready
     Serial.setTimeout(2); // The serial interface will look for new commands and it will only wait 2ms
 
-    // cstmDelay(7000); // Wait for the serial interface to be ready
+    cstmDelay(7000); // Wait for the serial interface to be ready
     //  Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();
 
     // Setup the Axis collection. This will setup the axes and the axis configuration.
-    // FIXME myAxisCollection.setup(&mySensorCalculator); // Setup the axis collection with the sensor calculator
+    myAxisCollection.setup(&mySensorCalculator); // Setup the axis collection with the sensor calculator
 
     // Populate the key collection with the keys that are configured in config.h
-    // FIXME myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
+    myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
 
     // Add the HID event buffer as an observer to the axes in the Axis collection and as an observer to the keys in the Key collection
     // myAxisCollection.attachAxesObserver(&myHIDEventBuffer);
@@ -198,7 +198,6 @@ void setup() {
 void loop() {
     // Check if the user entered a command through the Serial monitor
     if (Serial.available()) {
-        Serial.println(F("Serial available."));
         myCommandHandler.parseSerialMonitorInput();
     }
 
@@ -206,7 +205,7 @@ void loop() {
     mySensorCollection.evaluate();
 
     // Calculate from sensor data and apply all config- & calibration settings to the axis values & notify collection observers
-    // FIXME myAxisCollection.evaluate();
+    myAxisCollection.evaluate();
 
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
     // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities

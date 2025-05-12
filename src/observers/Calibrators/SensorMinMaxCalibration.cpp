@@ -19,7 +19,7 @@ SensorMinMaxCalibration::SensorMinMaxCalibration(SensorCalibrationManager *calmg
     Serial.println(F(" sec."));
 }
 
-void SensorMinMaxCalibration::finish(SensorCollection *sensorCollection) {
+void SensorMinMaxCalibration::finish(IObservable *sensorCollection) {
     bool warningsOccurred = false; // Flag to track if any warnings occurred during calibration
 
     MinMaxPrinter printer;
@@ -27,7 +27,7 @@ void SensorMinMaxCalibration::finish(SensorCollection *sensorCollection) {
     // REVIEW - Should this loop be moved to hardware?
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
 
-        Sensor *sensor = sensorCollection->getSensor(id);
+        Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id);
         if (sensor == nullptr) {
             continue; // Skip if the sensor is not available
         }
@@ -46,7 +46,8 @@ void SensorMinMaxCalibration::finish(SensorCollection *sensorCollection) {
     m_CalibrationManager->deactivate(warningsOccurred); // Finish the calibration process
 }
 
-void SensorMinMaxCalibration::update(SensorCollection *sensorCollection) {
+void SensorMinMaxCalibration::update(IObservable *sensorCollection) {
+
     // Finish the calibration process if the configured time has elapsed iterations are reached
     if (millis() - m_startCalibrationTime > (MINMAXDURATION * 1000)) {
         finish(sensorCollection); // Finish the calibration process
@@ -54,7 +55,7 @@ void SensorMinMaxCalibration::update(SensorCollection *sensorCollection) {
     }
 
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
-        Sensor *sensor = sensorCollection->getSensor(id);
+        Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id); // Get the sensor from the collection
         if (sensor == nullptr) {
             continue; // Skip if the sensor is not available
         }

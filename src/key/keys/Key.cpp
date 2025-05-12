@@ -1,6 +1,6 @@
 #include "Key.hpp"   // Include the header file for the Key class
 #include <Arduino.h> // Include Arduino library for Serial function
-
+#if 0
 int8_t Key::getHIDCommand(uint8_t *cmds) {
     if (!m_keyState) {
         return 0; // do nothing if this key is not pressed
@@ -22,3 +22,4 @@ int8_t Key::getHIDCommand(uint8_t *cmds) {
     *cmds = static_cast<uint8_t>(commandType); // Store the command type in the result array
     return 1;
 }
+#endif

@@ -87,6 +87,7 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
         setState(new DebugParamSensorInformationFiltered(this));
         break;
     case 4:
+        Serial.println(F("Debug Case 4:"));
         // Translation and rotation values - without modifier function, inversion, YZ switching nor Exclusivemode applied
         setState(new DebugParamAxisInformation(this));
         break;

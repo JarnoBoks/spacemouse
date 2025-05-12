@@ -33,7 +33,7 @@ SensorIdleCalibration::SensorIdleCalibration(SensorCalibrationManager *calmgr, c
  * @param hardware Pointer to the Hardware instance
  * @details This function calculates the average position by dividing the sum of all readings by the number of iterations.
  */
-void SensorIdleCalibration::finish(SensorCollection *sensorCollection) {
+void SensorIdleCalibration::finish(IObservable *sensorCollection) {
 
     IdlePositionPrinter printer;
 
@@ -48,7 +48,7 @@ void SensorIdleCalibration::finish(SensorCollection *sensorCollection) {
 
         // Update the idlePosition for each sensor (returns true if the idle position is in the predefined normal zone)
         // Secondary check: Check if the dead zone is above the warning threshold.
-        Sensor *sensor = sensorCollection->getSensor(id);
+        Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id); // Get the sensor from the collection
         bool positionWarning = !(sensor->setIdlePosition(m_sumReads[id] / m_processedIterations));
         m_warningsOccurred = m_warningsOccurred || positionWarning || (sensorDZ > DEADZONEWARNING);
 
@@ -75,7 +75,7 @@ void SensorIdleCalibration::finish(SensorCollection *sensorCollection) {
  *          It reads the raw values from the sensors and updates the sum of reads, minimum and maximum values.
  * @param hardware Pointer to the Hardware instance
  */
-void SensorIdleCalibration::update(SensorCollection *sensorCollection) {
+void SensorIdleCalibration::update(IObservable *sensorCollection) {
     // Finish the calibration process if the requested iterations are reached
     if (m_processedIterations >= m_requestedIterations) {
         finish(sensorCollection); // Finish the calibration process
@@ -84,7 +84,7 @@ void SensorIdleCalibration::update(SensorCollection *sensorCollection) {
 
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
         // Get the sensor by ID
-        Sensor *sensor = sensorCollection->getSensor(id);
+        Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id);
         if (sensor == nullptr) {
             continue; // Skip if the sensor is not available
         }

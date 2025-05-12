@@ -27,14 +27,16 @@ void KeyCollection::setup() {
 
         KeyFactory *factory; // Pointer to the factory for creating keys
         if (cKEY_CONFIGS[i][0] == KEY_PHYSICAL) {
-            factory = new KeyFactoryPhysicalkey(); // Create a factory for physical keys
+            KeyFactoryPhysicalkey factory;
+            m_items[m_itemCount] = factory.create(m_itemCount);
+
         } else if (cKEY_CONFIGS[i][0] == KEY_ROTARY) {
-            factory = new KeyFactoryRotarykey(); // Create a factory for rotary keys
+            KeyFactoryRotarykey factory;
+            m_items[m_itemCount] = factory.create(m_itemCount);
         } else {
             // Invalid key type, handle error or skip
             continue; // Skip to the next iteration if the key type is not recognized
         }
-        m_items[m_itemCount] = factory->create(m_itemCount);
         m_items[m_itemCount]->setContext(this); // Set the context of the key instance to this KeyCollection instance
         m_itemCount++;
         delete factory; // Delete the factory instance to free memory

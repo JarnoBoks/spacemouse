@@ -28,9 +28,12 @@ public:
     }
     ~HIDEventBuffer() override = default;
 
-    void update(KeyCollection *keyCollection) override;
-    void update(AxisRotation *axisRotation) override;
-    void update(AxisTranslation *axisTranslation) override;
+    // REFACTOR - we have to check the update functons.
+    void update(KeyCollection *keyCollection);     // override;
+    void update(AxisRotation *axisRotation);       // override;
+    void update(AxisTranslation *axisTranslation); // override;
+
+    void update(IObservable *observable) override;
 
     const bool isRotationStaged() const { return !isBufferEmpty(m_rot_staged); }
     const bool isTranslationStaged() const { return !isBufferEmpty(m_trans_staged); }

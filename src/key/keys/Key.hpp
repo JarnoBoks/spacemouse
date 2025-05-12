@@ -3,7 +3,7 @@
 #include "IKey.h"
 #include "common/ICollectable.hpp"
 #include "common/Observable.hpp"
-#include "hidhandler/commands/ICommand.hpp" // For Command interface
+// REMOVE ? #include "hidhandler/commands/ICommand.hpp" // For Command interface
 
 #include "key/functionality/IKeyFunctionality.h"
 #include "key/functionality/CommandType.hpp" // For CommandType enum
@@ -25,7 +25,7 @@ constexpr uint8_t c_MAX_KEY_OBSERVERS = 1;
  *          It provides functionality for managing key states and executing associated commands.
  * @warning The Key class should not be instantiated directly. Instead, use derived classes like PhysicalKey or RotaryKey.
  */
-class Key : public IKey, public ICollectable, public Observable {
+class Key : public ICollectable, public Observable {
 protected:
     IKeyFunctionality *m_keystrategy = nullptr;  // Pointer to the key functionality
     bool m_keyState = false;                     // Current state of the key (true = pressed, false = released)
@@ -68,8 +68,6 @@ public:
 
     // Real functionality to be implemented in derived classes
     virtual void evaluate() override = 0; // Pure virtual function to evaluate the key state and call the appropriate functionality
-
-    virtual int8_t getHIDCommand(uint8_t *cmds); // Pure virtual function to send the HID command for the key         // TODO - This should be in the interface!
 
     // NOTE: isCurrent is not used for this collection, but is part of the ICollectable interface.
     const bool isCurrent(const char *name) const override { return false; };

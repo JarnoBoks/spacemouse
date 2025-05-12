@@ -12,12 +12,14 @@ class DebugOutputAxesSensitivity : public DebugOutputAxes {
 private:
 protected:
     inline const int getAxisValue(const Axis *axis) const override {
+        // Class need the sensitivity value for printing.
         return axis->getSnsValue(); // Get the axis value
     }
 
 public:
     inline void update(IObservable *axisCollection) override {
-        DebugOutputAxes::update(axisCollection); // Call the base class update method
+        // Call the base class update method
+        DebugOutputAxes::update(axisCollection);
         Serial.println();
     }
 };

@@ -15,6 +15,7 @@ public:
     void evaluate() override {
         // Call the base class evaluate method
         Axis::evaluate();
-        Observable::notifyObservers(); // Notify observers of changes in the rotation axis
+        // Notify observers of changes in the rotation axis
+        Observable::notifyObservers();
     };
 };

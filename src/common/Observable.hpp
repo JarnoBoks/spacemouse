@@ -13,10 +13,6 @@ private:
     uint8_t observerCount = 0; // Number of observers attached
     uint8_t maxObservers;
 
-    // NOTE - On Arduino it is not possible to use dynamic_cast, so we have to use a workaround with the classType variable.
-    // This variable is used to identify the type of the observable class, so we can use the correct observer type.
-    uint8_t classType; // Contains the type of the observable class (e.g., KeyCollection, AxisCollection, etc.)
-
 public:
     Observable() = delete; // Delete the default constructor to prevent instantiation without parameters
     Observable(uint8_t maxObservers) : maxObservers(maxObservers) {
@@ -31,8 +27,6 @@ public:
         clearObservers(); // Clear the observers when the observable is destroyed
         delete[] observers;
     }
-
-    uint8_t getClassType() const { return classType; } // Get the class type of the observable
 
     void attachObserver(IObserver *observer) override;
     void detachObserver(IObserver *observer) override;

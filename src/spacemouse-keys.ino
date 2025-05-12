@@ -82,12 +82,15 @@ HIDEventBufferKeys myHIDEventBufferKeys;
 HIDEventBufferRotation myHIDEventBufferRotation;
 HIDEventBufferTranslation myHIDEventBufferTranslation;
 
+#ifdef ARDUINO_ARCH_AVR
 #include "hidhandler/usbinterface/SpaceMouseUSBInterface.h"
 #include "hidhandler/HIDHandlerController.h"
 #include "hidhandler/SpaceMouseHID.h"
 SpaceMouseHID mySpaceMouseHID;
+#endif
 
 #include "common/CustomDelay.h" // Include the custom delay header
+#include "common/FreeRAM.h"     // Include the free RAM header
 
 // #include <ArduinoShrink.h>
 void setup() {
@@ -108,7 +111,7 @@ void setup() {
     myAxisCollection.setup(&mySensorCalculator, &myHIDEventBufferTranslation, &myHIDEventBufferRotation); // Setup the axis collection with the sensor calculator
 
     // Populate the key collection with the keys that are configured in config.h
-    myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
+    // FIXME myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
 
     // FIXME myKeyCollection.attachKeyObserver(&myHIDEventBuffer);
 
@@ -118,18 +121,13 @@ void setup() {
     // FIXME - Kinematics should be removed
     // FIXME Kinematics::getInstance()->setAxisCollection(&myAxisCollection); // Set the axis collection for the kinematics object
 
+#ifdef ARDUINO_ARCH_AVR
     // FIXME - For now a manual start. Should be done automatically.
     SpaceMouseUSBInterface_::getInstance();
+#endif
 
     // Call the setup function of the button factory. This will setup the buttons and the button configuration.
     // REVIEW - Not necessary for now: KeyFactory::getInstance()->setupKeys(); // Updated from setupButtons() to setupKeys()
-
-    // Start the idle calibration of the sensors. This will zero the sensors during the loop.
-    // TODO - During setup we aren't interested in the output of the calibration process.
-    // TODO - We do not want to send output to the HID while the calibration isn't finished.
-    // FIXME - Cleanup the calibration manager when the calibration is finished.
-    mySensorCalibrationManagerIdle = new SensorCalibrationManagerIdle(&mySensorCollection); // Initialize the sensor calibration manager
-    mySensorCalibrationManagerIdle->activate();                                             // Start the idle calibration with 500 iterations
 
     //  Setup the Command Handler and register the commands that can be handled via the serial interface.
     // NOTE: Memory wise is is allowed to allocate memory Dynamically, while the commands will never be deleted.
@@ -144,8 +142,6 @@ void setup() {
     myCommandHandler.registerCommand(new ShowCommand());
     myCommandHandler.registerCommand(new ExclusiveCommand());
     myCommandHandler.registerCommand(new SwitchYZCommand());
-    // REVIEW myCommandHandler.registerCommand(new BootloaderCommand());
-
 #if SIMULATOR_DEBUGGING
     // When debugging with SimAVR through PlatformIO the serial monitor is not available.
     // Use this line to initialize a debug state if necessary and the corresponding output.
@@ -153,11 +149,12 @@ void setup() {
     myCommandHandler.handleInput(buffer, 32, 1);
 #endif
 
+#ifdef ARDUINO_ARCH_AVR
     // Connect the HID interface to the axes and keys
     mySpaceMouseHID.getController()->setHIDEventBufferKeys(&myHIDEventBufferKeys);               // Connect the HID event buffer to the HID interface
     mySpaceMouseHID.getController()->setHIDEventBufferRotation(&myHIDEventBufferRotation);       // Connect the HID event buffer to the HID interface
     mySpaceMouseHID.getController()->setHIDEventBufferTranslation(&myHIDEventBufferTranslation); // Connect the HID event buffer to the HID interface
-
+#endif
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
     initEncoderWheel();
 #endif
@@ -173,8 +170,31 @@ void setup() {
 #endif
 }
 
+void setup2() {
+    // This function is called after the setup() function. It is used to initialize the HID interface and the key collection.
+    // The HID interface is used to send the data to the computer and the key collection is used to handle the keys.
+    // The setup2() function is called after the setup() function to allow for a delay before starting the HID interface.
+    // This is useful for debugging purposes, as it allows for a delay before starting the HID interface.
+    Serial.println(F("Setup2() called!")); // Print a message to the serial monitor
+    FreeRAM::display_freeram();
+    // Start the idle calibration of the sensors. This will zero the sensors during the loop.
+    // TODO - During setup we aren't interested in the output of the calibration process.
+    // TODO - We do not want to send output to the HID while the calibration isn't finished.
+    // FIXME - Cleanup the calibration manager when the calibration is finished.
+    mySensorCalibrationManagerIdle = new SensorCalibrationManagerIdle(&mySensorCollection); // Initialize the sensor calibration manager
+    mySensorCalibrationManagerIdle->activate();                                             // Start the idle calibration with 500 iterations
+    FreeRAM::display_freeram();                                                             // Print the free RAM to the serial monitor
+    Serial.println(F("Setup done!"));                                                       // Print a message to the serial monitor
+}
+
+bool firstrun = true; // Flag to check if the setup2() function has been called
 void loop() {
-    // Check if the user entered a command through the Serial monitor
+    if (firstrun) {
+        setup2();         // Call the setup2() function to initialize the HID interface and the key collection
+        firstrun = false; // Set the flag to false to prevent calling the setup2() function again
+    }
+    // FreeRAM::display_freeram(); // Print the free RAM to the serial monitor
+    //  Check if the user entered a command through the Serial monitor
     if (Serial.available()) {
         myCommandHandler.parseSerialMonitorInput();
     }
@@ -198,7 +218,9 @@ void loop() {
     calcEncoderAsKey(Keys, Mouse_Calibration.GetDebug());
 #endif
 
+#ifdef ARDUINO_ARCH_AVR
     mySpaceMouseHID.execute();
+#endif
 
     // Check for the LED state by calling updateLEDState.
     // This empties the USB input buffer and checks for the corresponding report.

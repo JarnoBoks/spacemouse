@@ -15,14 +15,10 @@ void SensorCalibrationManagerIdle::activate(const int iterations) {
 }
 
 void SensorCalibrationManagerIdle::activate() {
-    Serial.println(F("SensorCalibrationManagerIdle::activate() - Start idle calibration."));
     // Call the base class calculate function
     SensorCalibrationManager::activate();
-    FreeRAM::display_freeram();
+
     // Attach the idle calibration observer to the hardware
-    // currentCalibration = new SensorIdleCalibration(this, 500);
-    Serial.println(F("SensorCalibrationManagerIdle::activate() - Idle calibration observer created."));
+    currentCalibration = new SensorIdleCalibration(this, 500);
     m_SensorCollection->attachObserver(currentCalibration);
-    Serial.println(F("SensorCalibrationManagerIdle::activate() - Idle calibration observer attached to sensor collection."));
-    FreeRAM::display_freeram();
 }

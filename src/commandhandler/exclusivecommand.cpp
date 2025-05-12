@@ -2,17 +2,7 @@
 #include "kinematics/kinematics.h"
 #include "kinematics/kinematicsconfig.h"
 #include "visitors/ExclusiveModePrinter.h"
-
-// Only log to serial if not using Arduino AVR architecture
-#ifndef ARDUINO_ARCH_AVR
-#ifndef ESP_PRINT(x)
-#define ESP_PRINT(x) Serial.println(x)
-#define ESP_DBG(x) Serial.println(x)
-#endif
-#else
-#define ESP_PRINT(x)
-#define ESP_DBG(x)
-#endif
+#include "common/esp_print.h"
 
 void ExclusiveCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     ESP_DBG(F("ExclusiveCommand executed"));

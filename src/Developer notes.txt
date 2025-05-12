@@ -8,4 +8,7 @@ Other classes should be abstracted from it.
 
 Collections can be responsible for populating their collection.
 
-C:\Users\jarno.RATATOSK.000\.platformio\packages\toolchain-atmelavr\bin\avr-nm -Crtd --size-sort C:\arduino-devices\spacemouse\.pio\build\micro\firmware.elf > test_variables.txt
+ESP32 - S3 USB Serial:
+https://github.com/espressif/esp-idf/blob/master/examples/peripherals/usb/device/tusb_hid/main/tusb_hid_example_main.c
+
+C:\Users\jarno.RATATOSK.000\.platformio\packages\toolchain-atmelavr\bin\avr-nm -Crtd --size-sort .pio\build\micro\firmware.elf > test_variables.txt

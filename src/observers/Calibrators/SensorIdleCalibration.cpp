@@ -1,5 +1,3 @@
-// TODO - Create base class for all sensor calibration types
-
 #include "SensorIdleCalibration.h"
 #include "sensor/sensors/Sensor.hpp" // For Sensor class
 #include "sensor/calibration/SensorCalibrationManager.hpp"
@@ -16,9 +14,9 @@
  * @param numiterations Number of iterations for calibration
  */
 SensorIdleCalibration::SensorIdleCalibration(SensorCalibrationManager *calmgr, const int numiterations)
-    : m_requestedIterations(numiterations), m_processedIterations(0), m_startCalibrationTime(millis()), m_CalibrationManager(calmgr) {
+    : m_requestedIterations(numiterations), m_CalibrationManager(calmgr) {
 
-    FreeRAM::display_freeram(); // Display the free RAM at the start of the calibration process
+    m_startCalibrationTime = millis(); // Store the start time of the calibration process
     Serial.println(F("Starting calibration..."));
 
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {

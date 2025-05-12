@@ -73,19 +73,22 @@ Debug Modes:
      Hall Effect: The values should be approximately -350 to +350, small movements are ignored.   //TODO - check if this is correct for the HES sensors
 
  4:  Report translation & rotation values.
-     The translation (TX, TY, TZ) and rotation (RX, RY, RZ) values are calculated from the hardware output and sensitivity is applied. None of the modifier function, inversion, YZ switching nor Exclusivemode are
-     applied. See kinematics.h for the details of the calculation. The parameters used in the calculation can be configured (see further below).
+     The translation (TX, TY, TZ) and rotation (RX, RY, RZ) values are calculated from the hardware output and
+     sensitivity is applied. None of the modifier function, inversion, YZ switching nor Exclusivemode are applied.
+     See kinematics.h for the details of the calculation. The parameters used in the calculation can be configured (see further below).
 
      Output:      Approximately -350 to +350 depending on the parameter.
 
- 5:  Report centered values (2nd debug) and translation & rotation values side by side for direct reference. Modifier function and inversion are applied. Any configured YZ switching or Exclusivemode is not applied.
+ 5:  Report centered values (2nd debug) and translation & rotation values side by side for direct reference.
+     Modifier function and inversion are applied. Any configured YZ switching or Exclusivemode is not applied.
 
- 6:  Report centered values (2nd debug) and translation & rotation values (5th debug) and the key state after applying the kill-key functionality.
+ 6:  Report centered values (2nd debug) and translation & rotation values (5th debug) and the key state after
+     applying the kill-key functionality.
 
  7: Report centered values (2nd debug) and translation & rotation values and keystatus (4th debug) after applying
      the kill-switch and the exclusive mode. (If configured).
 
- 8:  Report the frequency of the loop().
+ 8:  Report the frequency of the loop() and the available free RAM memory.
      This is useful to check if the loop() is running fast enough. The frequency is calculated by counting the number
      of iterations in one second. The frequency is reported in Hz.
 

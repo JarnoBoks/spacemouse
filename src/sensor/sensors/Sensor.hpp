@@ -35,7 +35,7 @@ protected:
 public:
     Sensor() = delete; // Delete the default constructor to prevent instantiation without parameters
     Sensor(const int8_t pin, const int8_t id);
-    virtual ~Sensor(); // Destructor;
+    virtual ~Sensor();
 
     const bool isCurrent(const char *name) const override;
 

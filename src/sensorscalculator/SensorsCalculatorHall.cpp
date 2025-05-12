@@ -20,10 +20,10 @@ void SensorsCalculatorHall::setAnalogReference(const bool isDebug) {
 #endif
 }
 
-// Define a macro to simplify the access to the sensor values
+// Macro to simplify the access to the sensor values
 #define VAL(x) value(x)
 void SensorsCalculatorHall::evaluate(Axis *axis) {
-    if (!m_sensorCollection)
+    if (!m_sensorCollection || !axis)
         return;
 
     int16_t retval = 0;

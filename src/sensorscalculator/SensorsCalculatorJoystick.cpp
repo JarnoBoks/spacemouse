@@ -4,10 +4,10 @@
 #include "..\axis\axes\Axis.hpp"             // Include the header file for the Axis class
 #include "axis/axes/axistype.h"
 
-// Define a macro to simplify the access to the sensor values
+// Macro to simplify the access to the sensor values
 #define VAL(x) value(x)
 void SensorsCalculatorJoystick::evaluate(Axis *axis) {
-    if (!m_sensorCollection)
+    if (!m_sensorCollection || !axis)
         return;
 
     int16_t retval = 0;

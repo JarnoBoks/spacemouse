@@ -12,7 +12,7 @@
  */
 class Collection : public ICollection {
 private:
-    uint8_t m_maxItems = 0; // Maximum number of items in the collection
+    const uint8_t m_maxItems = 0; // Maximum number of items in the collection
 protected:
     ICollectable **m_items;
     uint8_t m_itemCount = 0; // Number of items created

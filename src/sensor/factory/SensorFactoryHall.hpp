@@ -10,5 +10,5 @@ public:
     SensorFactoryHall() = default;
     ~SensorFactoryHall() {};
 
-    Sensor *create(const uint8_t id) override;
+    Sensor *create(const uint8_t id) override final;
 };

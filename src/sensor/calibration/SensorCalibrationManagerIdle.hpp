@@ -15,6 +15,6 @@ public:
      */
     SensorCalibrationManagerIdle(SensorCollection *sensorCollection) : SensorCalibrationManager(sensorCollection) {};
 
-    virtual void activate() override;
+    void activate() override final;
     void activate(const int iterations);
 };

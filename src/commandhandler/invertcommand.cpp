@@ -18,7 +18,7 @@ void InvertCommand::execute(const char *param1, const char *param2, uint8_t para
     IAxisConfigCommand::execute(param1, param2, paramCount); // Call the base class execute function
 
     // Check if the directionfig is valid
-    if (m_DirectionConfig == nullptr) {
+    if (!m_DirectionConfig) {
         ESP_PRINT(F("InvertCommand::execute: No direction config available"));
         return; // No direction config available, exit the function
     }

@@ -8,4 +8,4 @@ Other classes should be abstracted from it.
 
 Collections can be responsible for populating their collection.
 
-C:\arduino_devices\spacemouse>C:\Users\jarno.RATATOSK\.platformio\packages\toolchain-atmelavr\bin\avr-nm -Crtd --size-sort C:\arduino_devices\spacemouse\.pio\build\micro\firmware.elf > variables2.txt
+C:\Users\jarno.RATATOSK.000\.platformio\packages\toolchain-atmelavr\bin\avr-nm -Crtd --size-sort C:\arduino-devices\spacemouse\.pio\build\micro\firmware.elf > test_variables.txt

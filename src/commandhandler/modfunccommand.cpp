@@ -18,7 +18,7 @@ void ModFuncCommand::execute(const char *param1, const char *param2, uint8_t par
     IAxisConfigCommand::execute(param1, param2, paramCount);
 
     // Check if the directionConfig is valid
-    if (m_DirectionConfig == nullptr) {
+    if (!m_DirectionConfig) {
         ESP_PRINT(F("ModFuncCommand::execute: No direction config available"));
         return; // No direction config available, exit the function
     }

@@ -15,5 +15,5 @@ public:
      */
     SensorCalibrationManagerMinMax(SensorCollection *sensorCollection) : SensorCalibrationManager(sensorCollection) {};
 
-    virtual void activate() override;
+    void activate() override final;
 };

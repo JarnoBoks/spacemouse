@@ -24,6 +24,6 @@ private:
 public:
     HallSensor(const int8_t pin, HallSensorsId_t id);
 
-    bool setIdlePosition(int val) override;
-    bool idlePositionWarning(const int val) const override;
+    bool setIdlePosition(int val) override final;
+    bool idlePositionWarning(const int val) const override final;
 };

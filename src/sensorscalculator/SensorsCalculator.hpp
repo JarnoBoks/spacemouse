@@ -15,11 +15,10 @@ protected:
     const int value(uint8_t const id) const;
 
 public:
-    SensorsCalculator() = default; // Delete the default constructor to prevent instantiation without parameters
+    SensorsCalculator() = default; // REFACTOR - Why doesn't delete work here?
     SensorsCalculator(SensorCollection *sensorCollection) : m_sensorCollection(sensorCollection) {};
 
-    virtual ~SensorsCalculator() {
-    }
+    virtual ~SensorsCalculator() = default;
 
     virtual void evaluate(Axis *axis) = 0;
     virtual void setAnalogReference(const bool isDebug = false);

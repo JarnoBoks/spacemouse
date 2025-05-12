@@ -15,7 +15,7 @@
  */
 class PhysicalKey : public Key {
 private:
-    int m_pinNumber = -1; // Pin number for the physical key
+    const int8_t m_pinNumber = -1; // Pin number for the physical key
 
     // Physical keys have a debounce feature to prevent multiple triggers.
     bool m_previousKeyRawState = false;   // Last state of the key, necessary for debouncing

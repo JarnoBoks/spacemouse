@@ -24,6 +24,6 @@ public:
     JoystickSensor(const int8_t pin, JoystickSensorsId_t id);
     ~JoystickSensor() override {}
 
-    bool setIdlePosition(int val) override;
-    bool idlePositionWarning(const int val) const override;
+    bool setIdlePosition(int val) override final;
+    bool idlePositionWarning(const int val) const override final;
 };

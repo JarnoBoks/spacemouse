@@ -80,7 +80,7 @@ AxisCollection myAxisCollection;   // Axis collection object to hold the axes an
 #include "commandhandler/showcommand.h"
 #include "commandhandler/exclusivecommand.h"
 #include "commandhandler/switchyzcommand.h"
-#include "commandhandler/bootloadercommand.h"
+// REVIEW #include "commandhandler/bootloadercommand.h"
 CommandHandler myCommandHandler;                                                              // Command handler object to handle the commands from the serial interface
 CollectionIdentifier myCollections(&mySensorCollection, &myAxisCollection, &myKeyCollection); // Collection identifier object to identify the collection of the command
 
@@ -149,11 +149,12 @@ void setup() {
     // FIXME - Cleanup the calibration manager when the calibration is finished.
     mySensorCalibrationManagerIdle = new SensorCalibrationManagerIdle(&mySensorCollection); // Initialize the sensor calibration manager
     Serial.println(F("Sensor calibration manager initialized."));
-    FreeRAM::display_freeram();
     mySensorCalibrationManagerIdle->activate(); // Start the idle calibration with 500 iterations
 
     Serial.println(F("Sensor calibration manager started."));
     //  Setup the Command Handler and register the commands that can be handled via the serial interface.
+    // NOTE: Memory wise is is allowed to allocate memory Dynamically, while the commands will never be deleted.
+    // REVIEW - The entire commmand handler uses ~450 bytes of RAM, mainly due to the vtables for the command & command parameter classes.
     myCommandHandler.registerCommand(new DebugCommand(&myCollections));
     myCommandHandler.registerCommand(new IdleCommand(&myCollections));
     myCommandHandler.registerCommand(new MinMaxCommand(&myCollections));
@@ -164,8 +165,7 @@ void setup() {
     myCommandHandler.registerCommand(new ShowCommand());
     myCommandHandler.registerCommand(new ExclusiveCommand());
     myCommandHandler.registerCommand(new SwitchYZCommand());
-    myCommandHandler.registerCommand(new BootloaderCommand());
-
+    // REVIEW myCommandHandler.registerCommand(new BootloaderCommand());
 #if SIMULATOR_DEBUGGING
     // When debugging with SimAVR through PlatformIO the serial monitor is not available. The command handler will not be able to parse the input from the serial monitor.
     // Use this command to initialize a debug state.
@@ -213,7 +213,7 @@ void loop() {
 #endif
 
     // Evaluate the status of the keys & notify collection observers
-    // FIXME myKeyCollection.evaluate();
+    myKeyCollection.evaluate();
 
 #if ROTARY_KEYS > 0
     // The encoder wheel shall be treated as a key.

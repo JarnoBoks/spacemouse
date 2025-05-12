@@ -1,11 +1,12 @@
-// Every file will be ignored by git!
+// Ignore all files that meet the following patterns:
 config*.h
 .pio
 .vscode
 .idea
 test*.*
 
-// Allthough these files should be included, f.e config_sample.h, config_physicalkey.h
+
+// Except for the files that meet the following patterns (f.e config_sample.h, config_physicalkey.h)
 !config_*.h
 
 

@@ -20,5 +20,5 @@ public:
     virtual ~SensorCalibrationManager() = default; // Default destructor
 
     virtual void activate() = 0; // Pure virtual function to activate the calibration
-    virtual void deactivate(const bool warningsOccurred);
+    void deactivate(const bool warningsOccurred);
 };

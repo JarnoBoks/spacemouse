@@ -82,23 +82,22 @@ HIDEventBufferKeys myHIDEventBufferKeys;
 HIDEventBufferRotation myHIDEventBufferRotation;
 HIDEventBufferTranslation myHIDEventBufferTranslation;
 
-#ifdef ARDUINO_ARCH_AVR
-#include "hidhandler/usbinterface/SpaceMouseUSBInterface.h"
+// Include the header file for the USB interface (used to connect to the computer)
+#include "usbstack/USBInterface.hpp"
+
+// Include the header file for the HID handler (used to handle the HID events)
 #include "hidhandler/HIDHandlerController.h"
 #include "hidhandler/SpaceMouseHID.h"
 SpaceMouseHID mySpaceMouseHID;
-#endif
 
 #include "common/CustomDelay.h" // Include the custom delay header
 #include "common/FreeRAM.h"     // Include the free RAM header
 
+// Include the header file for the WiFi manager (used to connect to WiFi and handle OTA updates)
 #include "wifi/WifiManager.h"
+
 // #include <ArduinoShrink.h>
 void setup() {
-    CustomDelay::delay(100); // Wait for CPU to start all peripherals
-
-    WifiManager::setup_Wifi(); // Setup the WiFi connection (only if ESP32 and if configured in config.h)
-    WifiManager::setup_OTA();  // Setup the OTA connection (only if configured in platformio.ini)
 
     CustomDelay::delay(100); // Wait for the serial interface to be ready
 
@@ -107,7 +106,13 @@ void setup() {
     CustomDelay::delay(100); // Wait for the serial interface to be ready
     Serial.setTimeout(2);    // The serial interface will look for new commands and it will only wait 2ms
 
-    CustomDelay::delay(7000); // Wait for the serial interface to be ready
+    CustomDelay::delay(100); // Wait for CPU to start all peripherals
+
+    // Setup USB, WiFi and OTA
+    USBStart;
+    WifiManager::setup_Wifi(); // Setup the WiFi connection (only if ESP32 and if configured in config.h)
+    WifiManager::setup_OTA();  // Setup the OTA connection (only if configured in platformio.ini)
+
     //  Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();
 
@@ -126,11 +131,6 @@ void setup() {
     // FIXME - Kinematics should be removed
     // FIXME Kinematics::getInstance()->setAxisCollection(&myAxisCollection); // Set the axis collection for the kinematics object
 
-#ifdef ARDUINO_ARCH_AVR
-    // FIXME - For now a manual start. Should be done automatically.
-    SpaceMouseUSBInterface_::getInstance();
-#endif
-
     // Call the setup function of the button factory. This will setup the buttons and the button configuration.
     // REVIEW - Not necessary for now: KeyFactory::getInstance()->setupKeys(); // Updated from setupButtons() to setupKeys()
 
@@ -147,6 +147,7 @@ void setup() {
     myCommandHandler.registerCommand(new ShowCommand());
     myCommandHandler.registerCommand(new ExclusiveCommand());
     myCommandHandler.registerCommand(new SwitchYZCommand());
+
 #if SIMULATOR_DEBUGGING
     // When debugging with SimAVR through PlatformIO the serial monitor is not available.
     // Use this line to initialize a debug state if necessary and the corresponding output.
@@ -155,18 +156,16 @@ void setup() {
 #endif
 
     // Start the idle calibration of the sensors. This will zero the sensors during the loop.
-    // TODO - During setup we aren't interested in the output of the calibration process.
     // TODO - We do not want to send output to the HID while the calibration isn't finished.
     // FIXME - Cleanup the calibration manager when the calibration is finished.
     mySensorCalibrationManagerIdle = new SensorCalibrationManagerIdle(&mySensorCollection); // Initialize the sensor calibration manager
     mySensorCalibrationManagerIdle->activate();                                             // Start the idle calibration with 500 iterations
 
-#ifdef ARDUINO_ARCH_AVR
     // Connect the HID interface to the axes and keys
     mySpaceMouseHID.getController()->setHIDEventBufferKeys(&myHIDEventBufferKeys);               // Connect the HID event buffer to the HID interface
     mySpaceMouseHID.getController()->setHIDEventBufferRotation(&myHIDEventBufferRotation);       // Connect the HID event buffer to the HID interface
     mySpaceMouseHID.getController()->setHIDEventBufferTranslation(&myHIDEventBufferTranslation); // Connect the HID event buffer to the HID interface
-#endif
+
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
     initEncoderWheel();
 #endif

@@ -1,5 +1,4 @@
 #pragma once
-
 /* The user specific settings, like pin mappings or special configuration variables and sensitivities are stored in config.h.
    Please adjust your settings and save it as --> config.h <-- !
 */
@@ -11,15 +10,49 @@
 // You have to readdress this part of the configuration file.
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+//  _____________________________________________________________________________
+// | Follow this file from top to bottom to calibrate your space mouse.          |
+// | You can find some pictures for the calibration process here:                |
+// | https://github.com/AndunHH/spacemouse/wiki/Ergonomouse-Build#calibration    |
+//
+
+/* General information
+===========================
+This is the configuration file for the Spacemouse. It contains all the settings for the Spacemouse,
+including the pin assignments, calibration values and other settings.  The Spacemouse software is
+written in C++ and uses the Arduino framework. The software was originally written for an Arduino Pro Micro,
+but evolved to support the ESP32S3 architecture. Since may 2025 the main development is done on the ESP32S3
+architecture, but at this moment the software still functions for the Arduino Pro Micro.
+
+The software is best maintained with Visual Studio Code and PlatformIO. For more information on how to
+set up the development environment, see https://platformio.org/install/ide?install=vscode.
+
+The platformio.ini configuration file contains the settings for the various versions and architectures of the Software.
+Default all release versions will be compiled, but you can select the desired one by changing the evironment in the
+bottom bar of Visual Studio Code. The environments are:
+- arduino_pro_micro  : The original Arduino Pro Micro version
+- esp32s3_devkit_c1  : The ESP32S3 version for the Devkit C1 board
+- esp32s3_zero       : The ESP32S3 version for the Waveshare Zero board
+
+Both ESP versions are available in a default version and a version that allows uploading the firmware over the air (OTA).
+The OTA version is only available for the ESP32S3 version. In order for the OTA version to work, you need to set the
+WiFi credentials in the config.h file.
+
+Note: The initial upload of the code always have to be done over USB. After that, you can use OTA to upload the code.
+      Check the documentation for your specific hardware platform for more information how to upload the code.
+      (For some boards it is necessary to keep the BOOT button pressed while powering up the board to enable USB upload).
+*/
+
+// WiFi credentials for OTA upload, uncomment to use
+// #define WIFI_SSID "Your WiFi ssid"               // WiFi SSID
+// #define WIFI_PASSWORD "Your Wifi password"       // WiFi password
+// #define WIFI_HOSTNAME "Your Spacemouse Hostname" // WiFi hostname
+
 /* Calibration instructions
 ===========================
 
-| Follow this file from top to bottom to calibrate your space mouse.          |
-| You can find some pictures for the calibration process here:                |
-| https://github.com/AndunHH/spacemouse/wiki/Ergonomouse-Build#calibration    |
-
-General
-========
+ General
+=========
 The spacemouse is calibrated through the serial monitor (preferred) or through the configuration parameters
 in this file. To view the current calibrated values of the spacemouse, you can use the command "SHOW" in the
 serial monitor.

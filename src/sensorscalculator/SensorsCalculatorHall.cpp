@@ -3,6 +3,11 @@
 #include "..\axis\axes\Axis.hpp"         // Include the header file for the Axis class
 #include "axis/axes/axistype.h"          // Include the header file for the AxisType_t enum
 
+#ifndef INTERNAL
+#define INTERNAL 0x03 // Define the INTERNAL constant if not already defined (necessary for ESP32)
+#endif
+
+// FIXME - Hardware design should take care of the reference voltage.
 SensorsCalculatorHall::SensorsCalculatorHall() {
     // Set the analog reference voltage for the sensors
     setAnalogReference(INTERNAL);

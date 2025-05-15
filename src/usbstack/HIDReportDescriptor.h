@@ -1,33 +1,14 @@
-/*
-This class behaves as HID Device with two endpoints for in and out
-
-It was created by reverse-engineering a Space Navigator and relating to the HID Library by Nico Hood for reference. https://github.com/NicoHood/HID
-
-This code is based on https://forum.arduino.cc/t/solved-unable-to-receive-hid-reports-from-computer-using-pluggableusb/596793
-*/
 #pragma once
-#include <Arduino.h>
 
-// make sure that it is a supported Architecture
-#ifndef ARDUINO_ARCH_AVR
-#error "Unsupported Architecture"
-#endif
+#include "config.h"  // For ADV_HID_REL and ADV_HID_JIGGLE
+#include <stdint.h>  // For uint8_t
+#include <Arduino.h> // For PROGMEM
 
-#include "PluggableUSB.h"
-#include "HID.h"
-#include <hidhandler/HIDHandlerConfig.h>
-
-#define SPACEMOUSE_D_HIDREPORT(length) \
-    {                                  \
-        9, 0x21, 0x11, 0x01, 0, 1, 0x22, lowByte(length), highByte(length)}
-
-typedef struct
-{
-    InterfaceDescriptor hid;
-    HIDDescDescriptor desc;
-    EndpointDescriptor in;
-    EndpointDescriptor out;
-} SpaceMouseHIDDescriptor;
+// USB Device Identification
+// !!  For Arduino the USB VID and PID for this emulated space mouse pro must be set in the boards.txt
+// !!  in arduino IDE or in set_hwids.py in platformIO.
+#define SM_USB_VID 0x256f
+#define SM_USB_PID 0xc631 // Vendor ID and Product ID for the SpaceMouse
 
 // HID Report IDs
 // These IDs are used to identify the different reports sent by the SpaceMouse to the host computer.
@@ -36,10 +17,7 @@ typedef struct
 #define REPORTID_KEYS 0x03  // Report ID for the third report (keys)
 #define REPORTID_LEDS 0x04  // Report ID for the fourth report (LEDs)
 
-// The USB VID and PID for this emulated space mouse pro must be set in the boards.txt in arduino IDE or
-// in set_hwids.py in platformIO.
-
-static const uint8_t SpaceMouseReportDescriptor[] PROGMEM = {
+static const uint8_t desc_hid_report[] PROGMEM = {
     0x05, 0x01,       // Usage Page (Generic Desktop)
     0x09, 0x08,       // Usage (Multi-Axis)
     0xA1, 0x01,       // Collection (Application)
@@ -107,42 +85,3 @@ static const uint8_t SpaceMouseReportDescriptor[] PROGMEM = {
     0xC0,                //   End Collection
     0xc0                 // END_COLLECTION
 };
-
-#define USBControllerInterface pluggedInterface
-#define USBControllerEndpointIn pluggedEndpoint
-#define USBControllerEndpointOut (pluggedEndpoint + 1)
-#define USBControllerTX USBControllerEndpointIn
-#define USBControllerRX USBControllerEndpointOut
-
-class SpaceMouseUSBInterface_ : public PluggableUSBModule {
-private:
-    SpaceMouseUSBInterface_();
-    static SpaceMouseUSBInterface_ *_instance;
-    bool ledState;
-
-protected:
-    uint8_t endpointTypes[2];
-    uint8_t protocol;
-    uint8_t idle;
-
-    int getInterface(uint8_t *interfaceNumber);
-    int getDescriptor(USBSetup &setup);
-    bool setup(USBSetup &setup);
-
-public:
-    static SpaceMouseUSBInterface_ *getInstance() {
-        if (!_instance) {
-            _instance = new SpaceMouseUSBInterface_();
-        }
-        return _instance;
-    }
-
-    int write(const uint8_t *buffer, size_t size);
-    int SendReport(uint8_t id, const void *data, int len);
-    int readSingleByte();
-    void printAllReports();
-    bool updateLEDState();
-    bool getLEDState();
-};
-
-// REMOVE - Replaced with instance - extern SpaceMouseUSBInterface_ SpaceMouseUSBInterface;

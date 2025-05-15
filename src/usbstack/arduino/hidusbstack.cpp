@@ -9,29 +9,29 @@ This code is based on https://forum.arduino.cc/t/solved-unable-to-receive-hid-re
 #include <Arduino.h>
 #include "config.h"
 
-#include "SpaceMouseUSBInterface.h"
+#include "..\SpaceMouseUSBInterface.h"
 
-SpaceMouseUSBInterface_ *SpaceMouseUSBInterface_::_instance = nullptr;
+HidUSBStack *HidUSBStack::_instance = nullptr;
 
-SpaceMouseUSBInterface_::SpaceMouseUSBInterface_() : PluggableUSBModule(2, 1, endpointTypes) {
+HidUSBStack::HidUSBStack() : PluggableUSBModule(2, 1, endpointTypes) {
     endpointTypes[0] = EP_TYPE_INTERRUPT_IN;
     endpointTypes[1] = EP_TYPE_INTERRUPT_OUT;
     PluggableUSB().plug(this);
     ledState = false;
 }
 
-int SpaceMouseUSBInterface_::getInterface(uint8_t *interfaceNumber) {
+int HidUSBStack::getInterface(uint8_t *interfaceNumber) {
     interfaceNumber[0] += 1;
     SpaceMouseHIDDescriptor interfaceDescriptor = {
         D_INTERFACE(USBControllerInterface, 2, USB_DEVICE_CLASS_HUMAN_INTERFACE, 0, 0),
-        SPACEMOUSE_D_HIDREPORT(sizeof(SpaceMouseReportDescriptor)),
+        SPACEMOUSE_D_HIDREPORT(sizeof(desc_hid_report)),
         D_ENDPOINT(USB_ENDPOINT_IN(USBControllerEndpointIn), USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, 0),
         D_ENDPOINT(USB_ENDPOINT_OUT(USBControllerEndpointOut), USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, 0),
     };
     return USB_SendControl(0, &interfaceDescriptor, sizeof(interfaceDescriptor));
 }
 
-int SpaceMouseUSBInterface_::getDescriptor(USBSetup &setup) {
+int HidUSBStack::getDescriptor(USBSetup &setup) {
     // code copied and modified from NicoHood's HID-Project
     // check if it is a HID class Descriptor request
     if (setup.bmRequestType != REQUEST_DEVICETOHOST_STANDARD_INTERFACE) {
@@ -48,10 +48,10 @@ int SpaceMouseUSBInterface_::getDescriptor(USBSetup &setup) {
 
     protocol = HID_REPORT_PROTOCOL;
 
-    return USB_SendControl(TRANSFER_PGM, SpaceMouseReportDescriptor, sizeof(SpaceMouseReportDescriptor));
+    return USB_SendControl(TRANSFER_PGM, desc_hid_report, sizeof(desc_hid_report));
 }
 
-bool SpaceMouseUSBInterface_::setup(USBSetup &setup) {
+bool HidUSBStack::setup(USBSetup &setup) {
     // code copied from NicoHood's HID-Project
     if (pluggedInterface != setup.wIndex) {
         return false;
@@ -95,7 +95,7 @@ bool SpaceMouseUSBInterface_::setup(USBSetup &setup) {
     return false;
 }
 
-int SpaceMouseUSBInterface_::write(const uint8_t *buffer, size_t size) {
+int HidUSBStack::write(const uint8_t *buffer, size_t size) {
     return USB_Send(USBControllerTX, buffer, size);
 }
 
@@ -106,7 +106,7 @@ int SpaceMouseUSBInterface_::write(const uint8_t *buffer, size_t size) {
  * @param len  Length of the data
  * @return Length of data sent (including 1 byte for report id)
  */
-int SpaceMouseUSBInterface_::SendReport(uint8_t id, const void *data, int len) {
+int HidUSBStack::SendReport(uint8_t id, const void *data, int len) {
     auto ret = USB_Send(USBControllerTX, &id, 1);
     if (ret < 0)
         return ret;
@@ -120,7 +120,7 @@ int SpaceMouseUSBInterface_::SendReport(uint8_t id, const void *data, int len) {
  * @brief Reads a single byte from the interface, if available
  * @return Returns the byte or zero
  */
-int SpaceMouseUSBInterface_::readSingleByte() {
+int HidUSBStack::readSingleByte() {
     if (USB_Available(USBControllerRX)) {
         return USB_Recv(USBControllerRX);
     } else {
@@ -131,7 +131,7 @@ int SpaceMouseUSBInterface_::readSingleByte() {
 /**
  * @brief Try to read some reports and print them
  */
-void SpaceMouseUSBInterface_::printAllReports() {
+void HidUSBStack::printAllReports() {
     uint8_t numBytes = USB_Available(USBControllerRX);
     if (numBytes >= 2) {
         uint8_t data[2] = {0};
@@ -151,7 +151,7 @@ void SpaceMouseUSBInterface_::printAllReports() {
  * @return Returns the led status (false = off, true = on)
  * @details This function is called in the main loop to check for LED reports from the host.
  */
-bool SpaceMouseUSBInterface_::updateLEDState() {
+bool HidUSBStack::updateLEDState() {
     uint8_t numBytes = USB_Available(USBControllerRX);
     if (numBytes >= 2) {
         uint8_t data[2] = {0};
@@ -176,7 +176,7 @@ bool SpaceMouseUSBInterface_::updateLEDState() {
  * @return Boolean LED state
  * @details This function returns the current state of the LED, which is updated by the updateLEDState function.
  */
-bool SpaceMouseUSBInterface_::getLEDState() {
+bool HidUSBStack::getLEDState() {
     return ledState;
 }
 

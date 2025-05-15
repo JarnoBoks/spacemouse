@@ -9,10 +9,10 @@
 #include "..\functionality\StrategyCommandKey.hpp" // For CommandKeyStrategy class
 
 // Include header files for the commands that the keys can send
-#include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
+// REMOVE #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
 
 // Include header files for the command targets for the keys
-#include "hidhandler/translator/TranslatorKeys.h"
+// REMOVE #include "hidhandler/translator/TranslatorKeys.h"
 
 void KeyFactory::setupFunctionality(Key *key) {
     // Get the pinNumber from the config.h object for this key.
@@ -50,7 +50,7 @@ void KeyFactory::setupFunctionality(Key *key) {
         key->setStrategy(cmdFunc);                                       // Set the command functionality for the key
 #endif
         IKeyFunctionality *strategy = new StrategyCommandKey(key); // KeyStrategy instance that wraps the command to send.
-        key->setStrategy(strategy);                               // Set the command functionality for the key
+        key->setStrategy(strategy);                                // Set the command functionality for the key
     }
 }
 

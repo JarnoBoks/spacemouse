@@ -1,6 +1,6 @@
 #include "HIDStateCheckkeys.h"
-#include <hidhandler/translator/TranslatorKeys.h> // for TranslatorKinematicsBase
-#include <hidhandler/HIDHandlerController.h>      // For HIDHandlerController (context)
+// REMOVE #include <hidhandler/translator/TranslatorKeys.h> // for TranslatorKinematicsBase
+#include <hidhandler/HIDHandlerController.h> // For HIDHandlerController (context)
 
 // Includes for the possible target states
 #include "HIDStateSendkeys.h"

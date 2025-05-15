@@ -1,11 +1,10 @@
 #pragma once
 
-#include "IHIDState.h"                         // for IHIDState
-#include "HIDStateData.h"                      // for HIDStateData
-#include "config.h"                            // for ADV_HID_JIGGLE
-#include <hidhandler/HIDHandlerConfig.h>       // for HIDUPDATERATE_MS
-#include <hidhandler/translator/ITranslator.h> // for Translator interface
-#include <Arduino.h>                           // for millis()
+#include "IHIDState.h"                   // for IHIDState
+#include "HIDStateData.h"                // for HIDStateData
+#include "config.h"                      // for ADV_HID_JIGGLE
+#include <hidhandler/HIDHandlerConfig.h> // for HIDUPDATERATE_MS
+#include <Arduino.h>                     // for millis()
 
 class HIDHandlerController; // Forward declaration of HIDHandlerController
 

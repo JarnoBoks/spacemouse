@@ -1,8 +1,8 @@
 #pragma once
 #include "HIDCommand.hpp"
 #include "key/keys/Key.hpp"
-#include "hidhandler/translator/ITranslator.h" // Include the HID translator header for key functionality
-
+// REMOVE #include "hidhandler/translator/ITranslator.h" // Include the HID translator header for key functionality
+#if 0
 /**
  * @brief Command class that service the key press event.
  * @details This class is used to store the key data and send it to the translator for processing.
@@ -37,3 +37,4 @@ public:
         translator_receiver->stageDataToSend(this); // Store the command data in the translator
     }
 };
+#endif

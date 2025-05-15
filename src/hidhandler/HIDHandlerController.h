@@ -8,7 +8,7 @@
 #include "states/HIDStateStart.h" // for HIDStateInit
 
 // Include the translator header files
-#include "translator/TranslatorKeys.h" // for TranslatorKeys        // REMOVE
+// REMOVE #include "translator/TranslatorKeys.h" // for TranslatorKeys        // REMOVE
 
 class HIDEventBufferKeys;        // forward declaration
 class HIDEventBufferRotation;    // forward declaration
@@ -25,7 +25,7 @@ private:
     HIDStateData *stateData = nullptr;    // Pointer to the state data object
 
     // Known interfaces for the HID state machine //REFACTOR - Remove this in favor of the HIDEventBuffer
-    TranslatorKeys *m_TranslatorKeys = nullptr; // Translator for key data
+    // REMOVE TranslatorKeys *m_TranslatorKeys = nullptr; // Translator for key data
 
     // Known interfaces for the HID event buffer
     HIDEventBufferKeys *m_HIDEventBufferKeys = nullptr;               // Pointer to the HID event buffer
@@ -39,8 +39,9 @@ public:
      *          With use of the initializer list the state is set to the 'Start' state.
      */
     HIDHandlerController() : currentState(new HIDStateStart()),
-                             stateData(new HIDStateData()),
-                             m_TranslatorKeys(new TranslatorKeys()) {
+                             stateData(new HIDStateData())
+    // REMOVE m_TranslatorKeys(new TranslatorKeys())
+    {
         currentState->set_context(this);   // Set the context for the current state
         currentState->set_data(stateData); // Initialize the state data
     }
@@ -53,7 +54,7 @@ public:
     HIDHandlerController(HIDEventBufferKeys *eventBufferKeys, HIDEventBufferRotation *eventBufferRotation, HIDEventBufferTranslation *eventBufferTranslation)
         : currentState(new HIDStateStart()),
           stateData(new HIDStateData()),
-          m_TranslatorKeys(new TranslatorKeys()),
+          // REMOVE m_TranslatorKeys(new TranslatorKeys()),
           m_HIDEventBufferKeys(eventBufferKeys),
           m_HIDEventBufferRotation(eventBufferRotation),
           m_HIDEventBufferTranslation(eventBufferTranslation) {
@@ -64,7 +65,7 @@ public:
     ~HIDHandlerController() {
         delete currentState; // Clean up the current state object
         delete stateData;    // Clean up the state data object
-        delete m_TranslatorKeys;
+        // REMOVE delete m_TranslatorKeys;
     }
 
     /**

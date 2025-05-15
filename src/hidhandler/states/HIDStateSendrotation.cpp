@@ -22,12 +22,9 @@ void HIDStateSendrotation::apply() {
         return;
     }
 
-    SpaceMouseUSBInterface_ *usbInterface = SpaceMouseUSBInterface_::getInstance();                              // Get the USB interface instance
-    usbInterface->SendReport(REPORTID_ROT, context->getHIDEventBufferRotation()->getStaged(), HID_MESSAGE_SIZE); // send new rotational values
-
-    // HIDSenderRotation hidSender(context->getHIDEventBufferRotation()->getStaged()); // Create a new HIDSender instance with the staged rotation data
-    // hidSender.sendData();                                                           // Send the rotation data
-    context->getHIDEventBufferRotation()->clearStaged(); // Clear the staged rotation data
+    HIDSenderRotation hidSender(context->getHIDEventBufferRotation()->getStaged()); // Create a new HIDSender instance with the staged translation data
+    hidSender.sendData();                                                           // Send the translation data
+    context->getHIDEventBufferRotation()->clearStaged();                            // Clear the staged translation data
 
     // Increment or reset the zero counter.
     // It is safe to assume the translator is executed and is of type TranslatorKinematicsRotation.

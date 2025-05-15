@@ -92,8 +92,13 @@ SpaceMouseHID mySpaceMouseHID;
 #include "common/CustomDelay.h" // Include the custom delay header
 #include "common/FreeRAM.h"     // Include the free RAM header
 
+#include "wifi/WifiManager.h"
 // #include <ArduinoShrink.h>
 void setup() {
+    CustomDelay::delay(100); // Wait for CPU to start all peripherals
+
+    WifiManager::setup_Wifi(); // Setup the WiFi connection (only if ESP32 and if configured in config.h)
+    WifiManager::setup_OTA();  // Setup the OTA connection (only if configured in platformio.ini)
 
     CustomDelay::delay(100); // Wait for the serial interface to be ready
 
@@ -149,6 +154,13 @@ void setup() {
     myCommandHandler.handleInput(buffer, 32, 1);
 #endif
 
+    // Start the idle calibration of the sensors. This will zero the sensors during the loop.
+    // TODO - During setup we aren't interested in the output of the calibration process.
+    // TODO - We do not want to send output to the HID while the calibration isn't finished.
+    // FIXME - Cleanup the calibration manager when the calibration is finished.
+    mySensorCalibrationManagerIdle = new SensorCalibrationManagerIdle(&mySensorCollection); // Initialize the sensor calibration manager
+    mySensorCalibrationManagerIdle->activate();                                             // Start the idle calibration with 500 iterations
+
 #ifdef ARDUINO_ARCH_AVR
     // Connect the HID interface to the axes and keys
     mySpaceMouseHID.getController()->setHIDEventBufferKeys(&myHIDEventBufferKeys);               // Connect the HID event buffer to the HID interface
@@ -170,34 +182,14 @@ void setup() {
 #endif
 }
 
-void setup2() {
-    // This function is called after the setup() function. It is used to initialize the HID interface and the key collection.
-    // The HID interface is used to send the data to the computer and the key collection is used to handle the keys.
-    // The setup2() function is called after the setup() function to allow for a delay before starting the HID interface.
-    // This is useful for debugging purposes, as it allows for a delay before starting the HID interface.
-    Serial.println(F("Setup2() called!")); // Print a message to the serial monitor
-    FreeRAM::display_freeram();
-    // Start the idle calibration of the sensors. This will zero the sensors during the loop.
-    // TODO - During setup we aren't interested in the output of the calibration process.
-    // TODO - We do not want to send output to the HID while the calibration isn't finished.
-    // FIXME - Cleanup the calibration manager when the calibration is finished.
-    mySensorCalibrationManagerIdle = new SensorCalibrationManagerIdle(&mySensorCollection); // Initialize the sensor calibration manager
-    mySensorCalibrationManagerIdle->activate();                                             // Start the idle calibration with 500 iterations
-    FreeRAM::display_freeram();                                                             // Print the free RAM to the serial monitor
-    Serial.println(F("Setup done!"));                                                       // Print a message to the serial monitor
-}
-
-bool firstrun = true; // Flag to check if the setup2() function has been called
 void loop() {
-    if (firstrun) {
-        setup2();         // Call the setup2() function to initialize the HID interface and the key collection
-        firstrun = false; // Set the flag to false to prevent calling the setup2() function again
-    }
-    // FreeRAM::display_freeram(); // Print the free RAM to the serial monitor
+
     //  Check if the user entered a command through the Serial monitor
     if (Serial.available()) {
         myCommandHandler.parseSerialMonitorInput();
     }
+
+    WifiManager::handle_OTA(); // Handle the OTA connection (only if configured in platformio.ini)
 
     // Update all the sensor values & apply the calibration to the read sensor values & notify collection observers
     mySensorCollection.evaluate();

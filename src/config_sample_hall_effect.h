@@ -703,7 +703,7 @@ Change from "//define" to "#define" to activate the LED feature.
 /* LED strip with data pin
 ---------------------------
 The connected LED is not just a simple LED, but an intelligent one, like a neopixel controlled by FASTLED library.
-The LEDpin is used as a data pin. The LEDRING is used to define the number of LEDs on the ring.
+The LEDpin is used as the data pin. The LEDRING is used to define the number of LEDs on the ring.
 */
 
 // #define LEDRING 24
@@ -734,8 +734,9 @@ The following settings allow customization of debug output behavior */
 The following settings are advanced and don't need to be changed for normal usage (for Windows users).
 */
 
-// Definition, how many bits are used in the HID report to encode the keys
-#define HIDMAXBUTTONS 32 // must be multiple of 8!
+// Definition, the number of bits that are used in the HID report to encode the keys. HIDMAXBUTTONS must be a multiple of 8.
+// For example, if you have 3 keys that send a command to the PC, you need 3 bits and HIDMAXBUTTONS = 8.
+#define HIDMAXBUTTONS 32
 
 /* ADV_HID_REL and ADV_HID_JIGGLE change how the values are reported over HID protocol, see hidInterface.cpp and .h
 

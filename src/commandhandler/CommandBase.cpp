@@ -23,8 +23,9 @@ const bool CommandBase::isWordEmpty(const char *str, const char *errorMsg) const
     return false; // String is not empty or null
 }
 
-// NOTE - The number conversion functions are both written with the usage of the strtod function, for code size purposes.
-//        strtod is already used by somewhere else and to preserve space in the compiled code we do not use strtol or atof.
+// DEVNOTE - The number conversion functions are both written with the usage of the strtod function, for code size purposes.
+//           The strtod function is already used somewhere else in the code and to preserve space in the compiled code we do
+//           use strtol or atof.
 const bool CommandBase::convertWordNumber(const char *str, long *n) const {
     // Check if the string is a number (integer or float)
     char *endptr = nullptr;

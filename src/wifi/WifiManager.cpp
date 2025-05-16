@@ -11,7 +11,7 @@
 
 void WifiManager::setup_Wifi() {
 
-#ifdef WIFI_SSID &&WIFI_PASSWORD &&WIFI_HOSTNAME
+#if defined(WIFI_SSID) && defined(WIFI_PASSWORD) && defined(WIFI_HOSTNAME)
 
     WiFi.setHostname(WIFI_HOSTNAME);
     WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
@@ -41,7 +41,7 @@ void WifiManager::setup_Wifi() {
 }
 
 void WifiManager::setup_OTA() {
-#ifdef INI_OTAHOSTNAME &&WIFI_SSID &&WIFI_PASSWORD &&WIFI_HOSTNAME
+#if defined(INI_OTAHOSTNAME) && defined(WIFI_SSID) && defined(WIFI_PASSWORD) && defined(WIFI_HOSTNAME)
     // Port defaults to 3232
     ArduinoOTA.setPort(3232);
 
@@ -95,8 +95,8 @@ void WifiManager::setup_OTA() {
 }
 
 void WifiManager::handle_OTA() {
-#ifdef INI_OTAHOSTNAME &&WIFI_SSID &&WIFI_PASSWORD &&WIFI_HOSTNAME
+#if defined(INI_OTAHOSTNAME) && defined(WIFI_SSID) && defined(WIFI_PASSWORD) && defined(WIFI_HOSTNAME)
     ArduinoOTA.handle();
-#endif // INI_OTAHOSTNAME &&WIFI_SSID &&WIFI_PASSWORD &&WIFI_HOSTNAME
+#endif // INI_OTAHOSTNAME && WIFI_SSID && WIFI_PASSWORD && WIFI_HOSTNAME
 }
 #endif // ARDUINO_ARCH_ESP32

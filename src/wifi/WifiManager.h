@@ -9,3 +9,12 @@ public:
     static void handle_OTA();
 };
 #endif
+
+#ifdef ARDUINO_ARCH_AVR
+class WifiManager {
+public:
+    static void setup_Wifi() {};
+    static void setup_OTA() {};
+    static void handle_OTA() {};
+};
+#endif

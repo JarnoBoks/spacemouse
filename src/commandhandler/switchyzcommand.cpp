@@ -36,5 +36,7 @@ void SwitchYZCommand::execute(const char *param1, const char *param2, uint8_t pa
         return;
     }
 
-    return; // No action needed for two parameters in this case
+    if (paramCount == 2) {
+        // Not used - Ignore commands that have two parameters
+    }
 }

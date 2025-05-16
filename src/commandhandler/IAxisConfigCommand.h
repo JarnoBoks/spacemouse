@@ -14,7 +14,7 @@ class Axis;
 class IAxisConfigCommand : public CommandBase {
 private:
 protected:
-    AxisDirectionConfig *m_DirectionConfig = nullptr;
+    AxisDirectionConfig *m_DirectionConfig = nullptr; // REFACTOR - Change name to m_AxisDirectionConfig
     Axis *m_Axis = nullptr;
     float m_requestedValue = 0;
 

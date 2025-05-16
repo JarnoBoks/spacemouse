@@ -17,9 +17,10 @@ void SensCommand::execute(const char *param1, const char *param2, uint8_t paramC
     // Call the base class execute function to handle common functionality
     IAxisConfigCommand::execute(param1, param2, paramCount);
 
+    // Check if the axis has a valid AxisDirectionConfig
     if (!m_DirectionConfig) {
         ESP_PRINT(F("SensCommand::execute: No direction config available"));
-        return; // No direction config available, exit the function
+        return;
     }
 
     m_DirectionConfig->sensitivity = m_requestedValue;   // Set the sensitivity value to the requested value

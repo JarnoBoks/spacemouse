@@ -54,8 +54,8 @@ void DebugCommand::stop() {
  * @details Handles switching between debug states or reporting the current state.
  */
 void DebugCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
-    if (paramCount == 0) {
-        currentState->report();
+    if (paramCount == 0 || paramCount >= 2) {
+        currentState->report(); // TODO - Add a correct report output for all states
         return;
     }
 
@@ -87,7 +87,6 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
         setState(new DebugParamSensorInformationFiltered(this));
         break;
     case 4:
-        Serial.println(F("Debug Case 4:"));
         // Translation and rotation values - without modifier function, inversion, YZ switching nor Exclusivemode applied
         setState(new DebugParamAxisInformation(this));
         break;

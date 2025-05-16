@@ -51,24 +51,19 @@ AxisCollection myAxisCollection;   // Axis collection object to hold the axes an
 // Include the header files for the HID commands
 #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
 
-// Include the header files for the command handler that will handle the commands send by the serial interface
-#include "commandhandler/commandhandler.h"
-#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
+// Include the header files for the command handler that will handle the commands send by the serial interface.
+// For the ESP32 and AVR architecture, the command handler is different.
+#include "commandhandler/factory/CommandHandlerFactory.hpp"
+#ifdef ARDUINO_ARCH_ESP32
+#include "commandhandler/EspCommandHandler.hpp"
+#endif
+#ifdef ARDUINO_ARCH_AVR
+#include "commandhandler/AvrCommandHandler/AvrCommandHandler.hpp"
+#endif
 
-// Include the header files for the commands that can be received through the serial interface
-#include "commandhandler/debugcommand.h"
-#include "commandhandler/idlecommand.h"
-#include "commandhandler/minmaxcommand.h"
-#include "commandhandler/senscommand.h"
-#include "commandhandler/gatecommand.h"
-#include "commandhandler/modfunccommand.h"
-#include "commandhandler/invertcommand.h"
-#include "commandhandler/showcommand.h"
-#include "commandhandler/exclusivecommand.h"
-#include "commandhandler/switchyzcommand.h"
-// NOTE  #include "commandhandler/bootloadercommand.h"
-CommandHandler myCommandHandler;                                                              // Command handler object to handle the commands from the serial interface
+#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
 CollectionIdentifier myCollections(&mySensorCollection, &myAxisCollection, &myKeyCollection); // Collection identifier object to identify the collection of the command
+CommandHandler *myCommandHandler;                                                             // Command handler object to handle the commands from the serial interface
 
 // Include the header file for the calibration manager (used to calibrate center position of the sensors on startup)
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp" // Include the sensor calibration manager header file
@@ -111,7 +106,7 @@ void setup() {
     // Setup USB, WiFi and OTA
     USBStart;
     WifiManager::setup_Wifi(); // Setup the WiFi connection (only if ESP32 and if configured in config.h)
-    WifiManager::setup_OTA();  // Setup the OTA connection (only if configured in platformio.ini)
+    WifiManager::setup_OTA();  // Setup the OTA connection (only if ESP32 and if selected environment)
 
     //  Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();
@@ -134,25 +129,15 @@ void setup() {
     // Call the setup function of the button factory. This will setup the buttons and the button configuration.
     // REVIEW - Not necessary for now: KeyFactory::getInstance()->setupKeys(); // Updated from setupButtons() to setupKeys()
 
-    //  Setup the Command Handler and register the commands that can be handled via the serial interface.
-    // NOTE: Memory wise is is allowed to allocate memory Dynamically, while the commands will never be deleted.
-    // REVIEW - The entire commmand handler uses ~450 bytes of RAM, mainly due to the vtables for the command & command parameter classes.
-    myCommandHandler.registerCommand(new DebugCommand(&myCollections));
-    myCommandHandler.registerCommand(new IdleCommand(&myCollections));
-    myCommandHandler.registerCommand(new MinMaxCommand(&myCollections));
-    myCommandHandler.registerCommand(new SensCommand());
-    myCommandHandler.registerCommand(new GateCommand());
-    myCommandHandler.registerCommand(new ModFuncCommand());
-    myCommandHandler.registerCommand(new InvertCommand());
-    myCommandHandler.registerCommand(new ShowCommand());
-    myCommandHandler.registerCommand(new ExclusiveCommand());
-    myCommandHandler.registerCommand(new SwitchYZCommand());
+    CommandHandlerFactory myCommandHandlerFactory(&myCollections);     // Create the command handler factory
+    myCommandHandler = myCommandHandlerFactory.createCommandHandler(); // Create the command handler object
+    myCommandHandlerFactory.setupCommandHandler(myCommandHandler);     // Setup the command handler and register the commands
 
 #if SIMULATOR_DEBUGGING
     // When debugging with SimAVR through PlatformIO the serial monitor is not available.
     // Use this line to initialize a debug state if necessary and the corresponding output.
     char buffer[32] = "DEBUG 1";
-    myCommandHandler.handleInput(buffer, 32, 1);
+    myCommandHandler->handleInput(buffer, 32, 1);
 #endif
 
     // Start the idle calibration of the sensors. This will zero the sensors during the loop.
@@ -185,7 +170,7 @@ void loop() {
 
     //  Check if the user entered a command through the Serial monitor
     if (Serial.available()) {
-        myCommandHandler.parseSerialMonitorInput();
+        myCommandHandler->parseSerialMonitorInput();
     }
 
     WifiManager::handle_OTA(); // Handle the OTA connection (only if configured in platformio.ini)

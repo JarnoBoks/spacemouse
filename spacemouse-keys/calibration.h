@@ -22,11 +22,11 @@ enum DebugLevel_t : uint8_t {
 };
 
 // Called from main routine
-class Calibration {
+class AvrCommandHandler {
 public:
-    Calibration() = default;                                                              // Constructor
-    Calibration(Kinematics &SMKIN, SpaceMouseHW_ &SMHW) : _SMKIN(&SMKIN), _SMHW(&SMHW) {} // Constructor with parameters
-    ~Calibration() = default;                                                             // Destructor
+    AvrCommandHandler() = default;                                                              // Constructor
+    AvrCommandHandler(Kinematics &SMKIN, SpaceMouseHW_ &SMHW) : _SMKIN(&SMKIN), _SMHW(&SMHW) {} // Constructor with parameters
+    ~AvrCommandHandler() = default;                                                             // Destructor
 
     void SetKeysObject(SpaceKeys &SMKEYS) { _SMKEYS = &SMKEYS; } // Set the SpaceKeys object
 

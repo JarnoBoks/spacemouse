@@ -12,3 +12,10 @@ ESP32 - S3 USB Serial:
 https://github.com/espressif/esp-idf/blob/master/examples/peripherals/usb/device/tusb_hid/main/tusb_hid_example_main.c
 
 C:\Users\jarno.RATATOSK.000\.platformio\packages\toolchain-atmelavr\bin\avr-nm -Crtd --size-sort .pio\build\micro\firmware.elf > test_variables.txt
+
+
+
+CommandHandler:
+CommandHandler is built for both the AVR (Arduino) & ESP Architecture. Functionality is the same (16/05/2025).
+AVR design is less maintainable, but uses less memory in order to let the Arduino function normal.
+The ESP design is programmed OOP style and is maintained very easily.

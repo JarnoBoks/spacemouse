@@ -72,6 +72,7 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         }
     }
     if (paramCount == 2) {
+        // REVIEW - Not implemented on the AVR version
         // Command received: MINMAX <+|-><sensorname> <value>
         // TODO - Add functionality for the second parameter
 

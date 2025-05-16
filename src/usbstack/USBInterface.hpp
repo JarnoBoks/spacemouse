@@ -1,10 +1,10 @@
 #pragma once
 
 #ifdef ARDUINO_ARCH_AVR
-#include "usbastack/arduino/hidusbstack.hpp"
+#include "usbstack/arduino/hidusbstack.hpp"
 
-#define USBStart HIDUSBStack::getInstance()
-#define USBSendReport(x, y, z) HIDUSBStack::getInstance()->SendReport(x, y, z)
+#define USBStart HidUSBStack::getInstance()
+#define USBSendReport(x, y, z) HidUSBStack::getInstance()->SendReport(x, y, z)
 #endif
 
 #ifdef ARDUINO_ARCH_ESP32

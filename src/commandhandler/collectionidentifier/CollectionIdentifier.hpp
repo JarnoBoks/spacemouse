@@ -4,6 +4,11 @@ class SensorCollection; // Forward declaration of SensorCollection class
 class AxisCollection;   // Forward declaration of AxisCollection class
 class KeyCollection;    // Forward declaration of KeyCollection class
 
+/**
+ * @brief   Class containing pointers to collections of sensors, axes, and keys.
+ * @details This class is used as a data container to access collections of sensors, axes, and keys. It avoids separate parameters in
+ *          every function and makes it easier to pass around the collections as a single object and to extend the functionality in the future.
+ */
 class CollectionIdentifier {
 private:
     SensorCollection *m_SensorCollection = nullptr; // Pointer to the sensor collection

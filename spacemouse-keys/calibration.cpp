@@ -11,7 +11,7 @@
 /**
  * @brief Reports the raw (optionally inverted) ADC 10-bit values and the status of the raw key readings (without debouncing), if the output is due (every x miliseconds)
  */
-void Calibration::DebugOutput1_HW_RawInverted() {
+void AvrCommandHandler::DebugOutput1_HW_RawInverted() {
     if (_debug == 1 && _isDebugOutputDue()) {
         _SMHW->PrintRawReads();
         Serial.print(F(", "));
@@ -24,7 +24,7 @@ void Calibration::DebugOutput1_HW_RawInverted() {
  * @brief Reports the centered values of the sensors and the status of the keys, if the output is due (every x miliseconds)
  * @details Centered values are the difference between the raw values and the centerPoint values.
  */
-void Calibration::DebugOutput2_HW_Centered() {
+void AvrCommandHandler::DebugOutput2_HW_Centered() {
     if (_debug == 2 && _isDebugOutputDue()) {
         _SMHW->PrintCentered();
         Serial.print(DEBUG_LINE_END);
@@ -35,7 +35,7 @@ void Calibration::DebugOutput2_HW_Centered() {
  * @brief Reports the mapped values of the sensors with deadzone applied, if the output is due (every x miliseconds)
  * @details Mapped values are the difference between the raw values and the centerPoint values, with deadzone applied.
  */
-void Calibration::DebugOutput3_HW_DeadzonedMapped() {
+void AvrCommandHandler::DebugOutput3_HW_DeadzonedMapped() {
     if (_debug == 3 && _isDebugOutputDue()) {
         _SMHW->PrintCentered();
         Serial.print(DEBUG_LINE_END);
@@ -45,7 +45,7 @@ void Calibration::DebugOutput3_HW_DeadzonedMapped() {
 /**
  * @brief Reports translation & rotation values. Modifier function and inversion are not applied. Mainly used for calibrating base sensitivity and gate values.
  */
-void Calibration::DebugOutput4_KIN_Velocity() {
+void AvrCommandHandler::DebugOutput4_KIN_Velocity() {
     if (_debug == 4 && _isDebugOutputDue()) {
         _SMKIN->PrintVelocities();
         Serial.print(DEBUG_LINE_END);
@@ -56,7 +56,7 @@ void Calibration::DebugOutput4_KIN_Velocity() {
  * @brief Reports mapped sensor values with deadzone applied and translation & rotation values side by side for direct reference.
  *        Useful for calibrating the modifier function.
  */
-void Calibration::DebugOutput5_HWKIN_CenteredAndVelocity() {
+void AvrCommandHandler::DebugOutput5_HWKIN_CenteredAndVelocity() {
     if (_debug == 5 && _isDebugOutputDue()) {
         _SMHW->PrintCentered();
         helper_printseparator();
@@ -65,7 +65,7 @@ void Calibration::DebugOutput5_HWKIN_CenteredAndVelocity() {
     }
 }
 
-void Calibration::DebugOutput6_HWKINKEY_CenteredAndVelocityAndKeystate() {
+void AvrCommandHandler::DebugOutput6_HWKINKEY_CenteredAndVelocityAndKeystate() {
     if (_debug == 6 && _isDebugOutputDue()) {
         _SMHW->PrintCentered();
         helper_printseparator();
@@ -76,7 +76,7 @@ void Calibration::DebugOutput6_HWKINKEY_CenteredAndVelocityAndKeystate() {
     }
 }
 
-void Calibration::DebugOutput7_HWKINKEY_CenteredAndVelocityAndKeystate() {
+void AvrCommandHandler::DebugOutput7_HWKINKEY_CenteredAndVelocityAndKeystate() {
     if (_debug == 7) {
         _SMHW->PrintCentered();
         helper_printseparator();
@@ -94,7 +94,7 @@ void Calibration::DebugOutput7_HWKINKEY_CenteredAndVelocityAndKeystate() {
  * @retval true     debug output is due
  * @retval false    debug output is not due
  */
-bool Calibration::_isDebugOutputDue() {
+bool AvrCommandHandler::_isDebugOutputDue() {
     static unsigned long lastDebugOutput = 0; // time from millis(), when the last debug output was given
 
     if (millis() - lastDebugOutput > DEBUGDELAY) {
@@ -109,7 +109,7 @@ bool Calibration::_isDebugOutputDue() {
  * @brief Update the frequency report. This function is called every second to report the frequency of the loop.
  * @details The frequency is calculated by counting the number of iterations in one second and printing it to the serial monitor.
  */
-void Calibration::DebugOutput8_UpdateFrequencyReport() {
+void AvrCommandHandler::DebugOutput8_UpdateFrequencyReport() {
     if (_debug == 8) {
         // increase iterations counter
         _iterationsPerSecond++;
@@ -127,7 +127,7 @@ void Calibration::DebugOutput8_UpdateFrequencyReport() {
  * @brief  Handle the input from the serial monitor. This function reads the input from the serial monitor and processes it.
  * @details The function reads the input until a newline character or the buffer limit is reached. It then tokenizes the input and handles the command based on the number of received words.
  */
-void Calibration::DebugInput() {
+void AvrCommandHandler::DebugInput() {
     // NOTE - The input buffer size is limited to 64 bytes. If increased above 127 bytes, check typecast in the while loop!!
     char inputBuffer[64]; // Buffer to store the input command
     uint8_t bytesRead = 0;
@@ -202,7 +202,7 @@ void Calibration::DebugInput() {
  * @retval 1 Success
  * @retval -1 Command unknown
  */
-int8_t Calibration::_handleOneWord(char *words[]) {
+int8_t AvrCommandHandler::_handleOneWord(char *words[]) {
     int8_t ret = 1; // Default return value for success
 
     // --------------- SHOW ----------------------------------------------------
@@ -261,7 +261,7 @@ int8_t Calibration::_handleOneWord(char *words[]) {
  * @retval -3 No parameter given
  * @retval -4 Second parameter is not a number
  */
-int8_t Calibration::_handleTwoWords(char *words[]) {
+int8_t AvrCommandHandler::_handleTwoWords(char *words[]) {
     int8_t ret = 1; // Default return value for success
 
     // When we have two words, the first word is the command and the second word is the parameter.
@@ -349,7 +349,7 @@ int8_t Calibration::_handleTwoWords(char *words[]) {
  * @retval -5 Third parameter is not a float
  *
  */
-int8_t Calibration::_handleThreeWords(char *words[]) {
+int8_t AvrCommandHandler::_handleThreeWords(char *words[]) {
     int8_t ret = 1; // Default return value for success
 
     // Handle three words command. The first word is the command, the second word is the axis, and the third word is the value.

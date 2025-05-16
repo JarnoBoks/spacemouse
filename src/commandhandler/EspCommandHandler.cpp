@@ -1,6 +1,25 @@
-#include "CommandHandler.h"
+#include "ESPCommandHandler.hpp"
+#include "commandhandler/CommandBase.h" // For CommandBase class
 
-#define MAX_INPUT_SIZE 48 // Maximum size of the input buffer
+#define MAX_INPUT_SIZE 48 // Maximum size of the input buffer, ie. maximum number of characters in the user entered command string
+
+/**
+ * @brief Constructor for the ESPCommandHandler class.
+ */
+ESPCommandHandler::ESPCommandHandler() {
+    for (uint8_t i = 0; i < MAX_COMMANDS; ++i) {
+        commands[i] = nullptr; // Initialize the command pointers to nullptr
+    }
+}
+
+/**
+ * @brief Destructor for the ESPCommandHandler class.
+ */
+ESPCommandHandler::~ESPCommandHandler() {
+    for (int i = 0; i < commandCount; ++i) {
+        delete commands[i]; // Clean up the command pointers
+    }
+}
 
 /**
  * @brief Registers a command in the command handler.
@@ -9,7 +28,7 @@
  * @param cmd The command pointer to be stored.
  * @return True if the command was registered successfully, false otherwise.
  */
-bool CommandHandler::registerCommand(CommandBase *cmd) {
+bool ESPCommandHandler::registerCommand(CommandBase *cmd) {
     if (commandCount >= MAX_COMMANDS) {
         // TODO ESPPRINT- Serial.println(F("CommandHandler: Command array is full!"));  // Print error message if the array is full
         return false; // Exit the function if the array is full
@@ -25,7 +44,7 @@ bool CommandHandler::registerCommand(CommandBase *cmd) {
  * @param inputsize The size of the input string.
  * @param bytesRead The number of bytes read from the input.
  */
-void CommandHandler::handleInput(char input[], const uint8_t inputsize, const int8_t bytesRead) {
+void ESPCommandHandler::handleInput(char input[], const uint8_t inputsize, const int8_t bytesRead) {
     if (bytesRead == 0) {
         return; // No input received, exit the function
     }
@@ -70,7 +89,7 @@ void CommandHandler::handleInput(char input[], const uint8_t inputsize, const in
  * @details Reads the input from the serial monitor and stores it in a buffer.
  *          The input is terminated by a newline character or when the buffer is full.
  */
-void CommandHandler::parseSerialMonitorInput() {
+void ESPCommandHandler::parseSerialMonitorInput() {
     char inputBuffer[MAX_INPUT_SIZE] = ""; // Buffer to store the input command
     uint8_t bytesRead = 0;
     // Read the input into the buffer until a newline character or buffer limit

@@ -22,6 +22,7 @@ public:
 
     /**
      * @brief This function prints the current state data for debugging purposes.
+     * //REFACTOR - Should be set between precompiler directives
      */
     void printHIDStateData() {
         // Output the state data for debugging purposes

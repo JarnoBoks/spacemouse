@@ -42,15 +42,10 @@ public:
     virtual const bool isStaged() const {
         bool ret = false;
         for (uint8_t i = 0; i < HID_MESSAGE_SIZE; i++) {
-            // Serial.print(m_message[i]);
-            // Serial.print(F(" "));
             if (m_message[i] != 0) {
                 ret = true;
             }
         }
-        // Serial.println();
-        // Serial.print(F("HIDEventBuffer isStaged: "));
-        // Serial.println((ret) ? F("STAGED") : F("NOT STAGED"));
         return ret;
     }
     virtual const uint8_t *getStaged() const { return m_message; }

@@ -30,11 +30,7 @@ protected:
     }
 
 public:
-    HIDStateBase() = default; // Default constructor
-#if 0
-    HIDStateBase(HIDStateData *data = nullptr)
-        : data(data) {}                // Constructor to initialize the state data and translator
-#endif
+    HIDStateBase() = default;          // Default constructor
     virtual ~HIDStateBase() = default; // Default destructor
 
     inline void set_context(HIDHandlerController *context) { this->context = context; }

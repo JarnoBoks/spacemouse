@@ -6,8 +6,10 @@
 #define HIDUPDATERATE_MS 8
 #endif
 
+// REFACTOR - Move to usbstack
 #ifndef HIDMAXBUTTONS
 #define HIDMAXBUTTONS 32 // must be multiple of 8!
 #endif
 
+// REFACTOR - Move to usbstack
 constexpr uint8_t HIDKEYDATASIZE = HIDMAXBUTTONS / 8; // Size of the key data array

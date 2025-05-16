@@ -48,9 +48,6 @@ SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection);
 #include "axis/AxisCollection.hpp" // Include the axis collection header file
 AxisCollection myAxisCollection;   // Axis collection object to hold the axes and the axis configuration (initialized empty)
 
-// Include the header files for the HID commands
-#include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
-
 // Include the header files for the command handler that will handle the commands send by the user through the serial monitor.
 // For the ESP32 and AVR architecture, the command handler is different.
 #include "commandhandler/factory/CommandHandlerFactory.hpp"
@@ -63,7 +60,7 @@ AxisCollection myAxisCollection;   // Axis collection object to hold the axes an
 CommandHandler *myCommandHandler; // Command handler object to handle the commands from the serial interface
 
 // Include the header file for the collections carrier
-#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
+#include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
 CollectionCarrier myCollections(&mySensorCollection, &myAxisCollection, &myKeyCollection); // Collection identifier object to identify the collection of the command
 
 // Include the header file for the calibration manager (used to calibrate center position of the sensors on startup)
@@ -117,9 +114,8 @@ void setup() {
     myAxisCollection.setup(&mySensorCalculator, &myHIDEventBufferTranslation, &myHIDEventBufferRotation); // Setup the axis collection with the sensor calculator
 
     // Populate the key collection with the keys that are configured in config.h
-    // FIXME myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
-
-    // FIXME myKeyCollection.attachKeyObserver(&myHIDEventBuffer);
+    myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
+    myKeyCollection.attachKeysObserver(&myHIDEventBufferKeys);
 
     // Setup the Kinematics object. This will setup the kinematic axes of the mouse.
     // The setup will check the EEPROM for the configuration of the sensors and the axes.
@@ -168,7 +164,6 @@ void setup() {
 }
 
 void loop() {
-
     //  Check if the user entered a command through the Serial monitor
     if (Serial.available()) {
         myCommandHandler->parseSerialMonitorInput();

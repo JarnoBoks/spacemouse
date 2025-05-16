@@ -39,7 +39,7 @@ public:
 
     virtual void update(IObservable *observable) override;
 
-    const bool isStaged() const {
+    virtual const bool isStaged() const {
         bool ret = false;
         for (uint8_t i = 0; i < HID_MESSAGE_SIZE; i++) {
             // Serial.print(m_message[i]);
@@ -53,8 +53,6 @@ public:
         // Serial.println((ret) ? F("STAGED") : F("NOT STAGED"));
         return ret;
     }
-    const uint8_t *getStaged() const { return m_message; }
-    inline void clearStaged() {
-        memset(m_message, 0, HID_MESSAGE_SIZE); // Clear the message buffer
-    }
+    virtual const uint8_t *getStaged() const { return m_message; }
+    virtual inline void clearStaged() { memset(m_message, 0, HID_MESSAGE_SIZE); }
 };

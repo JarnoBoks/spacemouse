@@ -5,7 +5,7 @@ class HIDEventBufferRotation : public HIDEventBuffer {
 private:
 public:
     HIDEventBufferRotation() = default;
-    virtual ~HIDEventBufferRotation() override = default;
+    virtual ~HIDEventBufferRotation() = default;
 
     void update(IObservable *rotationAxis) override final;
 };

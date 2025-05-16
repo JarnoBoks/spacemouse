@@ -1,7 +1,6 @@
 #pragma once
 
 #include "hidhandler/sender/HIDSender.hpp" // for HIDSender
-// REMOVE #include "hidhandler/usbinterface/SpaceMouseUSBInterface.h" // for SpaceMouseUSBInterface
 #include "usbstack/USBInterface.hpp"
 #include "usbstack/HIDReportDescriptor.h" // for USBStart#include <observers/HIDEventBuffer/HIDEventBuffer.hpp> // for HID_MESSAGE_SIZE
 
@@ -17,11 +16,6 @@ public:
     virtual ~HIDSenderRotation() = default;                   // Default destructor
 
     void sendData() override final {
-// Send new rotational values
-#if 0
-        SpaceMouseUSBInterface_ *usbInterface = SpaceMouseUSBInterface_::getInstance(); // Get the USB interface instance
-        usbInterface->SendReport(REPORTID_ROT, getMessage(), HID_MESSAGE_SIZE);         // send new rotational values
-#endif
         USBSendReport(REPORTID_ROT, getMessage(), HID_MESSAGE_SIZE); // send new rotational values
     }
 };

@@ -54,6 +54,9 @@ public:
         Observable::notifyObservers(); // Notify observers of changes in the axis collection
     };
 
-    // REFACTOR - We should be able to apply a function to all axes in the collection, for now it is programmed manually for the attachment of observers
+    // REVIEW - We should be able to apply a function to all axes in the collection, for now it is programmed manually for the attachment of observers
+    /**
+     * @brief Attach an observer to all axes in the collection.
+     */
     void attachAxesObserver(IObserver *observer);
 };

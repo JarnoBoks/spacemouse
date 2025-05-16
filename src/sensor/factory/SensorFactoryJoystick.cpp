@@ -1,7 +1,7 @@
 #include "SensorFactoryJoystick.hpp" // Include the header file for the sensor factory
 
 // Include header file for the key to create
-#include "sensors/JoystickSensor.hpp"
+#include "sensor/sensors/JoystickSensor.hpp"
 
 // Include the configuration header file for the key configuration in this factory
 #include "config.h"

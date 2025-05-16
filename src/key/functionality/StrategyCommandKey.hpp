@@ -17,16 +17,14 @@ public:
     StrategyCommandKey(Key *context_key) : IKeyFunctionality(context_key) {} // Constructor with context
 
     inline void onPress() override {
-        Serial.println(F("StrategyCommandKey::onPress()"));
         IObservable *observable = static_cast<IObservable *>(getContext()); // Get the context of the key
         if (observable)
-            observable->notifyObservers(); // Call the notifyObservers method of the key context
+            observable->notifyObservers();
     };
 
     inline void onRelease() override {
-        Serial.println(F("StrategyCommandKey::onRelease()"));
         IObservable *observable = static_cast<IObservable *>(getContext()); // Get the context of the key
         if (observable)
-            observable->notifyObservers(); // Call the notifyObservers method of the key context
+            observable->notifyObservers();
     };
 };

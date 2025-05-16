@@ -7,30 +7,25 @@
 #include "HIDStateSendrotation.h"
 
 void HIDStateSendtranslation::apply() {
-    // Serial.println(F("HIDStateSendtranslation::apply()"));
 
-    const bool staged = context->getHIDEventBufferTranslation()->isStaged();
     if (!isNewHidReportDue()) {
         return;
     }
 
-    if (!(staged || m_data->countTransZeros < 3)) {
-        return;
+    //  Send a message if new data is staged or if the zero counter is less than 3
+    const bool staged = context->getHIDEventBufferTranslation()->isStaged();
+    if (staged || m_data->countTransZeros < 3) {
+        HIDSenderTranslation hidSender(context->getHIDEventBufferTranslation()->getStaged()); // Create a new HIDSender instance with the staged translation data
+        hidSender.sendData();                                                                 // Send the translation data
+        context->getHIDEventBufferTranslation()->clearStaged();                               // Clear the staged translation data
+
+        // Increment or reset the zero counter.
+        m_data->countTransZeros = (staged) ? 0 : m_data->countTransZeros + 1; // Increment the zero counter if translation data is staged
+
+        m_data->lastHIDsentRep += HIDUPDATERATE_MS;
+        m_data->hasSentNewData = true; // REFACTOR - Is this used anywhere?
     }
 
-    HIDSenderTranslation hidSender(context->getHIDEventBufferTranslation()->getStaged()); // Create a new HIDSender instance with the staged translation data
-    hidSender.sendData();                                                                 // Send the translation data
-    context->getHIDEventBufferTranslation()->clearStaged();                               // Clear the staged translation data
-
-    // Increment or reset the zero counter.
-    // It is safe to assume the translator is executed and is of type TranslatorKinematicsRotation.
-    m_data->countRotZeros = (staged) ? 0 : m_data->countRotZeros + 1; // Increment the zero counter if rotation data is staged
-
-    m_data->lastHIDsentRep += HIDUPDATERATE_MS;
-    m_data->hasSentNewData = true; // REFACTOR - Is this used anywhere?
-
-    // NOTE: In the original software, there was a check for the key data to see if it was different from the previous key data.
-    //       This is not necessary in the new implementation, as the key data is handled separately in the HIDStateSendkeys class.
     context->setState(new HIDStateSendrotation());
 }
 

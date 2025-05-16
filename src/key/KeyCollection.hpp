@@ -42,4 +42,9 @@ public:
     };
 
     void setup();
+
+    /**
+     * @brief Attach an observer to all keys in the collection.
+     */
+    void attachKeysObserver(IObserver *observer);
 };

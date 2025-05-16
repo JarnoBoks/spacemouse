@@ -50,3 +50,15 @@ void KeyCollection::setup() {
 Key *KeyCollection::getKey(const uint8_t id) const {
     return static_cast<Key *>(getItem(id)); // Call the base class method to get the item at the specified index
 }
+
+/**
+ * @brief Attach an observer to all keys in the collection.
+ * @details This function iterates through all keys in the collection and attaches the provided observer to each key.
+ *          This allows the observer to receive updates from all keys in the collection.
+ * @param observer Pointer to the observer to be attached.
+ */
+void KeyCollection::attachKeysObserver(IObserver *observer) {
+    for (int i = 0; i < m_itemCount; i++) {
+        static_cast<Key *>(m_items[i])->attachObserver(observer); // Attach the observer to each key in the collection
+    }
+};

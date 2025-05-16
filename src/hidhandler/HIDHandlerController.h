@@ -7,9 +7,6 @@
 #include "states/HIDStateBase.h"  // for HIDStateBase
 #include "states/HIDStateStart.h" // for HIDStateInit
 
-// Include the translator header files
-// REMOVE #include "translator/TranslatorKeys.h" // for TranslatorKeys        // REMOVE
-
 class HIDEventBufferKeys;        // forward declaration
 class HIDEventBufferRotation;    // forward declaration
 class HIDEventBufferTranslation; // forward declaration
@@ -23,9 +20,6 @@ class HIDHandlerController {
 private:
     HIDStateBase *currentState = nullptr; // Pointer to the current HID state
     HIDStateData *stateData = nullptr;    // Pointer to the state data object
-
-    // Known interfaces for the HID state machine //REFACTOR - Remove this in favor of the HIDEventBuffer
-    // REMOVE TranslatorKeys *m_TranslatorKeys = nullptr; // Translator for key data
 
     // Known interfaces for the HID event buffer
     HIDEventBufferKeys *m_HIDEventBufferKeys = nullptr;               // Pointer to the HID event buffer
@@ -54,7 +48,6 @@ public:
     HIDHandlerController(HIDEventBufferKeys *eventBufferKeys, HIDEventBufferRotation *eventBufferRotation, HIDEventBufferTranslation *eventBufferTranslation)
         : currentState(new HIDStateStart()),
           stateData(new HIDStateData()),
-          // REMOVE m_TranslatorKeys(new TranslatorKeys()),
           m_HIDEventBufferKeys(eventBufferKeys),
           m_HIDEventBufferRotation(eventBufferRotation),
           m_HIDEventBufferTranslation(eventBufferTranslation) {
@@ -65,7 +58,6 @@ public:
     ~HIDHandlerController() {
         delete currentState; // Clean up the current state object
         delete stateData;    // Clean up the state data object
-        // REMOVE delete m_TranslatorKeys;
     }
 
     /**

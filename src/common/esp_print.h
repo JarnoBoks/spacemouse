@@ -11,4 +11,8 @@
 #else
 #define ESP_PRINT(x)
 #define ESP_DBG(x)
+#define ESP_ERROR(x)
 #endif
+
+// Define error codes
+#define ERR01 1

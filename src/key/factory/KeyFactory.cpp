@@ -1,4 +1,3 @@
-// KeyFactory.h
 #include "KeyFactory.hpp"
 #include "config.h" // For CFG_NUMBER_OF_KEYS and KEYCFG
 
@@ -8,7 +7,7 @@
 #include "key/functionality/StrategyCommandKey.hpp" // For CommandKeyStrategy class
 
 // Include header files for the commands that the keys can send
-// REMOVE #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
+// REVIEW #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
 
 void KeyFactory::setupFunctionality(Key *key) {
     // Get the pinNumber from the config.h object for this key.
@@ -20,13 +19,7 @@ void KeyFactory::setupFunctionality(Key *key) {
     constexpr uint8_t key_CFG[number_of_keys][3] = KEYCFG; // Array to hold the key configuration
     uint8_t id = key->getId();                             // Get the ID from the key object
 
-    Serial.print(F("KeyFactory::setupFunctionality() - Key ID: "));
-    Serial.println(id); // Debug output to indicate the key ID
-
     uint8_t rcmd = key_CFG[id][1];
-
-    Serial.print(F("KeyFactory::setupFunctionality() - Command Type: "));
-    Serial.println(rcmd); // Debug output to indicate the command type
 
     // REVIEW - What happens if the key is not in the key_CFG array?
     // REVIEW - What happens if the rcmd is not in the CommandType enum?
@@ -41,12 +34,7 @@ void KeyFactory::setupFunctionality(Key *key) {
         // Attach killtrans functionality
         // STUB key->setFunctionality(new KillTranslationFunctionality(), CommandType::KILLTRANSLATION);
     } else {
-#if 0
-        // Setup the command object for a CommandKey. This is a command that will be sent to the HID translator.
-        ICommand *HIDSK = new HIDCommandStoreKeyPress(key, nullptr);     // Create a new command that the key will send
-        IKeyFunctionality *cmdFunc = new CommandKeyFunctionality(HIDSK); // KeyStrategy instance that wraps the command to send.
-        key->setStrategy(cmdFunc);                                       // Set the command functionality for the key
-#endif
+        // Attach command functionality
         IKeyFunctionality *strategy = new StrategyCommandKey(key); // KeyStrategy instance that wraps the command to send.
         key->setStrategy(strategy);                                // Set the command functionality for the key
     }

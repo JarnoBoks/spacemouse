@@ -469,6 +469,7 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
         ESP_PRINT(F("IAxisConfigCommand::execute: Show config"));
 
         AxisConfigPrinter printer;
+
         // REVIEW - Move this to the kinematics class?
         Kinematics *kinematics = Kinematics::getInstance();
         for (uint8_t id = 0; id < AxisType_t::LENGTH; id++) {
@@ -575,14 +576,10 @@ void AVRCommandHandler::DebugParamOff() {
 
 void AVRCommandHandler::DebugParamSensorInformationRaw() {
     DetachCurrentObservers(); // Detach the previous observer if it exists
-    delay(1000);              // Delay to allow the observer to detach properly
 
-    delay(1000); // Delay to allow the observer to detach properly
     // Instantiate the Observer for the RawSensor values and attach it to the hardware
     m_SensorObserver = new DebugOutputSensorsRaw();
-    delay(1000);                                                                        // Delay to allow the observer to detach properly
     getCollectionIdentifier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
-    delay(1000);                                                                        // Delay to allow the observer to detach properly
 }
 
 void AVRCommandHandler::DebugParamSensorInformationCentered() {
@@ -640,7 +637,6 @@ void AVRCommandHandler::DebugParamLoopFrequency() {
 }
 
 void AVRCommandHandler::DetachCurrentObservers() {
-    Serial.println(F("AVRCommandHandler::DetachCurrentObservers()")); // Print a message to indicate that we are detaching the observers
     if (m_AxisObserver != nullptr) {
         getCollectionIdentifier()->getAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
         delete m_AxisObserver;                                                          // Delete the previous observer if it exists

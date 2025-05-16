@@ -93,23 +93,19 @@ SpaceMouseHID mySpaceMouseHID;
 void setup() {
 
     CustomDelay::delay(100); // Wait for the serial interface to be ready
-
     // Begin Serial for debugging or calibration
     Serial.begin(250000);
     CustomDelay::delay(100); // Wait for the serial interface to be ready
     Serial.setTimeout(2);    // The serial interface will look for new commands and it will only wait 2ms
-
     CustomDelay::delay(100); // Wait for CPU to start all peripherals
 
     // Setup USB, WiFi and OTA
-#if 0
     USBStart;
     WifiManager::setup_Wifi(); // Setup the WiFi connection (only if ESP32 and if configured in config.h)
     WifiManager::setup_OTA();  // Setup the OTA connection (only if ESP32 and if selected environment)
-#endif
+
     //  Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();
-#if 0
     // Setup the Axis collection. This will setup the axes and the axis configuration, and attaches the HID event buffers.
     // TODO - Create a AxisFactory that will create the axes based on the configuration.
     myAxisCollection.setup(&mySensorCalculator, &myHIDEventBufferTranslation, &myHIDEventBufferRotation); // Setup the axis collection with the sensor calculator
@@ -117,7 +113,7 @@ void setup() {
     // Populate the key collection with the keys that are configured in config.h
     myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
     myKeyCollection.attachKeysObserver(&myHIDEventBufferKeys);
-#endif
+
     // Setup the Kinematics object. This will setup the kinematic axes of the mouse.
     // The setup will check the EEPROM for the configuration of the sensors and the axes.
     // If the configuration is not available, the default values as set in config.h will be used (and stored in the EEPROM)
@@ -143,12 +139,12 @@ void setup() {
     // FIXME - Cleanup the calibration manager when the calibration is finished.
     mySensorCalibrationManagerIdle = new SensorCalibrationManagerIdle(&mySensorCollection); // Initialize the sensor calibration manager
     mySensorCalibrationManagerIdle->activate();                                             // Start the idle calibration with 500 iterations
-#if 0
+
     // Connect the HID interface to the axes and keys
     mySpaceMouseHID.getController()->setHIDEventBufferKeys(&myHIDEventBufferKeys);               // Connect the HID event buffer to the HID interface
     mySpaceMouseHID.getController()->setHIDEventBufferRotation(&myHIDEventBufferRotation);       // Connect the HID event buffer to the HID interface
     mySpaceMouseHID.getController()->setHIDEventBufferTranslation(&myHIDEventBufferTranslation); // Connect the HID event buffer to the HID interface
-#endif
+
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
     initEncoderWheel();
 #endif
@@ -169,7 +165,6 @@ void loop() {
     if (Serial.available()) {
         myCommandHandler->parseSerialMonitorInput();
     }
-
     WifiManager::handle_OTA(); // Handle the OTA connection (only if configured in platformio.ini)
 
     // Update all the sensor values & apply the calibration to the read sensor values & notify collection observers
@@ -191,9 +186,7 @@ void loop() {
     calcEncoderAsKey(Keys, Mouse_Calibration.GetDebug());
 #endif
 
-#ifdef ARDUINO_ARCH_AVR
     mySpaceMouseHID.execute();
-#endif
 
     // Check for the LED state by calling updateLEDState.
     // This empties the USB input buffer and checks for the corresponding report.

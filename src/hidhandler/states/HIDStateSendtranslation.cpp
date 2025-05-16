@@ -12,6 +12,10 @@ void HIDStateSendtranslation::apply() {
         return;
     }
 
+    if (!context || !context->getHIDEventBufferTranslation()) {
+        return;
+    }
+
     //  Send a message if new data is staged or if the zero counter is less than 3
     const bool staged = context->getHIDEventBufferTranslation()->isStaged();
     if (staged || m_data->countTransZeros < 3) {

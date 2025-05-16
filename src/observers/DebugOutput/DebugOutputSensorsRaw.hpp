@@ -21,9 +21,9 @@ public:
     DebugOutputSensorsRaw() {};
 
     void update(IObservable *sensorCollection) override {
-        Serial.print(F("DebugOutputSensorsRaw::update()")); // Print a message to indicate that we are updating the sensor values
         // Call the base class update method
         DebugOutputSensors::update(sensorCollection);
+
         Serial.println();
     }
 };

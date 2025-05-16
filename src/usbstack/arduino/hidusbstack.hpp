@@ -7,7 +7,7 @@ This code is based on https://forum.arduino.cc/t/solved-unable-to-receive-hid-re
 */
 #pragma once
 // make sure that it is a supported Architecture
-#ifdef ARDUINO_ARCH_AVR
+#ifdef ARDUINO_AVR_MICRO // ARDUINO_ARCH_AVR
 #include <Arduino.h>
 
 #include "PluggableUSB.h"

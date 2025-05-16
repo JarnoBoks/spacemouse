@@ -51,6 +51,7 @@ public:
           m_HIDEventBufferKeys(eventBufferKeys),
           m_HIDEventBufferRotation(eventBufferRotation),
           m_HIDEventBufferTranslation(eventBufferTranslation) {
+
         currentState->set_context(this);   // Set the context for the current state
         currentState->set_data(stateData); // Initialize the state data
     }

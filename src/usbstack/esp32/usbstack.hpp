@@ -1,5 +1,6 @@
 #pragma once
-#ifdef ARDUINO_ARCH_ESP32
+
+#if defined(ARDUINO_ARCH_ESP32)
 
 #include <stdint.h>
 

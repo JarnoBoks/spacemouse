@@ -57,7 +57,7 @@ public:
         DetachCurrentObservers(); // Detach the observers when the object is destroyed
     };
 
-    CollectionCarrier *setCollectionIdentifier(CollectionCarrier *collectionIdentifier) { return m_CollectionIdentifier; } // Set the collection identifier
+    void setCollectionIdentifier(CollectionCarrier *collectionIdentifier) { m_CollectionIdentifier = collectionIdentifier; } // Set the collection identifier
 
     void parseSerialMonitorInput();
     void handleInput(char input[], const uint8_t inputsize, const int8_t bytesRead);

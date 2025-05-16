@@ -5,7 +5,7 @@ It was created by reverse-engineering a Space Navigator and relating to the HID 
 
 This code is based on https://forum.arduino.cc/t/solved-unable-to-receive-hid-reports-from-computer-using-pluggableusb/596793
 */
-#ifdef ARDUINO_ARCH_AVR
+#ifdef ARDUINO_AVR_MICRO
 #include "hidusbstack.hpp"
 
 #include <Arduino.h>

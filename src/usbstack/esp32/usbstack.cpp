@@ -1,4 +1,5 @@
-#ifdef ARDUINO_ARCH_ESP32
+
+#if defined(ARDUINO_ARCH_ESP32)
 
 #include "usbstack.hpp"
 #include "usbstack/HIDReportDescriptor.h"

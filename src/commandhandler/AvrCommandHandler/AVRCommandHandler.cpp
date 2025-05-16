@@ -30,7 +30,7 @@
 #include "observers/DebugOutput/DebugOutputLoopFrequency.hpp"
 
 #include <common/esp_print.h>
-
+#include <common/freeRAM.h>
 #include <Arduino.h> // For Serial
 
 #define MAX_INPUT_SIZE 48 // Maximum size of the input buffer
@@ -54,6 +54,8 @@ static const char CMD_EXLC[] PROGMEM = "EXLC";
  * @param bytesRead The number of bytes read from the input.
  */
 void AVRCommandHandler::handleInput(char input[], const uint8_t inputsize, const int8_t bytesRead) {
+    Serial.println(F("AVRCommandHandler::handleInput()")); // Print a message to indicate that we are handling the input
+    FreeRAM::display_freeram();                            // Print the free RAM to the serial monitor
     if (bytesRead == 0) {
         return; // No input received, exit the function
     }
@@ -115,8 +117,11 @@ void AVRCommandHandler::handleInput(char input[], const uint8_t inputsize, const
  *          The input is terminated by a newline character or when the buffer is full.
  */
 void AVRCommandHandler::parseSerialMonitorInput() {
-    char inputBuffer[MAX_INPUT_SIZE] = ""; // Buffer to store the input command
+    FreeRAM::display_freeram();                  // Print the free RAM to the serial monitor
+    char inputBuffer[MAX_INPUT_SIZE];            // Buffer to store the input command
+    memset(inputBuffer, 0, sizeof(inputBuffer)); // Clear the buffer
     uint8_t bytesRead = 0;
+
     // Read the input into the buffer until a newline character or buffer limit
     while (Serial.available() > 0 && bytesRead < sizeof(inputBuffer) - 1) {
         //  Read a character from the serial input
@@ -255,6 +260,7 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
 }
 
 void AVRCommandHandler::executeDebug(const char *param1, const char *param2, const uint8_t paramCount) {
+
     // Implementation for DEBUG command
     if (paramCount == 0 || paramCount >= 2) {
         return;
@@ -569,10 +575,14 @@ void AVRCommandHandler::DebugParamOff() {
 
 void AVRCommandHandler::DebugParamSensorInformationRaw() {
     DetachCurrentObservers(); // Detach the previous observer if it exists
+    delay(1000);              // Delay to allow the observer to detach properly
 
+    delay(1000); // Delay to allow the observer to detach properly
     // Instantiate the Observer for the RawSensor values and attach it to the hardware
     m_SensorObserver = new DebugOutputSensorsRaw();
+    delay(1000);                                                                        // Delay to allow the observer to detach properly
     getCollectionIdentifier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
+    delay(1000);                                                                        // Delay to allow the observer to detach properly
 }
 
 void AVRCommandHandler::DebugParamSensorInformationCentered() {
@@ -630,6 +640,7 @@ void AVRCommandHandler::DebugParamLoopFrequency() {
 }
 
 void AVRCommandHandler::DetachCurrentObservers() {
+    Serial.println(F("AVRCommandHandler::DetachCurrentObservers()")); // Print a message to indicate that we are detaching the observers
     if (m_AxisObserver != nullptr) {
         getCollectionIdentifier()->getAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
         delete m_AxisObserver;                                                          // Delete the previous observer if it exists

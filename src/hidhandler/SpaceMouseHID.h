@@ -2,14 +2,13 @@
 
 #ifdef ARDUINO_ARCH_AVR
 //  Include inbuilt Arduino HID library by NicoHood: https://github.com/NicoHood/HID
-#include "HID.h"
+// #include "HID.h"
 #else
 // FIXME - The HID library is not compatible with the ESP32. The ESP32 uses the BLE HID library instead.
 #endif // ARDUINO_ARCH_AVR
 
 // Include the State Controller header file
 #include "HIDHandlerController.h"
-#include "states/HIDStateInit.h"
 
 class HIDHandlerController; // Forward declaration of HIDHandlerController class
 

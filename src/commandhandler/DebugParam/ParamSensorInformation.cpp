@@ -1,5 +1,5 @@
 #include "ParamSensorInformation.hpp"
-#include "..\CollectionCarrier\CollectionCarrier.hpp"
+#include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
 #include "sensor/SensorCollection.hpp"
 #include "observers/DebugOutput/DebugOutputSensors.hpp"
 

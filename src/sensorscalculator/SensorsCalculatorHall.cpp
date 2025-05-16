@@ -1,7 +1,7 @@
 #include "SensorsCalculatorHall.hpp"
 #include "sensor/sensors/HallSensor.hpp" // Include the header file for the Hall sensor
-#include "..\axis\axes\Axis.hpp"         // Include the header file for the Axis class
-#include "axis/axes/axistype.h"          // Include the header file for the AxisType_t enum
+#include "axis/axes/Axis.hpp"
+#include "axis/axes/axistype.h" // Include the header file for the AxisType_t enum
 
 #ifndef INTERNAL
 #define INTERNAL 0x03 // Define the INTERNAL constant if not already defined (necessary for ESP32)

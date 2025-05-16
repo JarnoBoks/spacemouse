@@ -1,7 +1,7 @@
 #include "SensorFactoryHall.hpp" // Include the header file for the sensor factory
 
 // Include header file for the key to create
-#include "..\sensors\HallSensor.hpp"
+#include "sensors/HallSensor.hpp"
 
 // Include the configuration header file for the key configuration in this factory
 #include "config.h"

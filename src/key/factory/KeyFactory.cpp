@@ -6,7 +6,7 @@
 #include "key/functionality/KillRotationFunctionality.h"
 #include "key/functionality/KillTranslationFunctionality.h"
 // REMOVE #include "key/functionality/CommandKeyFunctionality.hpp"
-#include "..\functionality\StrategyCommandKey.hpp" // For CommandKeyStrategy class
+#include "key/functionality/StrategyCommandKey.hpp" // For CommandKeyStrategy class
 
 // Include header files for the commands that the keys can send
 // REMOVE #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"

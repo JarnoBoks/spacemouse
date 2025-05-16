@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\IObserver.hpp"
+#include "observers/IObserver.hpp"
 #include "sensor/SensorCollection.hpp" // For cHW_MAX_SENSORS
 
 // Forward declaration of classes to avoid circular dependencies

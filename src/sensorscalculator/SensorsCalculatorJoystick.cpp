@@ -1,7 +1,7 @@
 
 #include "SensorsCalculatorJoystick.hpp"
 #include "sensor/sensors/JoystickSensor.hpp" // Include the JoystickSensor header file
-#include "..\axis\axes\Axis.hpp"             // Include the header file for the Axis class
+#include "axis/axes/Axis.hpp"
 #include "axis/axes/axistype.h"
 
 // Macro to simplify the access to the sensor values

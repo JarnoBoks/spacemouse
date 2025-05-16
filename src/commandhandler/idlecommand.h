@@ -2,7 +2,8 @@
 #pragma once
 
 #include "CommandBase.h"
-#include "..\sensor\calibration\SensorCalibrationManager.hpp" // Include the header file for the SensorCalibrationManager class
+
+class SensorCalibrationManager; // Forward declaration of the SensorCalibrationManager class
 
 /// @brief command text for the Idle Calibration command
 static const char CMD_IDLE[] PROGMEM = "IDLE";
@@ -19,8 +20,7 @@ private:
 public:
     IdleCommand() = delete;
     IdleCommand(CollectionCarrier *collectionIdentifier) : CommandBase(CMD_IDLE, collectionIdentifier) {}
-    ~IdleCommand() {
-        delete m_SensorCalibrationManager; // Clean up the sensor calibration manager instance when switching to another debug state
-    }
+    ~IdleCommand();
+
     void execute(const char *param1, const char *param2, const uint8_t paramCount) override;
 };

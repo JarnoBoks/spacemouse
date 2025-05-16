@@ -1,9 +1,16 @@
 #include "IdleCommand.h"
 
-#include "CollectionCarrier\CollectionCarrier.hpp"
+#include "CollectionCarrier/CollectionCarrier.hpp"
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp"
-
 #include <common/esp_print.h>
+
+/**
+ * @brief Destructor for the IdleCommand class.
+ * @details Cleans up the sensor calibration manager instance when switching to another debug state.
+ */
+IdleCommand::~IdleCommand() {
+    delete m_SensorCalibrationManager; // Clean up the sensor calibration manager instance when switching to another debug state
+}
 
 /**
  * @brief Executes the idle command to start calibration.

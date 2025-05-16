@@ -1,5 +1,5 @@
 #include "SensorCalibrationManagerMinMax.hpp"
-#include "..\..\observers\Calibrators\SensorMinMaxCalibration.h" // For SensorMinMaxCalibration class
+#include "observers/Calibrators/SensorMinMaxCalibration.h" // For SensorMinMaxCalibration class
 
 void SensorCalibrationManagerMinMax::activate() {
     SensorCalibrationManager::activate();

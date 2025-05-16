@@ -3,7 +3,7 @@
 
 // Include the header files for the command handler that will handle the commands send by the serial interface
 #include "commandhandler/EspCommandHandler.hpp"
-#include "..\CollectionCarrier\CollectionCarrier.hpp"
+#include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
 
 // Include the header files for the commands that can be received through the serial interface
 #include "commandhandler/debugcommand.h"

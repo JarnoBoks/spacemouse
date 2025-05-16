@@ -1,7 +1,7 @@
 #ifndef LIGHTBEHAVIOR_H
 #define LIGHTBEHAVIOR_H
 
-#include "..\axis\axes\Axis.hpp"
+#include "axis/axes/Axis.hpp"
 class LightBehavior {
 public:
     virtual void applyTo(Axis *axis) = 0;

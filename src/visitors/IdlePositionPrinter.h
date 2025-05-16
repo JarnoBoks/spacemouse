@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IPrinterVisitor.h"
-#include "..\sensor\sensors\Sensor.hpp"
+#include "sensor/sensors/Sensor.hpp"
 #include "common/TextHelper.h"
 
 class IdlePositionPrinter : public IPrinterVisitor {

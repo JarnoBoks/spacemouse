@@ -1,6 +1,6 @@
 #include "ParamSensorInformationFiltered.hpp"
 
-#include "..\CollectionCarrier\CollectionCarrier.hpp"
+#include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
 #include "sensor/SensorCollection.hpp"
 #include "observers/DebugOutput/DebugOutputSensorsFiltered.hpp"
 

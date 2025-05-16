@@ -1,5 +1,5 @@
 #include "ParamSensorAxisInformation.hpp"
-#include "..\CollectionCarrier\CollectionCarrier.hpp"
+#include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
 
 // Observable classes that are used in this file
 #include "sensor/SensorCollection.hpp" // For SensorCollection class

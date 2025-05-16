@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-class CollectionIdentifier;     // Forward declaration of CommandBase class
+class CollectionCarrier;        // Forward declaration of CommandBase class
 class SensorCalibrationManager; // Forward declaration of SensorCalibrationManager class
 class Axis;
 class AxisDirectionConfig; // Forward declaration of AxisDirectionConfig class
@@ -13,8 +13,8 @@ class DebugOutputLoopFrequency;
 
 class AVRCommandHandler {
 private:
-    CollectionIdentifier *m_CollectionIdentifier = nullptr;                                  // Pointer to the collection identifier
-    CollectionIdentifier *getCollectionIdentifier() const { return m_CollectionIdentifier; } // Get the collection identifier
+    CollectionCarrier *m_CollectionIdentifier = nullptr;                                  // Pointer to the collection identifier
+    CollectionCarrier *getCollectionIdentifier() const { return m_CollectionIdentifier; } // Get the collection identifier
 
     SensorCalibrationManager *m_SensorCalibrationManager = nullptr; // Pointer to the sensor calibration manager
     Axis *m_Axis = nullptr;                                         // Pointer to the axis
@@ -56,7 +56,7 @@ public:
         DetachCurrentObservers(); // Detach the observers when the object is destroyed
     };
 
-    CollectionIdentifier *setCollectionIdentifier(CollectionIdentifier *collectionIdentifier) { return m_CollectionIdentifier; } // Set the collection identifier
+    CollectionCarrier *setCollectionIdentifier(CollectionCarrier *collectionIdentifier) { return m_CollectionIdentifier; } // Set the collection identifier
 
     void parseSerialMonitorInput();
     void handleInput(char input[], const uint8_t inputsize, const int8_t bytesRead);

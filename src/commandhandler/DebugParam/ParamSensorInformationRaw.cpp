@@ -1,6 +1,6 @@
 #include "ParamSensorInformationRaw.hpp"
 
-#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
+#include "..\CollectionCarrier\CollectionCarrier.hpp"
 #include "sensor/SensorCollection.hpp"
 #include "observers/DebugOutput/DebugOutputSensorsRaw.hpp"
 

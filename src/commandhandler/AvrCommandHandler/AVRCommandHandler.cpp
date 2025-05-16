@@ -1,7 +1,7 @@
 // TODO - Remove all ESP print and ESP_DBG from the AVR version
 #include "AVRCommandHandler.hpp"
 
-#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
+#include "..\CollectionCarrier\CollectionCarrier.hpp"
 
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp"
 #include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"

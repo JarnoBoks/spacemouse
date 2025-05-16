@@ -3,7 +3,7 @@
 
 // Include the header files for the command handler that will handle the commands send by the serial interface
 #include "commandhandler/EspCommandHandler.hpp"
-#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
+#include "..\CollectionCarrier\CollectionCarrier.hpp"
 
 // Include the header files for the commands that can be received through the serial interface
 #include "commandhandler/debugcommand.h"
@@ -61,9 +61,9 @@ public:
 
 class CommandHandlerFactory {
 private:
-    CollectionIdentifier *m_Collections; // Pointer to the collection identifier object
+    CollectionCarrier *m_Collections; // Pointer to the collection identifier object
 public:
-    CommandHandlerFactory(CollectionIdentifier *collections) : m_Collections(collections) {
+    CommandHandlerFactory(CollectionCarrier *collections) : m_Collections(collections) {
         // Constructor
     }
 

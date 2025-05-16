@@ -51,7 +51,7 @@ AxisCollection myAxisCollection;   // Axis collection object to hold the axes an
 // Include the header files for the HID commands
 #include "hidhandler/commands/HIDCommandStoreKeyPress.hpp"
 
-// Include the header files for the command handler that will handle the commands send by the serial interface.
+// Include the header files for the command handler that will handle the commands send by the user through the serial monitor.
 // For the ESP32 and AVR architecture, the command handler is different.
 #include "commandhandler/factory/CommandHandlerFactory.hpp"
 #ifdef ARDUINO_ARCH_ESP32
@@ -60,10 +60,11 @@ AxisCollection myAxisCollection;   // Axis collection object to hold the axes an
 #ifdef ARDUINO_ARCH_AVR
 #include "commandhandler/AvrCommandHandler/AvrCommandHandler.hpp"
 #endif
+CommandHandler *myCommandHandler; // Command handler object to handle the commands from the serial interface
 
+// Include the header file for the collections carrier
 #include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
-CollectionIdentifier myCollections(&mySensorCollection, &myAxisCollection, &myKeyCollection); // Collection identifier object to identify the collection of the command
-CommandHandler *myCommandHandler;                                                             // Command handler object to handle the commands from the serial interface
+CollectionCarrier myCollections(&mySensorCollection, &myAxisCollection, &myKeyCollection); // Collection identifier object to identify the collection of the command
 
 // Include the header file for the calibration manager (used to calibrate center position of the sensors on startup)
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp" // Include the sensor calibration manager header file

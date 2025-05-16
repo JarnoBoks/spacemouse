@@ -1,5 +1,5 @@
 #include "ParamLoopFrequency.hpp"
-#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
+#include "..\CollectionCarrier\CollectionCarrier.hpp"
 #include "axis/AxisCollection.hpp"
 #include "observers/DebugOutput/DebugOutputLoopFrequency.hpp"
 

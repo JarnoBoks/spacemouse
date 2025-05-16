@@ -1,6 +1,6 @@
 #include "IdleCommand.h"
 
-#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
+#include "CollectionCarrier\CollectionCarrier.hpp"
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp"
 
 #include <common/esp_print.h>

@@ -10,8 +10,8 @@
 /// @brief command text for the command
 static const char CMD_DEBUG[] PROGMEM = "DEBUG";
 
-class IDebugParam;          // Forward declaration of IDebugParam class
-class CollectionIdentifier; // Forward declaration of CollectionIdentifier class
+class IDebugParam;       // Forward declaration of IDebugParam class
+class CollectionCarrier; // Forward declaration of CollectionIdentifier class
 
 /**
  * @brief This class handles the debug commands and manages the current debug state.
@@ -31,7 +31,7 @@ public:
      * @param sensorCollection Pointer to the SensorCollection instance.
      * @details Initializes the command with the provided sensor collection and sets the default debug state.
      */
-    DebugCommand(CollectionIdentifier *collectionIdentifer)
+    DebugCommand(CollectionCarrier *collectionIdentifer)
         : CommandBase(CMD_DEBUG, collectionIdentifer),
           currentState(new DebugParamOff()) {}
 

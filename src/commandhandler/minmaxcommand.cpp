@@ -1,5 +1,5 @@
 #include "MinMaxCommand.h"
-#include "commandhandler/collectionidentifier/CollectionIdentifier.hpp"
+#include "CollectionCarrier\CollectionCarrier.hpp"
 
 #include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
 #include "sensor/SensorCollection.hpp"

@@ -7,7 +7,7 @@
 static const char CMD_MINMAX[] PROGMEM = "MINMAX";
 
 class SensorCalibrationManager;
-class CollectionIdentifier;
+class CollectionCarrier;
 
 class MinMaxCommand : public CommandBase {
 private:
@@ -20,7 +20,7 @@ public:
      * @param collectionIdentifier Pointer to the CollectionIdentifier instance.
      * @details Initializes the command with the CMD_MINMAX command name.
      */
-    MinMaxCommand(CollectionIdentifier *collectionIdentifier) : CommandBase(CMD_MINMAX, collectionIdentifier) {}
+    MinMaxCommand(CollectionCarrier *collectionIdentifier) : CommandBase(CMD_MINMAX, collectionIdentifier) {}
 
     virtual ~MinMaxCommand();
 

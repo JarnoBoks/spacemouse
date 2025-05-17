@@ -2,7 +2,6 @@
 #include "key/keys/Key.hpp" // For Key class
 
 void HIDEventBufferKeys::update(IObservable *key) {
-    Serial.println(F("HIDEventBufferKeys::update()"));
 
     if (!key) {
         return;
@@ -24,10 +23,12 @@ void HIDEventBufferKeys::update(IObservable *key) {
         // If the key is released, clear the bit in the keyData array
         m_key_message[(rawcmd / 8)] &= ~(1 << (rawcmd % 8));
     }
+
     // Set the staged flag to true to indicate that data has been staged for sending
     m_isStaged = true;
 
-    const bool DEBUG = false;
+    // REFACTOR - Move the debug output to a separate function / observer
+    const bool DEBUG = true;
     if (DEBUG) {
         // debug the key outputs
         Serial.print(F("bitnumber: "));
@@ -38,8 +39,7 @@ void HIDEventBufferKeys::update(IObservable *key) {
         for (int b = 7; b >= 0; b--) {
             Serial.print(bitRead(m_key_message[(rawcmd / 8)], b));
         }
-        Serial.println();
         Serial.print(F(" / 0x"));
-        Serial.print(m_key_message[(rawcmd / 8)], HEX);
+        Serial.println(m_key_message[(rawcmd / 8)], HEX);
     }
 }

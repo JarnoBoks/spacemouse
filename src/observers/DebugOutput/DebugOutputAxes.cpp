@@ -11,7 +11,6 @@
  * @param kinematics Pointer to the Kinematics object.
  */
 void DebugOutputAxes::update(IObservable *axisCollection) {
-    Serial.print(F("Debug Axis Information: ")); // Print the debug information header
     if (!isDebugOutputDue() || !axisCollection) {
         return;
     }

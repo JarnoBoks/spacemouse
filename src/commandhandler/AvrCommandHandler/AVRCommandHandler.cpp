@@ -30,7 +30,6 @@
 #include "observers/DebugOutput/DebugOutputLoopFrequency.hpp"
 
 #include <common/esp_print.h>
-#include <common/freeRAM.h>
 #include <Arduino.h> // For Serial
 
 #define MAX_INPUT_SIZE 48 // Maximum size of the input buffer
@@ -54,8 +53,6 @@ static const char CMD_EXLC[] PROGMEM = "EXLC";
  * @param bytesRead The number of bytes read from the input.
  */
 void AVRCommandHandler::handleInput(char input[], const uint8_t inputsize, const int8_t bytesRead) {
-    Serial.println(F("AVRCommandHandler::handleInput()")); // Print a message to indicate that we are handling the input
-    FreeRAM::display_freeram();                            // Print the free RAM to the serial monitor
     if (bytesRead == 0) {
         return; // No input received, exit the function
     }
@@ -117,10 +114,9 @@ void AVRCommandHandler::handleInput(char input[], const uint8_t inputsize, const
  *          The input is terminated by a newline character or when the buffer is full.
  */
 void AVRCommandHandler::parseSerialMonitorInput() {
-    FreeRAM::display_freeram();                  // Print the free RAM to the serial monitor
+    uint8_t bytesRead = 0;
     char inputBuffer[MAX_INPUT_SIZE];            // Buffer to store the input command
     memset(inputBuffer, 0, sizeof(inputBuffer)); // Clear the buffer
-    uint8_t bytesRead = 0;
 
     // Read the input into the buffer until a newline character or buffer limit
     while (Serial.available() > 0 && bytesRead < sizeof(inputBuffer) - 1) {
@@ -136,9 +132,10 @@ void AVRCommandHandler::parseSerialMonitorInput() {
     }
 
     inputBuffer[bytesRead] = '\0'; // Null-terminate the string
-
+#if 0                              // DEBUG - Print the input string
     Serial.print(F("---- Received: ")); // Print the input string
     Serial.println(inputBuffer);        // Print the input string
+#endif
 
     handleInput(inputBuffer, sizeof(inputBuffer), bytesRead); // Call the handleInput function to process the input
 }

@@ -14,9 +14,9 @@
 #include <common/esp_print.h> // For ESP_PRINT
 
 /**
- * @brief Sets the current debug state.
+ * @brief Sets the current debug state and executes the new state.
  * @param state Pointer to the new debug state to be set.
- * @details Deletes the previous state and applies the new state.
+ * @details Deletes the previous state (freeing the used memory).
  */
 void DebugCommand::setState(IDebugParam *state) {
     delete currentState;
@@ -36,20 +36,11 @@ IDebugParam *DebugCommand::getState() const { return currentState; }
  * @details Removes the current debug state to clean up resources and stop any ongoing processes.
  */
 void DebugCommand::stop() {
-#if 0
-    // Two options to stop the command execution:
-    // 1. Delete the current debug state and set it to nullptr.
-    // 2. Set the state to a new instance of DebugParamOff.
-    // The first option is more efficient as it avoids creating a new instance of DebugParamOff.
-    // The second option is more explicit and may be easier to understand for future developers.
-    delete currentParam; // Clean up the current debug state
-    currentParam = nullptr; // Set the current parameter to nullptr to indicate no active state
-#endif
     setState(new DebugParamOff()); // Set the state to off
 }
 
 /**
- * @brief Executes the debug command based on the provided parameters.
+ * @brief Executes a received debug command, by parsing the parameters and switching to the requested debug state.
  * @param param1 First parameter, typically the debug level.
  * @param param2 Second parameter (unused).
  * @param paramCount Number of parameters provided.
@@ -107,7 +98,7 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
         // TODO setState(new DebugParamSensorInformationCentered(this));
         break;
     case 8:
-        // Report the frequency of the loop()
+        // Report the frequency of the loop, including free RAM memory.
         setState(new DebugParamLoopFrequency(this));
         break;
     case 9:

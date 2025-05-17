@@ -1,62 +1,52 @@
 #include "CommandBase.h"
 #include <Arduino.h>
 
-#define CF(x) ((const __FlashStringHelper *)x)
-static const char Error_CommandUnkown[] PROGMEM = "Unknown command or -format.";
-static const char Error[] PROGMEM = "Err: Invalid ";
-static const char Error_EmptyCommand[] PROGMEM = "command";
-static const char Error_EmptyParameter[] PROGMEM = "parameter";
-static const char Error_ParameterNoNumber[] PROGMEM = "integer";
-static const char Error_ParameterNoFloat[] PROGMEM = "float";
-static const char Error_EmptyValue[] PROGMEM = "value";
-
+/**
+ * @brief Checks if a word is empty.
+ * @param str The word to check.
+ * @param errorMsg The error message to display if the word is empty.
+ * @return True if the word is empty, false otherwise.
+ */
 const bool CommandBase::isWordEmpty(const char *str, const char *errorMsg) const {
     // Check if the string is empty or null
-    if (!str || *str == '\0') {
-#ifndef ARDUINO_ARCH_AVR
-        Serial.print(CF(Error));
-        Serial.println(CF(errorMsg));
-#endif
-        return true; // String is empty or null
-    }
-
-    return false; // String is not empty or null
+    return (!str || *str == '\0');
 }
 
-// DEVNOTE - The number conversion functions are both written with the usage of the strtod function, for code size purposes.
-//           The strtod function is already used somewhere else in the code and to preserve space in the compiled code we do
-//           use strtol or atof.
+/**
+ * @brief Converts a string to a long integer.
+ * @param str The string to convert.
+ * @param n Pointer to the long integer to store the result.
+ * @return The result of the conversion.
+ * @retval true Conversion successful
+ * @retval false Conversion failed
+ * @note The function uses strtod to convert the string to a long integer for code size purposes.
+ *       The strtod function is already used somewhere else in the code and to preserve space in the compiled code
+ *       strtol or atof is not used.
+ */
 const bool CommandBase::convertWordNumber(const char *str, long *n) const {
     // Check if the string is a number (integer or float)
     char *endptr = nullptr;
     *n = (long)strtod(str, &endptr); // Convert to long integer
 
-    if (*endptr != '\0') {
-        // TODO: Check if compile size is smaller with the usage of F() macro
-#ifndef ARDUINO_ARCH_AVR
-        Serial.print(CF(Error));
-        Serial.print(CF(Error_ParameterNoNumber));
-#endif
-        return false; // Not a valid number
-    }
-
-    return true; // Valid number
+    return (*endptr == '\0'); // Check if the conversion was successful
 }
 
+/**
+ * @brief Converts a string to a float.
+ * @param str The string to convert.
+ * @param value Pointer to the float to store the result.
+ * @return The result of the conversion.
+ * @retval true Conversion successful
+ * @retval false Conversion failed
+ * @note The function uses strtod to convert the string to a long integer for code size purposes.
+ *       The strtod function is already used somewhere else in the code and to preserve space in the compiled code
+ *       strtol or atof is not used.
+ */
 const bool CommandBase::convertWordFloat(const char *str, float *value) const {
 
     // Check if the string is a number (integer or float)
     char *endptr = nullptr;
     *value = float(strtod(str, &endptr)); // Convert to float
 
-    if (*endptr != '\0') {
-        // TODO: Check if compile size is smaller with the usage of F() macro
-#ifndef ARDUINO_ARCH_AVR
-        Serial.print(CF(Error));
-        Serial.println(CF(Error_ParameterNoFloat));
-#endif
-        return false; // Not a valid float
-    }
-
-    return true; // Valid float
+    return (*endptr == '\0'); // Check if the conversion was successful
 }

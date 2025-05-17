@@ -34,7 +34,7 @@
 
 #define MAX_INPUT_SIZE 48 // Maximum size of the input buffer
 
-// Commands to Handle
+// Input commands that can be handled
 static const char CMD_IDLE[] PROGMEM = "IDLE";
 static const char CMD_MINMAX[] PROGMEM = "MINMAX";
 static const char CMD_DEBUG[] PROGMEM = "DEBUG";
@@ -132,10 +132,6 @@ void AVRCommandHandler::parseSerialMonitorInput() {
     }
 
     inputBuffer[bytesRead] = '\0'; // Null-terminate the string
-#if 0                              // DEBUG - Print the input string
-    Serial.print(F("---- Received: ")); // Print the input string
-    Serial.println(inputBuffer);        // Print the input string
-#endif
 
     handleInput(inputBuffer, sizeof(inputBuffer), bytesRead); // Call the handleInput function to process the input
 }
@@ -534,34 +530,43 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
     return 0; // Default return value
 }
 
-// DEVNOTE - The number conversion functions are both written with the usage of the strtod function, for code size purposes.
-//           The strtod function is already used somewhere else in the code and to preserve space in the compiled code we do
-//           use strtol or atof.
+/**
+ * @brief Converts a string to a long integer.
+ * @param str The string to convert.
+ * @param n Pointer to the long integer to store the result.
+ * @return The result of the conversion.
+ * @retval true Conversion successful
+ * @retval false Conversion failed
+ * @note The function uses strtod to convert the string to a long integer for code size purposes.
+ *       The strtod function is already used somewhere else in the code and to preserve space in the compiled code
+ *       strtol or atof is not used.
+ */
 const bool AVRCommandHandler::convertWordNumber(const char *str, long *n) const {
     // Check if the string is a number (integer or float)
     char *endptr = nullptr;
     *n = (long)strtod(str, &endptr); // Convert to long integer
 
-    if (*endptr != '\0') {
-        // TODO: Check if compile size is smaller with the usage of F() macro
-        return false; // Not a valid number
-    }
-
-    return true; // Valid number
+    return (*endptr == '\0'); // Check if the conversion was successful
 }
 
+/**
+ * @brief Converts a string to a float.
+ * @param str The string to convert.
+ * @param value Pointer to the float to store the result.
+ * @return The result of the conversion.
+ * @retval true Conversion successful
+ * @retval false Conversion failed
+ * @note The function uses strtod to convert the string to a long integer for code size purposes.
+ *       The strtod function is already used somewhere else in the code and to preserve space in the compiled code
+ *       strtol or atof is not used.
+ */
 const bool AVRCommandHandler::convertWordFloat(const char *str, float *value) const {
 
     // Check if the string is a number (integer or float)
     char *endptr = nullptr;
     *value = float(strtod(str, &endptr)); // Convert to float
 
-    if (*endptr != '\0') {
-        // TODO: Check if compile size is smaller with the usage of F() macro
-        return false; // Not a valid float
-    }
-
-    return true; // Valid float
+    return (*endptr == '\0'); // Check if the conversion was successful
 }
 
 void AVRCommandHandler::DebugParamOff() {

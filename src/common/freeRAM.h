@@ -28,6 +28,7 @@ public:
 #if defined(ARDUINO_ARCH_ESP32)
     static int freeRam() {
         return heap_caps_get_free_size(MALLOC_CAP_8BIT);
+    }
 
 #else
     static int freeRam() {

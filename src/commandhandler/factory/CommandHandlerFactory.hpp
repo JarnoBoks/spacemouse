@@ -2,7 +2,7 @@
 #if defined(ARDUINO_ARCH_ESP32)
 
 // Include the header files for the command handler that will handle the commands send by the serial interface
-#include "commandhandler/EspCommandHandler.hpp"
+#include "..\ESPCommandHandler.hpp"
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
 
 // Include the header files for the commands that can be received through the serial interface
@@ -22,9 +22,9 @@
 
 class CommandHandlerFactory {
 private:
-    CollectionIdentifier *m_Collections; // Pointer to the collection identifier object
+    CollectionCarrier *m_Collections; // Pointer to the collection carrier object
 public:
-    CommandHandlerFactory(CollectionIdentifier *collections) : m_Collections(collections) {
+    CommandHandlerFactory(CollectionCarrier *collections) : m_Collections(collections) {
         // Constructor
     }
 

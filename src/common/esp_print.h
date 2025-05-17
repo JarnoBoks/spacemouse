@@ -1,3 +1,9 @@
+#if defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_ESP8266)
+
+#else
+
+#endif
+
 #ifndef ARDUINO_ARCH_AVR
 
 #ifndef ESP_PRINT
@@ -8,9 +14,6 @@
 #define ESP_DBG(x) Serial.println(x)
 #endif
 
-#else
-#define ESP_PRINT(x)
-#define ESP_DBG(x)
 #define ESP_WARN(x)      \
     Serial.print("W: "); \
     ESP_OUT(x);
@@ -34,5 +37,14 @@
     Serial.print(__func__); \
     Serial.print(F(" | ")); \
     Serial.print(F(x))
+
+#else
+#define ESP_PRINT(x)
+#define ESP_DBG(x)
+#define ESP_WARN(x)
+#define ESP_ERROR(x)
+#define ESP_INFO(x)
+#define ESP_INFO2(x, y)
+#define ESP_OUT(x)
 
 #endif

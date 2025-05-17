@@ -1,6 +1,7 @@
 #include "IAxisConfigCommand.h"
 
-#include "kinematics/kinematics.h"
+#include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
+#include <axis/AxisCollection.hpp>
 #include "axis/config/AxisConfig.hpp"
 #include "visitors/AxisConfigPrinter.h"
 
@@ -16,17 +17,7 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
     if (paramCount == 0) {
         // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
-        // REVIEW - Move this to the kinematics class?
-        Kinematics *kinematics = Kinematics::getInstance();
-        for (uint8_t id = 0; id < AxisType_t::LENGTH; id++) {
-            Axis *axis = kinematics->getAxis((AxisType_t)id); // Pointer to the axis
-            if (axis == nullptr) {
-                continue; // Skip if the axis is not available
-            }
-            axis->accept(printer); // Accept the printer visitor to print the axis configuration
-        }
-
-        return;
+        m_CollectionCarrier->getAxisCollection()->acceptAxesVisitor(printer);
     }
 
     if (paramCount == 1) {
@@ -36,7 +27,6 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
 
     if (paramCount == 2) {
         // F.e. command received: SENS <+|-><axisname> <value>
-        // TODO - Add functionality for the second parameter
 
         // Get the value that has to be set
         if (!convertWordFloat(param2, &m_requestedValue)) {
@@ -48,10 +38,9 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
         char direction = param1[0];
 
         // Get the axis from the axis name
-        char *reqAxisName = (char *)param1 + 1;                   // Get the axis name (skip the first character)
-        m_Axis = Kinematics::getInstance()->getAxis(reqAxisName); // Get the axis by its name
+        char *reqAxisName = (char *)param1 + 1; // Get the axis name (skip the first character)
 
-        // REVIEW - Failsafe: Axis not found can be removed from Arduino.
+        m_Axis = m_CollectionCarrier->getAxisCollection()->getAxis(reqAxisName); // Get the axis by its name
         if (m_Axis == nullptr) {
             ESP_WARN("Unknown axis");
             return;

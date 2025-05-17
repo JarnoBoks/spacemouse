@@ -1,26 +1,34 @@
 // TODO - Remove all ESP print and ESP_DBG from the AVR version
 #include "AVRCommandHandler.hpp"
 
+// Collections
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
+#include "axis/AxisCollection.hpp"
+#include "sensor/SensorCollection.hpp"
 
+// Calibration managers
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp"
 #include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
 
+// Axes
 #include "axis/axes/Axis.hpp"
 #include "axis/config/AxisConfig.hpp"
 #include "axis/config/AxisDirectionConfig.hpp"
 
+// Sensors
+#include "sensor/config/SensorConfig.h"
+
+// Kinematics
 #include "kinematics/kinematics.h"
 #include "kinematics/kinematicsconfig.h"
 
+// Visitors
 #include "visitors/AxisConfigPrinter.h"
 #include "visitors/SwitchYZPrinter.h"
 #include "visitors/ExclusiveModePrinter.h"
 #include "visitors/MinMaxPrinter.h"
 
-#include "sensor/SensorCollection.hpp"
-#include "sensor/config/SensorConfig.h"
-
+// Observers
 #include "observers/DebugOutput/DebugOutputSensorsRaw.hpp"
 #include "observers/DebugOutput/DebugOutputSensorsCentered.hpp"
 #include "observers/DebugOutput/DebugOutputSensorsCenteredNoNewline.hpp" // Implementation of the ODebugOutputSensors class
@@ -29,10 +37,12 @@
 #include "observers/DebugOutput/DebugOutputAxesSensitivity.hpp"
 #include "observers/DebugOutput/DebugOutputLoopFrequency.hpp"
 
+// Helpers & Common
 #include <common/esp_print.h>
 #include <Arduino.h> // For Serial
 
-#define MAX_INPUT_SIZE 48 // Maximum size of the input buffer
+// Maximum size of the input buffer
+#define MAX_INPUT_SIZE 48
 
 // Input commands that can be handled
 static const char CMD_IDLE[] PROGMEM = "IDLE";
@@ -138,15 +148,15 @@ void AVRCommandHandler::parseSerialMonitorInput() {
 
 void AVRCommandHandler::executeIdle(const char *param1, const char *param2, const uint8_t paramCount) {
     // Implementation for IDLE command
-    if (getCollectionIdentifier() == nullptr) {
-        ESP_PRINT(F("IdleCommand::execute: No collection identifier available"));
-        return; // No collection identifier available, exit the function
+    if (!getCollectionCarrier()) {
+        ESP_ERROR("Carrier N/A");
+        return;
     }
-    if (getCollectionIdentifier()->getSensorCollection() == nullptr) {
-        ESP_PRINT(F("IdleCommand::execute: No sensor collection available"));
+    if (!(getCollectionCarrier()->getSensorCollection())) {
+        ESP_ERROR("No sensor collection available");
         return; // No sensor collection available, exit the function
     }
-    SensorCollection *sensorCollection = getCollectionIdentifier()->getSensorCollection();
+    SensorCollection *sensorCollection = getCollectionCarrier()->getSensorCollection();
 
     SensorCalibrationManagerIdle *m_SensorCalibrationManager = new SensorCalibrationManagerIdle(sensorCollection); // Create a new instance of the sensor calibration manager
     m_SensorCalibrationManager->activate(2000);                                                                    // Start the idle calibration with 2000 iterations
@@ -154,16 +164,15 @@ void AVRCommandHandler::executeIdle(const char *param1, const char *param2, cons
 
 void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, const uint8_t paramCount) {
     // Implementation for MINMAX command
-
-    if (getCollectionIdentifier() == nullptr) {
-        ESP_PRINT(F("MinMaxCommand::execute: No collection identifier available"));
-        return; // No collection identifier available, exit the function
+    if (!getCollectionCarrier()) {
+        ESP_ERROR("Carrier N/A");
+        return;
     }
-    if (getCollectionIdentifier()->getSensorCollection() == nullptr) {
-        ESP_PRINT(F("MinMaxCommand::execute: No sensor collection available"));
+    if (!(getCollectionCarrier()->getSensorCollection())) {
+        ESP_ERROR("No sensor collection available");
         return; // No sensor collection available, exit the function
     }
-    SensorCollection *sensorCollection = getCollectionIdentifier()->getSensorCollection();
+    SensorCollection *sensorCollection = getCollectionCarrier()->getSensorCollection();
 
     if (paramCount == 0) {
         // No params provided, show config
@@ -183,33 +192,32 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
     }
 
     if (paramCount == 1) {
-        long requestedCalibration = 0; // Default value for the second word
+        long requestedCalibration = 0;
         if (!convertWordNumber(param1, (long *)&requestedCalibration)) {
-            return; // First parameter is not a number
+            ESP_WARN("Param not float");
+            return;
         }
+        ESP_INFO2("MinMax calibration requested", requestedCalibration);
 
-        ESP_PRINT(F("MinMaxCommand::execute: MinMax calibration requested: "));
-        ESP_PRINT(requestedCalibration);
         m_SensorCalibrationManager = new SensorCalibrationManagerMinMax(sensorCollection); // Create a new instance of the sensor calibration manager
         if (requestedCalibration == 0) {
-            ESP_PRINT(F("MinMaxCommand::execute: Start minmax calibration"));
+            ESP_INFO("Start minmax calibration");
             m_SensorCalibrationManager->activate();
         } else if (requestedCalibration == 1) {
-            ESP_PRINT(F("MinMaxCommand::execute: Start minmax calibration and store in EEPROM"));
+            ESP_INFO("Start minmax calibration and store in EEPROM");
             m_SensorCalibrationManager->activate();
             // TODO - Store the values in EEPROM
         } else {
-            ESP_PRINT(F("MinMaxCommand::execute: Unknown command"));
+            ESP_WARN("Unknown command");
         }
     }
     if (paramCount == 2) {
-        // REVIEW - Not implemented on the AVR version
         // Command received: MINMAX <+|-><sensorname> <value>
-        // TODO - Add functionality for the second parameter
 
         // Get the value that has to be set
         long requestedValue = 0; // Default value for the second word
         if (!convertWordNumber(param2, (long *)&requestedValue)) {
+            ESP_WARN("Param not float");
             return; // Second parameter is not a number
         }
 
@@ -222,33 +230,31 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
 
         // REVIEW - Failsafe: Sensor not found can be removed from Arduino.
         if (sensor == nullptr) {
-            ESP_PRINT(F("MinMaxCommand::execute: Sensor not found"));
+            ESP_ERROR("Sensor not found");
             return; // Sensor not found, exit the function
         }
 
         if (sensor != nullptr && direction == '+') {
             // Set the maximum value for the sensor
-            ESP_PRINT(F("MinMaxCommand::execute: Set max for sensor "));
+            ESP_INFO("Set max for sensor ");
             sensor->getConfig()->setMax(requestedValue);
 
         } else if (sensor != nullptr && direction == '-') {
             // Set the minimum value for the sensor
-            ESP_PRINT(F("MinMaxCommand::execute: Set min for sensor "));
+            ESP_INFO("Set min for sensor ");
             sensor->getConfig()->setMin(requestedValue);
 
         } else {
-            ESP_PRINT(F("MinMaxCommand::execute: Unknown command"));
+            ESP_WARN("Unknown command");
             return; // Invalid direction, exit the function
         }
 
-        ESP_PRINT(F("MinMaxCommand::execute: Set minmax for sensor "));
-        ESP_PRINT(param1);
-        ESP_PRINT(F(" to "));
-        ESP_PRINT(requestedValue);
+        ESP_INFO2("Set minmax for sensor ", param1);
+        ESP_INFO2("to ", requestedValue);
 
         // Store the value in the EEPROM
         sensor->getConfig()->persist(sensor->getId());
-        ESP_PRINT(F("MinMaxCommand::execute: Store minmax for sensor "));
+        ESP_INFO("Store minmax for sensor");
     }
 }
 
@@ -325,12 +331,12 @@ void AVRCommandHandler::executeSens(const char *param1, const char *param2, cons
     // Call the base class execute function to handle common functionality
     float requestedValue = executeAxis(param1, param2, paramCount);
 
-    if (!m_DirectionConfig) {
+    if (!m_AxisDirectionConfig) {
         ESP_PRINT(F("SensCommand::execute: No direction config available"));
         return; // No direction config available, exit the function
     }
 
-    m_DirectionConfig->sensitivity = requestedValue;     // Set the sensitivity value to the requested value
+    m_AxisDirectionConfig->sensitivity = requestedValue; // Set the sensitivity value to the requested value
     m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
 }
 
@@ -341,12 +347,12 @@ void AVRCommandHandler::executeGate(const char *param1, const char *param2, cons
     // Call the base class execute function to handle common functionality
     float requestedValue = executeAxis(param1, param2, paramCount);
 
-    if (m_DirectionConfig == nullptr) {
+    if (m_AxisDirectionConfig == nullptr) {
         ESP_PRINT(F("GateCommand::execute: No direction config available"));
         return; // No direction config available, exit the function
     }
 
-    m_DirectionConfig->gate = requestedValue;            // Set the gate value to the requested value
+    m_AxisDirectionConfig->gate = requestedValue;        // Set the gate value to the requested value
     m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
 }
 
@@ -358,13 +364,13 @@ void AVRCommandHandler::executeModFunc(const char *param1, const char *param2, c
     int requestedValue = static_cast<int>(executeAxis(param1, param2, paramCount));
 
     // Check if the directionConfig is valid
-    if (!m_DirectionConfig) {
+    if (!m_AxisDirectionConfig) {
         ESP_PRINT(F("ModFuncCommand::execute: No direction config available"));
         return; // No direction config available, exit the function
     }
 
-    m_DirectionConfig->modFuncType = static_cast<ModFunc_t>(requestedValue); // Set the mod function type to the requested value
-    m_Axis->getConfig()->persist(m_Axis->getAxisType());                     // Store the value in the EEPROM
+    m_AxisDirectionConfig->modFuncType = static_cast<ModFunc_t>(requestedValue); // Set the mod function type to the requested value
+    m_Axis->getConfig()->persist(m_Axis->getAxisType());                         // Store the value in the EEPROM
 }
 
 void AVRCommandHandler::executeInvert(const char *param1, const char *param2, const uint8_t paramCount) {
@@ -375,7 +381,7 @@ void AVRCommandHandler::executeInvert(const char *param1, const char *param2, co
     float requestedValue = executeAxis(param1, param2, paramCount);
 
     // Check if the axis has a valid AxisDirectionConfig
-    if (!m_DirectionConfig) {
+    if (!m_AxisDirectionConfig) {
         ESP_PRINT(F("InvertCommand::execute: No direction config available"));
         return; // No direction config available, exit the function
     }
@@ -458,41 +464,23 @@ void AVRCommandHandler::executeExlc(const char *param1, const char *param2, cons
 
 float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uint8_t paramCount) {
     if (paramCount == 0) {
-        // No params provided, show config
-        ESP_PRINT(F("IAxisConfigCommand::execute: Show config"));
-
+        // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
-
-        // REVIEW - Move this to the kinematics class?
-        Kinematics *kinematics = Kinematics::getInstance();
-        for (uint8_t id = 0; id < AxisType_t::LENGTH; id++) {
-            Axis *axis = kinematics->getAxis((AxisType_t)id); // Pointer to the axis
-            if (axis == nullptr) {
-                continue; // Skip if the axis is not available
-            }
-            axis->accept(printer); // Accept the printer visitor to print the axis configuration
-        }
-
+        m_CollectionCarrier->getAxisCollection()->acceptAxesVisitor(printer);
         return 0;
     }
 
     if (paramCount == 1) {
-        ESP_PRINT(F("IAxisConfigCommand::execute: First parameter: "));
-        ESP_PRINT(param1);
-
         return 0;
     }
 
     if (paramCount == 2) {
         // Command received: SENS <+|-><axisname> <value>
-        // TODO - Add functionality for the second parameter
-        ESP_PRINT(F("IAxisConfigCommand::execute: Second parameter: "));
-        ESP_PRINT(param2);
 
         float requestedValue = 0;
         // Get the value that has to be set
         if (!convertWordFloat(param2, &requestedValue)) {
-            ESP_PRINT(F("IAxisConfigCommand::execute: Second parameter is not a float"));
+            ESP_WARN("Param not float");
             return 0; // Second parameter is not a float
         }
 
@@ -500,27 +488,23 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
         char direction = param1[0]; // Get the first character of the first parameter
 
         // Get the axis from the axis name
-        char *reqAxisName = (char *)param1 + 1;                   // Get the axis name (skip the first character)
-        m_Axis = Kinematics::getInstance()->getAxis(reqAxisName); // Get the axis by its name
+        char *reqAxisName = (char *)param1 + 1;                                  // Get the axis name (skip the first character)
+        m_Axis = m_CollectionCarrier->getAxisCollection()->getAxis(reqAxisName); // Get the axis by its name
 
         // REVIEW - Failsafe: Axis not found can be removed from Arduino.
         if (m_Axis == nullptr) {
-            ESP_PRINT(F("IAxisConfigCommand::execute: Axis not found"));
             return 0; // Axis not found, exit the function
         }
 
         if (direction == '+') {
             // Set the maximum value for the sensor
-            ESP_PRINT(F("IAxisConfigCommand::execute: Set positive dir for axis "));
-            m_DirectionConfig = &m_Axis->getConfig()->posConfig; // Set the direction config to the positive direction
+            m_AxisDirectionConfig = &m_Axis->getConfig()->posConfig; // Set the direction config to the positive direction
 
         } else if (direction == '-') {
             // Set the minimum value for the sensor
-            ESP_PRINT(F("IAxisConfigCommand::execute: Set negative dir for axis "));
-            m_DirectionConfig = &m_Axis->getConfig()->negConfig; // Set the direction config to the negative direction
+            m_AxisDirectionConfig = &m_Axis->getConfig()->negConfig; // Set the direction config to the negative direction
 
         } else {
-            ESP_PRINT(F("IAxisConfigCommand::execute: Unknown command"));
             return 0; // Invalid direction, exit the function
         }
 
@@ -581,7 +565,7 @@ void AVRCommandHandler::DebugParamSensorInformationRaw() {
 
     // Instantiate the Observer for the RawSensor values and attach it to the hardware
     m_SensorObserver = new DebugOutputSensorsRaw();
-    getCollectionIdentifier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
+    getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
 }
 
 void AVRCommandHandler::DebugParamSensorInformationCentered() {
@@ -589,7 +573,7 @@ void AVRCommandHandler::DebugParamSensorInformationCentered() {
 
     // Instantiate the Observer for the CenteredSensor values and attach it to the hardware
     m_SensorObserver = new DebugOutputSensorsCentered();
-    getCollectionIdentifier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
+    getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
 }
 
 void AVRCommandHandler::DebugParamSensorInformationFiltered() {
@@ -597,7 +581,7 @@ void AVRCommandHandler::DebugParamSensorInformationFiltered() {
 
     // Instantiate the Observer for the FilteredSensor values and attach it to the hardware
     m_SensorObserver = new DebugOutputSensorsFiltered();
-    getCollectionIdentifier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
+    getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
 }
 
 void AVRCommandHandler::DebugParamAxisInformation() {
@@ -605,7 +589,7 @@ void AVRCommandHandler::DebugParamAxisInformation() {
 
     // Instantiate the Observer for the Axis values and attach it to the hardware
     m_AxisObserver = new DebugOutputAxesSensitivity();
-    getCollectionIdentifier()->getAxisCollection()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
+    getCollectionCarrier()->getAxisCollection()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
 }
 
 void AVRCommandHandler::DebugParamSensorAxisInformation() {
@@ -615,8 +599,8 @@ void AVRCommandHandler::DebugParamSensorAxisInformation() {
     m_SensorObserver = new DebugOutputSensorsCenteredNoNewline();
     m_AxisObserver = new DebugOutputAxesModified();
 
-    getCollectionIdentifier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
-    getCollectionIdentifier()->getAxisCollection()->attachObserver(m_AxisObserver);     // Attach the axis observer to the axis collection
+    getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
+    getCollectionCarrier()->getAxisCollection()->attachObserver(m_AxisObserver);     // Attach the axis observer to the axis collection
 }
 
 void AVRCommandHandler::DebugParamSensorAxisKeysInformation() {
@@ -626,8 +610,8 @@ void AVRCommandHandler::DebugParamSensorAxisKeysInformation() {
     m_SensorObserver = new DebugOutputSensorsCenteredNoNewline();
     m_AxisObserver = new DebugOutputAxesModified();
 
-    getCollectionIdentifier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
-    getCollectionIdentifier()->getAxisCollection()->attachObserver(m_AxisObserver);     // Attach the axis observer to the axis collection
+    getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
+    getCollectionCarrier()->getAxisCollection()->attachObserver(m_AxisObserver);     // Attach the axis observer to the axis collection
 }
 
 void AVRCommandHandler::DebugParamLoopFrequency() {
@@ -635,25 +619,25 @@ void AVRCommandHandler::DebugParamLoopFrequency() {
 
     // Instantiate the Observer for the Loop Frequency values and attach it to the hardware
     m_LoopFrequencyObserver = new DebugOutputLoopFrequency();
-    getCollectionIdentifier()->getAxisCollection()->attachObserver(m_LoopFrequencyObserver); // Attach the observer to the axis collection
+    getCollectionCarrier()->getAxisCollection()->attachObserver(m_LoopFrequencyObserver); // Attach the observer to the axis collection
 }
 
 void AVRCommandHandler::DetachCurrentObservers() {
     if (m_AxisObserver != nullptr) {
-        getCollectionIdentifier()->getAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
-        delete m_AxisObserver;                                                          // Delete the previous observer if it exists
-        m_AxisObserver = nullptr;                                                       // Set the observer pointer to null
+        getCollectionCarrier()->getAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
+        delete m_AxisObserver;                                                       // Delete the previous observer if it exists
+        m_AxisObserver = nullptr;                                                    // Set the observer pointer to null
     }
 
     if (m_SensorObserver != nullptr) {
-        getCollectionIdentifier()->getSensorCollection()->detachObserver(m_SensorObserver); // Detach the observer from the sensor collection
-        delete m_SensorObserver;                                                            // Delete the previous observer if it exists
-        m_SensorObserver = nullptr;                                                         // Set the observer pointer to null
+        getCollectionCarrier()->getSensorCollection()->detachObserver(m_SensorObserver); // Detach the observer from the sensor collection
+        delete m_SensorObserver;                                                         // Delete the previous observer if it exists
+        m_SensorObserver = nullptr;                                                      // Set the observer pointer to null
     }
 
     if (m_LoopFrequencyObserver != nullptr) {
-        getCollectionIdentifier()->getAxisCollection()->detachObserver(m_LoopFrequencyObserver); // Detach the observer from the axis collection
-        delete m_LoopFrequencyObserver;                                                          // Delete the previous observer if it exists
-        m_LoopFrequencyObserver = nullptr;                                                       // Set the observer pointer to null
+        getCollectionCarrier()->getAxisCollection()->detachObserver(m_LoopFrequencyObserver); // Detach the observer from the axis collection
+        delete m_LoopFrequencyObserver;                                                       // Delete the previous observer if it exists
+        m_LoopFrequencyObserver = nullptr;                                                    // Set the observer pointer to null
     }
 }

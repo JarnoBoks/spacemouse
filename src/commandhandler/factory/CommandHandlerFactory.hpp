@@ -41,10 +41,10 @@ public:
         commandHandler->registerCommand(new DebugCommand(m_Collections));
         commandHandler->registerCommand(new IdleCommand(m_Collections));
         commandHandler->registerCommand(new MinMaxCommand(m_Collections));
-        commandHandler->registerCommand(new SensCommand());
-        commandHandler->registerCommand(new GateCommand());
-        commandHandler->registerCommand(new ModFuncCommand());
-        commandHandler->registerCommand(new InvertCommand());
+        commandHandler->registerCommand(new SensCommand(m_Collections));
+        commandHandler->registerCommand(new GateCommand(m_Collections));
+        commandHandler->registerCommand(new ModFuncCommand(m_Collections));
+        commandHandler->registerCommand(new InvertCommand(m_Collections));
         commandHandler->registerCommand(new ShowCommand());
         commandHandler->registerCommand(new ExclusiveCommand());
         commandHandler->registerCommand(new SwitchYZCommand());

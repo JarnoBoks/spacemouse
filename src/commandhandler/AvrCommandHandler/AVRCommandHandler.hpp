@@ -14,12 +14,12 @@ class DebugOutputLoopFrequency;
 class AVRCommandHandler {
 private:
     // TODO: rename CollectionIdentifier to CollectionCarrier
-    CollectionCarrier *m_CollectionIdentifier = nullptr;                                  // Pointer to the collection identifier
-    CollectionCarrier *getCollectionIdentifier() const { return m_CollectionIdentifier; } // Get the collection identifier
+    CollectionCarrier *m_CollectionCarrier = nullptr;                               // Pointer to the collection carrier
+    CollectionCarrier *getCollectionCarrier() const { return m_CollectionCarrier; } // Get the collection carrier
 
     SensorCalibrationManager *m_SensorCalibrationManager = nullptr; // Pointer to the sensor calibration manager
     Axis *m_Axis = nullptr;                                         // Pointer to the axis
-    AxisDirectionConfig *m_DirectionConfig = nullptr;
+    AxisDirectionConfig *m_AxisDirectionConfig = nullptr;
 
     DebugOutputAxes *m_AxisObserver = nullptr;                   // Pointer to the axis observer instance
     DebugOutputSensors *m_SensorObserver = nullptr;              // Pointer to the sensor observer instance
@@ -57,7 +57,7 @@ public:
         DetachCurrentObservers(); // Detach the observers when the object is destroyed
     };
 
-    void setCollectionIdentifier(CollectionCarrier *collectionIdentifier) { m_CollectionIdentifier = collectionIdentifier; } // Set the collection identifier
+    void setCollectionIdentifier(CollectionCarrier *collectionCarrier) { m_CollectionCarrier = collectionCarrier; }
 
     void parseSerialMonitorInput();
     void handleInput(char input[], const uint8_t inputsize, const int8_t bytesRead);

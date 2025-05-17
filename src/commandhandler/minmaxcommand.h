@@ -17,10 +17,10 @@ public:
 
     /**
      * @brief Constructor for the MinMaxCommand class.
-     * @param collectionIdentifier Pointer to the CollectionIdentifier instance.
+     * @param collectionCarrier Pointer to the CollectionCarrier for accessing collections.
      * @details Initializes the command with the CMD_MINMAX command name.
      */
-    MinMaxCommand(CollectionCarrier *collectionIdentifier) : CommandBase(CMD_MINMAX, collectionIdentifier) {}
+    MinMaxCommand(CollectionCarrier *collectionCarrier) : CommandBase(CMD_MINMAX, collectionCarrier) {}
 
     virtual ~MinMaxCommand();
 

@@ -50,9 +50,10 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
     }
 
     if (paramCount == 1) {
-        long requestedCalibration = 0; // Default value for the second word
+        long requestedCalibration = 0;
         if (!convertWordNumber(param1, (long *)&requestedCalibration)) {
-            return; // First parameter is not a number
+            ESP_WARN("Param not float");
+            return;
         }
         ESP_INFO2("MinMax calibration requested", requestedCalibration);
 
@@ -69,9 +70,7 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         }
     }
     if (paramCount == 2) {
-        // REVIEW - Not implemented on the AVR version
         // Command received: MINMAX <+|-><sensorname> <value>
-        // TODO - Add functionality for the second parameter
 
         // Get the value that has to be set
         long requestedValue = 0; // Default value for the second word

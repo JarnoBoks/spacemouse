@@ -5,9 +5,10 @@
 
 #include <stdint.h>
 
-class ISensorsCalculator; // Forward declaration of the SensorsCalculator class
-class Axis;               // Forward declaration of the Axis class
-class HIDEventBuffer;     // Forward declaration of the HIDEventBuffer class
+class ISensorsCalculator;
+class Axis;
+class HIDEventBuffer;
+class IPrinterVisitor;
 
 /// @brief Number of axes that can be added to the collection.
 /// @details This is a constant value that defines the maximum number of axes that can be added to the collection.
@@ -59,4 +60,9 @@ public:
      * @brief Attach an observer to all axes in the collection.
      */
     void attachAxesObserver(IObserver *observer);
+
+    /**
+     * @brief Accept the Printer Visitor for all axes in the collection.
+     */
+    void acceptAxesVisitor(IPrinterVisitor &printerVisitor);
 };

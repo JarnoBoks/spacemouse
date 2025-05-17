@@ -32,7 +32,7 @@ public:
     CollectionCarrier(SensorCollection *sensorCollection, AxisCollection *axisCollection, KeyCollection *keyCollection)
         : m_SensorCollection(sensorCollection), m_AxisCollection(axisCollection), m_KeyCollection(keyCollection) {}
 
-    SensorCollection *getSensorCollection() const { return m_SensorCollection; } // Get the sensor collection
-    AxisCollection *getAxisCollection() const { return m_AxisCollection; }       // Get the axis collection
-    KeyCollection *getKeyCollection() const { return m_KeyCollection; }          // Get the key collection
+    inline SensorCollection *getSensorCollection() const { return m_SensorCollection; } // Get the sensor collection
+    inline AxisCollection *getAxisCollection() const { return m_AxisCollection; }       // Get the axis collection
+    inline KeyCollection *getKeyCollection() const { return m_KeyCollection; }          // Get the key collection
 };

@@ -63,3 +63,14 @@ void AxisCollection::attachAxesObserver(IObserver *observer) {
         static_cast<Axis *>(m_items[i])->attachObserver(observer); // Attach the observer to each axis in the collection
     }
 };
+
+/**
+ * @brief Distribute the printer visitor to all axes in the collection
+ * @param printerVisitor Reference to the printer visitor to be used for printing.
+ * @details This function iterates through all axes in the collection and calls the accept method on each axis,
+ */
+void AxisCollection::acceptAxesVisitor(IPrinterVisitor &printerVisitor) {
+    for (int i = 0; i < m_itemCount; i++) {
+        static_cast<Axis *>(m_items[i])->accept(printerVisitor);
+    }
+}

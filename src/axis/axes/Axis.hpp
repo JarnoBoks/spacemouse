@@ -57,7 +57,7 @@ public:
     inline void setSensorValue(const int16_t value) { m_rawValue = value; }
     inline void setFinValue(const int16_t value) { m_finValue = value; }
 
-    inline int16_t getSensorValue() const { return m_rawValue; } // Getter for raw axis value
+    inline int16_t getSensorValue() const { return m_rawValue; } // Getter for raw axis value   // FIXME - Change the name to getRawValue() for consistencys
     inline int16_t getSnsValue() const { return m_snsValue; }    // Getter for axis value after applying sensitivity
     inline int16_t getModValue() const { return m_modValue; }    // Getter for axis value after applying sensitivity & modifier function
     inline int16_t getFinValue() const { return m_finValue; }    // Getter for the final axis value after applying all axis & kinematics configurations
@@ -69,5 +69,5 @@ public:
 
     void setKillSwitchActive(bool active) { isKillSwitchActive = active; } // Setter for kill switch state      // REFACTOR - Check how to model this
 
-    void accept(IPrinterVisitor &visitor) { visitor.visit(*this); }
+    inline void accept(IPrinterVisitor &printerVisitor) { printerVisitor.visit(*this); }
 };

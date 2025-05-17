@@ -8,6 +8,8 @@
 #include "sensor/config/SensorConfig.h"
 #include "kinematics/kinematicsconfig.h"
 
+// REMOVE Obsolete code after testing the EEPROM storage
+
 /// @brief If the version number defined in the EEPROM is not equal to the version number defined in this file, the EEPROM will be erased and initialized with the default values.
 /// @warning Changing the version number will reset all stored calibration parameters in the EEPROM.
 constexpr uint8_t EEPROM_VERSION = SM_VERSION;
@@ -31,7 +33,7 @@ struct EESensorConfig {
     uint8_t deadzone = 0;
 };
 
-// -------------------------- EEPROM ADDRESS TABLE END -------------------------
+// -------------------------- EEPROM ADDRESS TABLE  -------------------------
 
 /**
  * The Arduino Micro has an EEPROM storage that can store 1024bytes (1KB)
@@ -64,6 +66,14 @@ constexpr int EEPROM_ADDRESS_CFG_AXIS_INV_END = EEPROM_ADDRESS_CFG_AXIS_INV_BASE
 // Initialize the static class variables
 bool EEPROMStore::_firstrun = false; // Initialize the first run flag
 bool EEPROMStore::_setupdone = false;
+
+// DEVNOTE - If simulating on a PC, the EEPROM is not available. In order to force the software to generate a default configuration,
+//           the EEPROM loadconfig functions should return false.
+#ifdef SIMULATOR_DEBUGGING
+#define LOADCONFIG_RETVAL false // Running in simulator mode, return false
+#else
+#define LOADCONFIG_RETVAL true // Running on a live device, return true
+#endif
 
 /**
  * @brief Starts EEPROM functionality and checks if the EEPROM version is the same as the version stored in the EEPROM.
@@ -121,8 +131,8 @@ bool EEPROMStore::loadConfig(AxisConfig &config, const int axisnumber) {
     config.negConfig.modFuncType = eeConfig.nModFunc;
     config.inversion = eeConfig.inversion;
 
-    // FIXME return true; // Return true while the configuration was loaded successfully
-    return false;
+    // Config was loaded succesfully. Return true while running on a live device, return false while running in the simulator.
+    return LOADCONFIG_RETVAL;
 }
 
 /**
@@ -148,12 +158,12 @@ bool EEPROMStore::loadConfig(AxisConfig &config, const int axisnumber) {
         return false; // EEPROM is not initialized, return false
     }
 
-    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + axisnumber * sizeof(AxisDirectionConfig), config.posConfig); // Store the configuration in the EEPROM
-    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE + axisnumber * sizeof(AxisDirectionConfig), config.negConfig); // Store the configuration in the EEPROM
-    EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_INV_BASE + axisnumber * sizeof(AxisConfig::inversion), config.inversion);   // Store the configuration in the EEPROM
+    EEPROM.get(EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + axisnumber * sizeof(AxisDirectionConfig), config.posConfig); // Store the configuration in the EEPROM
+    EEPROM.get(EEPROM_ADDRESS_CFG_AXIS_NCONFIG_BASE + axisnumber * sizeof(AxisDirectionConfig), config.negConfig); // Store the configuration in the EEPROM
+    EEPROM.get(EEPROM_ADDRESS_CFG_AXIS_INV_BASE + axisnumber * sizeof(AxisConfig::inversion), config.inversion);   // Store the configuration in the EEPROM
 
-    // FIXME return true; // Return true while the configuration was loaded successfully
-    return false;
+    // Config was loaded succesfully. Return true while running on a live device, return false while running in the simulator.
+    return LOADCONFIG_RETVAL;
 }
 
 /**
@@ -189,9 +199,8 @@ bool EEPROMStore::loadConfig(SensorConfig &config, const int sensornumber) {
     config.setInverted(eeConfig.inversion);
     config.setDeadzone(eeConfig.deadzone);
 
-    // FIXME return true; // Return true while the configuration was loaded successfully
-    return false;
-}
+    // Config was loaded succesfully. Return true while running on a live device, return false while running in the simulator.
+    return LOADCONFIG_RETVAL;}
 
 void EEPROMStore::saveConfig(SensorConfig &config, const int sensornumber) {
     EESensorConfig eeConfig;
@@ -211,8 +220,9 @@ bool EEPROMStore::loadConfig(SensorConfig &config, const int sensornumber) {
 
     // Setup the EEPROM address and transfer object for the sensor configuration
     EEPROM.get(EEPROM_ADDRESS_CFG_SENSORS_BASE + sensornumber * sizeof(SensorConfig), config); // Load the configuration from the EEPROM
-    // FIXME return true; // Return true while the configuration was loaded successfully. Is necessary for simulation purposes (simavr has no EEPROM available)
-    return false;
+
+    // Config was loaded succesfully. Return true while running on a live device, return false while running in the simulator.
+    return LOADCONFIG_RETVAL;
 }
 
 void EEPROMStore::saveConfig(SensorConfig &config, const int sensornumber) {
@@ -227,8 +237,9 @@ bool EEPROMStore::loadConfig(KinematicsConfig &config) {
 
     EEPROM.get(EEPROM_ADDRESS_CFG_AXES_BASE, config.exclusiveMode); // Load the configuration from the EEPROM
     EEPROM.get(EEPROM_ADDRESS_CFG_AXES_BASE + 1, config.switchYZ);  // Load the configuration from the EEPROM
-    // FIXME return true; // Return true while the configuration was loaded successfully
-    return false;
+
+    // Config was loaded succesfully. Return true while running on a live device, return false while running in the simulator.
+    return LOADCONFIG_RETVAL;
 }
 
 void EEPROMStore::saveConfig(KinematicsConfig &config) {
@@ -237,15 +248,14 @@ void EEPROMStore::saveConfig(KinematicsConfig &config) {
 }
 
 #if 0
-// REMOVE
 bool EEPROMStore::loadConfig(KeyConfig &config, const int8_t buttonnumber) {
     if (isFirstRun()) {
         return false; // EEPROM is not initialized, return false
     }
 
     EEPROM.get(EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + buttonnumber * sizeof(KeyConfig), config); // Load the configuration from the EEPROM
-    // FIXME return true; // Return true while the configuration was loaded successfully
-    return false;
+    // Config was loaded succesfully. Return true while running on a live device, return false while running in the simulator.
+    return LOADCONFIG_RETVAL;
 }
 
 void EEPROMStore::saveConfig(KeyConfig &config, const int8_t buttonnumber) {

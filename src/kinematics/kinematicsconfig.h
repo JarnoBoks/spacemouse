@@ -11,11 +11,6 @@ public:
     /** Constructor with no arguments - default */
     KinematicsConfig();
 
-#if 0
-    /* Constructor with axisType as argument - used when called from an axis */
-    KinematicsConfig(AxisType_t axisType);
-#endif
-
     /* Constructor with parameters - used when called from default config */
     KinematicsConfig(const bool exclmd,
                      const bool switchyz);

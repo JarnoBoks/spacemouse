@@ -29,21 +29,6 @@ Kinematics::Kinematics() : Observable(c_MAX_KINEMATICS_OBSERVERS),
                            config(new KinematicsConfig()) {
 }
 
-#if 0 // REMOVE
-/**
- * @brief Processes the kinematics for all axes and updates their values. Notifies attached observers of these changes.
- * @details This function calculates the values for each axis based on the hardware input and configuration.
- */
-void Kinematics::processKinematics() {
-    for (int i = 0; i < AxisType_t::LENGTH; i++) {
-        int16_t raw = hardware->calculateRawValue(static_cast<AxisType_t>(i));  // Get the raw value from the hardware
-        static_cast<Axis *>(m_axisCollection->getItem(i))->calculateValue(raw); // Calculate the value for each axis
-    }
-    hardware->notifyObservers(); // Notify observers of changes in the hardware
-    notifyObservers();           // Notify observers of changes in the kinematics
-}
-#endif
-
 // REVIEW - This should be a decorator function for the axis class, but we need to check if we can use the same function for both classes.
 // Define a macro to simplify the access to the sensor values
 #define ABSVAL(x) abs(static_cast<Axis *>(m_axisCollection->getItem(x))->getFinValue())
@@ -130,7 +115,7 @@ const AxisType_t Kinematics::getMainAxis(Axis *axis) {
     return idMainAxis;
 }
 
-#if 0  // REMOVE - Keeping for PGM string example at the moment
+#if 0 // REMOVE - Keeping for PGM string example at the moment
 Axis *Kinematics::getAxis(const char *name) {
     // TODO - Make progmem string for the axis names
     const __FlashStringHelper *axisNames[] PROGMEM = {F("TX"), F("TY"), F("TZ"), F("RX"), F("RY"), F("RZ")}; // Axis names
@@ -141,4 +126,4 @@ Axis *Kinematics::getAxis(const char *name) {
     }
     return nullptr; // Axis not found, return nullptr
 }
-#endif // REMOVE
+#endif

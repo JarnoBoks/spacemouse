@@ -26,8 +26,6 @@ public:
      */
     // TODO - Make the collectionCarrier a const reference
     IAxisConfigCommand(const char *cmdName, CollectionCarrier *collectionCarrier) : CommandBase(cmdName, collectionCarrier) {}
-
-    // REMOVE IAxisConfigCommand(const char *cmdName) : CommandBase(cmdName) {}
     virtual ~IAxisConfigCommand() {};
 
     virtual void execute(const char *param1, const char *param2, uint8_t paramCount) override;

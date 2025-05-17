@@ -23,14 +23,4 @@ public:
     virtual ~IObserver() {}
 
     inline virtual void update(IObservable *observable) {}; // Default implementation for IObservable, can be overridden by derived classes
-
-#if 0 // REMOVE -
-    // REFACTOR - Remove the following methods, they should be replaced by the IObservable interface and can be implemented in the derived classes
-    inline virtual void update(Kinematics *kinematics) {};
-    inline virtual void update(KeyCollection *keyCollection) {};
-    inline virtual void update(AxisCollection *axisCollection) {};
-    inline virtual void update(SensorCollection *sensorCollection) {};
-    inline virtual void update(AxisRotation *axisRotation) {};
-    inline virtual void update(AxisTranslation *axisTranslation) {};
-#endif
 };

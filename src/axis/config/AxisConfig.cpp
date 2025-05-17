@@ -26,13 +26,13 @@ AxisConfig::AxisConfig(AxisType_t axisType) : inversion(false) {
  * @brief Constructor for AxisConfig class with parameterized settings.
  * @details This constructor initializes the AxisConfig object with the given parameters for sensitivity, gate, and function types.
  *          This constructor is used when called from the DefaultAxisConfig class.
- * @param[in] psens|float Sensitivity for the positive direction.
- * @param[in] nsens Sensitivity for the negative direction.
- * @param[in] pgate Gate for the positive direction.
- * @param[in] ngate Gate for the negative direction.
- * @param[in] pmf Modifier function type for the positive direction.
- * @param[in] nmf Modifier function type for the negative direction.
- * @param[in] invert Inversion flag for the axis.
+ * @param psens Sensitivity for the positive direction.
+ * @param nsens Sensitivity for the negative direction.
+ * @param pgate Gate for the positive direction.
+ * @param ngate Gate for the negative direction.
+ * @param pmf Modifier function type for the positive direction.
+ * @param nmf Modifier function type for the negative direction.
+ * @param invert Inversion flag for the axis.
  * @note The constructor initializes the posConfig and negConfig members with the given parameters.
  */
 AxisConfig::AxisConfig(const float psens,

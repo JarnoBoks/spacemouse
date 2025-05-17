@@ -8,6 +8,14 @@
 #include "sensor/config/SensorConfig.h"
 #include "kinematics/kinematicsconfig.h"
 
+// DEVNOTE - If simulating on a PC, the EEPROM is not available. In order to force the software to generate a default configuration,
+//           the EEPROM loadconfig functions should return false.
+#ifdef SIMULATOR_DEBUGGING
+#define LOADCONFIG_RETVAL false // Running in simulator mode, return false
+#else
+#define LOADCONFIG_RETVAL false // true // Running on a live device, return true
+#endif
+
 // REMOVE Obsolete code after testing the EEPROM storage
 
 /// @brief If the version number defined in the EEPROM is not equal to the version number defined in this file, the EEPROM will be erased and initialized with the default values.
@@ -66,14 +74,6 @@ constexpr int EEPROM_ADDRESS_CFG_AXIS_INV_END = EEPROM_ADDRESS_CFG_AXIS_INV_BASE
 // Initialize the static class variables
 bool EEPROMStore::_firstrun = false; // Initialize the first run flag
 bool EEPROMStore::_setupdone = false;
-
-// DEVNOTE - If simulating on a PC, the EEPROM is not available. In order to force the software to generate a default configuration,
-//           the EEPROM loadconfig functions should return false.
-#ifdef SIMULATOR_DEBUGGING
-#define LOADCONFIG_RETVAL false // Running in simulator mode, return false
-#else
-#define LOADCONFIG_RETVAL true // Running on a live device, return true
-#endif
 
 /**
  * @brief Starts EEPROM functionality and checks if the EEPROM version is the same as the version stored in the EEPROM.

@@ -12,8 +12,7 @@ public:
     AxisDirectionConfig negConfig;
     bool inversion;
 
-    /** Constructor with no arguments - not used*/
-    AxisConfig();
+    AxisConfig() = delete;
 
     /* Constructor with axisType as argument - used when called from an axis */
     AxisConfig(AxisType_t axisType);

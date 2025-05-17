@@ -13,6 +13,7 @@ AxisDirectionConfig::AxisDirectionConfig(float sensitivity, uint8_t gate, ModFun
  * @brief  Sets the modifier function type and creates a new modifier function.
  * @details Cleans up the old modifier function and creates a new one based on the specified type.
  * @param mfType The type of the modifier function to be set.
+ * @deprecated This function is not used in the current implementation and may be removed in future versions.
  */
 void AxisDirectionConfig::setModfunc(ModFunc_t type) {
 

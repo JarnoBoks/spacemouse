@@ -13,5 +13,5 @@ void HIDEventBufferTranslation::update(IObservable *axisTranslation) {
     // For every axis 2 bytes are used, and thus the index is multiplied by 2.
     const uint8_t i_msg = (static_cast<AxisTranslation *>(axisTranslation)->getAxisType() - AxisType_t::TRANSX) * 2;
 
-    // updateMessage(axisvalue, i_msg);
+    updateMessage(axisvalue, i_msg);
 }

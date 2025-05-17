@@ -13,5 +13,5 @@ void HIDEventBufferRotation::update(IObservable *axisRotation) {
     // For every axis 2 bytes are used, and thus the index is multiplied by 2.
     const uint8_t i_msg = (static_cast<AxisRotation *>(axisRotation)->getAxisType() - AxisType_t::ROTX) * 2;
 
-    // updateMessage(axisvalue, i_msg);
+    updateMessage(axisvalue, i_msg);
 }

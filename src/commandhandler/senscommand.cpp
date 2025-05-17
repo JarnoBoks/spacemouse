@@ -18,11 +18,11 @@ void SensCommand::execute(const char *param1, const char *param2, uint8_t paramC
     IAxisConfigCommand::execute(param1, param2, paramCount);
 
     // Check if the axis has a valid AxisDirectionConfig
-    if (!m_DirectionConfig) {
+    if (!m_AxisDirectionConfig) {
         ESP_PRINT(F("SensCommand::execute: No direction config available"));
         return;
     }
 
-    m_DirectionConfig->sensitivity = m_requestedValue;   // Set the sensitivity value to the requested value
-    m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
+    m_AxisDirectionConfig->sensitivity = m_requestedValue; // Set the sensitivity value to the requested value
+    m_Axis->getConfig()->persist(m_Axis->getAxisType());   // Store the value in the EEPROM
 }

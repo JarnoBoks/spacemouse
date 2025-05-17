@@ -18,11 +18,11 @@ void GateCommand::execute(const char *param1, const char *param2, uint8_t paramC
     IAxisConfigCommand::execute(param1, param2, paramCount); // Call the base class execute function
 
     // Check if the axis has a valid AxisDirectionConfig
-    if (m_DirectionConfig == nullptr) {
+    if (m_AxisDirectionConfig == nullptr) {
         ESP_PRINT(F("GateCommand::execute: No direction config available"));
         return;
     }
 
-    m_DirectionConfig->gate = m_requestedValue;          // Set the gate value to the requested value
+    m_AxisDirectionConfig->gate = m_requestedValue;      // Set the gate value to the requested value
     m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
 }

@@ -65,12 +65,12 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
         if (direction == '+') {
             // Set the maximum value for the sensor
             ESP_PRINT(F("IAxisConfigCommand::execute: Set positive dir for axis "));
-            m_DirectionConfig = &m_Axis->getConfig()->posConfig; // Set the direction config to the positive direction
+            m_AxisDirectionConfig = &m_Axis->getConfig()->posConfig; // Set the direction config to the positive direction
 
         } else if (direction == '-') {
             // Set the minimum value for the sensor
             ESP_PRINT(F("IAxisConfigCommand::execute: Set negative dir for axis "));
-            m_DirectionConfig = &m_Axis->getConfig()->negConfig; // Set the direction config to the negative direction
+            m_AxisDirectionConfig = &m_Axis->getConfig()->negConfig; // Set the direction config to the negative direction
 
         } else {
             ESP_PRINT(F("IAxisConfigCommand::execute: Unknown command"));

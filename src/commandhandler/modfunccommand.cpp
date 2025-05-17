@@ -18,11 +18,11 @@ void ModFuncCommand::execute(const char *param1, const char *param2, uint8_t par
     IAxisConfigCommand::execute(param1, param2, paramCount);
 
     // Check if the axis has a valid AxisDirectionConfig
-    if (!m_DirectionConfig) {
+    if (!m_AxisDirectionConfig) {
         ESP_PRINT(F("ModFuncCommand::execute: No direction config available"));
         return;
     }
 
-    m_DirectionConfig->modFuncType = static_cast<ModFunc_t>(m_requestedValue); // Set the mod function type to the requested value
-    m_Axis->getConfig()->persist(m_Axis->getAxisType());                       // Store the value in the EEPROM
+    m_AxisDirectionConfig->modFuncType = static_cast<ModFunc_t>(m_requestedValue); // Set the mod function type to the requested value
+    m_Axis->getConfig()->persist(m_Axis->getAxisType());                           // Store the value in the EEPROM
 }

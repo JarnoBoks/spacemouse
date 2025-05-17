@@ -12,12 +12,9 @@
  * @param param2 Second parameter
  * @param paramCount Number of parameters provided.
  */
-// NOTE - Paramcount 0 & 1 is equal for all derived classes, so we can use the same function for all commands that have no parameters.
 void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     if (paramCount == 0) {
-        // No params provided, show config
-        ESP_PRINT(F("IAxisConfigCommand::execute: Show config"));
-
+        // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
         // REVIEW - Move this to the kinematics class?
         Kinematics *kinematics = Kinematics::getInstance();
@@ -33,24 +30,22 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
     }
 
     if (paramCount == 1) {
-        ESP_PRINT(F("IAxisConfigCommand::execute: First parameter: "));
-        ESP_PRINT(param1);
+        // No functionality for AxisConfigCommands with only one parameter
+        ESP_INFO("Incomplete command");
     }
 
     if (paramCount == 2) {
-        // Command received: SENS <+|-><axisname> <value>
+        // F.e. command received: SENS <+|-><axisname> <value>
         // TODO - Add functionality for the second parameter
-        ESP_PRINT(F("IAxisConfigCommand::execute: Second parameter: "));
-        ESP_PRINT(param2);
 
         // Get the value that has to be set
         if (!convertWordFloat(param2, &m_requestedValue)) {
-            ESP_PRINT(F("IAxisConfigCommand::execute: Second parameter is not a float"));
-            return; // Second parameter is not a float
+            ESP_WARN("Param not float");
+            return;
         }
 
-        // Get the direction (+ is maximum, - is minimum)
-        char direction = param1[0]; // Get the first character of the first parameter
+        // Get the first character of the first parameter for direction (+ is maximum, - is minimum)
+        char direction = param1[0];
 
         // Get the axis from the axis name
         char *reqAxisName = (char *)param1 + 1;                   // Get the axis name (skip the first character)
@@ -58,23 +53,21 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
 
         // REVIEW - Failsafe: Axis not found can be removed from Arduino.
         if (m_Axis == nullptr) {
-            ESP_PRINT(F("IAxisConfigCommand::execute: Axis not found"));
-            return; // Axis not found, exit the function
+            ESP_WARN("Unknown axis");
+            return;
         }
 
         if (direction == '+') {
             // Set the maximum value for the sensor
-            ESP_PRINT(F("IAxisConfigCommand::execute: Set positive dir for axis "));
-            m_AxisDirectionConfig = &m_Axis->getConfig()->posConfig; // Set the direction config to the positive direction
+            m_AxisDirectionConfig = &m_Axis->getConfig()->posConfig;
 
         } else if (direction == '-') {
             // Set the minimum value for the sensor
-            ESP_PRINT(F("IAxisConfigCommand::execute: Set negative dir for axis "));
-            m_AxisDirectionConfig = &m_Axis->getConfig()->negConfig; // Set the direction config to the negative direction
+            m_AxisDirectionConfig = &m_Axis->getConfig()->negConfig;
 
         } else {
-            ESP_PRINT(F("IAxisConfigCommand::execute: Unknown command"));
-            return; // Invalid direction, exit the function
+            ESP_WARN("Unknown command");
+            return;
         }
     }
 }

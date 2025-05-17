@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-class CommandBase; // Forward declaration of CommandBase class
+class CommandBase;
 
 #define MAX_COMMANDS 11
 

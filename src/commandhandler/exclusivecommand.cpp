@@ -18,8 +18,9 @@ void ExclusiveCommand::execute(const char *param1, const char *param2, uint8_t p
     if (paramCount == 1) {
         // One parameter provided, handle accordingly
 
-        long requestedLevel = 0; // Default value for the second word
+        long requestedLevel = 0;
         if (!convertWordNumber(param1, (long *)&requestedLevel)) {
+            ESP_WARN("Param not number");
             return; // First parameter is not a number
         }
 #ifdef ARCH_ESP32

@@ -11,6 +11,8 @@
 #include "DebugParam\ParamLoopFrequency.hpp"
 // ...include other debug states...
 
+#include <common/esp_print.h> // For ESP_PRINT
+
 /**
  * @brief Sets the current debug state.
  * @param state Pointer to the new debug state to be set.
@@ -55,6 +57,7 @@ void DebugCommand::stop() {
  */
 void DebugCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     if (paramCount == 0 || paramCount >= 2) {
+        ESP_INFO("Mallformed command");
         currentState->report(); // TODO - Add a correct report output for all states
         return;
     }
@@ -62,9 +65,10 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
     // Command is called with one or two parameters. We assume the requested level is set in the first parameter.
     // The second parameter is not used in this implementation, but it can be used for future extensions.
 
-    long requestedLevel = 0; // Default value for the second word
+    long requestedLevel = 0;
     if (!convertWordNumber(param1, (long *)&requestedLevel)) {
-        return; // First parameter is not a number
+        ESP_WARN("Param not number");
+        return;
     }
 
     switch (requestedLevel) {
@@ -116,9 +120,7 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
         break;
     default:
         // Handle unknown debug level
-#ifndef ARDUINO_ARCH_AVR // Only for device with more flash memory
-        Serial.println(F("Unknown debug mode"));
-#endif
+        ESP_WARN("Unknown debug level");
         break;
     }
 }

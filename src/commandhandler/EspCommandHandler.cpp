@@ -85,7 +85,7 @@ void ESPCommandHandler::handleInput(char input[], const uint8_t inputsize, const
 }
 
 /**
- * @brief   Parses the input received from the serial monitor in to a buffer and calls the handleInput function to process the input.
+ * @brief   Parses the input received from the serial monitor into a buffer and calls the handleInput function to process the input.
  * @details Reads the input from the serial monitor and stores it in a buffer.
  *          The input is terminated by a newline character or when the buffer is full.
  */

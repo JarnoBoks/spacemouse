@@ -12,14 +12,13 @@
  * @param paramCount Number of parameters provided.
  */
 void InvertCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
-    ESP_PRINT(F("InvertCommand executed"));
 
     // Call the base class execute function to handle common functionality
     IAxisConfigCommand::execute(param1, param2, paramCount); // Call the base class execute function
 
     // Check if the axis has a valid AxisDirectionConfig
     if (!m_AxisDirectionConfig) {
-        ESP_PRINT(F("InvertCommand::execute: No direction config available"));
+        ESP_WARN("No direction config");
         return;
     }
 

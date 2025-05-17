@@ -24,20 +24,18 @@ MinMaxCommand::~MinMaxCommand() {
  */
 void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
 
-    if (getCollectionIdentifier() == nullptr) {
-        ESP_PRINT(F("MinMaxCommand::execute: No collection identifier available"));
-        return; // No collection identifier available, exit the function
+    if (!getCollectionIdentifier()) {
+        ESP_ERROR("No collection identifier");
+        return;
     }
-    if (getCollectionIdentifier()->getSensorCollection() == nullptr) {
-        ESP_PRINT(F("MinMaxCommand::execute: No sensor collection available"));
-        return; // No sensor collection available, exit the function
+    if (!(getCollectionIdentifier()->getSensorCollection())) {
+        ESP_ERROR("No sensor collection");
+        return;
     }
     SensorCollection *sensorCollection = getCollectionIdentifier()->getSensorCollection();
 
     if (paramCount == 0) {
         // No params provided, show config
-        ESP_PRINT(F("MinMaxCommand::execute: Show config"));
-
         MinMaxPrinter Printer;
 
         for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
@@ -56,19 +54,18 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         if (!convertWordNumber(param1, (long *)&requestedCalibration)) {
             return; // First parameter is not a number
         }
+        ESP_INFO2("MinMax calibration requested", requestedCalibration);
 
-        ESP_PRINT(F("MinMaxCommand::execute: MinMax calibration requested: "));
-        ESP_PRINT(requestedCalibration);
         m_SensorCalibrationManager = new SensorCalibrationManagerMinMax(sensorCollection); // Create a new instance of the sensor calibration manager
         if (requestedCalibration == 0) {
-            ESP_PRINT(F("MinMaxCommand::execute: Start minmax calibration"));
+            ESP_INFO("Start minmax calibration");
             m_SensorCalibrationManager->activate();
         } else if (requestedCalibration == 1) {
-            ESP_PRINT(F("MinMaxCommand::execute: Start minmax calibration and store in EEPROM"));
+            ESP_INFO("Start minmax calibration and store in EEPROM");
             m_SensorCalibrationManager->activate();
             // TODO - Store the values in EEPROM
         } else {
-            ESP_PRINT(F("MinMaxCommand::execute: Unknown command"));
+            ESP_WARN("Unknown command");
         }
     }
     if (paramCount == 2) {
@@ -90,33 +87,31 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         Sensor *sensor = sensorCollection->getSensor(reqSensorName); // Get the sensor by its name
 
         // REVIEW - Failsafe: Sensor not found can be removed from Arduino.
-        if (sensor == nullptr) {
-            ESP_PRINT(F("MinMaxCommand::execute: Sensor not found"));
-            return; // Sensor not found, exit the function
+        if (!sensor) {
+            ESP_ERROR("Sensor not found");
+            return;
         }
 
         if (sensor != nullptr && direction == '+') {
             // Set the maximum value for the sensor
-            ESP_PRINT(F("MinMaxCommand::execute: Set max for sensor "));
+            ESP_INFO("Set max for sensor ");
             sensor->getConfig()->setMax(requestedValue);
 
         } else if (sensor != nullptr && direction == '-') {
             // Set the minimum value for the sensor
-            ESP_PRINT(F("MinMaxCommand::execute: Set min for sensor "));
+            ESP_INFO("Set min for sensor ");
             sensor->getConfig()->setMin(requestedValue);
 
         } else {
-            ESP_PRINT(F("MinMaxCommand::execute: Unknown command"));
+            ESP_WARN("Unknown command");
             return; // Invalid direction, exit the function
         }
 
-        ESP_PRINT(F("MinMaxCommand::execute: Set minmax for sensor "));
-        ESP_PRINT(param1);
-        ESP_PRINT(F(" to "));
-        ESP_PRINT(requestedValue);
+        ESP_INFO2("Set minmax for sensor ", param1);
+        ESP_INFO2("to ", requestedValue);
 
         // Store the value in the EEPROM
         sensor->getConfig()->persist(sensor->getId());
-        ESP_PRINT(F("MinMaxCommand::execute: Store minmax for sensor "));
+        ESP_INFO("Store minmax for sensor");
     }
 }

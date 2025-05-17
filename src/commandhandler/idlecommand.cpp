@@ -22,12 +22,12 @@ IdleCommand::~IdleCommand() {
  */
 void IdleCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     if (getCollectionIdentifier() == nullptr) {
-        ESP_PRINT(F("IdleCommand::execute: No collection identifier available"));
-        return; // No collection identifier available, exit the function
+        ESP_ERROR("No collection identifier");
+        return;
     }
     if (getCollectionIdentifier()->getSensorCollection() == nullptr) {
-        ESP_PRINT(F("IdleCommand::execute: No sensor collection available"));
-        return; // No sensor collection available, exit the function
+        ESP_ERROR("No sensor collection");
+        return;
     }
     SensorCollection *sensorCollection = getCollectionIdentifier()->getSensorCollection();
 

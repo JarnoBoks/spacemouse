@@ -1,4 +1,4 @@
-#if defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_AVR)
+#if defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_AVR) // Check is necessary to generate a compile error if the code is not compiled for ESP32 or AVR
 #if defined(ARDUINO_ARCH_ESP32)
 
 // Include the header files for the command handler that will handle the commands send by the serial interface

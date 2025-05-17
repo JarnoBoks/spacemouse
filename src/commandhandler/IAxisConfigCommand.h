@@ -6,10 +6,10 @@ class AxisDirectionConfig;
 class Axis;
 
 /**
- * @brief Interface for axis configuration commands.
+ * @brief   Interface for axis configuration commands.
  * @details This interface defines the structure for commands that configure axis settings.
  *          It includes methods for executing commands with parameters.
- * @note Derived classes should override the execute method.
+ * @note    Derived classes should override the execute method, and call the Baseclass functionality.
  */
 class IAxisConfigCommand : public CommandBase {
 private:

@@ -17,9 +17,8 @@ void GateCommand::execute(const char *param1, const char *param2, uint8_t paramC
     // Call the base class execute function to handle common functionality
     IAxisConfigCommand::execute(param1, param2, paramCount); // Call the base class execute function
 
-    // Check if the axis has a valid AxisDirectionConfig
     if (m_AxisDirectionConfig == nullptr) {
-        ESP_PRINT(F("GateCommand::execute: No direction config available"));
+        ESP_WARN("No axisdirection config");
         return;
     }
 

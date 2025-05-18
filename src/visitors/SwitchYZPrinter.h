@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IPrinterVisitor.h"
-#include "kinematics/kinematicsconfig.h"
+#include "kinematics/config/kinematicsconfig.hpp"
 #include "common/TextHelper.h"
 
 class SwitchYZPrinter : public IPrinterVisitor {

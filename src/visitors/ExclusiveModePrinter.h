@@ -3,7 +3,7 @@
 #include "IPrinterVisitor.h"
 #include "sensor/sensors/Sensor.hpp"
 #include "sensor/config/SensorConfig.hpp"
-#include "kinematics/kinematicsconfig.h"
+#include "kinematics/config/kinematicsconfig.hpp"
 #include "common/TextHelper.h"
 
 class ExclusiveModePrinter : public IPrinterVisitor {

@@ -20,7 +20,7 @@
 
 // Kinematics
 #include "kinematics/kinematics.h"
-#include "kinematics/kinematicsconfig.h"
+#include "kinematics/config/kinematicsconfig.hpp"
 
 // Visitors
 #include "visitors/AxisConfigPrinter.h"

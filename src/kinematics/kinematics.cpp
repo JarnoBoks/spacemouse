@@ -1,6 +1,6 @@
 #include "kinematics.h"
 #include "config.h"
-#include "KinematicsConfig.h"
+#include "kinematics/config/kinematicsconfig.hpp"
 #include "axis/AxisCollection.hpp" // Include the header file for the AxisCollection class
 #include "axis/axes/Axis.hpp"      // Include the header file for the Axis class
 

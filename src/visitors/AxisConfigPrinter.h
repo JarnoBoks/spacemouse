@@ -3,7 +3,7 @@
 #include "IPrinterVisitor.h"
 #include "axis/axes/Axis.hpp"
 #include "axis/config/AxisConfig.hpp"
-#include "kinematics/kinematicsconfig.h"
+#include "kinematics/config/kinematicsconfig.hpp"
 
 #define FMT_NOCOMMA false
 #define FMT_COMMA true

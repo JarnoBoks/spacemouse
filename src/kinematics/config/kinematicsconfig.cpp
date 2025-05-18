@@ -1,23 +1,24 @@
 
-#include "kinematicsconfig.h"
+#include "kinematicsconfig.hpp"
 
-#include "eeprom/eepromstore.h"       // To load and save the axis configuration to EEPROM
-#include "defaultkinematicsconfig.h"  // To get the default axis configuration if the EEPROM is empty or the version is changed
-#include "visitors/IPrinterVisitor.h" // For the visitor pattern
+#include "eeprom/eepromstore.h"        // To load and save the axis configuration to EEPROM
+#include "defaultkinematicsconfig.hpp" // To get the default axis configuration if the EEPROM is empty or the version is changed
+#include "visitors/IPrinterVisitor.h"  // For the visitor pattern
 
 constexpr uint8_t EEPROM_KINEMATICS_VERSION = 1; // Define the version number for the KinematicsConfig in EEPROM.     // TODO: Add versioning
 
 /** Constructor with no arguments - default */
 KinematicsConfig::KinematicsConfig() {
     if (!retrieve()) {
-        *this = DefaultKinematicsConfig::getInstance().getDefaultConfig();
+        DefaultKinematicsConfig defaultConfig;
+        *this = defaultConfig.create();
     }
 };
 
 /**
- * @brief   Constructor with parameters - used when called from default config
- * @param exclmd  Exclusive mode flag
- * @param switchyz Switch YZ flag
+ * @brief Constructor with parameters - used when called from default config
+ * @param exclusiveMode  Exclusive mode flag
+ * @param switchYZ Switch YZ flag
  */
 KinematicsConfig::KinematicsConfig(const bool exclusiveMode,
                                    const bool switchYZ) {
@@ -39,7 +40,7 @@ void KinematicsConfig::persist() const {
 
 /**
  * @brief Loads the Kinematics configuration from EEPROM.
- * @return The result of the load operation.
+ * @return The resultstatus of the load operation.
  * @retval True if the configuration was successfully loaded.
  * @retval False if the configuration could not be loaded.
  */

@@ -11,7 +11,7 @@
 
 /// @brief Number of observers that can be added to this object
 /// @details This is a constant value that defines the maximum number of observers that can be added to the collection.
-constexpr uint8_t c_MAX_KINEMATICS_OBSERVERS = 4; // Maximum number of observers for the axis collection
+constexpr uint8_t c_MAX_KINEMATICS_OBSERVERS = 4; // Maximum number of observers for the kinematics collection
 
 class KinematicsConfig;
 

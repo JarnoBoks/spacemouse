@@ -28,7 +28,9 @@ constexpr int EEPROM_ADDRESS_DATA = 4;    // Address in the EEPROM where the dat
  * @see config.h for the version number.
  */
 void EEPROMStore::setup() {
-
+#ifdef ARDUINO_ARCH_ESP32
+    EEPROM.begin(1024); // Initialize the EEPROM with 1024 bytes (same as the size of the Arduino EEPROM)
+#endif
     uint8_t version = 0; // The SpaceMouse version number as stored in the EEPROM
     EEPROM.get(EEPROM_ADDRESS_VERSION, version);
 
@@ -97,13 +99,14 @@ void EEPROMStore::save(const int tableId, const void *data, const int dataLen) {
     // Store the data after the table header
     address += sizeof(EEPROMTable);
     for (int i = 0; i < dataLen; i++) {
-        // REVIEW - Check if put can be used for Arduino too.
-#ifdef ARDUINO_ARCH_ESP32
-        EEPROM.put(address + i, ((uint8_t *)data)[i]);
-#else
+#if defined(ARDUINO_ARCH_AVR)
         EEPROM.update(address + i, ((uint8_t *)data)[i]);
-#endif
     }
+#elif defined(ARDUINO_ARCH_ESP32)
+        EEPROM.write(address + i, ((uint8_t *)data)[i]);
+    }
+    EEPROM.commit(); // Commit the changes to the EEPROM
+#endif
 }
 
 /**

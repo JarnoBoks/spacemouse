@@ -1,9 +1,9 @@
 
 #include "AxisConfig.hpp"
 
-#include "eeprom/eepromstore.h"       // To load and save the axis configuration to EEPROM
-#include "DefaultAxisConfig.hpp"      // To get the default axis configuration if the EEPROM is empty or the version is changed
-#include "visitors/IPrinterVisitor.h" // For the visitor pattern
+#include "eeprom/eepromstore.h"              // To load and save the axis configuration to EEPROM
+#include "DefaultAxisConfig.hpp"             // To get the default axis configuration if the EEPROM is empty or the version is changed
+#include <printervisitors/IPrinterVisitor.h> // For the visitor pattern
 
 constexpr uint8_t EEPROM_AXISCONFIG_VERSION = 1;     // Define the version number for the AxisConfig in EEPROM.     // TODO: Add versioning
 constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_POSCFG = 1; // Offset for the positive direction configuration ID

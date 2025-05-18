@@ -2,8 +2,8 @@
 #include "SensorConfig.hpp"
 #include "config.h" // Include the config file to know the hardware type
 #include "DefaultSensorConfig.hpp"
-#include "eeprom/eepromstore.h"       // To load and save the sensor configuration to EEPROM
-#include "visitors/IPrinterVisitor.h" // For IPrinterVisitor interface
+#include "eeprom/eepromstore.h"              // To load and save the sensor configuration to EEPROM
+#include <printervisitors/IPrinterVisitor.h> // For IPrinterVisitor interface
 
 #include <Arduino.h> // For abs() function
 

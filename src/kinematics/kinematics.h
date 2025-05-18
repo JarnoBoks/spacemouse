@@ -45,12 +45,14 @@ public:
     inline KinematicsConfig *getConfig() const { return config; } // Getter for config
 
     void processKinematics();
+
     const AxisType_t getMainAxis(Axis *axis); // Get the main and secondary axis for the kinematics
 
     // Functionality for the kill switches
     void killRotation(const bool killSwitchActive = true) {
         _applyKillSwitch(AxisType_t::ROTX, AxisType_t::ROTZ, killSwitchActive); // Set strategy for the rotation axes to kill switch
     };
+
     void killTranslation(const bool killSwitchActive = true) {
         _applyKillSwitch(AxisType_t::TRANSX, AxisType_t::TRANSZ, killSwitchActive);
     };

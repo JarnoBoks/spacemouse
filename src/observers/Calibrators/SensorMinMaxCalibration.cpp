@@ -5,7 +5,7 @@
 #include "sensor/config/SensorConfig.hpp"
 #include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
 
-#include "visitors/MinMaxPrinter.h" // For MinMaxPrinter class
+#include <printervisitors/MinMaxPrinter.h> // For MinMaxPrinter class
 
 #define MINMAXDURATION 15 // Duration for min/max calibration in seconds
 

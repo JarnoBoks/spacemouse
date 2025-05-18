@@ -2,10 +2,10 @@
 
 #include "common/ICollectable.hpp"
 #include "common/Observable.hpp"
-#include "axistype.h"                  // Include the header file for AxisType_t enum
-#include "axis/config/AxisConfig.hpp"  // Include the header file for AxisConfig class
-#include "axis/modifier/modfunctype.h" // Include the header file for ModFunc_t enum
-#include "visitors/IPrinterVisitor.h"  // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Move to cpp
+#include "axistype.h"                        // Include the header file for AxisType_t enum
+#include "axis/config/AxisConfig.hpp"        // Include the header file for AxisConfig class
+#include "axis/modifier/modfunctype.h"       // Include the header file for ModFunc_t enum
+#include <printervisitors/IPrinterVisitor.h> // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Move to cpp
 
 class SensorCollection;
 class ISensorsCalculator;

@@ -21,7 +21,7 @@ private:
 public:
     AxisConfigPrinter() {}
 
-    inline void visit(Axis &axis) override {
+    void visit(Axis &axis) override {
 
         // Print the sensitivity
         _helper_PrintConfig(axis.getName(), axis.getConfig()->posConfig.getSensitivity(), axis.getConfig()->negConfig.getSensitivity(), FMT_NOCOMMA, NO_PREFIX, TWO_DECIMALS, 21);

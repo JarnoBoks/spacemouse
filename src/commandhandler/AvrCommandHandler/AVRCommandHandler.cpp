@@ -23,10 +23,10 @@
 #include "kinematics/config/kinematicsconfig.hpp"
 
 // Visitors
-#include "visitors/AxisConfigPrinter.h"
-#include "visitors/SwitchYZPrinter.h"
-#include "visitors/ExclusiveModePrinter.h"
-#include "visitors/MinMaxPrinter.h"
+#include <printervisitors/AxisConfigPrinter.h>
+#include <printervisitors/SwitchYZPrinter.h>
+#include <printervisitors/ExclusiveModePrinter.h>
+#include <printervisitors/MinMaxPrinter.h>
 
 // Observers
 #include "observers/DebugOutput/DebugOutputSensorsRaw.hpp"

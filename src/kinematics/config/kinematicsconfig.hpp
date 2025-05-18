@@ -1,6 +1,5 @@
 #pragma once
 
-// Forward declaration of classes to avoid circular dependencies
 class IPrinterVisitor;
 
 class KinematicsConfig {

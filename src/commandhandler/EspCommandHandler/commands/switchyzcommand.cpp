@@ -1,7 +1,7 @@
 #include "switchyzcommand.h"
 #include "kinematics/kinematics.h"
 #include "kinematics/config/kinematicsconfig.hpp"
-#include "visitors/SwitchYZPrinter.h"
+#include "..\..\..\printervisitors\SwitchYZPrinter.h"
 #include "common/esp_print.h"
 
 void SwitchYZCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {

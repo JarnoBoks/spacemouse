@@ -1,7 +1,7 @@
 #include "SensorIdleCalibration.h"
 #include "sensor/sensors/Sensor.hpp" // For Sensor class
 #include "sensor/calibration/SensorCalibrationManager.hpp"
-#include "visitors/IdlePositionPrinter.h" // For IdlePositionPrinter class
+#include <printervisitors/IdlePositionPrinter.h> // For IdlePositionPrinter class
 
 #include "common/freeRAM.h"
 

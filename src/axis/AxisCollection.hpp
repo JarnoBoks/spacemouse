@@ -20,9 +20,9 @@ constexpr uint8_t cHW_MAX_AXES = 6;
 constexpr uint8_t c_MAX_AXISCOLLECTION_OBSERVERS = 4;
 
 /**
- * @brief Class representing a collection of axes for the SpaceMouse.
- * @details This class implements the ICollection interface and provides functionality for managing a collection of axes.
- *          It allows adding, removing, and notifying observers of changes in the sensor collection.
+ * @brief Class representing an observable collection of axes for the SpaceMouse.
+ * @details The class implements the ICollection interface and provides functionality for managing a collection of axes.
+ *          The class implements the Observable interface, allowing it to notify observers of changes in the collection.
  * @note The AxisCollection class is designed to manage a fixed number of axes and their associated observers.
  */
 class AxisCollection : public Collection, public Observable {

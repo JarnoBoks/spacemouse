@@ -3,7 +3,7 @@
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
 #include <axis/AxisCollection.hpp>
 #include "axis/config/AxisConfig.hpp"
-#include "visitors/AxisConfigPrinter.h"
+#include <printervisitors/AxisConfigPrinter.h>
 
 #include <common/esp_print.h> // For ESP_PRINT
 

@@ -1,7 +1,7 @@
 #include "exclusivecommand.h"
 #include "kinematics/kinematics.h"
 #include "kinematics/config/kinematicsconfig.hpp"
-#include "visitors/ExclusiveModePrinter.h"
+#include <printervisitors/ExclusiveModePrinter.h>
 #include "common/esp_print.h"
 
 void ExclusiveCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {

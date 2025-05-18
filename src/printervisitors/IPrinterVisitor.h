@@ -15,6 +15,7 @@ class Axis;
 class AxisConfig;
 class KinematicsConfig;
 
+// REFACTOR - We should not need to include all these classes here. We should be able to make one interface for all the classes that need to be visited.
 class IPrinterVisitor {
 public:
     virtual void visit(Sensor &sensor) = 0;

@@ -7,6 +7,10 @@
 class Axis;             // Forward declaration of Axis class
 class SensorCollection; // Forward declaration of SensorCollection class
 
+/**
+ * @brief Class to connect sensors to the axes.
+ * @details This class translates the sensor readings to movements and is hardware specific.
+ */
 class SensorsCalculator : public ISensorsCalculator {
 protected:
     SensorCollection *m_sensorCollection = nullptr; // Pointer to the sensor collection

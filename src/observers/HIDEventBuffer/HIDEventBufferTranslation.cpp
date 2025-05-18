@@ -6,12 +6,12 @@ void HIDEventBufferTranslation::update(IObservable *axisTranslation) {
         return;
     }
 
-    const int16_t axisvalue = static_cast<AxisTranslation *>(axisTranslation)->getFinValue();
+    const int16_t axisvalue = static_cast<AxisTranslation *>(axisTranslation)->getFinValue(); // Final value of the translation axis.
 
     // Offset the axisType to the first translation axis, in order to use it as an index in the message buffer.
-    // The first translation axis is TRANSX, which is 0 in the enum, so we have to subtract 0 from the axisType.
+    // The first translation axis is TRANSX,so we have to subtract it from the axisType to retrieve the index.
     // For every axis 2 bytes are used, and thus the index is multiplied by 2.
-    const uint8_t i_msg = (static_cast<AxisTranslation *>(axisTranslation)->getAxisType() - AxisType_t::TRANSX) * 2;
+    const uint8_t idx = (static_cast<AxisTranslation *>(axisTranslation)->getAxisType() - AxisType_t::TRANSX) * 2; // Message index for the translation axis.
 
-    updateMessage(axisvalue, i_msg);
+    updateMessage(axisvalue, idx);
 }

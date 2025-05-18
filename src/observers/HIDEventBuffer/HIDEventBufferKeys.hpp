@@ -3,9 +3,11 @@
 
 #include "hidhandler/HIDHandlerConfig.h" // for HIDKEYDATASIZE
 
+// REFACTOR - The base class is aiming for movement, should have a superclass and the Keysbuffer should be derived from it.
+
 /**
  * @brief   HID Event Buffer for Key Events
- * @details This class is derived from the HIDEventBuffer class and implements the update method to handle key events.
+ * @details This class is derived from the HIDEventBuffer class.
  *          The key event buffer is used to store the HID event data for key presses and releases
  *          It attaches to a key and updates the message buffer when the key state changes
  *          The message buffer is then used to send the HID event data to the host
@@ -24,7 +26,7 @@ public:
 
     void update(IObservable *key) override final;
 
-    virtual const bool isStaged() const override final { return m_isStaged; }
-    const uint8_t *getStaged() const override final { return m_key_message; }
-    inline void clearStaged() override final { m_isStaged = false; }
+    const bool isStaged() const override final { return m_isStaged; }         // Getter for staged flag
+    const uint8_t *getStaged() const override final { return m_key_message; } // Getter for the key message buffer
+    inline void clearStaged() override final { m_isStaged = false; }          // Clear the staged flag
 };

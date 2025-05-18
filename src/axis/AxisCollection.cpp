@@ -22,7 +22,7 @@ void AxisCollection::setup(ISensorsCalculator *sensorsCalculator, IObserver *hid
     // Call the setup function to initialize the axes
     setup(sensorsCalculator);
 
-    // Attach the HIDEventBuffer to the axes
+    // Attach the HIDEventBuffers to the axes
     static_cast<AxisTranslation *>(m_items[TRANSX])->attachObserver(hidEventBufferTranslation);
     static_cast<AxisTranslation *>(m_items[TRANSY])->attachObserver(hidEventBufferTranslation);
     static_cast<AxisTranslation *>(m_items[TRANSZ])->attachObserver(hidEventBufferTranslation);

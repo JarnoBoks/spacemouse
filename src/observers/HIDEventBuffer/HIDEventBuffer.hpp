@@ -3,8 +3,16 @@
 
 #include <Arduino.h> // for byte
 
-#define HID_MESSAGE_SIZE 6 // Size of the HID message buffer
+#define HID_MESSAGE_SIZE 6 // Size of the HID message buffer for translation and rotation axes
 
+/**
+ * @brief Base class for HID event buffers
+ * @details This class is used to store and manage HID event messages. It implements the IObserver interface,
+ *          allowing it to receive updates from observed objects.
+ *          The HID event buffer is used to store the HID messages that are sent to the host computer.
+ *          The buffer observes various items of the SpaceMouse (Axes, Keys, etc.) and stores the HID messages in a buffer.
+ *          The HID handler will then send the messages to the host computer and clear the buffer.
+ */
 class HIDEventBuffer : public IObserver {
 private:
     const bool isBufferEmpty(const uint8_t *buffer) const {
@@ -14,14 +22,19 @@ private:
             }
         }
         return true;
-#if 0
+#if 0 // REVIEW
         return (m_message[0]==0 && memcmp(m_message, m_message+1, HID_MESSAGE_SIZE-1) ) == 0)
 #endif
     }
 
 protected:
-    uint8_t m_message[HID_MESSAGE_SIZE];
+    uint8_t m_message[HID_MESSAGE_SIZE]; // Buffer for the HID messages.
 
+    /**
+     * @brief Update the HID message buffer with the given value and index
+     * @param value The value to be stored in the buffer
+     * @param idx The index at which to store the value
+     */
     void updateMessage(int16_t const value, uint8_t const idx) {
         if (idx < HID_MESSAGE_SIZE) {
             m_message[idx] = (byte)value & 0xFF;     // Store the lower byte of the axis value

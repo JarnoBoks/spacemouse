@@ -7,6 +7,13 @@
 class IPrinterVisitor;
 
 class AxisConfig {
+private:
+    struct EEPROM_Layout {
+        bool inversion;
+        int posConfig_ID;
+        int negConfig_ID;
+    };
+
 public:
     AxisDirectionConfig posConfig;
     AxisDirectionConfig negConfig;

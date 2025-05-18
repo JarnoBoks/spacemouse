@@ -71,6 +71,18 @@ constexpr int EEPROM_ADDRESS_CFG_AXIS_INV_END = EEPROM_ADDRESS_CFG_AXIS_INV_BASE
 
 // -------------------------- EEPROM ADDRESS TABLE END -------------------------
 
+static int getAddress(AxisDirectionConfig &config) {
+
+    // To define the base, we need to know if this is a positive or negative configuration
+    AxisConfig *axisConfig = config.getContext();
+
+    int address = EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE;
+    if (config.getContext() != nullptr) {
+        address += config.getContext()->getAxisType() * sizeof(AxisDirectionConfig);
+    }
+    return address;
+}
+
 // Initialize the static class variables
 bool EEPROMStore::_firstrun = false; // Initialize the first run flag
 bool EEPROMStore::_setupdone = false;
@@ -262,3 +274,58 @@ void EEPROMStore::saveConfig(KeyConfig &config, const int8_t buttonnumber) {
     EEPROM.put(EEPROM_ADDRESS_CFG_AXIS_PCONFIG_BASE + buttonnumber * sizeof(KeyConfig), config); // Store the configuration in the EEPROM
 }
 #endif
+
+int store(const int ID, const void *data, const int dataLen) {
+    EEPROMTable table;
+    int address = getEEPROMTable(ID, table);
+    if (address < 0) {
+        // The table was not found.
+    }
+
+    table._ID = ID;
+    table._Length = sizeof(table) + dataLen;
+    table._FormatVersion = SM_VERSION; // Increment this when the format changes.
+    for (int i = 0; i < dataLen; i++) {
+        table._Checksum += ((uint8_t *)data)[i]; // Calculate the checksum
+    }
+
+    EEPROM.put(address, table); // Store the table header in the EEPROM
+
+    address += sizeof(EEPROMTable); // Move to the data area
+    for (int i = 0; i < dataLen; i++) {
+        EEPROM.write(address + i, ((uint8_t *)data)[i]); // Store the data in the EEPROM
+    }
+}
+
+int load(const int ID, void *data, const int dataLen) {
+#if SIMULATOR_DEBUGGING
+    return -4;
+#endif
+
+    if (isFirstRun()) {
+        return -5; // EEPROM is not initialized, return false
+    }
+    EEPROMTable table;
+    int address = getEEPROMTable(ID, table);
+    if (address < 0) {
+        // The table was not found.
+        return -1;
+    }
+
+    if (table._Length != sizeof(table) + dataLen) {
+        // The length of the data does not match the expected length.
+        return -2;
+    }
+
+    // TODO - Checksum check
+    if (table._FormatVersion != SM_VERSION) {
+        // The format version does not match the expected version.
+        return -3;
+    }
+
+    for (int i = 0; i < dataLen; i++) {
+        ((uint8_t *)data)[i] = EEPROM.read(address + i); // Load the data from the EEPROM
+    }
+
+    return 1; // Return success
+}

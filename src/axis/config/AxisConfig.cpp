@@ -49,8 +49,17 @@ AxisConfig::AxisConfig(const float psens,
  * @details This function saves the AxisConfig object to EEPROM using the EEPROMStore class.
  * @param axisType The type of the axis being persisted, used to identify the correct location in EEPROM.
  */
+#define AXIS_CONFIG_VERSION 1 // Define the version number for the AxisConfig
 void AxisConfig::persist(AxisType_t axisType) {
     EEPROMStore::saveConfig(*this, static_cast<const int>(axisType)); // Store the configuration in the EEPROM
+
+    int ID = 5 * static_cast<int>(axisType) + EEPROM_AXIS_ID_BASE; // Define the ID for the AxisConfig in EEPROM
+
+    // Persist the data stored in this class
+    EEPROM.Store(ID, inversion); // Store the inversion flag in the EEPROM
+
+    posConfig.persist(ID + 1);
+    negConfig.persist(ID + 2);
 }
 
 /**

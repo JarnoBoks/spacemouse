@@ -6,8 +6,6 @@
 static const char CMD_MODFUNC[] PROGMEM = "MODFUNC";
 
 class ModFuncCommand : public IAxisConfigCommand {
-private:
-    void dir_config_updater(AxisDirectionConfig *axisDirectionConfig) override final;
 
 public:
     /**

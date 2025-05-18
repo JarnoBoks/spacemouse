@@ -4,7 +4,6 @@
 
 #include <common/esp_print.h> // For ESP_PRINT
 
-#if 0
 /**
  * @brief Executes the modfunct command based on the provided parameters.
  * @note This function extends the functionality of the base class IAxisConfigCommand::execute(...).
@@ -13,7 +12,7 @@
  * @param paramCount Number of parameters provided.
  */
 void ModFuncCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
-    // Call the base class execute function to handle common functionality
+    // Call the base class execute function to parse the parameters.
     IAxisConfigCommand::execute(param1, param2, paramCount);
 
     // No update of the configuration parameters possible or needed if the requested value is less than 0
@@ -29,10 +28,3 @@ void ModFuncCommand::execute(const char *param1, const char *param2, uint8_t par
 
     m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
 }
-#endif
-
-void ModFuncCommand::dir_config_updater(AxisDirectionConfig *axisDirectionConfig) {
-    if (axisDirectionConfig) {
-        axisDirectionConfig->setModFuncType(static_cast<ModFunc_t>(m_requestedValue));
-    }
-};

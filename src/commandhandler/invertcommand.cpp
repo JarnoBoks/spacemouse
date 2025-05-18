@@ -13,7 +13,7 @@
  */
 void InvertCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
 
-    // Call the base class execute function to handle common functionality
+    // Call the base class execute function to parse the parameters.
     IAxisConfigCommand::execute(param1, param2, paramCount); // Call the base class execute function
 
     // No update of the configuration parameters possible or needed if the requested value is less than 0

@@ -4,7 +4,6 @@
 
 #include <common/esp_print.h> // For ESP_PRINT
 
-#if 0
 /**
  * @brief Executes the gate command based on the provided parameters.
  * @note This function extends the functionality of the base class IAxisConfigCommand::execute(...).
@@ -13,7 +12,7 @@
  * @param paramCount Number of parameters provided.
  */
 void GateCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
-    // Call the base class execute function to handle common functionality
+    // Call the base class execute function to parse the parameters.
     IAxisConfigCommand::execute(param1, param2, paramCount);
 
     if (m_requestedValue < 0) {
@@ -29,10 +28,3 @@ void GateCommand::execute(const char *param1, const char *param2, uint8_t paramC
 
     m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
 }
-#endif
-
-void GateCommand::dir_config_updater(AxisDirectionConfig *axisDirectionConfig) {
-    if (axisDirectionConfig) {
-        axisDirectionConfig->setGate(m_requestedValue);
-    }
-};

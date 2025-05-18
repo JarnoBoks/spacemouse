@@ -20,8 +20,6 @@ protected:
     Axis *m_Axis = nullptr;                                    // Pointer to the Axis object that will be configured
     float m_requestedValue = 0;                                // Requested value for the axis configuration (sensitivity, gate, etc.) derived from the command. -1 if no update is needed.
 
-    virtual void dir_config_updater(AxisDirectionConfig *axisDirectionConfig) = 0; // Pure virtual function to be implemented by derived classes for finalizing the command execution
-
 public:
     /**
      * @brief Constructor for the SensCommand class.

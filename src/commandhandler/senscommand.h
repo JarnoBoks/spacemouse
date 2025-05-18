@@ -6,8 +6,6 @@
 static const char CMD_SENS[] PROGMEM = "SENS";
 
 class SensCommand : public IAxisConfigCommand {
-protected:
-    void dir_config_updater(AxisDirectionConfig *axisDirectionConfig) override final;
 
 public:
     /**

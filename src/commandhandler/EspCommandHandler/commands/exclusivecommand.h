@@ -1,7 +1,7 @@
 // exclusivecommand.h
 #pragma once
 
-#include "CommandBase.h"
+#include "CommandBase.hpp"
 
 /// @brief command text for the Exclusive mode command
 static const char CMD_EXCLUSIVE[] PROGMEM = "EXCL"; // Command name for the SHOW command

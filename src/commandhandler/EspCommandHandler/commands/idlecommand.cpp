@@ -1,7 +1,7 @@
 #include "IdleCommand.h"
 
-#include "CollectionCarrier/CollectionCarrier.hpp"
-#include "sensor/calibration/SensorCalibrationManagerIdle.hpp"
+#include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
+#include <sensor/calibration/SensorCalibrationManagerIdle.hpp>
 #include <common/esp_print.h>
 
 /**

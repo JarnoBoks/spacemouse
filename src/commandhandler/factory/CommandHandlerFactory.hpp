@@ -2,20 +2,20 @@
 #if defined(ARDUINO_ARCH_ESP32)
 
 // Include the header files for the command handler that will handle the commands send by the serial interface
-#include "..\ESPCommandHandler.hpp"
+#include "commandhandler/EspCommandHandler/EspCommandHandler.hpp"
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
 
 // Include the header files for the commands that can be received through the serial interface
-#include "commandhandler/debugcommand.h"
-#include "commandhandler/idlecommand.h"
-#include "commandhandler/minmaxcommand.h"
-#include "commandhandler/senscommand.h"
-#include "commandhandler/gatecommand.h"
-#include "commandhandler/modfunccommand.h"
-#include "commandhandler/invertcommand.h"
-#include "commandhandler/showcommand.h"
-#include "commandhandler/exclusivecommand.h"
-#include "commandhandler/switchyzcommand.h"
+#include "commandhandler/EspCommandHandler/commands/debugcommand.h"
+#include "commandhandler/EspCommandHandler/commands/idlecommand.h"
+#include "commandhandler/EspCommandHandler/commands/minmaxcommand.h"
+#include "commandhandler/EspCommandHandler/commands/senscommand.h"
+#include "commandhandler/EspCommandHandler/commands/gatecommand.h"
+#include "commandhandler/EspCommandHandler/commands/modfunccommand.h"
+#include "commandhandler/EspCommandHandler/commands/invertcommand.h"
+#include "commandhandler/EspCommandHandler/commands/showcommand.h"
+#include "commandhandler/EspCommandHandler/commands/exclusivecommand.h"
+#include "commandhandler/EspCommandHandler/commands/switchyzcommand.h"
 
 // Define the command handler type for ESP32
 #define CommandHandler ESPCommandHandler

@@ -37,7 +37,12 @@ void EEPROMStore::setup() {
         // Version number has changed, that implies that the EEPROM is not initialized. Clear the EEPROM and write the new version number.
         for (uint16_t i = 0; i <= EEPROM.length(); i++) {
             Serial.print(i);
+            // REVIEW - Check if put can be used for Arduino too.
+#ifdef ARDUINO_ARCH_AVR
             EEPROM.update(i, 0); // Clear the EEPROM
+#else
+            EEPROM.put(i, 0); // Clear the EEPROM
+#endif
         }
 
         // Store the new version number in the EEPROM, to avoid reinitializing the EEPROM on the next run.
@@ -92,7 +97,12 @@ void EEPROMStore::save(const int tableId, const void *data, const int dataLen) {
     // Store the data after the table header
     address += sizeof(EEPROMTable);
     for (int i = 0; i < dataLen; i++) {
+        // REVIEW - Check if put can be used for Arduino too.
+#ifdef ARDUINO_ARCH_ESP32
+        EEPROM.put(address + i, ((uint8_t *)data)[i]);
+#else
         EEPROM.update(address + i, ((uint8_t *)data)[i]);
+#endif
     }
 }
 

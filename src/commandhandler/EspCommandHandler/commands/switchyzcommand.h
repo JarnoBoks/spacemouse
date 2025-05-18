@@ -1,7 +1,6 @@
-// switchyzcommand.h
 #pragma once
 
-#include "CommandBase.h"
+#include "CommandBase.hpp"
 
 /// @brief command text for the Switch YZ command
 static const char CMD_SWITCHYZ[] PROGMEM = "SWITCHYZ";

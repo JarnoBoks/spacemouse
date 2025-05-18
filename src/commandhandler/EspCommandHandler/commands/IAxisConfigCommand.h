@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandBase.h"
+#include "CommandBase.hpp"
 
 #define NUM_AX_DIRCFG 2 // Number of axis direction configurations per AxisConfig in the software (Current: Positive and Negative)
 

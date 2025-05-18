@@ -1,7 +1,6 @@
-// minmaxcommand.h
 #pragma once
 
-#include "CommandBase.h"
+#include "CommandBase.hpp"
 
 /// @brief command text for the MinMax calibration command
 static const char CMD_MINMAX[] PROGMEM = "MINMAX";

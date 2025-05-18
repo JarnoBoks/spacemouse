@@ -1,10 +1,9 @@
 #include "MinMaxCommand.h"
-#include "CollectionCarrier\CollectionCarrier.hpp"
-
-#include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
-#include "sensor/SensorCollection.hpp"
-#include "sensor/config/SensorConfig.hpp"
-#include "visitors/MinMaxPrinter.h"
+#include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
+#include <sensor/calibration/SensorCalibrationManagerMinMax.hpp>
+#include <sensor/SensorCollection.hpp>
+#include <sensor/config/SensorConfig.hpp>
+#include <visitors/MinMaxPrinter.h>
 
 #include <common/esp_print.h> // For ESP_PRINT
 

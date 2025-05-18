@@ -1,5 +1,5 @@
 #include "ESPCommandHandler.hpp"
-#include "commandhandler/CommandBase.h" // For CommandBase class
+#include "commandhandler/EspCommandHandler/commands/CommandBase.hpp" // For CommandBase class
 
 #define MAX_INPUT_SIZE 48 // Maximum size of the input buffer, ie. maximum number of characters in the user entered command string
 

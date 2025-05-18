@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IDebugParam.hpp"
-#include <commandhandler/DebugCommand.h> // For DebugCommand
+#include <commandhandler/EspCommandHandler/commands/DebugCommand.h> // For DebugCommand
 
 /**
  * @brief Base class for debug parameters.

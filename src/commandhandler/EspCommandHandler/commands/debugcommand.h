@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandBase.h"
+#include "CommandBase.hpp"
 
 // DebugParam classes for default state
 #include "DebugParam\ParamOff.hpp"

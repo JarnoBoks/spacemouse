@@ -1,7 +1,6 @@
-// idlecommand.h
 #pragma once
 
-#include "CommandBase.h"
+#include "CommandBase.hpp"
 
 class SensorCalibrationManager; // Forward declaration of the SensorCalibrationManager class
 

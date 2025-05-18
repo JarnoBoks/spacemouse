@@ -1,7 +1,6 @@
-// showcommand.h
 #pragma once
 
-#include "CommandBase.h"
+#include "CommandBase.hpp"
 
 /// @brief command text for the Show command
 static const char CMD_SHOW[] PROGMEM = "SHOW";

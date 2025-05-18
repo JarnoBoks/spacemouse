@@ -52,7 +52,7 @@ AxisCollection myAxisCollection;   // Axis collection object to hold the axes an
 // For the ESP32 and AVR architecture, the command handler is different.
 #include "commandhandler/factory/CommandHandlerFactory.hpp"
 #ifdef ARDUINO_ARCH_ESP32
-#include "commandhandler/EspCommandHandler.hpp"
+#include "commandhandler/EspCommandHandler/EspCommandHandler.hpp"
 #endif
 #ifdef ARDUINO_ARCH_AVR
 #include "commandhandler/AvrCommandHandler/AvrCommandHandler.hpp"

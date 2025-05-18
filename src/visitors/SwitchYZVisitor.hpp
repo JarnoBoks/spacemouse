@@ -5,7 +5,8 @@
 #include "axis/AxisCollection.hpp"
 
 /**
- * @brief Visitor class for handling exclusive mode for translational or rotational movement.
+ * @brief Visitor class for switching the Y and Z axes in the AxisCollection.
+ * @details This class implements the IVisitor interface and provides functionality for switching the Y and Z axes in the AxisCollection.
  * @warning This class should only be used for visiting AxisCollection objects.
  */
 class SwitchYZVisitor : public IVisitor {

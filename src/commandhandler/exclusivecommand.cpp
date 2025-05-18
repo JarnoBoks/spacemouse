@@ -31,7 +31,7 @@ void ExclusiveCommand::execute(const char *param1, const char *param2, uint8_t p
 #endif
         KinematicsConfig *config = Kinematics::getInstance()->getConfig(); // Get the kinematics configuration instance
         // TODO - Check for Null pointer (on ESP)
-        config->exclusiveMode = requestedLevel;
+        config->setExclusiveMode(requestedLevel);
         config->persist();
 
         return;

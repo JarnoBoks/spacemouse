@@ -10,6 +10,7 @@ class DebugOutputSensors;
 class DebugOutputLoopFrequency;
 
 #define MAX_COMMANDS 11
+#define NUM_AX_DIRCFG 2 // Number of axis direction configurations in the software
 
 class AVRCommandHandler {
 private:
@@ -17,9 +18,9 @@ private:
     CollectionCarrier *m_CollectionCarrier = nullptr;                               // Pointer to the collection carrier
     CollectionCarrier *getCollectionCarrier() const { return m_CollectionCarrier; } // Get the collection carrier
 
-    SensorCalibrationManager *m_SensorCalibrationManager = nullptr; // Pointer to the sensor calibration manager
-    Axis *m_Axis = nullptr;                                         // Pointer to the axis
-    AxisDirectionConfig *m_AxisDirectionConfig = nullptr;
+    SensorCalibrationManager *m_SensorCalibrationManager = nullptr;                 // Pointer to the sensor calibration manager
+    Axis *m_Axis = nullptr;                                                         // Pointer to the axis
+    AxisDirectionConfig *m_AxisDirectionConfig[NUM_AX_DIRCFG] = {nullptr, nullptr}; // Pointer to the axis direction configuration
 
     DebugOutputAxes *m_AxisObserver = nullptr;                   // Pointer to the axis observer instance
     DebugOutputSensors *m_SensorObserver = nullptr;              // Pointer to the sensor observer instance

@@ -16,9 +16,8 @@ void InvertCommand::execute(const char *param1, const char *param2, uint8_t para
     // Call the base class execute function to handle common functionality
     IAxisConfigCommand::execute(param1, param2, paramCount); // Call the base class execute function
 
-    // Check if the axis has a valid AxisDirectionConfig
-    if (!m_AxisDirectionConfig) {
-        ESP_WARN("No direction config");
+    // No update of the configuration parameters possible or needed if the requested value is less than 0
+    if (m_requestedValue < 0) {
         return;
     }
 

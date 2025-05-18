@@ -1,5 +1,5 @@
 Configuration settings kept on a higher abstraction level
-Main, collections & factories have knowledge of the configuration in config.h.
+Main, collections, factories & Defaultconfigs have knowledge of the configuration in config.h.
 
 Collections use config.h only to:
     - Start the concrete factory.

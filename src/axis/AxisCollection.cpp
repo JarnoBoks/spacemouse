@@ -45,10 +45,10 @@ Axis *AxisCollection::getAxis(uint8_t id) const {
  * @brief Get the axis with the specified name.
  * @param name Name of the axis to retrieve.
  * @return Pointer to the axis with the specified name, or nullptr if not found.
- * @note The base class Collection::getItem() can be used too, but it returns a pointer to the ICollectable interface.
+ * @note The base class method 'Collection::getItem()' can be used too, but it returns a pointer to the ICollectable interface.
  */
 Axis *AxisCollection::getAxis(const char *name) const {
-    return static_cast<Axis *>(getItem(name)); // Return the axis with the specified name
+    return static_cast<Axis *>(getItem(name));
 }
 
 /**

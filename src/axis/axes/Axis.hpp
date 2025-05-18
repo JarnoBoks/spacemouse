@@ -29,7 +29,7 @@ private:
     const AxisType_t m_axisType = AxisType_t::UNINITIALIZED; // Type of the axis
     const char *m_name = nullptr;                            // Name of the axis
     AxisConfig *m_AxisConfig = nullptr;                      // Pointer to the axis configuration
-    const ICollection *context = nullptr;
+    // REVIEW - Is context still necessary?  const ICollection *context = nullptr;
 
     int16_t m_rawValue = 0; // Raw computed value for the axis, used to store the value that is calculated by the SensorsCalculator
     int16_t m_snsValue = 0; // Axis value after applying sensitivity
@@ -51,13 +51,13 @@ public:
     ~Axis() { delete m_AxisConfig; } // Destructor (not used in normal SpaceMouse operation)
 
     void evaluate() override;
-    const bool isCurrent(const char *name) const override { return false; }; // TODO - Write this function
-    void setContext(ICollection *Collection) override {};                    // TODO - Write this function
+    const bool isCurrent(const char *name) const override;
+    void setContext(ICollection *Collection) override {}; // TODO - Write this function
 
     inline void setSensorValue(const int16_t value) { m_rawValue = value; }
     inline void setFinValue(const int16_t value) { m_finValue = value; }
 
-    inline int16_t getSensorValue() const { return m_rawValue; } // Getter for raw axis value   // FIXME - Change the name to getRawValue() for consistencys
+    inline int16_t getSensorValue() const { return m_rawValue; } // Getter for raw axis value   // FIXME - Change the name to getRawValue() for consistency
     inline int16_t getSnsValue() const { return m_snsValue; }    // Getter for axis value after applying sensitivity
     inline int16_t getModValue() const { return m_modValue; }    // Getter for axis value after applying sensitivity & modifier function
     inline int16_t getFinValue() const { return m_finValue; }    // Getter for the final axis value after applying all axis & kinematics configurations

@@ -10,6 +10,8 @@
 #error "No hardwaretype defined"
 #endif
 
+// REFACTOR - Remove Singleton pattern
+
 // Initialize the static instance pointer to nullptr
 DefaultKinematicsConfig *DefaultKinematicsConfig::instance = nullptr;
 

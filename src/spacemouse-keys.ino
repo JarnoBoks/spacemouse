@@ -89,6 +89,9 @@ SpaceMouseHID mySpaceMouseHID;
 // Include the header file for the WiFi manager (used to connect to WiFi and handle OTA updates)
 #include "wifi/WifiManager.h"
 
+// Include the header file for the EEPROM storage (used to store the configuration of the sensors and axes)
+#include "eeprom/eepromstore.h"
+
 // #include <ArduinoShrink.h>
 void setup() {
 
@@ -98,6 +101,9 @@ void setup() {
     CustomDelay::delay(100); // Wait for the serial interface to be ready
     Serial.setTimeout(2);    // The serial interface will look for new commands and it will only wait 2ms
     CustomDelay::delay(100); // Wait for CPU to start all peripherals
+
+    // Initialize the EEPROM
+    EEPROMStore::setup(); // Setup the EEPROM storage
 
     // Setup USB, WiFi and OTA
     USBStart;

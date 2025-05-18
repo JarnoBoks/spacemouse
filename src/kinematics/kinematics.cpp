@@ -33,7 +33,7 @@ Kinematics::Kinematics() : Observable(c_MAX_KINEMATICS_OBSERVERS),
 // Define a macro to simplify the access to the sensor values
 #define ABSVAL(x) abs(static_cast<Axis *>(m_axisCollection->getItem(x))->getFinValue())
 void Kinematics::_applyExclusiveMode() {
-    if (config != nullptr && config->exclusiveMode) {
+    if (config != nullptr && config->getExclusiveMode()) {
         uint16_t totalRot = ABSVAL(ROTX) + ABSVAL(ROTY) + ABSVAL(ROTZ);         // Total rotation value
         uint16_t totalTrans = ABSVAL(TRANSX) + ABSVAL(TRANSY) + ABSVAL(TRANSZ); // Total translation value
 
@@ -64,7 +64,7 @@ void Kinematics::_applyExclusiveMode() {
 #define AROTZ m_axisCollection->getAxis(ROTZ)
 
 void Kinematics::_applySwitchYZ() {
-    if (config != nullptr && config->switchYZ) {
+    if (config != nullptr && config->getSwitchYZ()) {
         int16_t tmp = 0;
         tmp = ATRANSY->getFinValue();
 

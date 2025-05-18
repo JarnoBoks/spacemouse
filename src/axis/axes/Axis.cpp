@@ -5,6 +5,18 @@
 #include <math.h>
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
 
+/**
+ * @brief Checks if the provided name matches the sensor's name.
+ * @param name The name to compare against the sensor's name.
+ * @return True if the names match, false otherwise.
+ */
+const bool Axis::isCurrent(const char *name) const {
+    if (m_name != nullptr) {
+        return (strcmp(m_name, name) == 0); // NOTE - Change necessary if PROGMEN is used.
+    }
+    return false;
+}
+
 void Axis::evaluate() {
     m_sensorsCalculator->evaluate(this); // Get the raw value from the sensor calculator
 
@@ -17,13 +29,13 @@ void Axis::evaluate() {
     AxisDirectionConfig *dconfig = (m_rawValue > 0) ? &this->m_AxisConfig->posConfig : &this->m_AxisConfig->negConfig; // Get the config for the current axis and direction
 
     // Apply the sensitivity for this axis & direction
-    m_snsValue = dconfig->sensitivity * m_rawValue; // Apply the sensitivity for this axis & direction
+    m_snsValue = dconfig->getSensitivity() * m_rawValue; // Apply the sensitivity for this axis & direction
 
     // Apply the modifier function for this axis & direction
-    modifier(dconfig->modFuncType);
+    modifier(dconfig->getModFuncType());
 
     // Apply any gate for this axis & direction.
-    m_finValue = (abs(m_modValue) < dconfig->gate) ? 0 : m_modValue; // Apply the gate for this axis & direction
+    m_finValue = (abs(m_modValue) < dconfig->getGate()) ? 0 : m_modValue; // Apply the gate for this axis & direction
 
     // Invert the motion if necessary
     m_finValue = (m_AxisConfig->inversion) ? -m_finValue : m_finValue; // Invert the value if necessary

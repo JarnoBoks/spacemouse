@@ -11,7 +11,9 @@ static const char CMD_GATE[] PROGMEM = "GATE";
  * @note Ensure to validate parameters before execution.
  */
 class GateCommand : public IAxisConfigCommand {
-private:
+protected:
+    void dir_config_updater(AxisDirectionConfig *axisDirectionConfig) override final;
+
 public:
     /**
      * @brief Constructor for the GateCommand class.
@@ -20,6 +22,7 @@ public:
      */
     GateCommand(CollectionCarrier *collectionCarrier) : IAxisConfigCommand(CMD_GATE, collectionCarrier) {}
     ~GateCommand() {}
-
+#if 0 // REMOVE
     void execute(const char *param1, const char *param2, uint8_t paramCount) override;
+#endif
 };

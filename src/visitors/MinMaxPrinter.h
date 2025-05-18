@@ -2,7 +2,7 @@
 
 #include "IPrinterVisitor.h"
 #include "sensor/sensors/Sensor.hpp"
-#include "sensor/config/SensorConfig.h"
+#include "sensor/config/SensorConfig.hpp"
 #include "common/TextHelper.h"
 
 class MinMaxPrinter : public IPrinterVisitor {

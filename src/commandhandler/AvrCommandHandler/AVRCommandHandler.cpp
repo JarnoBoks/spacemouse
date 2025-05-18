@@ -16,7 +16,7 @@
 #include "axis/config/AxisDirectionConfig.hpp"
 
 // Sensors
-#include "sensor/config/SensorConfig.h"
+#include "sensor/config/SensorConfig.hpp"
 
 // Kinematics
 #include "kinematics/kinematics.h"
@@ -325,52 +325,64 @@ void AVRCommandHandler::executeDebug(const char *param1, const char *param2, con
 }
 
 void AVRCommandHandler::executeSens(const char *param1, const char *param2, const uint8_t paramCount) {
-    // Implementation for SENS command
-    ESP_PRINT(F("SensCommand executed"));
 
     // Call the base class execute function to handle common functionality
     float requestedValue = executeAxis(param1, param2, paramCount);
-
-    if (!m_AxisDirectionConfig) {
-        ESP_PRINT(F("SensCommand::execute: No direction config available"));
-        return; // No direction config available, exit the function
+    if (requestedValue < 0) {
+        // No update of the configuration parameters possible or needed.
+        return;
     }
 
-    m_AxisDirectionConfig->sensitivity = requestedValue; // Set the sensitivity value to the requested value
-    m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
+    bool touched = false; // Flag to indicate if the sensitivity was set
+    for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
+        if (m_AxisDirectionConfig[i]) {
+            m_AxisDirectionConfig[i]->setSensitivity(requestedValue);
+            touched |= true;
+        }
+    }
+
+    if (touched) {
+        m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
+    }
 }
 
 void AVRCommandHandler::executeGate(const char *param1, const char *param2, const uint8_t paramCount) {
-    // Implementation for GATE command
-    ESP_PRINT(F("GateCommand executed"));
-
     // Call the base class execute function to handle common functionality
     float requestedValue = executeAxis(param1, param2, paramCount);
-
-    if (m_AxisDirectionConfig == nullptr) {
-        ESP_PRINT(F("GateCommand::execute: No direction config available"));
-        return; // No direction config available, exit the function
+    if (requestedValue < 0) {
+        // No update of the configuration parameters possible or needed.
+        return;
     }
 
-    m_AxisDirectionConfig->gate = requestedValue;        // Set the gate value to the requested value
-    m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
+    bool touched = false; // Flag to indicate if the sensitivity was set
+    for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
+        if (m_AxisDirectionConfig[i]) {
+            m_AxisDirectionConfig[i]->setGate(requestedValue);
+            touched |= true;
+        }
+    }
+
+    if (touched) {
+        m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
+    }
 }
 
 void AVRCommandHandler::executeModFunc(const char *param1, const char *param2, const uint8_t paramCount) {
-    // Implementation for MODFUNC command
-    ESP_PRINT(F("ModFuncCommand executed"));
-
     // Call the base class execute function to handle common functionality
-    int requestedValue = static_cast<int>(executeAxis(param1, param2, paramCount));
+    float requestedValue = executeAxis(param1, param2, paramCount);
+    ModFunc_t mF = static_cast<ModFunc_t>(requestedValue); // Cast the requested value to ModFunc_t
 
-    // Check if the directionConfig is valid
-    if (!m_AxisDirectionConfig) {
-        ESP_PRINT(F("ModFuncCommand::execute: No direction config available"));
-        return; // No direction config available, exit the function
+    bool touched = false; // Flag to indicate if the sensitivity was set
+    for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
+        if (m_AxisDirectionConfig[i]) {
+            m_AxisDirectionConfig[i]->setModFuncType(mF);
+            touched |= true;
+        }
     }
 
-    m_AxisDirectionConfig->modFuncType = static_cast<ModFunc_t>(requestedValue); // Set the mod function type to the requested value
-    m_Axis->getConfig()->persist(m_Axis->getAxisType());                         // Store the value in the EEPROM
+    if (touched) {
+        m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
+    }
 }
 
 void AVRCommandHandler::executeInvert(const char *param1, const char *param2, const uint8_t paramCount) {
@@ -413,7 +425,7 @@ void AVRCommandHandler::executeSwitchXY(const char *param1, const char *param2, 
 
         KinematicsConfig *config = Kinematics::getInstance()->getConfig(); // Get the kinematics configuration instance
         // TODO - Check for Null pointer (on ESP)
-        config->switchYZ = requestedLevel;
+        config->setSwitchYZ(requestedLevel);
         config->persist();
 
         return;
@@ -451,7 +463,7 @@ void AVRCommandHandler::executeExlc(const char *param1, const char *param2, cons
 #endif
         KinematicsConfig *config = Kinematics::getInstance()->getConfig(); // Get the kinematics configuration instance
         // TODO - Check for Null pointer (on ESP)
-        config->exclusiveMode = requestedLevel;
+        config->setExclusiveMode(requestedLevel);
         config->persist();
 
         return;
@@ -462,56 +474,77 @@ void AVRCommandHandler::executeExlc(const char *param1, const char *param2, cons
     }
 }
 
+/**
+ * @brief Executes axis-related commands.
+ * @details This function handles the execution of axis-related commands based on the provided parameters.
+ *          It can be used to set the sensitivity, gate, or mod function type for a specific axis.
+ * @param param1 The first parameter (axis name or [+|-]axisname ).
+ * @param param2 The second parameter (value).
+ * @param paramCount The number of parameters provided.
+ * @return The result of the command execution.
+ * @retval -1 If no, incorrect or unsufficient parameters are provided.
+ * @retval The requested value (float) if two parameters are provided and the command is executed successfully. The m_AxisDirectionConfig array is updated to point to the correct AxisDirectionConfig object(s).
+ */
 float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uint8_t paramCount) {
     if (paramCount == 0) {
         // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
         m_CollectionCarrier->getAxisCollection()->acceptAxesVisitor(printer);
-        return 0;
+        return -1;
     }
 
     if (paramCount == 1) {
-        return 0;
+        return -1;
     }
 
     if (paramCount == 2) {
-        // Command received: SENS <+|-><axisname> <value>
+        // Command received, fe. SENS [+|-]<axisname> <value>
+
+        // Erase the m_AxisDirectionConfig pointers
+        for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
+            m_AxisDirectionConfig[i] = nullptr;
+        }
 
         float requestedValue = 0;
-        // Get the value that has to be set
         if (!convertWordFloat(param2, &requestedValue)) {
-            ESP_WARN("Param not float");
-            return 0; // Second parameter is not a float
+            return -1; // Second parameter is not a float
         }
 
-        // Get the direction (+ is maximum, - is minimum)
-        char direction = param1[0]; // Get the first character of the first parameter
+        char directionChar = param1[0]; // The direction entered in the user command (first character of the first parameter, + or - or axisname's first character)
+        if (directionChar == '+' || directionChar == '-') {
+            // The first character is a direction
+            // REVIEW - Can the cast (char *)param1 be removed?
+            char *reqAxisName = (char *)param1 + 1; // Pointer to the axis name (skip the first character)
+            m_Axis = m_CollectionCarrier->getAxisCollection()->getAxis(reqAxisName);
+            if (m_Axis == nullptr) {
+                return -1; // Error: Axis not found, exit the function
+            }
 
-        // Get the axis from the axis name
-        char *reqAxisName = (char *)param1 + 1;                                  // Get the axis name (skip the first character)
-        m_Axis = m_CollectionCarrier->getAxisCollection()->getAxis(reqAxisName); // Get the axis by its name
+            if (directionChar == '+') {
+                // The positive direction config should be used
+                m_AxisDirectionConfig[0] = &m_Axis->getConfig()->posConfig;
 
-        // REVIEW - Failsafe: Axis not found can be removed from Arduino.
-        if (m_Axis == nullptr) {
-            return 0; // Axis not found, exit the function
-        }
-
-        if (direction == '+') {
-            // Set the maximum value for the sensor
-            m_AxisDirectionConfig = &m_Axis->getConfig()->posConfig; // Set the direction config to the positive direction
-
-        } else if (direction == '-') {
-            // Set the minimum value for the sensor
-            m_AxisDirectionConfig = &m_Axis->getConfig()->negConfig; // Set the direction config to the negative direction
+            } else if (directionChar == '-') {
+                // The negative direction config should be used
+                m_AxisDirectionConfig[0] = &m_Axis->getConfig()->negConfig;
+            }
 
         } else {
-            return 0; // Invalid direction, exit the function
+            // The first character is not a direction, test if the Axis name is specified.
+            m_Axis = m_CollectionCarrier->getAxisCollection()->getAxis(param1);
+            if (m_Axis == nullptr) {
+                return -1; // Axis is not found, exit the function
+            }
+
+            // There is an axis name, but no direction provided. Both directions have to be updated.
+            m_AxisDirectionConfig[0] = &m_Axis->getConfig()->posConfig;
+            m_AxisDirectionConfig[1] = &m_Axis->getConfig()->negConfig;
         }
 
         return requestedValue; // Return the requested value
     }
 
-    return 0; // Default return value
+    return -1; // Return 0 if no valid number of parameters is provided.
 }
 
 /**

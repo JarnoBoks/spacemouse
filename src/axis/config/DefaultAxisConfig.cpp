@@ -1,6 +1,5 @@
-
 #include "DefaultAxisConfig.hpp"
-#include "config.h" // Include the config file to know the hardware type
+#include "config.h" // Include the config file to know the hardware type and load the correct defaults for the hardware.
 
 #if defined(HW_HALLEFFECT)
 #include "defaults_hall.h"
@@ -9,6 +8,8 @@
 #else
 #error "No hardwaretype defined"
 #endif
+
+// FIXME - Remove the Singleton pattern.
 
 // Initialize the static instance pointer to nullptr
 DefaultAxisConfig *DefaultAxisConfig::instance = nullptr;

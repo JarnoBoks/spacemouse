@@ -17,7 +17,7 @@ public:
     inline void visit(AxisConfig &config) override {};
 
     void visit(KinematicsConfig &config) override {
-        bool switchYZ = config.switchYZ; // Get the minimum value from the sensor configuration
+        bool switchYZ = config.getSwitchYZ(); // Get the YZ switching state from the kinematics configuration
         Serial.print(switchYZ);
         TextHelper::printBooleanDescription(switchYZ);
         Serial.println();

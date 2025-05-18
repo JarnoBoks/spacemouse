@@ -4,6 +4,7 @@
 
 #include <common/esp_print.h> // For ESP_PRINT
 
+#if 0
 /**
  * @brief Executes the modfunct command based on the provided parameters.
  * @note This function extends the functionality of the base class IAxisConfigCommand::execute(...).
@@ -12,16 +13,26 @@
  * @param paramCount Number of parameters provided.
  */
 void ModFuncCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
-    ESP_PRINT(F("ModFuncCommand executed"));
-
     // Call the base class execute function to handle common functionality
     IAxisConfigCommand::execute(param1, param2, paramCount);
 
-    if (!m_AxisDirectionConfig) {
-        ESP_WARN("No axisdirection config");
+    // No update of the configuration parameters possible or needed if the requested value is less than 0
+    if (m_requestedValue < 0) {
         return;
     }
 
-    m_AxisDirectionConfig->modFuncType = static_cast<ModFunc_t>(m_requestedValue); // Set the mod function type to the requested value
-    m_Axis->getConfig()->persist(m_Axis->getAxisType());                           // Store the value in the EEPROM
+    for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
+        if (m_AxisDirectionConfig[i]) {
+            m_AxisDirectionConfig[i]->setModFuncType(static_cast<ModFunc_t>(m_requestedValue));
+        }
+    }
+
+    m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
 }
+#endif
+
+void ModFuncCommand::dir_config_updater(AxisDirectionConfig *axisDirectionConfig) {
+    if (axisDirectionConfig) {
+        axisDirectionConfig->setModFuncType(static_cast<ModFunc_t>(m_requestedValue));
+    }
+};

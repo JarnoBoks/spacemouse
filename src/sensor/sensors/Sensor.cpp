@@ -1,5 +1,5 @@
 #include "Sensor.hpp"
-#include "sensor/config/SensorConfig.h"
+#include "sensor/config/SensorConfig.hpp"
 #include "visitors/IPrinterVisitor.h"
 
 #include <wiring_private.h> // for analogRead & map function

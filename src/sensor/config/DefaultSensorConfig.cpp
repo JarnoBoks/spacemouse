@@ -1,6 +1,6 @@
 
 #include "DefaultSensorConfig.hpp"
-#include "SensorConfig.h"              // Include the SensorConfig class to get the default values
+#include "SensorConfig.hpp"            // Include the SensorConfig class to get the default values
 #include "config.h"                    // Include the config file to know the hardware type
 #include "sensor/SensorCollection.hpp" // For cHW_MAX_SENSORS       // FIXME - Move MAX_SENSOR declaration to a better place
 
@@ -11,6 +11,8 @@
 #else
 #error "No hardwaretype defined"
 #endif
+
+// FIXME - Remove the Singleton pattern.
 
 // Initialize the static instance pointer to nullptr
 DefaultSensorConfig *DefaultSensorConfig::instance = nullptr;

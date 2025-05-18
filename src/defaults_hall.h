@@ -34,7 +34,7 @@
 
 // DEADZONE value for the HALL sensors
 #ifndef DEADZONE
-#define DEADZONE 3
+#define DEADZONE 5
 #endif
 
 // ---------------------- AXES DEFAULTS --------------------------

@@ -1,62 +1,41 @@
 #pragma once
 
-#include <Arduino.h>
-
-class AxisConfig;
-class SensorConfig;
-class KinematicsConfig;
-class KeyConfig;
-
-class AxisDirectionConfig;
+#include <stdint.h>
 
 // Documentation for the EEPROM layout / IDs
-#define EEPROM_AXIS_ID_BASE 1         // We store 6 Axis configurations & 12 AxisDirection configurations.
-                                      // Reserve 5 ID's for each axis (1 for the axis itself, 2 for the positive and negative direction configurations, and 2 for the inversion flag)
-#define EEPROM_SENSOR_ID_BASE 100     // We store 8 Sensor configurations
-#define EEPROM_KINEMATICS_ID_BASE 200 // We store 2 Kinematics configurations
+#define EEPROM_AXIS_ID_BASE 1         // Base ID for axis configurations
+#define EEPROM_AXIS_ID_RESERVATIONS 5 // Reserved ID's for each axis (1 for the AxisConfig, 2 for both AxisDirectionConfig's, 2 spare)
 
-struct EEPROMTable {
-    uint8_t _ID;            // (used by firmware to determine what this data is)
-    uint8_t _Length;        // (Length of data in 8-bit words)
-    uint8_t _FormatVersion; // (incremented every time the format of this table changes)
-    uint8_t _Checksum;      // (simple sum-to-zero checksum)
-                            // data follows
-};
+#define EEPROM_SENSOR_ID_BASE 100       // Base ID for sensor configurations
+#define EEPROM_SENSOR_ID_RESERVATIONS 3 // Reserved ID's for each sensor (1 for the SensorConfig, 2 spare)
 
-int getEEPROMAddress(uint8_t ID);
-int getEEPROMTable(const uint8_t ID, EEPROMTable &table) {
-    bool found = false;
-    int address = 0;
+#define EEPROM_KINEMATICS_ID_BASE 200 // Base ID for kinematics configurations
 
-    while (!found) {
-        EEPROM.get(address, table);
-        if (table._ID == 0) {
-            break; // End of the table
-        } else if (table._ID == ID) {
-            found = true;
-        } else {
-            address += sizeof(EEPROMTable) + table._Length;
-        }
-    }
-    return (found) ? address : -1; // Return the address of the table if found, otherwise return -1
-};
+#define EEPROM_MAX_ID 254 // Maximum ID for the EEPROM (limited by uint8_t data type)
+
+// Error codes for EEPROM operations
+constexpr int8_t ERR_EEPROMSTORE_SIMULATOR = -6;  // Simulator running
+constexpr int8_t ERR_EEPROMSTORE_IDNOTFOUND = -1; // ID not found
+constexpr int8_t ERR_EEPROMSTORE_LENGTH = -2;     // Length mismatch
+constexpr int8_t ERR_EEPROMSTORE_VERSION = -3;    // Version mismatch
+constexpr int8_t ERR_EEPROMSTORE_CHECKSUM = -4;   // Checksum failed
+constexpr int8_t ERR_EEPROMSTORE_SUCCESS = 1;     // Success
 
 class EEPROMStore {
 private:
-    static bool _firstrun;  // Indicates if this is the first boot of the space mouse (or SpaceMouse version changed)
-    static bool _setupdone; // Indicates if the EEPROM setup is complete and the first run flag has been checked
+    struct EEPROMTable {
+        uint8_t _ID;            // (used by firmware to determine what this data is)
+        uint8_t _Length;        // (Length of data in 8-bit words)
+        uint8_t _FormatVersion; // (incremented every time the format of this table changes)
+        uint8_t _Checksum;      // (simple sum-to-zero checksum)
+                                // data follows
+    };
+
+    static int getEEPROMTable(const int ID, EEPROMTable &table);
 
 public:
-    static bool isFirstRun(); // Check if the EEPROM is initialized`
-    static void setupEEPROM();
+    static void setup();
 
-    static bool loadConfig(AxisConfig &config, const int axisnumber);
-    static bool loadConfig(SensorConfig &config, const int sensornumber);
-    static bool loadConfig(KinematicsConfig &config);
-    static bool loadConfig(KeyConfig &config, const int8_t buttonnumber);
-
-    static void saveConfig(AxisConfig &config, const int axisnumber);
-    static void saveConfig(SensorConfig &config, const int sensornumber);
-    static void saveConfig(KinematicsConfig &config);
-    static void saveConfig(KeyConfig &config, const int8_t buttonnumber);
+    static void save(const int tableId, const void *data, const int dataLen);
+    static int8_t load(const int tableId, void *data, const int dataLen);
 };

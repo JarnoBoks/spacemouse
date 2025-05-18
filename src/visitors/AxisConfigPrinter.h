@@ -24,13 +24,13 @@ public:
     inline void visit(Axis &axis) override {
 
         // Print the sensitivity
-        _helper_PrintConfig(axis.getName(), axis.getConfig()->posConfig.sensitivity, axis.getConfig()->negConfig.sensitivity, FMT_NOCOMMA, NO_PREFIX, TWO_DECIMALS, 21);
+        _helper_PrintConfig(axis.getName(), axis.getConfig()->posConfig.getSensitivity(), axis.getConfig()->negConfig.getSensitivity(), FMT_NOCOMMA, NO_PREFIX, TWO_DECIMALS, 21);
 
         // Print the gate
-        _helper_PrintConfig(axis.getName(), axis.getConfig()->posConfig.gate, axis.getConfig()->negConfig.gate, FMT_COMMA, "G", NO_DECIMALS, 21);
+        _helper_PrintConfig(axis.getName(), axis.getConfig()->posConfig.getGate(), axis.getConfig()->negConfig.getGate(), FMT_COMMA, "G", NO_DECIMALS, 21);
 
         // Print the modfunc
-        _helper_PrintConfig(axis.getName(), axis.getConfig()->posConfig.modFuncType, axis.getConfig()->negConfig.modFuncType, FMT_COMMA, "M", NO_DECIMALS, 19);
+        _helper_PrintConfig(axis.getName(), axis.getConfig()->posConfig.getModFuncType(), axis.getConfig()->negConfig.getModFuncType(), FMT_COMMA, "M", NO_DECIMALS, 19);
 
         // Print the inversion
         _helper_PrintConfig(axis.getName(), axis.getConfig()->inversion, axis.getConfig()->inversion, FMT_COMMA, "I", NO_DECIMALS, -1);

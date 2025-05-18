@@ -2,6 +2,8 @@
 
 #include "CommandBase.h"
 
+#define NUM_AX_DIRCFG 2 // Number of axis direction configurations per AxisConfig in the software (Current: Positive and Negative)
+
 class AxisDirectionConfig;
 class Axis;
 
@@ -14,9 +16,11 @@ class Axis;
 class IAxisConfigCommand : public CommandBase {
 private:
 protected:
-    AxisDirectionConfig *m_AxisDirectionConfig = nullptr;
-    Axis *m_Axis = nullptr;
-    float m_requestedValue = 0;
+    AxisDirectionConfig *m_AxisDirectionConfig[NUM_AX_DIRCFG]; // Array of pointers to AxisDirectionConfig objects
+    Axis *m_Axis = nullptr;                                    // Pointer to the Axis object that will be configured
+    float m_requestedValue = 0;                                // Requested value for the axis configuration (sensitivity, gate, etc.) derived from the command. -1 if no update is needed.
+
+    virtual void dir_config_updater(AxisDirectionConfig *axisDirectionConfig) = 0; // Pure virtual function to be implemented by derived classes for finalizing the command execution
 
 public:
     /**
@@ -25,7 +29,11 @@ public:
      * @details Initializes the command with the CMD_SENS command name.
      */
     // TODO - Make the collectionCarrier a const reference
-    IAxisConfigCommand(const char *cmdName, CollectionCarrier *collectionCarrier) : CommandBase(cmdName, collectionCarrier) {}
+    IAxisConfigCommand(const char *cmdName, CollectionCarrier *collectionCarrier) : CommandBase(cmdName, collectionCarrier) {
+        for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
+            m_AxisDirectionConfig[i] = nullptr; // Initialize the axis direction configuration pointers to nullptr
+        }
+    }
     virtual ~IAxisConfigCommand() {};
 
     virtual void execute(const char *param1, const char *param2, uint8_t paramCount) override;

@@ -5,19 +5,26 @@
 #include "DefaultAxisConfig.hpp"      // To get the default axis configuration if the EEPROM is empty or the version is changed
 #include "visitors/IPrinterVisitor.h" // For the visitor pattern
 
-/** Constructor with no arguments - used when called with a non-existant axis (ie axistype = -1) */
+constexpr uint8_t EEPROM_AXISCONFIG_VERSION = 1;     // Define the version number for the AxisConfig in EEPROM.     // TODO: Add versioning
+constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_POSCFG = 1; // Offset for the positive direction configuration ID
+constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_NEGCFG = 2; // Offset for the negative direction configuration ID
+
+/**
+ * @brief Constructor with no arguments - used when called with a non-existant axistype
+ */
 AxisConfig::AxisConfig() : posConfig(AxisDirectionConfig()), negConfig(AxisDirectionConfig()), inversion(false) {}
 
 /**
  * @brief Constructor for AxisConfig class with axis type.
  * @details This constructor initializes the AxisConfig object with the given axis type.
- *          This constructor is used when called from an axis.
- *          It loads the configuration from EEPROM using the EEPROMStore class. If loading fails, it sets the configuration to default values.
+ *          It retrieves the configuration from EEPROM using the EEPROMStore class. If loading fails, it sets the configuration to default values.
+ * @see config.h for overriding the default values.
+ * @see defaults_hall.h for the default values for the HALL Effect hardware.
+ * @see defaults_joystick.h for the default values for the JOYSTICK hardware.
  * @param axisType The type of the axis being configured.
  */
-AxisConfig::AxisConfig(AxisType_t axisType) : inversion(false) {
-    if (!EEPROMStore::loadConfig(*this, static_cast<const int>(axisType))) {
-        // If loading from EEPROM fails, setup the configuration with default defined values, using the default axis configuration class.
+AxisConfig::AxisConfig(const AxisType_t axisType) : inversion(false) {
+    if (!retrieve(axisType)) {
         *this = DefaultAxisConfig::getInstance().getDefaultConfig(axisType);
     }
 }
@@ -49,17 +56,46 @@ AxisConfig::AxisConfig(const float psens,
  * @details This function saves the AxisConfig object to EEPROM using the EEPROMStore class.
  * @param axisType The type of the axis being persisted, used to identify the correct location in EEPROM.
  */
-#define AXIS_CONFIG_VERSION 1 // Define the version number for the AxisConfig
-void AxisConfig::persist(AxisType_t axisType) {
-    EEPROMStore::saveConfig(*this, static_cast<const int>(axisType)); // Store the configuration in the EEPROM
 
-    int ID = 5 * static_cast<int>(axisType) + EEPROM_AXIS_ID_BASE; // Define the ID for the AxisConfig in EEPROM
+void AxisConfig::persist(const AxisType_t axisType) const {
+
+    // Calculate the EEPROM tableId for the AxisConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
+    const int tableId = (static_cast<int>(axisType) * EEPROM_AXIS_ID_RESERVATIONS) + EEPROM_AXIS_ID_BASE; // Calculated Id for the AxisConfig in EEPROM
 
     // Persist the data stored in this class
-    EEPROM.Store(ID, inversion); // Store the inversion flag in the EEPROM
+    EEPROMStore::save(tableId, &inversion, sizeof(inversion)); // Store the inversion flag in the EEPROM
 
-    posConfig.persist(ID + 1);
-    negConfig.persist(ID + 2);
+    // Persist the AxisDirectionConfig objects
+    posConfig.persist(tableId + EEPROM_ID_OFFSET_AXCFG_POSCFG);
+    negConfig.persist(tableId + EEPROM_ID_OFFSET_AXCFG_NEGCFG);
+}
+
+/**
+ * @brief Loads the sensor configuration from EEPROM.
+ * @param axisType The type of the axis being loaded, used to calculate the correct location in EEPROM.
+ * @return The result of the load operation.
+ * @retval True if the configuration was successfully loaded.
+ * @retval False if the configuration could not be loaded.
+ */
+bool AxisConfig::retrieve(const AxisType_t axisType) {
+
+    // Calculate the EEPROM tableId for the AxisConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
+    const int tableId = (static_cast<int>(axisType) * EEPROM_AXIS_ID_RESERVATIONS) + EEPROM_AXIS_ID_BASE; // Calculated Id for the AxisConfig in EEPROM
+
+    // Retrieve the data stored in the EEPROM
+    if (EEPROMStore::load(tableId, &inversion, sizeof(inversion)) != ERR_EEPROMSTORE_SUCCESS) {
+        return false;
+    }
+
+    // Retrieve the AxisDirectionConfig objects
+    if (posConfig.retrieve(tableId + EEPROM_ID_OFFSET_AXCFG_POSCFG) != ERR_EEPROMSTORE_SUCCESS) {
+        return false;
+    }
+    if (negConfig.retrieve(tableId + EEPROM_ID_OFFSET_AXCFG_NEGCFG) != ERR_EEPROMSTORE_SUCCESS) {
+        return false;
+    }
+
+    return true;
 }
 
 /**

@@ -1,11 +1,11 @@
 
-#include "SensorConfig.h"
+#include "SensorConfig.hpp"
 #include "config.h" // Include the config file to know the hardware type
 #include "DefaultSensorConfig.hpp"
 #include "eeprom/eepromstore.h"       // To load and save the sensor configuration to EEPROM
 #include "visitors/IPrinterVisitor.h" // For IPrinterVisitor interface
 
-#include <math.h> // For abs() function
+#include <Arduino.h> // For abs() function
 
 #if defined(HW_HALLEFFECT)
 #include "defaults_hall.h"
@@ -15,36 +15,44 @@
 #error "No hardwaretype defined"
 #endif
 
+constexpr uint8_t EEPROM_SENSORCONFIG_VERSION = 1; // Define the version number for the SensorConfig in EEPROM.     // TODO: Add versioning
+
 /**
  * @brief Default constructor for SensorConfig.
- * Initializes the sensor configuration with zeroed values.
+ * @details Initializes the sensor configuration with zeroed values.
  * @note This constructor is not used in the current implementation.
  */
 SensorConfig::SensorConfig() {};
 
 /**
- * @brief Constructor for SensorConfig with sensorId.
- * Loads the sensor configuration from EEPROM using the provided sensorId.
- * If loading fails, it sets up the configuration with default defined values.
+ * @brief Constructor for AxisConfig class with axis type.
+ * @details This constructor initializes the SensorConfig object with the given sensor ID.
+ *          It retrieves the configuration from EEPROM using the EEPROMStore class. If loading fails, it sets the configuration to default values.
+ * @see config.h for overriding the default values.
+ * @see defaults_hall.h for the default values for the HALL Effect hardware.
+ * @see defaults_joystick.h for the default values for the JOYSTICK hardware.
  * @param sensorId The ID of the sensor to load the configuration for.
  */
-SensorConfig::SensorConfig(int8_t sensorId) {
-    if (!EEPROMStore::loadConfig(*this, sensorId)) {
-        // If loading from EEPROM fails, setup the configuration with default defined values
+SensorConfig::SensorConfig(const int8_t sensorId) {
+    if (!retrieve(sensorId)) {
         *this = DefaultSensorConfig::getInstance().getDefaultConfig(sensorId);
     }
 };
 
 /**
  * @brief Constructor for SensorConfig with parameters.
- * Initializes the sensor configuration with the provided min, max, invert, and deadzone values. Used when called from default sensor config.
+ * @details Initializes the sensor configuration with the provided min, max, invert, and deadzone values. Used when called from DefaultSensorConfig.
  * @param min The minimum value for the sensor configuration.
  * @param max The maximum value for the sensor configuration.
  * @param invert If true, inverts the sensor values.
  * @param deadzone The deadzone value for the sensor configuration.
  */
-SensorConfig::SensorConfig(const int min, const int max, const bool invert, const uint8_t deadzone)
-    : minv(min), maxv(max), invert(invert), deadzone(deadzone) {};
+SensorConfig::SensorConfig(const int min, const int max, const bool invert, const uint8_t deadzone) {
+    data.deadzone = deadzone;
+    data.invert = invert;
+    data.minv = min;
+    data.maxv = max;
+};
 
 /**
  * @brief Sets the minimum value for the sensor configuration.
@@ -52,7 +60,7 @@ SensorConfig::SensorConfig(const int min, const int max, const bool invert, cons
  * @note Used in calibration routines to update the minimum value.
  */
 void SensorConfig::updateMin(int val) {
-    minv = (val < minv) ? val : minv;
+    data.minv = (val < data.minv) ? val : data.minv;
 }
 
 /**
@@ -61,18 +69,18 @@ void SensorConfig::updateMin(int val) {
  * @note Used in calibration routines to update the maximum value.
  */
 void SensorConfig::updateMax(int val) {
-    maxv = (val > maxv) ? val : maxv;
+    data.maxv = (val > data.maxv) ? val : data.maxv;
 }
 
 void SensorConfig::_minWarning(bool *warning) const {
     if (warning != nullptr) {
-        *warning = (minv > MINIMUM_HIGH_WARNINGLEVEL); // If the minimum value is below the warning level, raise a warning
+        *warning = (data.minv > MINIMUM_HIGH_WARNINGLEVEL); // If the minimum value is below the warning level, raise a warning
     }
 }
 
 void SensorConfig::_maxWarning(bool *warning) const {
     if (warning != nullptr) {
-        *warning = (maxv < MAXIMUM_LOW_WARNINGLEVEL); // If the maximum value is below the warning level, raise a warning
+        *warning = (data.maxv < MAXIMUM_LOW_WARNINGLEVEL); // If the maximum value is below the warning level, raise a warning
     }
 }
 
@@ -85,11 +93,11 @@ void SensorConfig::_maxWarning(bool *warning) const {
  */
 const int SensorConfig::getMin(bool *warning) const {
     _minWarning(warning); // Check if the minimum value is above the warning level
-    return minv;
+    return data.minv;
 }
 
 void SensorConfig::setMin(const int val, bool *warning) {
-    minv = val;           // Set the minimum value
+    data.minv = val;      // Set the minimum value
     _minWarning(warning); // Check if the minimum value is above the warning level
 }
 
@@ -102,11 +110,11 @@ void SensorConfig::setMin(const int val, bool *warning) {
  */
 const int SensorConfig::getMax(bool *warning) const {
     _maxWarning(warning); // Check if the maximum value is below the warning level
-    return maxv;
+    return data.maxv;
 }
 
 void SensorConfig::setMax(const int val, bool *warning) {
-    maxv = val;           // Set the maximum value
+    data.maxv = val;      // Set the maximum value
     _maxWarning(warning); // Check if the maximum value is below the warning level
 }
 
@@ -119,8 +127,8 @@ void SensorConfig::setMax(const int val, bool *warning) {
  * @note If the maximum value is less than the minimum value, it raises a warning.
  */
 const int SensorConfig::getRange(bool *warning) const {
-    int range = abs(minv - maxv); // Calculate the working range
-    if (warning != nullptr && maxv < minv) {
+    int range = abs(data.minv - data.maxv); // Calculate the working range
+    if (warning != nullptr && data.maxv < data.minv) {
         *warning = true; // If the minimum value is greater than the maximum value, raise a warning
     } else if (warning != nullptr && range < WORKINGRANGE_WARNINGLEVEL) {
         *warning = true; // If the working range is below the warning level, raise a warning
@@ -128,7 +136,7 @@ const int SensorConfig::getRange(bool *warning) const {
         *warning = false; // If the minimum value is greater than the maximum value, raise a warning
     }
 
-    return (abs(minv - maxv)); // Calculate the working range}
+    return (abs(data.minv - data.maxv)); // Calculate the working range
 }
 
 /**
@@ -136,16 +144,31 @@ const int SensorConfig::getRange(bool *warning) const {
  * @param id The ID of the sensor to save the configuration for.
  * @note This function uses the EEPROMStore class to save the configuration.
  */
-void SensorConfig::persist(const int8_t id) {
-    EEPROMStore::saveConfig(*this, id); // Store the configuration in the EEPROM
+void SensorConfig::persist(const uint8_t sensorId) const {
+    // Calculate the EEPROM tableId for the SensorConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
+    const int tableId = (sensorId * EEPROM_SENSOR_ID_RESERVATIONS) + EEPROM_SENSOR_ID_BASE; // Calculated Id for the SensorConfig in EEPROM
+
+    // Persist the data stored in this class
+    EEPROMStore::save(tableId, &data, sizeof(data)); // Store the data structure in the EEPROM
 }
 
 /**
  * @brief Loads the sensor configuration from EEPROM.
- * @param address The address to load the configuration from.
+ * @param address The ID of the sensor to load the configuration for.
+ * @return The result of the load operation.
+ * @retval True if the configuration was successfully loaded.
+ * @retval False if the configuration could not be loaded.
  */
-void SensorConfig::retrieve(const uint8_t address) {
-    EEPROMStore::loadConfig(*this, address);
+bool SensorConfig::retrieve(const uint8_t sensorId) {
+    // Calculate the EEPROM tableId for the SensorConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
+    const int tableId = (sensorId * EEPROM_SENSOR_ID_RESERVATIONS) + EEPROM_SENSOR_ID_BASE; // Calculated Id for the SensorConfig in EEPROM
+
+    // Retrieve the data stored in the EEPROM
+    if (EEPROMStore::load(tableId, &data, sizeof(data)) != ERR_EEPROMSTORE_SUCCESS) {
+        return false;
+    }
+
+    return true;
 }
 
 void SensorConfig::accept(IPrinterVisitor &visitor) {

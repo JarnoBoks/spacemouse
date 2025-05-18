@@ -3,28 +3,22 @@
 #include "AxisDirectionConfig.hpp" // For the DirectionConfig class
 #include "axis/axes/axistype.h"    // For AxisType_t enum
 
-// Forward declaration of classes to avoid circular dependencies
 class IPrinterVisitor;
 
 class AxisConfig {
 private:
-    struct EEPROM_Layout {
-        bool inversion;
-        int posConfig_ID;
-        int negConfig_ID;
-    };
+    bool retrieve(const AxisType_t axisType);
 
 public:
-    AxisDirectionConfig posConfig;
-    AxisDirectionConfig negConfig;
-    bool inversion;
+    AxisDirectionConfig posConfig; // Object for positive direction configuration
+    AxisDirectionConfig negConfig; // Object for negative direction configuration
+    bool inversion = false;        // Inversion flag for the axis
 
-    AxisConfig() = delete;
+    ~AxisConfig() = default; // Default destructor
+    AxisConfig();
 
-    /* Constructor with axisType as argument - used when called from an axis */
-    AxisConfig(AxisType_t axisType);
+    AxisConfig(const AxisType_t axisType);
 
-    /* Constructor with parameters for sensitivity, gate, and function types - used when called from default config */
     AxisConfig(const float psens,
                const float nsens,
                const uint8_t pgate,
@@ -33,8 +27,7 @@ public:
                const ModFunc_t nmf,
                const bool invert);
 
-    /* Save the axisconfig to EEPROM */
-    void persist(AxisType_t axisType);
+    void persist(const AxisType_t axisType) const;
 
     void accept(IPrinterVisitor &visitor);
 };

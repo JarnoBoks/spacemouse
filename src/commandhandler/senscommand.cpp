@@ -4,6 +4,7 @@
 
 #include <common/esp_print.h> // For ESP_PRINT
 
+#if 0
 /**
  * @brief Executes the sens command based on the provided input parameters.
  * @note This function extends the functionality of the base class IAxisConfigCommand::execute(...).
@@ -12,16 +13,27 @@
  * @param paramCount Number of parameters provided.
  */
 void SensCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
-    ESP_PRINT(F("SensCommand executed"));
 
     // Call the base class execute function to handle common functionality
     IAxisConfigCommand::execute(param1, param2, paramCount);
 
-    if (!m_AxisDirectionConfig) {
-        ESP_WARN("No axisdirection config");
+    // No update of the configuration parameters possible or needed if the requested value is less than 0
+    if (m_requestedValue < 0) {
         return;
     }
 
-    m_AxisDirectionConfig->sensitivity = m_requestedValue; // Set the sensitivity value to the requested value
-    m_Axis->getConfig()->persist(m_Axis->getAxisType());   // Store the value in the EEPROM
+    for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
+        if (m_AxisDirectionConfig[i]) {
+            m_AxisDirectionConfig[i]->setSensitivity(m_requestedValue);
+        }
+    }
+
+    m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
+}
+#endif
+
+void SensCommand::dir_config_updater(AxisDirectionConfig *axisDirectionConfig) {
+    if (axisDirectionConfig) {
+        axisDirectionConfig->setSensitivity(m_requestedValue);
+    }
 }

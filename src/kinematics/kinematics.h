@@ -44,7 +44,11 @@ public:
 
     inline KinematicsConfig *getConfig() const { return config; } // Getter for config
 
-    void processKinematics();
+    void execute() {
+        _applyExclusiveMode();         // Apply exclusive mode if enabled
+        _applySwitchYZ();              // Apply switch YZ if enabled
+        Observable::notifyObservers(); // Notify observers of changes in the kinematics
+    }
 
     const AxisType_t getMainAxis(Axis *axis); // Get the main and secondary axis for the kinematics
 

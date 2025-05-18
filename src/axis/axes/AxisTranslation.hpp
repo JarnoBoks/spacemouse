@@ -12,6 +12,8 @@ public:
     AxisTranslation(const AxisType_t axisType, ISensorsCalculator *sensorsCalculator) : Axis(axisType, sensorsCalculator) {};
     ~AxisTranslation() = default; // Destructor
 
+    const bool isTranslation() const override { return true; }
+
     void evaluate() override final {
         // Call the base class evaluate method
         Axis::evaluate();

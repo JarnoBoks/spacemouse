@@ -1,7 +1,8 @@
 #pragma once
 
-#include "common/Collection.hpp" // Include the ICollection interface header file
-#include "common/Observable.hpp" // Include the ICollection interface header file
+#include "common/Collection.hpp"  // Include the ICollection interface header file
+#include "common/Observable.hpp"  // Include the ICollection interface header file
+#include "visitors/Visitable.hpp" // Include the IVisitable interface header file
 
 #include <stdint.h>
 
@@ -20,12 +21,13 @@ constexpr uint8_t cHW_MAX_AXES = 6;
 constexpr uint8_t c_MAX_AXISCOLLECTION_OBSERVERS = 4;
 
 /**
- * @brief Class representing an observable collection of axes for the SpaceMouse.
+ * @brief Class representing a visitable,observable collection of axes for the SpaceMouse.
  * @details The class implements the ICollection interface and provides functionality for managing a collection of axes.
  *          The class implements the Observable interface, allowing it to notify observers of changes in the collection.
+ *         The class implements the Visitable interface, allowing it to accept visitors.
  * @note The AxisCollection class is designed to manage a fixed number of axes and their associated observers.
  */
-class AxisCollection : public Collection, public Observable {
+class AxisCollection : public Collection, public Observable, public Visitable {
 private:
 public:
     /// @brief Constructor for empty AxisCollection

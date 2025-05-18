@@ -4,6 +4,9 @@
 #include "axis/AxisCollection.hpp" // Include the header file for the AxisCollection class
 #include "axis/axes/Axis.hpp"      // Include the header file for the Axis class
 
+#include <visitors/ExclusiveMovementVisitor.hpp>
+#include <visitors/SwitchYZVisitor.hpp>
+
 // Static pointer for the Singleton instance of Kinematics
 // This pointer is initialized to nullptr, indicating that the instance has not been created yet.
 Kinematics *Kinematics::instance = nullptr;
@@ -29,11 +32,18 @@ Kinematics::Kinematics() : Observable(c_MAX_KINEMATICS_OBSERVERS),
                            config(new KinematicsConfig()) {
 }
 
-// REVIEW - This should be a decorator function for the axis class, but we need to check if we can use the same function for both classes.
+#if 0 // REMOVE
 // Define a macro to simplify the access to the sensor values
 #define ABSVAL(x) abs(static_cast<Axis *>(m_axisCollection->getItem(x))->getFinValue())
+#endif
 void Kinematics::_applyExclusiveMode() {
-    if (config != nullptr && config->getExclusiveMode()) {
+    if (config && config->getExclusiveMode()) {
+        // Create a visitor for the exclusive movement
+        ExclusiveMovementVisitor EMvisitor;
+        m_axisCollection->accept(EMvisitor); // Accept the visitor to apply the exclusive movement
+    }
+#if 0 // REMOVE - After testing
+    if (config && config->getExclusiveMode()) {
         uint16_t totalRot = ABSVAL(ROTX) + ABSVAL(ROTY) + ABSVAL(ROTZ);         // Total rotation value
         uint16_t totalTrans = ABSVAL(TRANSX) + ABSVAL(TRANSY) + ABSVAL(TRANSZ); // Total translation value
 
@@ -53,9 +63,13 @@ void Kinematics::_applyExclusiveMode() {
             static_cast<Axis *>(m_axisCollection->getItem(i))->setFinValue(0); // Set translation axes to 0
         }
     }
+#endif
 }
+#if 0 // REMOVE
 #undef ABSVAL
+#endif
 
+#if 0 // REMOVE - After testing
 // REVIEW - What is the order of the exclusive mode and switch YZ?
 // REVIEW - Can we switch the entire axis at once in the array?
 #define ATRANSY m_axisCollection->getAxis(TRANSY)
@@ -80,6 +94,15 @@ void Kinematics::_applySwitchYZ() {
 #undef ATRANSZ
 #undef AROTY
 #undef AROTZ
+#endif
+
+void Kinematics::_applySwitchYZ() {
+    if (config != nullptr && config->getSwitchYZ()) {
+        // Create a visitor for the switch YZ
+        SwitchYZVisitor YZvisitor;
+        m_axisCollection->accept(YZvisitor); // Accept the visitor to apply the switch YZ
+    }
+}
 
 /**
  * @brief Get the axis with the largest velocity.

@@ -17,14 +17,15 @@ const bool Axis::isCurrent(const char *name) const {
     return false;
 }
 
+/**
+ * @brief Evaluates the axis by processing the sensor data and applying configurations.
+ * @details This function retrieves the raw value from the sensor calculator, applies sensitivity, modifier function, and gate settings,
+ *          and inverts the value if necessary. It also handles the kill switch functionality.
+ * @note The function uses the m_sensorsCalculator to get the raw value from the sensor.
+ *       The final value is stored in m_finValue, which is the processed value after applying all configurations.
+ */
 void Axis::evaluate() {
     m_sensorsCalculator->evaluate(this); // Get the raw value from the sensor calculator
-
-    // Stop processing if the kill switch is active
-    if (isKillSwitchActive) {
-        m_finValue = 0;
-        return;
-    }
 
     AxisDirectionConfig *dconfig = (m_rawValue > 0) ? &this->m_AxisConfig->posConfig : &this->m_AxisConfig->negConfig; // Get the config for the current axis and direction
 
@@ -41,6 +42,13 @@ void Axis::evaluate() {
     m_finValue = (m_AxisConfig->inversion) ? -m_finValue : m_finValue; // Invert the value if necessary
 }
 
+/**
+ * @brief Applies a modifier function to the axis.
+ * @param type The type of modifier function to apply.
+ * @details This function modifies the axis value based on the specified modifier function type.
+ *          The available modifier functions are linear, squared, tangent, squared tangent, and cubed tangent.
+ *          The value is constrained to the range of -350 to 350.
+ */
 void Axis::modifier(ModFunc_t type) {
     m_modValue = constrain(m_snsValue, -350, 350); // Constrain the value to the range of -350 to 350
 

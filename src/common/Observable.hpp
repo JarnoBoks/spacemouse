@@ -9,7 +9,7 @@ class Observable : public IObservable {
     // REFACTOR - Can we use a template function in the base class for all these getItem functions in the collection classes?
     // REFACTOR - Can we add consts to the function parameters?
 private:
-    IObserver **observers;     // Array of pointers to observers        // FIXME - Create a template for the observers
+    IObserver **observers;     // Array of pointers to observers
     uint8_t observerCount = 0; // Number of observers attached
     uint8_t maxObservers;
 
@@ -31,5 +31,5 @@ public:
     void attachObserver(IObserver *observer) override;
     void detachObserver(IObserver *observer) override;
     void clearObservers() override;
-    virtual void notifyObservers() override;
+    virtual void notifyObservers() override; // REVIEW - Should this be public or protected? The class knows if there has to be notification. // REVIEW - Why are all these functions virtual? Necessary to override by Derived classes?
 };

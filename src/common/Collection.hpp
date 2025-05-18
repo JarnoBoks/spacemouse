@@ -66,6 +66,10 @@ public:
     }
 
     // --- Addressing items  ---------------------------------
+
+    /// @brief Get the item at the specified index
+    /// @param id The index of the item to retrieve
+    /// @return A pointer to the item at the specified index, or nullptr if the index is out of bounds
     ICollectable *getItem(const uint8_t id) const override {
         if (id < m_maxItems) {
             return m_items[id]; // Return the sensor at the specified index
@@ -73,6 +77,9 @@ public:
         return nullptr; // Return nullptr if the index is out of bounds
     }
 
+    /// @brief Get the item with the specified name
+    /// @param name The name of the item to retrieve
+    /// @return A pointer to the item with the specified name, or nullptr if no matching item is found
     ICollectable *getItem(const char *name) const override {
         for (uint8_t i = 0; i < m_itemCount; i++) {
             if (m_items[i] != nullptr && m_items[i]->isCurrent(name)) {
@@ -82,5 +89,7 @@ public:
         return nullptr; // Return nullptr if no matching sensor is found
     };
 
-    inline uint8_t getItemCount() const { return m_itemCount; } // Get the number of items in the collection
+    /// @brief Get the number of items in the collection
+    /// @return The number of items in the collection
+    inline uint8_t getItemCount() const { return m_itemCount; }
 };

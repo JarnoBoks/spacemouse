@@ -12,7 +12,9 @@ public:
     AxisRotation(const AxisType_t axisType, ISensorsCalculator *sensorsCalculator) : Axis(axisType, sensorsCalculator) {};
     ~AxisRotation() = default; // Destructor
 
-    void evaluate() override final  {
+    const bool isTranslation() const override { return false; }
+
+    void evaluate() override final {
         // Call the base class evaluate method
         Axis::evaluate();
         // Notify observers of changes in the rotation axis

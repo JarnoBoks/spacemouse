@@ -1,0 +1,41 @@
+#pragma once
+#include "IVisitor.hpp" // Include the IVisitor interface header file
+
+#include "axis/axes/Axis.hpp" // Include the Axis class header file
+#include "axis/AxisCollection.hpp"
+
+/**
+ * @brief Visitor class for handling exclusive mode for translational or rotational movement.
+ * @warning This class should only be used for visiting AxisCollection objects.
+ */
+class SwitchYZVisitor : public IVisitor {
+public:
+    SwitchYZVisitor() = default;  // Default constructor
+    ~SwitchYZVisitor() = default; // Destructor
+
+    void visit(Visitable &axisCollection) override {
+
+        // Cast the Visitable to AxisCollection
+        AxisCollection *axisCol = static_cast<AxisCollection *>(&axisCollection);
+
+        if (!axisCol) {
+            Serial.println(F("Invalid AxisCollection"));
+            return;
+        }
+
+        Axis *axisY = axisCol->getAxis(TRANSY);
+        Axis *axisZ = axisCol->getAxis(TRANSZ);
+
+        int16_t tmp = 0;
+        tmp = axisY->getFinValue();
+        axisY->setFinValue(axisZ->getFinValue());
+        axisZ->setFinValue(tmp);
+
+        axisY = axisCol->getAxis(ROTY);
+        axisZ = axisCol->getAxis(ROTZ);
+
+        tmp = axisY->getFinValue();
+        axisY->setFinValue(axisZ->getFinValue());
+        axisZ->setFinValue(tmp);
+    }
+};

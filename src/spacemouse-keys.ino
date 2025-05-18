@@ -189,8 +189,11 @@ void loop() {
 
 #if ROTARY_KEYS > 0
     // The encoder wheel shall be treated as a key.
-    calcEncoderAsKey(Keys, Mouse_Calibration.GetDebug());
+    calcEncoderAsKey(Keys, Moue_Calibration.GetDebug());
 #endif
+
+    // Decorators for the Axes / Keys (SwitchYZ, ExclusiveMode)
+    Kinematics::getInstance()->execute(); // Set the axis collection for the kinematics object
 
     mySpaceMouseHID.execute();
 

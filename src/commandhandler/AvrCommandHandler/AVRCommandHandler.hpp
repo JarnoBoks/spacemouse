@@ -14,7 +14,6 @@ class DebugOutputLoopFrequency;
 
 class AVRCommandHandler {
 private:
-    // TODO: rename CollectionIdentifier to CollectionCarrier
     CollectionCarrier *m_CollectionCarrier = nullptr;                               // Pointer to the collection carrier
     CollectionCarrier *getCollectionCarrier() const { return m_CollectionCarrier; } // Get the collection carrier
 

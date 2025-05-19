@@ -13,7 +13,7 @@
 // NOTE - At the moment the dead zone warning threshold is non hardware type specific. This should be changed in the future.
 
 // Text messages for calibration
-static const char Error_AlreadyCalibrating[] PROGMEM = "Calibration already in progress!"; // Error message for already calibrating
+static const char Error_AlreadyCalibrating[] PROGMEM = "Calibration already in progress!"; // Error message when calibration is already in progress
 
 void SensorCalibrationManager::activate() {
     if (currentCalibration != nullptr) {
@@ -22,6 +22,13 @@ void SensorCalibrationManager::activate() {
     }
 }
 
+/**
+ * @brief Deactivates the current calibration process.
+ * @param warningsOccurred *Ignored* Indicates if any warnings occurred during calibration.
+ * @details This function detaches the current calibration observer from the sensor collection and deletes the observer instance.
+ *         It is called when the calibration process is completed or canceled.
+ * REVIEW -Is the parameter warningsOccurred necessary? It is not used in the current implementation.
+ */
 void SensorCalibrationManager::deactivate(const bool warningsOccurred) {
     m_SensorCollection->detachObserver(currentCalibration);
     delete currentCalibration;

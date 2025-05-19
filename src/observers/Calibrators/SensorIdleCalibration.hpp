@@ -10,7 +10,7 @@ class SensorCalibrationManager;
  * @brief Class to calibrate the idle position of the hardware sensors of the spacemouse.
  * This class inherits from IObserver.
  *
- * @details The class is an observer of the Hardware class and is instantiated by the SensorCalibrationManager.
+ * @details The class is an observer of the SensorCollection class and is instantiated by the SensorCalibrationManager.
  */
 class SensorIdleCalibration : public IObserver {
 private:
@@ -28,7 +28,8 @@ private:
     // REVIEW - SensorCalibrationManager is a singleton. Is it necessary to store the pointer here? (Uses some memory).
     SensorCalibrationManager *m_CalibrationManager = nullptr; // Pointer to the calibration manager
 
-    void finish(IObservable *sensorCollection); // Finish the calibration process
+    void _initialize();                            // Initialize the calibration process
+    void _finalize(IObservable *sensorCollection); // Finish the calibration process
 
 protected:
 public:

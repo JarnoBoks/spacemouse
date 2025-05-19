@@ -1,4 +1,4 @@
-#include "SensorIdleCalibration.h"
+#include "SensorIdleCalibration.hpp"
 #include "sensor/sensors/Sensor.hpp" // For Sensor class
 #include "sensor/calibration/SensorCalibrationManager.hpp"
 #include <printervisitors/IdlePositionPrinter.h> // For IdlePositionPrinter class
@@ -9,29 +9,39 @@
 // NOTE - At the moment the dead zone warning threshold is non hardware type specific. This could be changed in the future.
 
 /**
- * @brief Constructor for SensorIdleCalibration class *
+ * @brief Constructor for SensorIdleCalibration class
  * @param calmgr Pointer to the SensorCalibrationManager
  * @param numiterations Number of iterations for calibration
  */
 SensorIdleCalibration::SensorIdleCalibration(SensorCalibrationManager *calmgr, const int numiterations)
     : m_requestedIterations(numiterations), m_CalibrationManager(calmgr) {
 
-    m_startCalibrationTime = millis(); // Store the start time of the calibration process
-    Serial.println(F("Starting calibration..."));
-
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
         m_sumReads[id] = 0;
         m_minIdleValue[id] = 1023;
         m_maxIdleValue[id] = 0;
     }
+
+    _initialize(); // Call the initialize function to start the calibration process
+}
+
+/**
+ * @brief Initialize the Idle calibration
+ * @details This function is called to initialize the idle calibration process.
+ */
+void SensorIdleCalibration::_initialize() {
+    m_startCalibrationTime = millis(); // Store the start time of the calibration process
+    Serial.println(F("Starting calibration..."));
 }
 
 /**
  * @brief Finish the Idle calibration
- * @param hardware Pointer to the Hardware instance
- * @details This function calculates the average position by dividing the sum of all readings by the number of iterations.
+ * @details This function is called to finish the idle calibration process.
+ *          It calculates the average position for each sensor and prints the calibration results.
+ *          It also checks for any warnings that occurred during the calibration process.
+ * @param sensorCollection Pointer to the SensorCollection
  */
-void SensorIdleCalibration::finish(IObservable *sensorCollection) {
+void SensorIdleCalibration::_finalize(IObservable *sensorCollection) {
 
     IdlePositionPrinter printer;
 
@@ -69,14 +79,15 @@ void SensorIdleCalibration::finish(IObservable *sensorCollection) {
 
 /**
  * @brief Update the sensor calibration process
+ * @param sensorCollection Pointer to the SensorCollection
  * @details This function is called to update the calibration process.
  *          It reads the raw values from the sensors and updates the sum of reads, minimum and maximum values.
- * @param hardware Pointer to the Hardware instance
+ *          It also checks if the requested number of iterations has been reached and calls the finalizer.
  */
 void SensorIdleCalibration::update(IObservable *sensorCollection) {
     // Finish the calibration process if the requested iterations are reached
     if (m_processedIterations >= m_requestedIterations) {
-        finish(sensorCollection); // Finish the calibration process
+        _finalize(sensorCollection); // Finish the calibration process
         return;
     }
 

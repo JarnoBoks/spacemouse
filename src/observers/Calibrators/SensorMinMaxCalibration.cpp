@@ -1,4 +1,4 @@
-#include "SensorMinMaxCalibration.h"
+#include "SensorMinMaxCalibration.hpp"
 
 #include "sensor/SensorCollection.hpp"
 #include "sensor/sensors/Sensor.hpp"
@@ -11,20 +11,28 @@
 
 SensorMinMaxCalibration::SensorMinMaxCalibration(SensorCalibrationManager *calmgr)
     : m_CalibrationManager(calmgr) {
-    m_startCalibrationTime = millis();
+    for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
+        m_minValue[id] = 1023;  // Initialize minimum values to maximum possible value (1023)
+        m_maxValue[id] = -1023; // Initialize maximum values to minimum possible value (-1023)
+    }
 
-    // Initialize the calibration process    // Initialize the calibration process
+    _initialize(); // Call the initialize function to start the calibration process
+}
+
+void SensorMinMaxCalibration::_initialize() {
+    // Initialize the calibration process
+    m_startCalibrationTime = millis();
     Serial.print(F("Move the spacemouse for "));
     Serial.print(MINMAXDURATION);
     Serial.println(F(" sec."));
 }
 
-void SensorMinMaxCalibration::finish(IObservable *sensorCollection) {
+void SensorMinMaxCalibration::_finalize(IObservable *sensorCollection) {
     bool warningsOccurred = false; // Flag to track if any warnings occurred during calibration
 
     MinMaxPrinter printer;
 
-    // REVIEW - Should this loop be moved to hardware?
+    // REVIEW - Should this loop be moved to the sensorcollection?
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
 
         Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id);
@@ -50,7 +58,7 @@ void SensorMinMaxCalibration::update(IObservable *sensorCollection) {
 
     // Finish the calibration process if the configured time has elapsed iterations are reached
     if (millis() - m_startCalibrationTime > (MINMAXDURATION * 1000)) {
-        finish(sensorCollection); // Finish the calibration process
+        _finalize(sensorCollection); // Finish the calibration process
         return;
     }
 

@@ -2,7 +2,7 @@
 #include "IVisitor.hpp" // Include the IVisitor interface header file
 
 #include "axis/axes/Axis.hpp" // Include the Axis class header file
-#include "axis/AxisCollection.hpp"
+#include <axis/KnobMotionVectorCollection.hpp>
 
 /**
  * @brief Visitor class for handling exclusive mode for translational or rotational movement.
@@ -14,14 +14,14 @@ public:
     ~ExclusiveMovementVisitor() = default; // Destructor
     /**
      * @brief Visit method for AxisCollection objects.
-     * @param axisCollection The AxisCollection object to visit.
+     * @param knobMotionVectors The AxisCollection object to visit.
      * @details This method calculates the total rotation and translation values of the axes in the collection.
      *          It then sets the fin value of either the translation or rotation axes to 0, depending on which has a greater total value.
      */
-    void visit(Visitable &axisCollection) override {
+    void visit(Visitable &knobMotionVectors) override {
 
         // Cast the Visitable to AxisCollection
-        AxisCollection *axisCol = static_cast<AxisCollection *>(&axisCollection);
+        KnobMotionVectorCollection *axisCol = static_cast<KnobMotionVectorCollection *>(&knobMotionVectors);
 
         if (!axisCol) {
             Serial.println(F("Invalid AxisCollection"));

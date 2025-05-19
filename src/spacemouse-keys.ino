@@ -45,8 +45,8 @@ SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection);
 #endif
 
 // Include the header file for the Axis and the Axis collection
-#include "axis/AxisCollection.hpp" // Include the axis collection header file
-AxisCollection myAxisCollection;   // Axis collection object to hold the axes and the axis configuration (initialized empty)
+#include "axis/AxisCollection.hpp"           // Include the axis collection header file
+KnobMotionVectorCollection myAxisCollection; // Axis collection object to hold the axes and the axis configuration (initialized empty)
 
 // Include the header files for the command handler that will handle the commands send by the user through the serial monitor.
 // For the ESP32 and AVR architecture, the command handler is different.

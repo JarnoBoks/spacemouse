@@ -1,8 +1,8 @@
 #include "IAxisConfigCommand.h"
 
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
-#include <axis/AxisCollection.hpp>
-#include "axis/config/AxisConfig.hpp"
+#include <axis/KnobMotionVectorCollection.hpp>
+#include <axis/config/AxisConfig.hpp>
 #include <printervisitors/AxisConfigPrinter.h>
 
 #include <common/esp_print.h> // For ESP_PRINT
@@ -21,7 +21,7 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
     if (paramCount == 0) {
         // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
-        m_CollectionCarrier->getAxisCollection()->acceptAxesVisitor(printer);
+        m_CollectionCarrier->getKnobMotionVectors()->acceptAxesVisitor(printer);
         return;
     }
 
@@ -50,7 +50,7 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
             // The first character is a direction
             // REVIEW - Can the cast (char *)param1 be removed?
             char *reqAxisName = (char *)param1 + 1; // Pointer to the axis name (skip the first character)
-            m_Axis = m_CollectionCarrier->getAxisCollection()->getAxis(reqAxisName);
+            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getAxis(reqAxisName);
             if (m_Axis == nullptr) {
                 ESP_INFO("Axis not found");
                 m_requestedValue = -1;
@@ -68,7 +68,7 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
 
         } else {
             // The first character is not a direction, test if the Axis name is specified.
-            m_Axis = m_CollectionCarrier->getAxisCollection()->getAxis(param1);
+            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getAxis(param1);
             if (m_Axis == nullptr) {
                 ESP_INFO("Axis not found");
                 m_requestedValue = -1; // Update the requested value to -1, indicating no update/storage needed

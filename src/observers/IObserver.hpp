@@ -4,7 +4,7 @@
 // Forward declaration of classes that are observed (to avoid circular dependencies)
 class Kinematics;
 class KeyCollection;
-class AxisCollection;
+class KnobMotionVectorCollection;
 class SensorCollection;
 class AxisRotation;
 class AxisTranslation;

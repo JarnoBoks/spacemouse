@@ -1,8 +1,8 @@
 #pragma once
 #include "IVisitor.hpp" // Include the IVisitor interface header file
 
-#include "axis/axes/Axis.hpp" // Include the Axis class header file
-#include "axis/AxisCollection.hpp"
+#include <axis/axes/Axis.hpp> // Include the Axis class header file
+#include <axis/KnobMotionVectorCollection.hpp>
 
 /**
  * @brief Visitor class for switching the Y and Z axes in the AxisCollection.
@@ -14,10 +14,10 @@ public:
     SwitchYZVisitor() = default;  // Default constructor
     ~SwitchYZVisitor() = default; // Destructor
 
-    void visit(Visitable &axisCollection) override {
+    void visit(Visitable &knobMotionVectors) override {
 
         // Cast the Visitable to AxisCollection
-        AxisCollection *axisCol = static_cast<AxisCollection *>(&axisCollection);
+        KnobMotionVectorCollection *axisCol = static_cast<KnobMotionVectorCollection *>(&knobMotionVectors);
 
         if (!axisCol) {
             Serial.println(F("Invalid AxisCollection"));

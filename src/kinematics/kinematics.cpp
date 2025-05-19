@@ -1,8 +1,8 @@
 #include "kinematics.h"
 #include "config.h"
 #include "kinematics/config/kinematicsconfig.hpp"
-#include "axis/AxisCollection.hpp" // Include the header file for the AxisCollection class
-#include "axis/axes/Axis.hpp"      // Include the header file for the Axis class
+#include <axis/KnobMotionVectorCollection.hpp>
+#include <axis/axes/Axis.hpp> // Include the header file for the Axis class
 
 #include <visitors/ExclusiveMovementVisitor.hpp>
 #include <visitors/SwitchYZVisitor.hpp>
@@ -40,7 +40,7 @@ void Kinematics::_applyExclusiveMode() {
     if (config && config->getExclusiveMode()) {
         // Create a visitor for the exclusive movement
         ExclusiveMovementVisitor EMvisitor;
-        m_axisCollection->accept(EMvisitor); // Accept the visitor to apply the exclusive movement
+        m_knobMotionVectors->accept(EMvisitor); // Accept the visitor to apply the exclusive movement
     }
 #if 0 // REMOVE - After testing
     if (config && config->getExclusiveMode()) {
@@ -60,7 +60,7 @@ void Kinematics::_applyExclusiveMode() {
         }
 
         for (int i = startAxis; i <= endAxis; i++) {
-            static_cast<Axis *>(m_axisCollection->getItem(i))->setFinValue(0); // Set translation axes to 0
+            static_cast<Axis *>(m_knobMotionVectors->getItem(i))->setFinValue(0); // Set translation axes to 0
         }
     }
 #endif
@@ -100,7 +100,7 @@ void Kinematics::_applySwitchYZ() {
     if (config != nullptr && config->getSwitchYZ()) {
         // Create a visitor for the switch YZ
         SwitchYZVisitor YZvisitor;
-        m_axisCollection->accept(YZvisitor); // Accept the visitor to apply the switch YZ
+        m_knobMotionVectors->accept(YZvisitor); // Accept the visitor to apply the switch YZ
     }
 }
 
@@ -121,7 +121,7 @@ const MotionVector_t Kinematics::getMainAxis(Axis *axis) {
 
     // Loop through all axes to find the one with the biggest velocity
     for (int i = 0; i < MotionVector_t::LENGTH; i++) {
-        int16_t absvalue = abs(m_axisCollection->getAxis(i)->getFinValue()); // Get the value of the axis
+        int16_t absvalue = abs(m_knobMotionVectors->getAxis(i)->getFinValue()); // Get the value of the axis
 
         // Is the value of this axis greater than deadzone and greater than any of the axis before?
         if ((absvalue > maximumVelocity) && (absvalue > VELOCITYDEADZONEFORLED)) {
@@ -132,7 +132,7 @@ const MotionVector_t Kinematics::getMainAxis(Axis *axis) {
     if (idMainAxis == MotionVector_t::UNINITIALIZED) {
         axis = nullptr; // Set the axis to nullptr if no axis is found
     } else {
-        axis = static_cast<Axis *>(m_axisCollection->getItem(idMainAxis));
+        axis = static_cast<Axis *>(m_knobMotionVectors->getItem(idMainAxis));
         // REVIEW - Check if the pointer assignment is correct. It should be a reference to the axis, not a pointer.
     }
     return idMainAxis;

@@ -5,9 +5,9 @@
 #define MAX_AXES 6
 
 #include <axis/MotionVectorType.h> // For MotionVector_t enum
-#include "axis/axes/Axis.hpp"      // For Axis class
-#include "observers/IObserver.hpp"
-#include "axis/AxisCollection.hpp"
+#include <axis/axes/Axis.hpp>      // For Axis class
+#include <observers/IObserver.hpp>
+#include <axis/KnobMotionVectorCollection.hpp>
 
 /// @brief Number of observers that can be added to this object
 /// @details This is a constant value that defines the maximum number of observers that can be added to the collection.
@@ -19,7 +19,7 @@ class KinematicsConfig;
 class Kinematics : public Observable {
 private:
     static Kinematics *instance;
-    AxisCollection *m_axisCollection = nullptr; // Pointer to the axis collection
+    KnobMotionVectorCollection *m_knobMotionVectors = nullptr; // Pointer to the axis collection
 
     KinematicsConfig *config = nullptr;
 
@@ -32,7 +32,7 @@ private:
     void _applyKillSwitch(const AxisType_t start, const AxisType_t end, const bool killSwitchActive) {
         // Set strategy for the rotation axes to kill switch
         for (uint8_t i = start; i <= end; i++) {
-            static_cast<Axis *>(m_axisCollection->getItem(i))->setKillSwitchActive(killSwitchActive); // Set the kill switch state for the axis
+            static_cast<Axis *>(m_knobMotionVectors->getItem(i))->setKillSwitchActive(killSwitchActive); // Set the kill switch state for the axis
         }
     };
 #endif
@@ -40,8 +40,8 @@ private:
 public:
     static Kinematics *getInstance();
 
-    inline void setAxisCollection(AxisCollection *axisCollection) {
-        m_axisCollection = axisCollection; // Set the axis collection
+    inline void setAxisCollection(KnobMotionVectorCollection *axisCollection) {
+        m_knobMotionVectors = axisCollection; // Set the axis collection
     };
 
     inline KinematicsConfig *getConfig() const { return config; } // Getter for config

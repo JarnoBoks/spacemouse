@@ -1,6 +1,6 @@
 #include "DebugOutputAxes.hpp"
-#include "axis/AxisCollection.hpp"
-#include "axis/axes/Axis.hpp"
+#include <axis/KnobMotionVectorCollection.hpp>
+#include <axis/axes/Axis.hpp>
 #include <common/TextHelper.h>
 
 /**
@@ -10,17 +10,17 @@
  *          The function iterates through all axes and prints their names and values to the serial monitor.
  * @param kinematics Pointer to the Kinematics object.
  */
-void DebugOutputAxes::update(IObservable *axisCollection) {
-    if (!isDebugOutputDue() || !axisCollection) {
+void DebugOutputAxes::update(IObservable *knobMotionVectors) {
+    if (!isDebugOutputDue() || !knobMotionVectors) {
         return;
     }
 
     // REFACTOR - Do the loop constraint(itemCount) for all collections (sensors, keys, axes) in the base class
     // REVIEW - Test - static cast is not necessary, but it is more readable
-    for (uint8_t id = 0; id < static_cast<AxisCollection *>(axisCollection)->getItemCount(); id++) {
+    for (uint8_t id = 0; id < static_cast<KnobMotionVectorCollection *>(knobMotionVectors)->getItemCount(); id++) {
         TextHelper::printLeadingComma(id); // Print a komma if it's not the first axis
 
-        Axis *axis = static_cast<AxisCollection *>(axisCollection)->getAxis(static_cast<MotionVector_t>(id)); // Pointer to the axis
+        Axis *axis = static_cast<KnobMotionVectorCollection *>(knobMotionVectors)->getAxis(static_cast<MotionVector_t>(id)); // Pointer to the axis
         if (!axis)
             continue;
 

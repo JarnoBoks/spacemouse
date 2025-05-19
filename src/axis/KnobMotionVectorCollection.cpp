@@ -1,13 +1,13 @@
-#include "AxisCollection.hpp"
-#include "axes/AxisRotation.hpp"
-#include "axes/AxisTranslation.hpp"
+#include "KnobMotionVectorCollection.hpp"
+#include <axis/axes/AxisRotation.hpp>
+#include <axis/axes/AxisTranslation.hpp>
 
 /**
  * @brief Setup the axis collection according to the configuration.
  * @details This method initializes the axes based on the configuration defined in config.h.
- *          It creates instances of the axes and sets their context to this AxisCollection instance.
+ *          It creates instances of the axes and sets their context to this KnobMotionVectorCollection instance.
  */
-void AxisCollection::setup(ISensorsCalculator *sensorsCalculator) {
+void KnobMotionVectorCollection::setup(ISensorsCalculator *sensorsCalculator) {
     m_items[TRANSX] = new AxisTranslation(TRANSX, sensorsCalculator);
     m_items[TRANSY] = new AxisTranslation(TRANSY, sensorsCalculator);
     m_items[TRANSZ] = new AxisTranslation(TRANSZ, sensorsCalculator);
@@ -17,7 +17,7 @@ void AxisCollection::setup(ISensorsCalculator *sensorsCalculator) {
     m_itemCount = 6;
 };
 
-void AxisCollection::setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation) {
+void KnobMotionVectorCollection::setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation) {
     // Call the setup function to initialize the axes
     setup(sensorsCalculator);
 
@@ -36,7 +36,7 @@ void AxisCollection::setup(ISensorsCalculator *sensorsCalculator, IObserver *hid
  * @return Pointer to the axis at the specified index, or nullptr if the index is out of bounds.
  * @note The base class Collection::getItem() can be used too, but it returns a pointer to the ICollectable interface.
  */
-Axis *AxisCollection::getAxis(uint8_t id) const {
+Axis *KnobMotionVectorCollection::getAxis(uint8_t id) const {
     return static_cast<Axis *>(getItem(id)); // Return the axis with the specified id
 }
 
@@ -46,7 +46,7 @@ Axis *AxisCollection::getAxis(uint8_t id) const {
  * @return Pointer to the axis with the specified name, or nullptr if not found.
  * @note The base class method 'Collection::getItem()' can be used too, but it returns a pointer to the ICollectable interface.
  */
-Axis *AxisCollection::getAxis(const char *name) const {
+Axis *KnobMotionVectorCollection::getAxis(const char *name) const {
     return static_cast<Axis *>(getItem(name));
 }
 
@@ -57,7 +57,7 @@ Axis *AxisCollection::getAxis(const char *name) const {
  * @param observer Pointer to the observer to be attached.
  * @deprecated This function is not used in the current implementation and may be removed in future versions.
  */
-void AxisCollection::attachAxesObserver(IObserver *observer) {
+void KnobMotionVectorCollection::attachAxesObserver(IObserver *observer) {
     for (int i = 0; i < m_itemCount; i++) {
         static_cast<Axis *>(m_items[i])->attachObserver(observer); // Attach the observer to each axis in the collection
     }
@@ -68,7 +68,7 @@ void AxisCollection::attachAxesObserver(IObserver *observer) {
  * @param printerVisitor Reference to the printer visitor to be used for printing.
  * @details This function iterates through all axes in the collection and calls the accept method on each axis,
  */
-void AxisCollection::acceptAxesVisitor(IPrinterVisitor &printerVisitor) {
+void KnobMotionVectorCollection::acceptAxesVisitor(IPrinterVisitor &printerVisitor) {
     for (int i = 0; i < m_itemCount; i++) {
         static_cast<Axis *>(m_items[i])->accept(printerVisitor);
     }

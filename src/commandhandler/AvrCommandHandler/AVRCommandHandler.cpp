@@ -3,7 +3,7 @@
 
 // Collections
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
-#include "axis/AxisCollection.hpp"
+#include <axis/KnobMotionVectorCollection.hpp>
 #include "sensor/SensorCollection.hpp"
 
 // Calibration managers
@@ -482,7 +482,7 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
     if (paramCount == 0) {
         // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
-        m_CollectionCarrier->getAxisCollection()->acceptAxesVisitor(printer);
+        m_CollectionCarrier->getKnobMotionVectors()->acceptAxesVisitor(printer);
         return -1;
     }
 
@@ -508,7 +508,7 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
             // The first character is a direction
             // REVIEW - Can the cast (char *)param1 be removed?
             char *reqAxisName = (char *)param1 + 1; // Pointer to the axis name (skip the first character)
-            m_Axis = m_CollectionCarrier->getAxisCollection()->getAxis(reqAxisName);
+            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getAxis(reqAxisName);
             if (m_Axis == nullptr) {
                 return -1; // Error: Axis not found, exit the function
             }
@@ -524,7 +524,7 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
 
         } else {
             // The first character is not a direction, test if the Axis name is specified.
-            m_Axis = m_CollectionCarrier->getAxisCollection()->getAxis(param1);
+            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getAxis(param1);
             if (m_Axis == nullptr) {
                 return -1; // Axis is not found, exit the function
             }
@@ -615,7 +615,7 @@ void AVRCommandHandler::DebugParamAxisInformation() {
 
     // Instantiate the Observer for the Axis values and attach it to the hardware
     m_AxisObserver = new DebugOutputAxesSensitivity();
-    getCollectionCarrier()->getAxisCollection()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
+    getCollectionCarrier()->getKnobMotionVectors()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
 }
 
 void AVRCommandHandler::DebugParamSensorAxisInformation() {
@@ -626,7 +626,7 @@ void AVRCommandHandler::DebugParamSensorAxisInformation() {
     m_AxisObserver = new DebugOutputAxesModified();
 
     getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
-    getCollectionCarrier()->getAxisCollection()->attachObserver(m_AxisObserver);     // Attach the axis observer to the axis collection
+    getCollectionCarrier()->getKnobMotionVectors()->attachObserver(m_AxisObserver);  // Attach the axis observer to the axis collection
 }
 
 void AVRCommandHandler::DebugParamSensorAxisKeysInformation() {
@@ -637,7 +637,7 @@ void AVRCommandHandler::DebugParamSensorAxisKeysInformation() {
     m_AxisObserver = new DebugOutputAxesModified();
 
     getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
-    getCollectionCarrier()->getAxisCollection()->attachObserver(m_AxisObserver);     // Attach the axis observer to the axis collection
+    getCollectionCarrier()->getKnobMotionVectors()->attachObserver(m_AxisObserver);  // Attach the axis observer to the axis collection
 }
 
 void AVRCommandHandler::DebugParamLoopFrequency() {
@@ -645,14 +645,14 @@ void AVRCommandHandler::DebugParamLoopFrequency() {
 
     // Instantiate the Observer for the Loop Frequency values and attach it to the hardware
     m_LoopFrequencyObserver = new DebugOutputLoopFrequency();
-    getCollectionCarrier()->getAxisCollection()->attachObserver(m_LoopFrequencyObserver); // Attach the observer to the axis collection
+    getCollectionCarrier()->getKnobMotionVectors()->attachObserver(m_LoopFrequencyObserver); // Attach the observer to the axis collection
 }
 
 void AVRCommandHandler::DetachCurrentObservers() {
     if (m_AxisObserver != nullptr) {
-        getCollectionCarrier()->getAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
-        delete m_AxisObserver;                                                       // Delete the previous observer if it exists
-        m_AxisObserver = nullptr;                                                    // Set the observer pointer to null
+        getCollectionCarrier()->getKnobMotionVectors()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
+        delete m_AxisObserver;                                                          // Delete the previous observer if it exists
+        m_AxisObserver = nullptr;                                                       // Set the observer pointer to null
     }
 
     if (m_SensorObserver != nullptr) {
@@ -662,8 +662,8 @@ void AVRCommandHandler::DetachCurrentObservers() {
     }
 
     if (m_LoopFrequencyObserver != nullptr) {
-        getCollectionCarrier()->getAxisCollection()->detachObserver(m_LoopFrequencyObserver); // Detach the observer from the axis collection
-        delete m_LoopFrequencyObserver;                                                       // Delete the previous observer if it exists
-        m_LoopFrequencyObserver = nullptr;                                                    // Set the observer pointer to null
+        getCollectionCarrier()->getKnobMotionVectors()->detachObserver(m_LoopFrequencyObserver); // Detach the observer from the axis collection
+        delete m_LoopFrequencyObserver;                                                          // Delete the previous observer if it exists
+        m_LoopFrequencyObserver = nullptr;                                                       // Set the observer pointer to null
     }
 }

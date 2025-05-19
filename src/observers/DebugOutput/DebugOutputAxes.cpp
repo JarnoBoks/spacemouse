@@ -20,7 +20,7 @@ void DebugOutputAxes::update(IObservable *axisCollection) {
     for (uint8_t id = 0; id < static_cast<AxisCollection *>(axisCollection)->getItemCount(); id++) {
         TextHelper::printLeadingComma(id); // Print a komma if it's not the first axis
 
-        Axis *axis = static_cast<AxisCollection *>(axisCollection)->getAxis(static_cast<AxisType_t>(id)); // Pointer to the axis
+        Axis *axis = static_cast<AxisCollection *>(axisCollection)->getAxis(static_cast<MotionVector_t>(id)); // Pointer to the axis
         if (!axis)
             continue;
 

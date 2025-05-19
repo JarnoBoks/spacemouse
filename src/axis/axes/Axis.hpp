@@ -2,17 +2,18 @@
 
 #include "common/ICollectable.hpp"
 #include "common/Observable.hpp"
-#include "axistype.h"                        // Include the header file for AxisType_t enum
+#include "..\MotionVectorType.h"             // Include the header file for MotionVector_t enum
 #include "axis/config/AxisConfig.hpp"        // Include the header file for AxisConfig class
-#include "axis/modifier/modfunctype.h"       // Include the header file for ModFunc_t enum
+#include <axis/ModifierFunctionType.h>       // Include the header file for ModFunc_t enum
 #include <printervisitors/IPrinterVisitor.h> // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Use IVisitor instead of IPrinterVisitor
 
 class SensorCollection;
 class ISensorsCalculator;
 
-constexpr const char *c_AXIS_NAMES[] = {"TX", "TY", "TZ", "RX", "RY", "RZ"}; // Axis names for serial output        // TODO - Move to PROGMEM
+// TODO - Move to PROGMEM
+constexpr const char *c_AXIS_NAMES[] = {"TX", "TY", "TZ", "RX", "RY", "RZ"}; // Axis names for serial output, ordered by the MotionVector_t.
 
-/// @brief Number of observers that can be added to a axis
+/// @brief Number of observers that can be added to a axis.
 /// @details This is a constant value that defines the maximum number of observers that can be added to the axis.
 /// @note This value is set to 1, as the axis is only having the HID Event buffer as observer.
 constexpr uint8_t c_MAX_AXIS_OBSERVERS = 1;
@@ -24,11 +25,10 @@ constexpr uint8_t c_MAX_AXIS_OBSERVERS = 1;
  */
 class Axis : public ICollectable, public Observable {
 private:
-    ISensorsCalculator *m_sensorsCalculator = nullptr;       // Pointer to the sensor calculator
-    const AxisType_t m_axisType = AxisType_t::UNINITIALIZED; // Type of the axis
-    const char *m_name = nullptr;                            // Name of the axis
-    AxisConfig *m_AxisConfig = nullptr;                      // Pointer to the axis configuration
-    // REVIEW - Is context still necessary?  const ICollection *context = nullptr;
+    ISensorsCalculator *m_sensorsCalculator = nullptr;               // Pointer to the sensor calculator
+    const MotionVector_t m_axisType = MotionVector_t::UNINITIALIZED; // Type of the axis
+    const char *m_name = nullptr;                                    // Name of the axis
+    AxisConfig *m_AxisConfig = nullptr;                              // Pointer to the axis configuration
 
     int16_t m_rawValue = 0; // Raw computed value for the axis, used to store the value that is calculated by the SensorsCalculator
     int16_t m_snsValue = 0; // Axis value after applying sensitivity
@@ -39,19 +39,20 @@ private:
 
 protected:
 public:
-    Axis() = delete;
-    Axis(const AxisType_t axisType, ISensorsCalculator *sensorsCalculator) : Observable(c_MAX_AXIS_OBSERVERS),
+    Axis() = delete; // Delete default constructor, do not allow instantiation without parameters
+    Axis(const MotionVector_t type, ISensorsCalculator *sensorsCalculator) : Observable(c_MAX_AXIS_OBSERVERS),
                                                                              m_sensorsCalculator(sensorsCalculator),
-                                                                             m_axisType(axisType),
-                                                                             m_name(c_AXIS_NAMES[static_cast<int>(axisType)]),
-                                                                             m_AxisConfig(new AxisConfig(axisType)) {};
+                                                                             m_axisType(type),
+                                                                             m_name(c_AXIS_NAMES[static_cast<int>(type)]), // Set the name of the axis based on the MotionVector_t enum
+                                                                             m_AxisConfig(new AxisConfig(type)) {};        // Create a new AxisConfig object for this axis
+
     ~Axis() { delete m_AxisConfig; } // Destructor (not used in normal SpaceMouse operation)
 
     void evaluate() override;
-    const bool isCurrent(const char *name) const override;
-    virtual const bool isTranslation() const = 0;
 
-    // REMOVE void setContext(ICollection *Collection) override {}; // TODO - Write this function
+    const bool isCurrent(const char *name) const override;
+
+    virtual const bool isTranslation() const = 0;
 
     inline void setRawValue(const int16_t value) { m_rawValue = value; } // Setter for raw axis value, used by SensorsCalculator
 
@@ -76,7 +77,7 @@ public:
 
     inline const ISensorsCalculator *getSensorsCalculator() const { return m_sensorsCalculator; } // Getter for sensor calculator
     inline AxisConfig *getConfig() const { return m_AxisConfig; }                                 // Getter for axis configuration
-    inline const AxisType_t getAxisType() const { return m_axisType; }                            // Getter for axis type
+    inline const MotionVector_t getAxisType() const { return m_axisType; }                        // Getter for axis type
     inline const char *getName() const { return m_name; }                                         // Getter for axis name
 
     inline void accept(IPrinterVisitor &printerVisitor) { printerVisitor.visit(*this); }

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "AxisDirectionConfig.hpp" // For the DirectionConfig class
-#include "axis/axes/axistype.h"    // For AxisType_t enum
+#include <axis/MotionVectorType.h> // For MotionVector_t enum
 
 class IPrinterVisitor;
 
 class AxisConfig {
 private:
-    bool retrieve(const AxisType_t axisType);
+    bool retrieve(const MotionVector_t motionVectorType);
 
 public:
     AxisDirectionConfig posConfig; // Object for positive direction configuration
@@ -17,7 +17,7 @@ public:
     ~AxisConfig() = default; // Default destructor
     AxisConfig();
 
-    AxisConfig(const AxisType_t axisType);
+    AxisConfig(const MotionVector_t motionVectorType);
 
     AxisConfig(const float psens,
                const float nsens,
@@ -27,7 +27,7 @@ public:
                const ModFunc_t nmf,
                const bool invert);
 
-    void persist(const AxisType_t axisType) const;
+    void persist(const MotionVector_t motionVectorType) const;
 
     void accept(IPrinterVisitor &visitor);
 };

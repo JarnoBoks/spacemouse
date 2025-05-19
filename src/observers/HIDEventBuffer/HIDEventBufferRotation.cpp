@@ -11,7 +11,7 @@ void HIDEventBufferRotation::update(IObservable *axisRotation) {
     // Offset the axisType to the first rotation axis, in order to use it as an index in the rotation message buffer.
     // The first rotation axis is ROTX, so we have to subtract it from the axisType to retrieve the index.
     // For every axis 2 bytes are used, and thus the index is multiplied by 2.
-    const uint8_t idx = (static_cast<AxisRotation *>(axisRotation)->getAxisType() - AxisType_t::ROTX) * 2; // Message index for the rotation axis.
+    const uint8_t idx = (static_cast<AxisRotation *>(axisRotation)->getAxisType() - MotionVector_t::ROTX) * 2; // Message index for the rotation axis.
 
     updateMessage(axisvalue, idx);
 }

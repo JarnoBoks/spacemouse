@@ -23,9 +23,9 @@ AxisConfig::AxisConfig() : posConfig(AxisDirectionConfig()), negConfig(AxisDirec
  * @see defaults_joystick.h for the default values for the JOYSTICK hardware.
  * @param axisType The type of the axis being configured.
  */
-AxisConfig::AxisConfig(const AxisType_t axisType) : inversion(false) {
-    if (!retrieve(axisType)) {
-        *this = DefaultAxisConfig::getInstance().getDefaultConfig(axisType);
+AxisConfig::AxisConfig(const MotionVector_t motionVectorType) : inversion(false) {
+    if (!retrieve(motionVectorType)) {
+        *this = DefaultAxisConfig::getInstance().getDefaultConfig(motionVectorType);
     }
 }
 
@@ -57,7 +57,7 @@ AxisConfig::AxisConfig(const float psens,
  * @param axisType The type of the axis being persisted, used to identify the correct location in EEPROM.
  */
 
-void AxisConfig::persist(const AxisType_t axisType) const {
+void AxisConfig::persist(const MotionVector_t axisType) const {
 
     // Calculate the EEPROM tableId for the AxisConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
     const int tableId = (static_cast<int>(axisType) * EEPROM_AXIS_ID_RESERVATIONS) + EEPROM_AXIS_ID_BASE; // Calculated Id for the AxisConfig in EEPROM
@@ -77,7 +77,7 @@ void AxisConfig::persist(const AxisType_t axisType) const {
  * @retval True if the configuration was successfully loaded.
  * @retval False if the configuration could not be loaded.
  */
-bool AxisConfig::retrieve(const AxisType_t axisType) {
+bool AxisConfig::retrieve(const MotionVector_t axisType) {
 
     // Calculate the EEPROM tableId for the AxisConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
     const int tableId = (static_cast<int>(axisType) * EEPROM_AXIS_ID_RESERVATIONS) + EEPROM_AXIS_ID_BASE; // Calculated Id for the AxisConfig in EEPROM

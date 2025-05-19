@@ -8,7 +8,6 @@
  *          It creates instances of the axes and sets their context to this AxisCollection instance.
  */
 void AxisCollection::setup(ISensorsCalculator *sensorsCalculator) {
-    // REFACTOR - Create an 'add' function that allows for direct adressing the index.
     m_items[TRANSX] = new AxisTranslation(TRANSX, sensorsCalculator);
     m_items[TRANSY] = new AxisTranslation(TRANSY, sensorsCalculator);
     m_items[TRANSZ] = new AxisTranslation(TRANSZ, sensorsCalculator);

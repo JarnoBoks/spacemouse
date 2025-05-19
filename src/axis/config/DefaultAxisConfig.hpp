@@ -13,5 +13,5 @@ private:
 
 public:
     static DefaultAxisConfig &getInstance();
-    AxisConfig getDefaultConfig(AxisType_t type);
+    AxisConfig getDefaultConfig(MotionVector_t type);
 };

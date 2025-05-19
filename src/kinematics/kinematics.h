@@ -4,8 +4,8 @@
 
 #define MAX_AXES 6
 
-#include "axis/axes/axistype.h" // For AxisType_t
-#include "axis/axes/Axis.hpp"   // For Axis class
+#include <axis/MotionVectorType.h> // For MotionVector_t enum
+#include "axis/axes/Axis.hpp"      // For Axis class
 #include "observers/IObserver.hpp"
 #include "axis/AxisCollection.hpp"
 
@@ -52,7 +52,7 @@ public:
         Observable::notifyObservers(); // Notify observers of changes in the kinematics
     }
 
-    const AxisType_t getMainAxis(Axis *axis); // Get the main and secondary axis for the kinematics
+    const MotionVector_t getMainAxis(Axis *axis); // Get the main and secondary axis for the kinematics
 #if 0
     // Functionality for the kill switches
     void killRotation(const bool killSwitchActive = true) {

@@ -9,7 +9,7 @@ class AxisRotation : public Axis {
 
 public:
     AxisRotation() = delete; // Delete the default constructor
-    AxisRotation(const AxisType_t axisType, ISensorsCalculator *sensorsCalculator) : Axis(axisType, sensorsCalculator) {};
+    AxisRotation(const MotionVector_t motionVectorType, ISensorsCalculator *sensorsCalculator) : Axis(motionVectorType, sensorsCalculator) {};
     ~AxisRotation() = default; // Destructor
 
     const bool isTranslation() const override { return false; }

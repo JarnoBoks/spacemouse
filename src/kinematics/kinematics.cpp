@@ -115,21 +115,21 @@ void Kinematics::_applySwitchYZ() {
 #endif
 
 // REFACTOR - Shoud return a pointer to the axis instead of the AxisType_t enum. This will make it easier to use in the LED ring and other classes.
-const AxisType_t Kinematics::getMainAxis(Axis *axis) {
-    AxisType_t idMainAxis = AxisType_t::UNINITIALIZED;
+const MotionVector_t Kinematics::getMainAxis(Axis *axis) {
+    MotionVector_t idMainAxis = MotionVector_t::UNINITIALIZED;
     int16_t maximumVelocity = 0;
 
     // Loop through all axes to find the one with the biggest velocity
-    for (int i = 0; i < AxisType_t::LENGTH; i++) {
+    for (int i = 0; i < MotionVector_t::LENGTH; i++) {
         int16_t absvalue = abs(m_axisCollection->getAxis(i)->getFinValue()); // Get the value of the axis
 
         // Is the value of this axis greater than deadzone and greater than any of the axis before?
         if ((absvalue > maximumVelocity) && (absvalue > VELOCITYDEADZONEFORLED)) {
             maximumVelocity = absvalue;
-            idMainAxis = static_cast<AxisType_t>(i);
+            idMainAxis = static_cast<MotionVector_t>(i);
         }
     }
-    if (idMainAxis == AxisType_t::UNINITIALIZED) {
+    if (idMainAxis == MotionVector_t::UNINITIALIZED) {
         axis = nullptr; // Set the axis to nullptr if no axis is found
     } else {
         axis = static_cast<Axis *>(m_axisCollection->getItem(idMainAxis));

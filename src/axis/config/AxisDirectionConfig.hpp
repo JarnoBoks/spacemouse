@@ -2,7 +2,7 @@
 #define DIRECTIONCONFIG_H
 
 #include <Arduino.h>
-#include "axis/modifier/modfunctype.h" // For ModFunc_t
+#include <axis/ModifierFunctionType.h> // Include the header file for ModFunc_t enum
 
 class AxisConfig;
 

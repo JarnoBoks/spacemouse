@@ -1,7 +1,7 @@
 #ifndef LIGHTBEHAVIOR_H
 #define LIGHTBEHAVIOR_H
 
-#include "axis/axes/Axis.hpp"
+#include <axis/axes/KnobMotionVector.hpp>
 class LightBehavior {
 public:
     virtual void applyTo(KnobMotionVector *axis) = 0;

@@ -1,8 +1,8 @@
 
 #include "SensorsCalculatorJoystick.hpp"
-#include "sensor/sensors/JoystickSensor.hpp" // Include the JoystickSensor header file
-#include "axis/axes/Axis.hpp"
+#include "sensor/sensors/JoystickSensor.hpp"
 #include <axis/MotionVectorType.h> // For MotionVector_t enum
+#include <axis/axes/KnobMotionVector.hpp>
 
 // Macro to simplify the access to the sensor values
 #define VAL(x) value(x)

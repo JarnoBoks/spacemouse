@@ -1,4 +1,4 @@
-#include "Axis.hpp"
+#include "KnobMotionVector.hpp"
 
 /**
  * @brief Class representing a rotation MotionVector in the system.

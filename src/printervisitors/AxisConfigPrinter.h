@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IPrinterVisitor.h"
-#include "axis/axes/Axis.hpp"
+#include <axis/axes/KnobMotionVector.hpp>
 #include "axis/config/AxisConfig.hpp"
 #include "kinematics/config/kinematicsconfig.hpp"
 

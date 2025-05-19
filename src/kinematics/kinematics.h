@@ -5,7 +5,7 @@
 #define MAX_AXES 6
 
 #include <axis/MotionVectorType.h> // For MotionVector_t enum
-#include <axis/axes/Axis.hpp>      // For Axis class
+#include <axis/axes/KnobMotionVector.hpp>
 #include <observers/IObserver.hpp>
 #include <axis/KnobMotionVectorCollection.hpp>
 

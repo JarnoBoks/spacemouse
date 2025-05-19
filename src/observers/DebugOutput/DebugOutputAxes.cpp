@@ -1,6 +1,6 @@
 #include "DebugOutputAxes.hpp"
 #include <axis/KnobMotionVectorCollection.hpp>
-#include <axis/axes/Axis.hpp>
+#include <axis/axes/KnobMotionVector.hpp>
 #include <common/TextHelper.h>
 
 /**

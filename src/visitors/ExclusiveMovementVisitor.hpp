@@ -1,7 +1,7 @@
 #pragma once
-#include "IVisitor.hpp" // Include the IVisitor interface header file
+#include "IVisitor.hpp"
 
-#include "axis/axes/Axis.hpp" // Include the Axis class header file
+#include <axis/axes/KnobMotionVector.hpp>
 #include <axis/KnobMotionVectorCollection.hpp>
 
 /**

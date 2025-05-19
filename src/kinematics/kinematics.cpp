@@ -2,7 +2,7 @@
 #include "config.h"
 #include "kinematics/config/kinematicsconfig.hpp"
 #include <axis/KnobMotionVectorCollection.hpp>
-#include <axis/axes/Axis.hpp> // Include the header file for the Axis class
+#include <axis/axes/KnobMotionVector.hpp>
 
 #include <visitors/ExclusiveMovementVisitor.hpp>
 #include <visitors/SwitchYZVisitor.hpp>

@@ -11,7 +11,7 @@
 #include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
 
 // Axes
-#include "axis/axes/Axis.hpp"
+#include "..\..\axis\axes\KnobMotionVector.hpp"
 #include "axis/config/AxisConfig.hpp"
 #include "axis/config/AxisDirectionConfig.hpp"
 

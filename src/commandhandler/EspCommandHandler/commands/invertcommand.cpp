@@ -1,5 +1,5 @@
 #include "invertcommand.h"
-#include "axis/axes/Axis.hpp"
+#include <axis/axes/KnobMotionVector.hpp>
 #include "axis/config/AxisConfig.hpp"
 
 #include <common/esp_print.h> // For ESP_PRINT

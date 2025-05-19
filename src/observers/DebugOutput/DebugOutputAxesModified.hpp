@@ -1,7 +1,7 @@
 #pragma once
 
 #include "debugOutputAxes.hpp"
-#include "axis/axes/Axis.hpp"
+#include <axis/axes/KnobMotionVector.hpp>
 
 /**
  * @brief Output class for modified axes values.

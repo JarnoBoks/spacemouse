@@ -1,4 +1,4 @@
-#include "Axis.hpp"
+#include "KnobMotionVector.hpp"
 #include "sensorscalculator/ISensorsCalculator.hpp" // Include the header file for ISensorsCalculator interface
 #include <axis/ModifierFunctionType.h>              // Include the header file for ModFunc_t enum
 

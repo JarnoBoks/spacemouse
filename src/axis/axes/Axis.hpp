@@ -5,11 +5,10 @@
 #include "axistype.h"                        // Include the header file for AxisType_t enum
 #include "axis/config/AxisConfig.hpp"        // Include the header file for AxisConfig class
 #include "axis/modifier/modfunctype.h"       // Include the header file for ModFunc_t enum
-#include <printervisitors/IPrinterVisitor.h> // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Move to cpp
+#include <printervisitors/IPrinterVisitor.h> // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Use IVisitor instead of IPrinterVisitor
 
 class SensorCollection;
 class ISensorsCalculator;
-class IPrinterVisitor;
 
 constexpr const char *c_AXIS_NAMES[] = {"TX", "TY", "TZ", "RX", "RY", "RZ"}; // Axis names for serial output        // TODO - Move to PROGMEM
 
@@ -34,7 +33,7 @@ private:
     int16_t m_rawValue = 0; // Raw computed value for the axis, used to store the value that is calculated by the SensorsCalculator
     int16_t m_snsValue = 0; // Axis value after applying sensitivity
     int16_t m_modValue = 0; // Axis value after applying sensitivity & modifier function
-    int16_t m_finValue = 0; // The value of the axis after reading from the hardware and applying all axis & kinematics configurations.
+    int16_t m_finValue = 0; // The value of the axis after applying all axis & kinematics configurations. Observed by the HID Event buffer.
 
     void modifier(ModFunc_t type);
 
@@ -52,9 +51,9 @@ public:
     const bool isCurrent(const char *name) const override;
     virtual const bool isTranslation() const = 0;
 
-    void setContext(ICollection *Collection) override {}; // TODO - Write this function
+    // REMOVE void setContext(ICollection *Collection) override {}; // TODO - Write this function
 
-    inline void setSensorValue(const int16_t value) { m_rawValue = value; }
+    inline void setRawValue(const int16_t value) { m_rawValue = value; } // Setter for raw axis value, used by SensorsCalculator
 
     /// @brief Setter for the Final value of the axis.
     /// @details This function sets the final value of the axis and notifies observers if the value has changed.
@@ -67,9 +66,9 @@ public:
         }
     }
 
-    inline int16_t getSensorValue() const { return m_rawValue; } // Getter for raw axis value   // FIXME - Change the name to getRawValue() for consistency
-    inline int16_t getSnsValue() const { return m_snsValue; }    // Getter for axis value after applying sensitivity
-    inline int16_t getModValue() const { return m_modValue; }    // Getter for axis value after applying sensitivity & modifier function
+    inline int16_t getRawValue() const { return m_rawValue; } // Getter for raw axis value
+    inline int16_t getSnsValue() const { return m_snsValue; } // Getter for axis value after applying sensitivity
+    inline int16_t getModValue() const { return m_modValue; } // Getter for axis value after applying sensitivity & modifier function
 
     /// @brief Getter for the final axis value after applying all axis & kinematics configurations
     /// @return The final axis value after applying all axis & kinematics configurations

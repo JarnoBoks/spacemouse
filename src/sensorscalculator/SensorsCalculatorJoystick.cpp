@@ -36,6 +36,6 @@ void SensorsCalculatorJoystick::evaluate(Axis *axis) {
         break;
     }
 
-    axis->setSensorValue(retval);
+    axis->setRawValue(retval);
 }
 #undef VAL

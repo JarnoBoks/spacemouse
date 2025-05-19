@@ -61,6 +61,6 @@ void SensorsCalculatorHall::evaluate(Axis *axis) {
         // Handle invalid axis type if necessary - nothing to do - retval is already 0
         break;
     }
-    axis->setSensorValue(retval);
+    axis->setRawValue(retval);
 }
 #undef VAL

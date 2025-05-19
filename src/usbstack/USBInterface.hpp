@@ -1,5 +1,15 @@
 #pragma once
 
+/**
+ * @brief USBInterface
+ * @details This class provides an interface for USB communication.
+ * It is designed to be used with different architectures (AVR and ESP32).
+ * The class provides methods to set up USB communication and send reports.
+ * For AVR architecture, it uses the HidUSBStack class.
+ * For ESP32 architecture, it uses the USBStack class.
+ * For ATmega2560 architecture, it does not implement any USB functionality.
+ * The class is designed to be used with the Arduino framework.
+ */
 #ifdef ARDUINO_AVR_MICRO
 #include "usbstack/arduino/hidusbstack.hpp"
 

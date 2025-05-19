@@ -11,7 +11,6 @@
  */
 class DebugOutputAxesModified : public DebugOutputAxes {
 private:
-protected:
     inline const int getAxisValue(const Axis *axis) const override {
         return axis->getModValue(); // Get the axis value
     }

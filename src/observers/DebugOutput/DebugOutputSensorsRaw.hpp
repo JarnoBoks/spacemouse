@@ -12,7 +12,6 @@
  */
 class DebugOutputSensorsRaw : public DebugOutputSensors {
 private:
-protected:
     inline const int getSensorValue(const Sensor *sensor) const override {
         return sensor->getRawValue(); // Get the raw value from the sensor
     }

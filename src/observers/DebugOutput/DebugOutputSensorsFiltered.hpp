@@ -12,7 +12,6 @@
  */
 class DebugOutputSensorsFiltered : public DebugOutputSensors {
 private:
-protected:
     inline const int getSensorValue(const Sensor *sensor) const override {
         return sensor->getFinValue(); // Get the filtered value from the sensor
     }

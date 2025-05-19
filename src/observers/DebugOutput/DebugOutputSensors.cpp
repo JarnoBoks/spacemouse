@@ -5,11 +5,14 @@
 
 // void DebugOutputSensors::update(SensorCollection *sensorCollection) {
 void DebugOutputSensors::update(IObservable *sensorCollection) {
-    if (!isDebugOutputDue() || sensorCollection == nullptr) {
-        return; // If the debug output is not due, do nothing
+
+    // Check if the debug output is due and if the sensor collection is not null
+    if (!isDebugOutputDue() || !sensorCollection) {
+        return;
     }
 
-    for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
+    // REVIEW - Test - static cast is not necessary, but it is more readable
+    for (uint8_t id = 0; id < static_cast<SensorCollection *>(sensorCollection)->getItemCount(); id++) {
         TextHelper::printLeadingComma(id); // Print a komma if it's not the first sensor
 
         Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id); // Pointer to the sensor

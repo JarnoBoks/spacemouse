@@ -10,8 +10,7 @@
  *          After outputting the values, it does not print a newline character to the Serial monitor.
  */
 class DebugOutputAxesModifiedNoNewline : public DebugOutputAxes {
-protected:
-    // REVIEW - Can this be made private?
+private:
     /**
      * @brief Get the axis value after applying the modifier function.
      * @details This function overrides the getAxisValue method from the base class to return the value of the axis after applying the modifier function.

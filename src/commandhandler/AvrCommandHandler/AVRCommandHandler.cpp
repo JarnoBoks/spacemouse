@@ -449,7 +449,6 @@ void AVRCommandHandler::executeExlc(const char *param1, const char *param2, cons
 
     if (paramCount == 1) {
         // One parameter provided, handle accordingly
-
         long requestedLevel = 0; // Default value for the second word
         if (!convertWordNumber(param1, (long *)&requestedLevel)) {
             return; // First parameter is not a number

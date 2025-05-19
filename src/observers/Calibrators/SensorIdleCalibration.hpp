@@ -25,8 +25,7 @@ private:
     int m_minIdleValue[cHW_MAX_SENSORS];  // Array to store minimum idle values for each sensor
     int m_maxIdleValue[cHW_MAX_SENSORS];  // Array to store maximum idle values for each sensor
 
-    // REVIEW - SensorCalibrationManager is a singleton. Is it necessary to store the pointer here? (Uses some memory).
-    SensorCalibrationManager *m_CalibrationManager = nullptr; // Pointer to the calibration manager
+    SensorCalibrationManager *m_CalibrationManager = nullptr; // Pointer to the Sensor Calibration manager
 
     void _initialize();                            // Initialize the calibration process
     void _finalize(IObservable *sensorCollection); // Finish the calibration process

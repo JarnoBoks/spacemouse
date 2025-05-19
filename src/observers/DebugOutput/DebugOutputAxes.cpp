@@ -1,7 +1,7 @@
 #include "DebugOutputAxes.hpp"
 #include "axis/AxisCollection.hpp"
 #include "axis/axes/Axis.hpp"
-#include "common/TextHelper.h"
+#include <common/TextHelper.h>
 
 /**
  * @brief   Writes the debug output for the axes, using the getAxisValue function to get the axis value.
@@ -16,7 +16,7 @@ void DebugOutputAxes::update(IObservable *axisCollection) {
     }
 
     // REFACTOR - Do the loop constraint(itemCount) for all collections (sensors, keys, axes) in the base class
-    // REMOVE for (uint8_t id = 0; id < AxisType_t::LENGTH; id++) {
+    // REVIEW - Test - static cast is not necessary, but it is more readable
     for (uint8_t id = 0; id < static_cast<AxisCollection *>(axisCollection)->getItemCount(); id++) {
         TextHelper::printLeadingComma(id); // Print a komma if it's not the first axis
 

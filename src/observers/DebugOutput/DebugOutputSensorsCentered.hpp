@@ -12,7 +12,6 @@
  */
 class DebugOutputSensorsCentered : public DebugOutputSensors {
 private:
-protected:
     inline const int getSensorValue(const Sensor *sensor) const override {
         return sensor->getCntValue(); // Get the centered value from the sensor
     }

@@ -8,7 +8,6 @@ class Sensor;
 
 class DebugOutputSensors : public DebugOutput {
 private:
-protected:
     virtual const int getSensorValue(const Sensor *sensor) const = 0;
 
 public:

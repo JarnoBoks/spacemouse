@@ -2,6 +2,7 @@
 #include "observers/IObserver.hpp"
 #include "config.h" // For STARTDEBUG and DEBUGDELAY
 
+// TODO - Implement STARTDEBUG level, using config.h
 #ifndef STARTDEBUG
 // For fail-safe: If STARTDEBUG is not defined, set it to 0 (no debug output).
 #define STARTDEBUG OFF
@@ -25,9 +26,6 @@ protected:
     bool isDebugOutputDue(); // Check if a new debug output should be printed
 
 public:
-    DebugOutput() = default;  // Default constructor
-    virtual ~DebugOutput() {} // Default destructor
-
-    // virtual void update(Kinematics *kinematics) override = 0;             // Pure virtual function to be implemented by derived classes
-    // virtual void update(SensorCollection *sensorCollection) override = 0; // Pure virtual function to be implemented by derived classes
+    DebugOutput() = default; // Default constructor
+    virtual ~DebugOutput() {}
 };

@@ -5,12 +5,12 @@
  * @details This class inherits from the Axis class and provides functionality for managing the rotation axis configuration and state.
  *          It includes methods for evaluating the axis state and notifying observers of changes.
  */
-class AxisTranslation : public KnobMotionVector {
+class KnobTranslation : public KnobMotionVector {
 
 public:
-    AxisTranslation() = delete; // Delete the default constructor
-    AxisTranslation(const MotionVector_t motionVectorType, ISensorsCalculator *sensorsCalculator) : KnobMotionVector(motionVectorType, sensorsCalculator) {};
-    ~AxisTranslation() = default; // Destructor
+    KnobTranslation() = delete; // Delete the default constructor
+    KnobTranslation(const MotionVector_t motionVectorType, ISensorsCalculator *sensorsCalculator) : KnobMotionVector(motionVectorType, sensorsCalculator) {};
+    ~KnobTranslation() = default; // Destructor
 
     const bool isTranslation() const override { return true; }
 

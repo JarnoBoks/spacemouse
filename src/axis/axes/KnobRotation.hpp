@@ -5,12 +5,12 @@
  * @details This class inherits from the KnobMotionVector class and provides functionality for managing the rotation MotionVector configuration and state.
  *          It includes methods for evaluating the MotionVector state and notifying observers of changes.
  */
-class AxisRotation : public KnobMotionVector {
+class KnobRotation : public KnobMotionVector {
 
 public:
-    AxisRotation() = delete; // Delete the default constructor
-    AxisRotation(const MotionVector_t motionVectorType, ISensorsCalculator *sensorsCalculator) : KnobMotionVector(motionVectorType, sensorsCalculator) {};
-    ~AxisRotation() = default; // Destructor
+    KnobRotation() = delete; // Delete the default constructor
+    KnobRotation(const MotionVector_t motionVectorType, ISensorsCalculator *sensorsCalculator) : KnobMotionVector(motionVectorType, sensorsCalculator) {};
+    ~KnobRotation() = default; // Destructor
 
     const bool isTranslation() const override { return false; }
 

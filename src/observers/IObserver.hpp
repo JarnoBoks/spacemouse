@@ -6,8 +6,8 @@ class Kinematics;
 class KeyCollection;
 class KnobMotionVectorCollection;
 class SensorCollection;
-class AxisRotation;
-class AxisTranslation;
+class KnobRotation;
+class KnobTranslation;
 
 class IObservable; // REVIEW - Can probably be removed, not using the Observable interface in the observer class
 

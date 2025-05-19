@@ -1,6 +1,6 @@
 #include "KnobMotionVectorCollection.hpp"
-#include <axis/axes/AxisRotation.hpp>
-#include <axis/axes/AxisTranslation.hpp>
+#include <axis/axes/KnobRotation.hpp>
+#include <axis/axes/KnobTranslation.hpp>
 
 /**
  * @brief Setup the axis collection according to the configuration.
@@ -8,12 +8,12 @@
  *          It creates instances of the axes and sets their context to this KnobMotionVectorCollection instance.
  */
 void KnobMotionVectorCollection::setup(ISensorsCalculator *sensorsCalculator) {
-    m_items[TRANSX] = new AxisTranslation(TRANSX, sensorsCalculator);
-    m_items[TRANSY] = new AxisTranslation(TRANSY, sensorsCalculator);
-    m_items[TRANSZ] = new AxisTranslation(TRANSZ, sensorsCalculator);
-    m_items[ROTX] = new AxisRotation(ROTX, sensorsCalculator);
-    m_items[ROTY] = new AxisRotation(ROTY, sensorsCalculator);
-    m_items[ROTZ] = new AxisRotation(ROTZ, sensorsCalculator);
+    m_items[TRANSX] = new KnobTranslation(TRANSX, sensorsCalculator);
+    m_items[TRANSY] = new KnobTranslation(TRANSY, sensorsCalculator);
+    m_items[TRANSZ] = new KnobTranslation(TRANSZ, sensorsCalculator);
+    m_items[ROTX] = new KnobRotation(ROTX, sensorsCalculator);
+    m_items[ROTY] = new KnobRotation(ROTY, sensorsCalculator);
+    m_items[ROTZ] = new KnobRotation(ROTZ, sensorsCalculator);
     m_itemCount = 6;
 };
 
@@ -22,12 +22,12 @@ void KnobMotionVectorCollection::setup(ISensorsCalculator *sensorsCalculator, IO
     setup(sensorsCalculator);
 
     // Attach the HIDEventBuffers to the axes
-    static_cast<AxisTranslation *>(m_items[TRANSX])->attachObserver(hidEventBufferTranslation);
-    static_cast<AxisTranslation *>(m_items[TRANSY])->attachObserver(hidEventBufferTranslation);
-    static_cast<AxisTranslation *>(m_items[TRANSZ])->attachObserver(hidEventBufferTranslation);
-    static_cast<AxisRotation *>(m_items[ROTX])->attachObserver(hidEventBufferRotation);
-    static_cast<AxisRotation *>(m_items[ROTY])->attachObserver(hidEventBufferRotation);
-    static_cast<AxisRotation *>(m_items[ROTZ])->attachObserver(hidEventBufferRotation);
+    static_cast<KnobTranslation *>(m_items[TRANSX])->attachObserver(hidEventBufferTranslation);
+    static_cast<KnobTranslation *>(m_items[TRANSY])->attachObserver(hidEventBufferTranslation);
+    static_cast<KnobTranslation *>(m_items[TRANSZ])->attachObserver(hidEventBufferTranslation);
+    static_cast<KnobRotation *>(m_items[ROTX])->attachObserver(hidEventBufferRotation);
+    static_cast<KnobRotation *>(m_items[ROTY])->attachObserver(hidEventBufferRotation);
+    static_cast<KnobRotation *>(m_items[ROTZ])->attachObserver(hidEventBufferRotation);
 };
 
 /**

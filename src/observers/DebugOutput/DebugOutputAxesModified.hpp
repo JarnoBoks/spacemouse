@@ -11,7 +11,7 @@
  */
 class DebugOutputAxesModified : public DebugOutputAxes {
 private:
-    inline const int getAxisValue(const Axis *axis) const override {
+    inline const int getAxisValue(const KnobMotionVector *axis) const override {
         return axis->getModValue(); // Get the axis value
     }
 

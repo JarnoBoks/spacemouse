@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <Arduino.h> // For reference voltage settings
 
-class Axis;             // Forward declaration of Axis class
+class KnobMotionVector; // Forward declaration of Axis class
 class SensorCollection; // Forward declaration of SensorCollection class
 
 /**
@@ -24,6 +24,6 @@ public:
 
     virtual ~SensorsCalculator() = default;
 
-    virtual void evaluate(Axis *axis) = 0;
+    virtual void evaluate(KnobMotionVector *axis) = 0;
     virtual void setAnalogReference(const bool isDebug = false);
 };

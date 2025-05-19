@@ -508,9 +508,9 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
             // The first character is a direction
             // REVIEW - Can the cast (char *)param1 be removed?
             char *reqAxisName = (char *)param1 + 1; // Pointer to the axis name (skip the first character)
-            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getAxis(reqAxisName);
+            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(reqAxisName);
             if (m_Axis == nullptr) {
-                return -1; // Error: Axis not found, exit the function
+                return -1; // Error: KnobMotionVector not found, exit the function
             }
 
             if (directionChar == '+') {
@@ -523,10 +523,10 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
             }
 
         } else {
-            // The first character is not a direction, test if the Axis name is specified.
-            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getAxis(param1);
+            // The first character is not a direction, test if the KnobMotionVector name is specified.
+            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(param1);
             if (m_Axis == nullptr) {
-                return -1; // Axis is not found, exit the function
+                return -1; // KnobMotionVector is not found, exit the function
             }
 
             // There is an axis name, but no direction provided. Both directions have to be updated.
@@ -613,7 +613,7 @@ void AVRCommandHandler::DebugParamSensorInformationFiltered() {
 void AVRCommandHandler::DebugParamAxisInformation() {
     DetachCurrentObservers(); // Detach the previous observer if it exists
 
-    // Instantiate the Observer for the Axis values and attach it to the hardware
+    // Instantiate the Observer for the KnobMotionVector values and attach it to the hardware
     m_AxisObserver = new DebugOutputAxesSensitivity();
     getCollectionCarrier()->getKnobMotionVectors()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
 }

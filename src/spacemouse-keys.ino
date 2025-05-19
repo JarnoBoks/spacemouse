@@ -44,9 +44,9 @@ SensorsCalculatorHall mySensorCalculator(&mySensorCollection);
 SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection);
 #endif
 
-// Include the header file for the Axis and the Axis collection
-#include "axis/AxisCollection.hpp"           // Include the axis collection header file
-KnobMotionVectorCollection myAxisCollection; // Axis collection object to hold the axes and the axis configuration (initialized empty)
+// Include the header file for the KnobMotionVector and the KnobMotionVector collection
+#include <axis/KnobMotionVectorCollection.hpp>  // Include the axis collection header file
+KnobMotionVectorCollection myKnobMotionVectors; // KnobMotionVector collection object to hold the axes and the axis configuration (initialized empty)
 
 // Include the header files for the command handler that will handle the commands send by the user through the serial monitor.
 // For the ESP32 and AVR architecture, the command handler is different.
@@ -61,13 +61,13 @@ CommandHandler *myCommandHandler; // Command handler object to handle the comman
 
 // Include the header file for the collections carrier
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
-CollectionCarrier myCollections(&mySensorCollection, &myAxisCollection, &myKeyCollection); // Collection identifier object to identify the collection of the command
+CollectionCarrier myCollections(&mySensorCollection, &myKnobMotionVectors, &myKeyCollection); // Collection identifier object to identify the collection of the command
 
 // Include the header file for the calibration manager (used to calibrate center position of the sensors on startup)
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp" // Include the sensor calibration manager header file
 SensorCalibrationManagerIdle *mySensorCalibrationManagerIdle;  // Sensor calibration manager object to handle the calibration of the sensors
 
-// Include the header file for the HID Event Buffer (used as interface between Axis & Keys and the HID Handler)
+// Include the header file for the HID Event Buffer (used as interface between KnobMotionVector & Keys and the HID Handler)
 #include "observers/HIDEventBuffer/HIDEventBufferKeys.hpp"
 #include "observers/HIDEventBuffer/HIDEventBufferRotation.hpp"
 #include "observers/HIDEventBuffer/HIDEventBufferTranslation.hpp"
@@ -112,9 +112,9 @@ void setup() {
 
     //  Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();
-    // Setup the Axis collection. This will setup the axes and the axis configuration, and attaches the HID event buffers.
+    // Setup the KnobMotionVector collection. This will setup the axes and the axis configuration, and attaches the HID event buffers.
     // TODO - Create a AxisFactory that will create the axes based on the configuration.
-    myAxisCollection.setup(&mySensorCalculator, &myHIDEventBufferTranslation, &myHIDEventBufferRotation); // Setup the axis collection with the sensor calculator
+    myKnobMotionVectors.setup(&mySensorCalculator, &myHIDEventBufferTranslation, &myHIDEventBufferRotation); // Setup the axis collection with the sensor calculator
 
     // Populate the key collection with the keys that are configured in config.h
     myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
@@ -124,7 +124,7 @@ void setup() {
     // The setup will check the EEPROM for the configuration of the sensors and the axes.
     // If the configuration is not available, the default values as set in config.h will be used (and stored in the EEPROM)
     // FIXME - Kinematics should be removed
-    // FIXME Kinematics::getInstance()->setAxisCollection(&myAxisCollection); // Set the axis collection for the kinematics object
+    // FIXME Kinematics::getInstance()->setAxisCollection(&myKnobMotionVectors); // Set the axis collection for the kinematics object
 
     // Call the setup function of the button factory. This will setup the buttons and the button configuration.
     // REVIEW - Not necessary for now: KeyFactory::getInstance()->setupKeys(); // Updated from setupButtons() to setupKeys()
@@ -177,7 +177,7 @@ void loop() {
     mySensorCollection.evaluate();
 
     // Calculate from sensor data and apply all config- & calibration settings to the axis values & notify collection observers
-    myAxisCollection.evaluate();
+    myKnobMotionVectors.evaluate();
 
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
     // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities

@@ -10,7 +10,7 @@ public:
     SensorsCalculatorHall(SensorCollection *sensorCollection) : SensorsCalculator(sensorCollection) {}
     ~SensorsCalculatorHall() {}; // nothing to do in destructor
 
-    void evaluate(Axis *axis) override final;
+    void evaluate(KnobMotionVector *axis) override final;
 
     void setAnalogReference(const bool isDebug = false) override;
 };

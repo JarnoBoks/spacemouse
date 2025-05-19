@@ -50,11 +50,11 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
             // The first character is a direction
             // REVIEW - Can the cast (char *)param1 be removed?
             char *reqAxisName = (char *)param1 + 1; // Pointer to the axis name (skip the first character)
-            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getAxis(reqAxisName);
+            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(reqAxisName);
             if (m_Axis == nullptr) {
-                ESP_INFO("Axis not found");
+                ESP_INFO("KnobMotionVector not found");
                 m_requestedValue = -1;
-                return; // Error: Axis not found, exit the function
+                return;
             }
 
             if (directionChar == '+') {
@@ -67,10 +67,10 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
             }
 
         } else {
-            // The first character is not a direction, test if the Axis name is specified.
-            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getAxis(param1);
+            // The first character is not a direction, test if the KnobMotionVector name is specified.
+            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(param1);
             if (m_Axis == nullptr) {
-                ESP_INFO("Axis not found");
+                ESP_INFO("KnobMotionVector not found");
                 m_requestedValue = -1; // Update the requested value to -1, indicating no update/storage needed
                 return;
             }

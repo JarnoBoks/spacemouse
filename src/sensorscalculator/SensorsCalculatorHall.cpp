@@ -27,7 +27,7 @@ void SensorsCalculatorHall::setAnalogReference(const bool isDebug) {
 
 // Macro to simplify the access to the sensor values
 #define VAL(x) value(x)
-void SensorsCalculatorHall::evaluate(Axis *axis) {
+void SensorsCalculatorHall::evaluate(KnobMotionVector *axis) {
     if (!m_sensorCollection || !axis)
         return;
 

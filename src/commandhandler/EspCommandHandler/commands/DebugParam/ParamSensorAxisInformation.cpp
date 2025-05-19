@@ -13,7 +13,7 @@
 #include <Arduino.h>
 
 /**
- * @brief Destructor to clean up the observer instance
+ * @brief   Destructor to clean up the observer instance
  * @details This destructor checks if the rawSensorObserver pointer is not null.
  *          If it is not null, it detaches the observer from the hardware and deletes the observer instance.
  *          This ensures that the observer is properly cleaned up and does not cause memory leaks.
@@ -28,7 +28,7 @@ DebugParamSensorAxisInformation::~DebugParamSensorAxisInformation() {
 }
 
 /**
- * @brief Applies the debug parameters by instantiating the observers and attaching them to the hardware & kinematics.
+ * @brief   Applies the debug parameters by instantiating the observers and attaching them to the hardware & kinematics.
  * @details This method creates instances of the Output_SensorValuesCenteredWithoutNewline and DebugOutputAxesModified classes,
  *          and attaches them to the hardware and kinematics instances respectively.
  *          This allows for monitoring and reporting of sensor values and axis values during debugging.
@@ -44,5 +44,5 @@ void DebugParamSensorAxisInformation::apply() {
 }
 
 void DebugParamSensorAxisInformation::report() {
-    ESP_PRINT("Debug Axis Information:");
+    ESP_PRINT("Debug KnobMotionVector Information:");
 }

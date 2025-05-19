@@ -12,7 +12,7 @@ private:
     uint16_t ledUpdateRateMs;
 
 public:
-    void applyTo(Axis *axis) override;
+    void applyTo(KnobMotionVector *axis) override;
     void setPin(uint8_t pin);
     void setNumLeds(uint8_t num);
     void setVelocityDeadzone(uint8_t deadzone);

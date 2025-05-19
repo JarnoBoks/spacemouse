@@ -52,7 +52,7 @@ public:
         Observable::notifyObservers(); // Notify observers of changes in the kinematics
     }
 
-    const MotionVector_t getMainAxis(Axis *axis); // Get the main and secondary axis for the kinematics
+    const MotionVector_t getMainAxis(KnobMotionVector *axis); // Get the main and secondary axis for the kinematics
 #if 0
     // Functionality for the kill switches
     void killRotation(const bool killSwitchActive = true) {

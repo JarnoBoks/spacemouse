@@ -32,7 +32,7 @@ public:
         uint16_t totalTranslation = 0; // Total translation value
 
         for (uint8_t i = 0; i < axisCol->getItemCount(); i++) {
-            Axis *axis = static_cast<Axis *>(axisCol->getItem(i));
+            KnobMotionVector *axis = static_cast<KnobMotionVector *>(axisCol->getItem(i));
             if (axis) {
                 if (axis->isTranslation()) {
                     totalTranslation += abs(axis->getFinValue());
@@ -52,7 +52,7 @@ public:
         }
 
         for (uint8_t i = 0; i < axisCol->getItemCount(); i++) {
-            Axis *axis = static_cast<Axis *>(axisCol->getItem(i));
+            KnobMotionVector *axis = static_cast<KnobMotionVector *>(axisCol->getItem(i));
             if (axis && (axis->isTranslation() == actOnTranslationAxis)) {
                 axis->setFinValue(0); // Set the fin value to 0 for the selected axes
             }

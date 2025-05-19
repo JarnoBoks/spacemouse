@@ -17,7 +17,7 @@ private:
      * @param axis Pointer to the Axis object.
      * @return The modified value of the axis.
      */
-    inline const int getAxisValue(const Axis *axis) const override {
+    inline const int getAxisValue(const KnobMotionVector *axis) const override {
         return axis->getModValue(); // Get the axis value
     }
 };

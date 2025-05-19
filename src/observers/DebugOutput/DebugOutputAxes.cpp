@@ -20,7 +20,7 @@ void DebugOutputAxes::update(IObservable *knobMotionVectors) {
     for (uint8_t id = 0; id < static_cast<KnobMotionVectorCollection *>(knobMotionVectors)->getItemCount(); id++) {
         TextHelper::printLeadingComma(id); // Print a komma if it's not the first axis
 
-        Axis *axis = static_cast<KnobMotionVectorCollection *>(knobMotionVectors)->getAxis(static_cast<MotionVector_t>(id)); // Pointer to the axis
+        KnobMotionVector *axis = static_cast<KnobMotionVectorCollection *>(knobMotionVectors)->getMotionVector(static_cast<MotionVector_t>(id)); // Pointer to the axis
         if (!axis)
             continue;
 

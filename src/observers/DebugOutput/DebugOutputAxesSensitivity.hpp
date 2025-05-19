@@ -10,7 +10,7 @@
  */
 class DebugOutputAxesSensitivity : public DebugOutputAxes {
 private:
-    inline const int getAxisValue(const Axis *axis) const override {
+    inline const int getAxisValue(const KnobMotionVector *axis) const override {
         // Class need the sensitivity value for printing.
         return axis->getSnsValue(); // Get the axis value
     }

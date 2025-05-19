@@ -3,7 +3,7 @@
 
 class CollectionCarrier;        // Forward declaration of CommandBase class
 class SensorCalibrationManager; // Forward declaration of SensorCalibrationManager class
-class Axis;
+class KnobMotionVector;
 class AxisDirectionConfig; // Forward declaration of AxisDirectionConfig class
 class DebugOutputAxes;
 class DebugOutputSensors;
@@ -18,8 +18,8 @@ private:
     CollectionCarrier *getCollectionCarrier() const { return m_CollectionCarrier; } // Get the collection carrier
 
     SensorCalibrationManager *m_SensorCalibrationManager = nullptr;                 // Pointer to the sensor calibration manager
-    Axis *m_Axis = nullptr;                                                         // Pointer to the axis
-    AxisDirectionConfig *m_AxisDirectionConfig[NUM_AX_DIRCFG] = {nullptr, nullptr}; // Pointer to the axis direction configuration
+    KnobMotionVector *m_Axis = nullptr;                                             // Pointer to the knob MotionVector
+    AxisDirectionConfig *m_AxisDirectionConfig[NUM_AX_DIRCFG] = {nullptr, nullptr}; // Pointer to the knob MotionVector direction configuration
 
     DebugOutputAxes *m_AxisObserver = nullptr;                   // Pointer to the axis observer instance
     DebugOutputSensors *m_SensorObserver = nullptr;              // Pointer to the sensor observer instance

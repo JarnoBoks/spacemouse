@@ -24,16 +24,16 @@ public:
             return;
         }
 
-        Axis *axisY = axisCol->getAxis(TRANSY);
-        Axis *axisZ = axisCol->getAxis(TRANSZ);
+        KnobMotionVector *axisY = axisCol->getMotionVector(TRANSY);
+        KnobMotionVector *axisZ = axisCol->getMotionVector(TRANSZ);
 
         int16_t tmp = 0;
         tmp = axisY->getFinValue();
         axisY->setFinValue(axisZ->getFinValue());
         axisZ->setFinValue(tmp);
 
-        axisY = axisCol->getAxis(ROTY);
-        axisZ = axisCol->getAxis(ROTZ);
+        axisY = axisCol->getMotionVector(ROTY);
+        axisZ = axisCol->getMotionVector(ROTZ);
 
         tmp = axisY->getFinValue();
         axisY->setFinValue(axisZ->getFinValue());

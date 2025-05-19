@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 class ISensorsCalculator;
-class Axis;
+class KnobMotionVector;
 class HIDEventBuffer;
 class IPrinterVisitor;
 
@@ -43,8 +43,8 @@ public:
     void setup(ISensorsCalculator *sensorsCalculator);
     void setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation);
 
-    Axis *getAxis(const uint8_t id) const;
-    Axis *getAxis(const char *name) const;
+    KnobMotionVector *getMotionVector(const uint8_t id) const;
+    KnobMotionVector *getMotionVector(const char *descriptor) const;
 
     /**
      * @brief Evaluate all items in the collection and notify observers of the changes.

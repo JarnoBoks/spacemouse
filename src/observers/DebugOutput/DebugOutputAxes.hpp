@@ -2,11 +2,11 @@
 
 #include "DebugOutput.hpp"
 
-class Axis;
+class KnobMotionVector;
 
 class DebugOutputAxes : public DebugOutput {
 protected:
-    virtual const int getAxisValue(const Axis *axis) const = 0; // Pure virtual function to get the axis value. Derived classes must implement this function.
+    virtual const int getAxisValue(const KnobMotionVector *axis) const = 0; // Pure virtual function to get the axis value. Derived classes must implement this function.
 
 public:
     DebugOutputAxes() = default;

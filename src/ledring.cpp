@@ -22,7 +22,7 @@ LedRing::LedRing() {
 void LedRing::ProcessLED(boolean ledCmd) {
     unsigned long now = millis();
     static unsigned long lastLEDupdate = now;
-    Axis *axis; // pointer to the axis object
+    KnobMotionVector *axis; // pointer to the axis object
 
     if (now - lastLEDupdate >= LEDUPDATERATE_MS) {
         _setAllLEDs(CRGB::Black);

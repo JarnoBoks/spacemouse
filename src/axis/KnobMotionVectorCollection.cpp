@@ -36,8 +36,8 @@ void KnobMotionVectorCollection::setup(ISensorsCalculator *sensorsCalculator, IO
  * @return Pointer to the axis at the specified index, or nullptr if the index is out of bounds.
  * @note The base class Collection::getItem() can be used too, but it returns a pointer to the ICollectable interface.
  */
-Axis *KnobMotionVectorCollection::getAxis(uint8_t id) const {
-    return static_cast<Axis *>(getItem(id)); // Return the axis with the specified id
+KnobMotionVector *KnobMotionVectorCollection::getMotionVector(uint8_t id) const {
+    return static_cast<KnobMotionVector *>(getItem(id)); // Return the axis with the specified id
 }
 
 /**
@@ -46,8 +46,8 @@ Axis *KnobMotionVectorCollection::getAxis(uint8_t id) const {
  * @return Pointer to the axis with the specified name, or nullptr if not found.
  * @note The base class method 'Collection::getItem()' can be used too, but it returns a pointer to the ICollectable interface.
  */
-Axis *KnobMotionVectorCollection::getAxis(const char *name) const {
-    return static_cast<Axis *>(getItem(name));
+KnobMotionVector *KnobMotionVectorCollection::getMotionVector(const char *name) const {
+    return static_cast<KnobMotionVector *>(getItem(name));
 }
 
 /**
@@ -59,7 +59,7 @@ Axis *KnobMotionVectorCollection::getAxis(const char *name) const {
  */
 void KnobMotionVectorCollection::attachAxesObserver(IObserver *observer) {
     for (int i = 0; i < m_itemCount; i++) {
-        static_cast<Axis *>(m_items[i])->attachObserver(observer); // Attach the observer to each axis in the collection
+        static_cast<KnobMotionVector *>(m_items[i])->attachObserver(observer); // Attach the observer to each axis in the collection
     }
 };
 
@@ -70,6 +70,6 @@ void KnobMotionVectorCollection::attachAxesObserver(IObserver *observer) {
  */
 void KnobMotionVectorCollection::acceptAxesVisitor(IPrinterVisitor &printerVisitor) {
     for (int i = 0; i < m_itemCount; i++) {
-        static_cast<Axis *>(m_items[i])->accept(printerVisitor);
+        static_cast<KnobMotionVector *>(m_items[i])->accept(printerVisitor);
     }
 }

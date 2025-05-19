@@ -9,5 +9,5 @@ public:
     SensorsCalculatorJoystick(SensorCollection *sensorCollection) : SensorsCalculator(sensorCollection) {} // Constructor with sensor collection
     ~SensorsCalculatorJoystick() {};                                                                       // nothing to do in destructor
 
-    void evaluate(Axis *axis) override final;
+    void evaluate(KnobMotionVector *axis) override final;
 };

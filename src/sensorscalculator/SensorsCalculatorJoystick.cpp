@@ -6,7 +6,7 @@
 
 // Macro to simplify the access to the sensor values
 #define VAL(x) value(x)
-void SensorsCalculatorJoystick::evaluate(Axis *axis) {
+void SensorsCalculatorJoystick::evaluate(KnobMotionVector *axis) {
     if (!m_sensorCollection || !axis)
         return;
 

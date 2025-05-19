@@ -4,7 +4,7 @@
 #include "axis/axes/Axis.hpp"
 class LightBehavior {
 public:
-    virtual void applyTo(Axis *axis) = 0;
+    virtual void applyTo(KnobMotionVector *axis) = 0;
     virtual ~LightBehavior() {}
 };
 

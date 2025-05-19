@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AxisDirectionConfig.hpp" // For the DirectionConfig class
-#include <axis/MotionVectorType.h> // For MotionVector_t enum
+#include <Knob/MotionVectorType.h> // For MotionVector_t enum
 
 class IPrinterVisitor;
 

@@ -1,8 +1,8 @@
 #pragma once
 #include "IVisitor.hpp"
 
-#include <axis/axes/KnobMotionVector.hpp>
-#include <axis/KnobMotionVectorCollection.hpp>
+#include <Knob/MotionVector/KnobMotionVector.hpp>
+#include <Knob/KnobMotionVectorCollection.hpp>
 
 /**
  * @brief Visitor class for handling exclusive mode for translational or rotational movement.

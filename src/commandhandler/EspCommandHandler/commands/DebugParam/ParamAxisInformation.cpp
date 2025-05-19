@@ -1,6 +1,6 @@
 #include "ParamAxisInformation.hpp"
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
-#include <axis/KnobMotionVectorCollection.hpp>
+#include <Knob/KnobMotionVectorCollection.hpp>
 #include <observers/DebugOutput/DebugOutputAxesSensitivity.hpp>
 
 /**

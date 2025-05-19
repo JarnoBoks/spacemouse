@@ -1,5 +1,5 @@
 #include "HIDEventBufferRotation.hpp"
-#include <axis/axes/KnobRotation.hpp>
+#include <Knob/MotionVector/KnobRotation.hpp>
 
 void HIDEventBufferRotation::update(IObservable *axisRotation) {
     if (!axisRotation) {

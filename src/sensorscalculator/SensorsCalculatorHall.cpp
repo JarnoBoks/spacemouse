@@ -1,7 +1,7 @@
 #include "SensorsCalculatorHall.hpp"
 #include "sensor/sensors/HallSensor.hpp" // Include the header file for the Hall sensor
-#include <axis/MotionVectorType.h>       // For MotionVector_t enum
-#include <axis/axes/KnobMotionVector.hpp>
+#include <Knob/MotionVectorType.h>       // For MotionVector_t enum
+#include <Knob/MotionVector/KnobMotionVector.hpp>
 
 #ifndef INTERNAL
 #define INTERNAL 0x03 // Define the INTERNAL constant if not already defined (necessary for ESP32)

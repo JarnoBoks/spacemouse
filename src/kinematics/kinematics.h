@@ -4,10 +4,10 @@
 
 #define MAX_AXES 6
 
-#include <axis/MotionVectorType.h> // For MotionVector_t enum
-#include <axis/axes/KnobMotionVector.hpp>
+#include <Knob/MotionVectorType.h> // For MotionVector_t enum
+#include <Knob/MotionVector/KnobMotionVector.hpp>
 #include <observers/IObserver.hpp>
-#include <axis/KnobMotionVectorCollection.hpp>
+#include <Knob/KnobMotionVectorCollection.hpp>
 
 /// @brief Number of observers that can be added to this object
 /// @details This is a constant value that defines the maximum number of observers that can be added to the collection.

@@ -1,7 +1,7 @@
 #ifndef LEDRING_H
 #define LEDRING_H
 #include "lightbehavior.h"
-#include <axis/axes/KnobMotionVector.hpp>
+#include <Knob/MotionVector/KnobMotionVector.hpp>
 
 class LedRing : public LightBehavior {
 private:

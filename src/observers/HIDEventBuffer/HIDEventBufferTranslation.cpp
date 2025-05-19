@@ -1,5 +1,5 @@
 #include "HIDEventBufferTranslation.hpp"
-#include <axis/axes/KnobTranslation.hpp>
+#include <Knob/MotionVector/KnobTranslation.hpp>
 
 void HIDEventBufferTranslation::update(IObservable *axisTranslation) {
     if (!axisTranslation) {

@@ -5,7 +5,7 @@
 
 // Observable classes that are used in this file
 #include <sensor/SensorCollection.hpp>         // For SensorCollection class
-#include <axis/KnobMotionVectorCollection.hpp> // For KnobMotionVectorCollection class
+#include <Knob/KnobMotionVectorCollection.hpp> // For KnobMotionVectorCollection class
 
 // Observers that are used in this file.
 #include "observers/DebugOutput/DebugOutputAxesModified.hpp"             // Implementation of the ODebugOutputAxes class

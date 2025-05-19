@@ -1,6 +1,6 @@
 #include "KnobMotionVectorCollection.hpp"
-#include <axis/axes/KnobRotation.hpp>
-#include <axis/axes/KnobTranslation.hpp>
+#include <Knob/MotionVector/KnobRotation.hpp>
+#include <Knob/MotionVector/KnobTranslation.hpp>
 
 /**
  * @brief Setup the axis collection according to the configuration.

@@ -1,8 +1,8 @@
 #pragma once
 #include "IVisitor.hpp" // Include the IVisitor interface header file
 
-#include <axis/axes/KnobMotionVector.hpp> // Include the Axis class header file
-#include <axis/KnobMotionVectorCollection.hpp>
+#include <Knob/MotionVector/KnobMotionVector.hpp> // Include the Axis class header file
+#include <Knob/KnobMotionVectorCollection.hpp>
 
 /**
  * @brief Visitor class for switching the Y and Z axes in the AxisCollection.

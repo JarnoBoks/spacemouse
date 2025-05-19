@@ -1,6 +1,6 @@
 #include "KnobMotionVector.hpp"
 #include "sensorscalculator/ISensorsCalculator.hpp" // Include the header file for ISensorsCalculator interface
-#include <axis/ModifierFunctionType.h>              // Include the header file for ModFunc_t enum
+#include <Knob/ModifierFunctionType.h>              // Include the header file for ModFunc_t enum
 
 #include <math.h>
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function

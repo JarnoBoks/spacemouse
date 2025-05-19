@@ -3,7 +3,7 @@
 
 // Collections
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
-#include <axis/KnobMotionVectorCollection.hpp>
+#include <Knob/KnobMotionVectorCollection.hpp>
 #include "sensor/SensorCollection.hpp"
 
 // Calibration managers
@@ -11,9 +11,9 @@
 #include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
 
 // Axes
-#include "..\..\axis\axes\KnobMotionVector.hpp"
-#include "axis/config/AxisConfig.hpp"
-#include "axis/config/AxisDirectionConfig.hpp"
+#include "..\..\Knob\MotionVector\KnobMotionVector.hpp"
+#include "..\..\Knob\config\AxisConfig.hpp"
+#include "..\..\Knob\config\AxisDirectionConfig.hpp"
 
 // Sensors
 #include "sensor/config/SensorConfig.hpp"

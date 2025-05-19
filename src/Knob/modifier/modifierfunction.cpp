@@ -1,6 +1,7 @@
 
 #include "modifierfunction.hpp"
-#include <math.h>
+#include <Arduino.h> // Constrain function
+// #include <math.h>
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
 
 int16_t LinearModifier::modify(int16_t input) {

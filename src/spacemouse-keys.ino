@@ -45,7 +45,7 @@ SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection);
 #endif
 
 // Include the header file for the KnobMotionVector and the KnobMotionVector collection
-#include <axis/KnobMotionVectorCollection.hpp>  // Include the axis collection header file
+#include <Knob/KnobMotionVectorCollection.hpp>  // Include the axis collection header file
 KnobMotionVectorCollection myKnobMotionVectors; // KnobMotionVector collection object to hold the axes and the axis configuration (initialized empty)
 
 // Include the header files for the command handler that will handle the commands send by the user through the serial monitor.

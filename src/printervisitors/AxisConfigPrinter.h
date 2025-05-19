@@ -1,8 +1,8 @@
 #pragma once
 
 #include "IPrinterVisitor.h"
-#include <axis/axes/KnobMotionVector.hpp>
-#include "axis/config/AxisConfig.hpp"
+#include <Knob/MotionVector/KnobMotionVector.hpp>
+#include "..\Knob\config\AxisConfig.hpp"
 #include "kinematics/config/kinematicsconfig.hpp"
 
 #define FMT_NOCOMMA false

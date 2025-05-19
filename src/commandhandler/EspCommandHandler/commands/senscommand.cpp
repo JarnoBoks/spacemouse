@@ -1,6 +1,6 @@
 #include "senscommand.h"
-#include <axis/axes/KnobMotionVector.hpp>
-#include "axis/config/AxisConfig.hpp"
+#include <Knob/MotionVector/KnobMotionVector.hpp>
+#include "..\..\..\Knob\config\AxisConfig.hpp"
 
 #include <common/esp_print.h> // For ESP_PRINT
 

@@ -1,8 +1,8 @@
 #include "IAxisConfigCommand.h"
 
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
-#include <axis/KnobMotionVectorCollection.hpp>
-#include <axis/config/AxisConfig.hpp>
+#include <Knob/KnobMotionVectorCollection.hpp>
+#include <Knob/config/AxisConfig.hpp>
 #include <printervisitors/AxisConfigPrinter.h>
 
 #include <common/esp_print.h> // For ESP_PRINT

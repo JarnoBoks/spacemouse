@@ -1,8 +1,8 @@
 
 #include "SensorsCalculatorJoystick.hpp"
 #include "sensor/sensors/JoystickSensor.hpp"
-#include <axis/MotionVectorType.h> // For MotionVector_t enum
-#include <axis/axes/KnobMotionVector.hpp>
+#include <Knob/MotionVectorType.h> // For MotionVector_t enum
+#include <Knob/MotionVector/KnobMotionVector.hpp>
 
 // Macro to simplify the access to the sensor values
 #define VAL(x) value(x)

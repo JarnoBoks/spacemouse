@@ -1,5 +1,5 @@
 #include "AxisDirectionConfig.hpp"
-#include "axis/config/AxisConfig.hpp"
+#include <Knob/config/AxisConfig.hpp>
 #include "eeprom/eepromstore.h" // To load and save the axis configuration to EEPROM
 
 constexpr uint8_t EEPROM_AXISDIRCONFIG_VERSION = 1; // Define the version number for the AxisDirectionConfig in EEPROM.     // TODO: Add versioning

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Arduino.h>
+#include <stdint.h> // For int16_t type
 
 // --- Modifier Function (Strategy) ---
 class ModifierStrategy {

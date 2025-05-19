@@ -165,11 +165,7 @@ bool SensorConfig::retrieve(const uint8_t sensorId) {
     const int tableId = (sensorId * EEPROM_SENSOR_ID_RESERVATIONS) + EEPROM_SENSOR_ID_BASE; // Calculated Id for the SensorConfig in EEPROM
 
     // Retrieve the data stored in the EEPROM
-    if (EEPROMStore::load(tableId, &data, sizeof(data)) != ERR_EEPROMSTORE_SUCCESS) {
-        return false;
-    }
-
-    return true;
+    return (EEPROMStore::load(tableId, &data, sizeof(data)) == ERR_EEPROMSTORE_SUCCESS);
 }
 
 void SensorConfig::accept(IPrinterVisitor &visitor) {

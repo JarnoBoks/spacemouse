@@ -13,12 +13,11 @@ class IPrinterVisitor;
 
 /// @brief Number of motionvectors that can be added to the collection.
 /// @details This is a constant value that defines the maximum number of motionvectors that can be added to the collection.
-/// @note As long as the specific hardware options for the SpaceMouse all have the same number of motionvectors, this is a good solution.
-constexpr uint8_t cHW_MAX_MOTIONVECTORS = 6;
+constexpr uint8_t c_KNOB_MAX_MOTIONVECTORS = 6;
 
 /// @brief Number of observers that can be added to this collection.
 /// @details This is a constant value that defines the maximum number of observers that can be added to the collection.
-constexpr uint8_t c_MAX_AXISCOLLECTION_OBSERVERS = 4;
+constexpr uint8_t c_KNOB_MAX_MOTIONVECTORCOLLECTION_OBSERVERS = 4;
 
 /**
  * @brief Class representing a visitable,observable collection of motionvectors for the SpaceMouse Knob
@@ -31,7 +30,7 @@ class KnobMotionVectorCollection : public Collection, public Observable, public 
 private:
 public:
     /// @brief Constructor for empty KnobMotionVectorCollection
-    KnobMotionVectorCollection() : Collection(cHW_MAX_MOTIONVECTORS), Observable(c_MAX_AXISCOLLECTION_OBSERVERS) {}
+    KnobMotionVectorCollection() : Collection(c_KNOB_MAX_MOTIONVECTORS), Observable(c_KNOB_MAX_MOTIONVECTORCOLLECTION_OBSERVERS) {}
     ~KnobMotionVectorCollection() {
     }
 

@@ -1,5 +1,7 @@
 #pragma once
-#include "KnobVectorConfig.hpp"
+#include <Knob/MotionVectorType.h> // For MotionVector_t enum
+
+class KinematicsMVConfig;
 
 /**
  * @brief Class that creates the default configuration for a knob MotionVector
@@ -8,10 +10,10 @@
  *          if the KnobVectorConfig class is instantiated and the EEPROM is empty or the version number
  *          has been changed.
  */
-class DefaultKnobVectorConfig {
+class DefaultKinematicsMVConfig {
 private:
 public:
-    DefaultKnobVectorConfig() = default;
-    ~DefaultKnobVectorConfig() = default;
-    KnobVectorConfig create(MotionVector_t type);
+    DefaultKinematicsMVConfig() = default;
+    ~DefaultKinematicsMVConfig() = default;
+    KinematicsMVConfig create(MotionVector_t type);
 };

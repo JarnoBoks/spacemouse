@@ -117,11 +117,11 @@ void Kinematics::_applySwitchYZ() {
 
 // REFACTOR - Shoud return a pointer to the motionVector instead of the MotionVector_t enum. This will make it easier to use in the LED ring and other classes.
 const MotionVector_t Kinematics::getMainAxis(KnobMotionVector *motionVector) {
-    MotionVector_t idMainAxis = MotionVector_t::UNINITIALIZED;
+    MotionVector_t idMainAxis = MotionVector_t::MV_UNINITIALIZED;
     int16_t maximumVelocity = 0;
 
     // Loop through all axes to find the one with the biggest velocity
-    for (int i = 0; i < MotionVector_t::LENGTH; i++) {
+    for (int i = 0; i < MotionVector_t::MV_LENGTH; i++) {
         int16_t absvalue = abs(m_knobMotionVectors->getMotionVector(i)->getFinValue()); // Get the value of the motionVector
 
         // Is the value of this motionVector greater than deadzone and greater than any of the motionVector before?
@@ -130,7 +130,7 @@ const MotionVector_t Kinematics::getMainAxis(KnobMotionVector *motionVector) {
             idMainAxis = static_cast<MotionVector_t>(i);
         }
     }
-    if (idMainAxis == MotionVector_t::UNINITIALIZED) {
+    if (idMainAxis == MotionVector_t::MV_UNINITIALIZED) {
         motionVector = nullptr; // Set the motionVector to nullptr if no motionVector is found
     } else {
         motionVector = static_cast<KnobMotionVector *>(m_knobMotionVectors->getItem(idMainAxis));

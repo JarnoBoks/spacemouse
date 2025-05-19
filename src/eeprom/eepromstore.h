@@ -3,13 +3,15 @@
 #include <stdint.h>
 
 // Documentation for the EEPROM layout / IDs
-#define EEPROM_AXIS_ID_BASE 1         // Base ID for axis configurations
-#define EEPROM_AXIS_ID_RESERVATIONS 5 // Reserved ID's for each axis (1 for the AxisConfig, 2 for both AxisDirectionConfig's, 2 spare)
+#define EEPROM_KNOB_MOTIONVECTOR_ID_BASE 1         // Base ID for knob Motion Vector configurations. There are 6 vectors in total.
+#define EEPROM_KNOB_MOTIONVECTOR_ID_RESERVATIONS 5 // Reserved ID's for each knob motion vector (1 for the KnobMotionVectorConfig, 2 for both KnobMotionVectorDirectionConfig's, 2 spare)
 
-#define EEPROM_SENSOR_ID_BASE 100       // Base ID for sensor configurations
+#define EEPROM_SENSOR_ID_BASE 75        // Base ID for sensor configurations. There are 8 sensors in total.
 #define EEPROM_SENSOR_ID_RESERVATIONS 3 // Reserved ID's for each sensor (1 for the SensorConfig, 2 spare)
 
-#define EEPROM_KINEMATICS_ID_BASE 200 // Base ID for kinematics configurations
+#define EEPROM_KINEMATICS_ID_BASE 150             // Base ID for kinematics configurations
+#define EEPROM_KIN_MOTIONVECTOR_ID_BASE 160       // Base ID for kinematics motion vector configurations
+#define EEPROM_KIN_MOTIONVECTOR_ID_RESERVATIONS 2 // Reserved ID's for each kinematics motion vector (1 for the KinematicsMVConfig, 1 spare)
 
 #define EEPROM_MAX_ID 254 // Maximum ID for the EEPROM (limited by uint8_t data type)
 

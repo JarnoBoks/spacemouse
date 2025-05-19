@@ -12,7 +12,9 @@ constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_NEGCFG = 2; // Offset for the negative 
 /**
  * @brief Constructor with no arguments - used when called with a non-existant axistype
  */
-KnobVectorConfig::KnobVectorConfig() : posConfig(KnobVectorDirectionConfig()), negConfig(KnobVectorDirectionConfig()), inversion(false) {}
+KnobVectorConfig::KnobVectorConfig()
+    : posConfig(KnobVectorDirectionConfig()),
+      negConfig(KnobVectorDirectionConfig()), inversion(false) {}
 
 /**
  * @brief Constructor for KnobVectorConfig class with axis vectorType.
@@ -50,7 +52,9 @@ KnobVectorConfig::KnobVectorConfig(const float psens,
                                    const ModFunc_t pmf,
                                    const ModFunc_t nmf,
                                    const bool invert)
-    : posConfig(KnobVectorDirectionConfig(psens, pgate, pmf)), negConfig(KnobVectorDirectionConfig(nsens, ngate, nmf)), inversion(invert) {}
+    : posConfig(KnobVectorDirectionConfig(psens, pgate, pmf)),
+      negConfig(KnobVectorDirectionConfig(nsens, ngate, nmf)),
+      inversion(invert) {}
 
 /**
  * @brief  Persist the KnobVectorConfig to EEPROM.
@@ -60,7 +64,7 @@ KnobVectorConfig::KnobVectorConfig(const float psens,
 void KnobVectorConfig::persist(const MotionVector_t vectorType) const {
 
     // Calculate the EEPROM tableId for the KnobVectorConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
-    const int tableId = (static_cast<int>(vectorType) * EEPROM_AXIS_ID_RESERVATIONS) + EEPROM_AXIS_ID_BASE; // Calculated Id for the MotionVectorConfiguration in EEPROM
+    const int tableId = (static_cast<int>(vectorType) * EEPROM_KNOB_MOTIONVECTOR_ID_RESERVATIONS) + EEPROM_KNOB_MOTIONVECTOR_ID_BASE; // Calculated Id for the MotionVectorConfiguration in EEPROM
 
     // Persist the data stored in this class
     EEPROMStore::save(tableId, &inversion, sizeof(inversion)); // Store the inversion flag in the EEPROM
@@ -80,7 +84,7 @@ void KnobVectorConfig::persist(const MotionVector_t vectorType) const {
 bool KnobVectorConfig::retrieve(const MotionVector_t vectorType) {
 
     // Calculate the EEPROM tableId for the KnobVectorConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
-    const int tableId = (static_cast<int>(vectorType) * EEPROM_AXIS_ID_RESERVATIONS) + EEPROM_AXIS_ID_BASE; // Calculated Id for the AxisConfig in EEPROM
+    const int tableId = (static_cast<int>(vectorType) * EEPROM_KNOB_MOTIONVECTOR_ID_RESERVATIONS) + EEPROM_KNOB_MOTIONVECTOR_ID_BASE; // Calculated Id for the knob MotionVectorConfiguration in EEPROM
 
     // Retrieve the data stored in the EEPROM
     if (EEPROMStore::load(tableId, &inversion, sizeof(inversion)) != ERR_EEPROMSTORE_SUCCESS) {

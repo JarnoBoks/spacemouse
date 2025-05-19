@@ -154,7 +154,7 @@ void AVRCommandHandler::executeIdle(const char *param1, const char *param2, cons
     }
     if (!(getCollectionCarrier()->getSensorCollection())) {
         ESP_ERROR("No sensor collection available");
-        return; // No sensor collection available, exit the function
+        return;
     }
     SensorCollection *sensorCollection = getCollectionCarrier()->getSensorCollection();
 
@@ -228,7 +228,6 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
         char *reqSensorName = (char *)param1 + 1;                    // Get the sensor name (skip the first character)
         Sensor *sensor = sensorCollection->getSensor(reqSensorName); // Get the sensor by its name
 
-        // REVIEW - Failsafe: Sensor not found can be removed from Arduino.
         if (sensor == nullptr) {
             ESP_ERROR("Sensor not found");
             return; // Sensor not found, exit the function
@@ -455,12 +454,7 @@ void AVRCommandHandler::executeExlc(const char *param1, const char *param2, cons
         if (!convertWordNumber(param1, (long *)&requestedLevel)) {
             return; // First parameter is not a number
         }
-#ifdef ARCH_ESP32
-        if (requestedLevel < 0 || requestedLevel > 1) {
-            ESP_DBG(F("Invalid parameter value. Expected 0 or 1."));
-            return; // Invalid parameter value
-        }
-#endif
+
         KinematicsConfig *config = Kinematics::getInstance()->getConfig(); // Get the kinematics configuration instance
         // TODO - Check for Null pointer (on ESP)
         config->setExclusiveMode(requestedLevel);

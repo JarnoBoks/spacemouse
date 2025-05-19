@@ -25,7 +25,8 @@ KnobVectorConfig::KnobVectorConfig() : posConfig(KnobVectorDirectionConfig()), n
  */
 KnobVectorConfig::KnobVectorConfig(const MotionVector_t motionVectorType) : inversion(false) {
     if (!retrieve(motionVectorType)) {
-        *this = DefaultKnobVectorConfig::getInstance().getDefaultConfig(motionVectorType);
+        DefaultKnobVectorConfig defaultConfig;
+        *this = defaultConfig.create(motionVectorType);
     }
 }
 

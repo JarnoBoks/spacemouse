@@ -9,30 +9,6 @@
 #error "No hardwaretype defined"
 #endif
 
-// FIXME - Remove the Singleton pattern.
-
-// Initialize the static instance pointer to nullptr
-DefaultKnobVectorConfig *DefaultKnobVectorConfig::instance = nullptr;
-
-/**
- * @brief Get the instance of DefaultKnobVectorConfig.
- * @return Reference to the singleton instance of DefaultKnobVectorConfig.
- */
-DefaultKnobVectorConfig &DefaultKnobVectorConfig::getInstance() {
-    if (!instance) {
-        instance = new DefaultKnobVectorConfig();
-    }
-    return *instance;
-}
-
-/**
- * @brief DefaultKnobVectorConfig constructor.
- * @details This constructor is private to enforce the singleton pattern.
- * It initializes the default axis configuration for the given hardware type.
- */
-DefaultKnobVectorConfig::DefaultKnobVectorConfig() {
-}
-
 // Preprocessor macros to convert the default values to the correct types
 // These macros are used to convert the default values to the correct types for the KnobVectorConfig constructor.
 #define S_TP(x) static_cast<float>(x)
@@ -44,7 +20,7 @@ DefaultKnobVectorConfig::DefaultKnobVectorConfig() {
  * @param type The axis type for which to get the default configuration.
  * @return The default KnobVectorConfig for the specified axis type.
  */
-KnobVectorConfig DefaultKnobVectorConfig::getDefaultConfig(MotionVector_t type) {
+KnobVectorConfig DefaultKnobVectorConfig::create(MotionVector_t type) {
     // This function will return the default configuration for the given axis type.
     // The default configuration is used if there isn't a configuration in the EEPROM or if the EEPROM version is changed.
     switch (MotionVector_t(type)) {

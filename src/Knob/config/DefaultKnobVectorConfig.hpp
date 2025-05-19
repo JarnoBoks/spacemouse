@@ -8,10 +8,8 @@
  */
 class DefaultKnobVectorConfig {
 private:
-    static DefaultKnobVectorConfig *instance;
-    DefaultKnobVectorConfig(); // Private constructor to prevent instantiation
-
 public:
-    static DefaultKnobVectorConfig &getInstance();
-    KnobVectorConfig getDefaultConfig(MotionVector_t type);
+    DefaultKnobVectorConfig() = default;
+    ~DefaultKnobVectorConfig() = default;
+    KnobVectorConfig create(MotionVector_t type);
 };

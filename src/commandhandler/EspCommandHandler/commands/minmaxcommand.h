@@ -3,7 +3,7 @@
 #include "CommandBase.hpp"
 
 /// @brief command text for the MinMax calibration command
-static const char CMD_MINMAX[] PROGMEM = "MINMAX";
+static const char CMD_MINMAX_P[] PROGMEM = "MINMAX";
 
 class SensorCalibrationManager;
 class CollectionCarrier;
@@ -19,7 +19,7 @@ public:
      * @param collectionCarrier Pointer to the CollectionCarrier for accessing collections.
      * @details Initializes the command with the CMD_MINMAX command name.
      */
-    MinMaxCommand(CollectionCarrier *collectionCarrier) : CommandBase(CMD_MINMAX, collectionCarrier) {}
+    MinMaxCommand(CollectionCarrier *collectionCarrier) : CommandBase(CMD_MINMAX_P, collectionCarrier) {}
 
     virtual ~MinMaxCommand();
 

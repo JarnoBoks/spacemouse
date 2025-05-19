@@ -218,7 +218,7 @@ int8_t AvrCommandHandler::_handleOneWord(char *words[]) {
         _SMKIN->PrintExclusiveMode(); // Print the exclusive mode flag
 
         // --------------- IDLE ----------------------------------------------------
-    } else if (strcmp_P(words[0], CMD_IDLE) == 0) {
+    } else if (strcmp_P(words[0], CMD_IDLE_P) == 0) {
         // Tune Idle position & suggest deadzone value
         _SMHW->BusyZeroing(2000, true); // Call the function to calibrate the idle position
 

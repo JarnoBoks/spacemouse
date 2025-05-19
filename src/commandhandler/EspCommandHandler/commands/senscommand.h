@@ -3,7 +3,7 @@
 #include "IAxisConfigCommand.h"
 
 /// @brief command text for the Sensitivity configuration command
-static const char CMD_SENS[] PROGMEM = "SENS";
+static const char CMD_SENS_P[] PROGMEM = "SENS";
 
 class SensCommand : public IAxisConfigCommand {
 
@@ -13,7 +13,7 @@ public:
      * @param collectionCarrier Pointer to the CollectionCarrier for accessing collections.
      * @details Initializes the command with the CMD_SENS command name.
      */
-    SensCommand(CollectionCarrier *collectionCarrier) : IAxisConfigCommand(CMD_SENS, collectionCarrier) {}
+    SensCommand(CollectionCarrier *collectionCarrier) : IAxisConfigCommand(CMD_SENS_P, collectionCarrier) {}
     ~SensCommand() {};
 
     void execute(const char *param1, const char *param2, uint8_t paramCount) override;

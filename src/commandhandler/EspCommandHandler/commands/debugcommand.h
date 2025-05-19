@@ -8,7 +8,7 @@
 // TODO - Add the STARTUPDEBUG definition to the default constructor
 
 /// @brief command text for the command
-static const char CMD_DEBUG[] PROGMEM = "DEBUG";
+static const char CMD_DEBUG_P[] PROGMEM = "DEBUG";
 
 class IDebugParam;       // Forward declaration of IDebugParam class
 class CollectionCarrier; // Forward declaration of CollectionIdentifier class
@@ -32,7 +32,7 @@ public:
      * @details Initializes the command with the provided sensor collection and sets the default debug state.
      */
     DebugCommand(CollectionCarrier *collectionIdentifer)
-        : CommandBase(CMD_DEBUG, collectionIdentifer),
+        : CommandBase(CMD_DEBUG_P, collectionIdentifer),
           currentState(new DebugParamOff()) {}
 
     ~DebugCommand() { delete currentState; };

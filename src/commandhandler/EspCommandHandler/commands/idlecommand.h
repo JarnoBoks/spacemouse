@@ -5,7 +5,7 @@
 class SensorCalibrationManager; // Forward declaration of the SensorCalibrationManager class
 
 /// @brief command text for the Idle Calibration command
-static const char CMD_IDLE[] PROGMEM = "IDLE";
+static const char CMD_IDLE_P[] PROGMEM = "IDLE";
 
 /**
  * @brief Class to handle the IDLE command.
@@ -18,7 +18,7 @@ private:
 
 public:
     IdleCommand() = delete;
-    IdleCommand(CollectionCarrier *collectionIdentifier) : CommandBase(CMD_IDLE, collectionIdentifier) {}
+    IdleCommand(CollectionCarrier *collectionIdentifier) : CommandBase(CMD_IDLE_P, collectionIdentifier) {}
     ~IdleCommand();
 
     void execute(const char *param1, const char *param2, const uint8_t paramCount) override;

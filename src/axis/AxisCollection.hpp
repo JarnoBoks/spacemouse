@@ -53,11 +53,10 @@ public:
      * @note Derived classes are allowed to override this method to provide custom evaluation logic.
      */
     void evaluate() override {
-        Collection::evaluate();        // Evaluate the axes in the collection
+        Collection::evaluate();        // Evaluate all axes in the collection
         Observable::notifyObservers(); // Notify observers of changes in the axis collection
     };
 
-    // REVIEW - We should be able to apply a function to all axes in the collection, for now it is programmed manually for the attachment of observers
     /**
      * @brief Attach an observer to all axes in the collection.
      */

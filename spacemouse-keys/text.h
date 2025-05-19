@@ -6,8 +6,8 @@
 /// @brief Command list for the serial interface. The commands are stored in program memory to save RAM space.
 
 // Commands without parameters/values (1 word)
-static const char CMD_SHOW[] PROGMEM = "SHOW"; // Reports all configuration settings of the spacemouse.
-static const char CMD_IDLE[] PROGMEM = "IDLE"; // Calibrate the idle position of the spacemouse.
+static const char CMD_SHOW[] PROGMEM = "SHOW";   // Reports all configuration settings of the spacemouse.
+static const char CMD_IDLE_P[] PROGMEM = "IDLE"; // Calibrate the idle position of the spacemouse.
 
 // Commands with no parameters (1 word) or with an integer value (2 words)
 static const char CMD_DEADZONE[] PROGMEM = "DEADZONE";  // "DEADZONE" | "DEADZONE x"    Reports or update and reports the global deadzone configuration.

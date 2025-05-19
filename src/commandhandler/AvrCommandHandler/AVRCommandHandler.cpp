@@ -45,15 +45,15 @@
 #define MAX_INPUT_SIZE 48
 
 // Input commands that can be handled
-static const char CMD_IDLE[] PROGMEM = "IDLE";
-static const char CMD_MINMAX[] PROGMEM = "MINMAX";
-static const char CMD_DEBUG[] PROGMEM = "DEBUG";
-static const char CMD_SENS[] PROGMEM = "SENS";
-static const char CMD_GATE[] PROGMEM = "GATE";
-static const char CMD_MODFUNC[] PROGMEM = "MODFUNC";
-static const char CMD_INVERT[] PROGMEM = "INVERT";
-static const char CMD_SWITCHXY[] PROGMEM = "SWITCHXY";
-static const char CMD_EXLC[] PROGMEM = "EXLC";
+static const char CMD_IDLE_P[] PROGMEM = "IDLE";
+static const char CMD_MINMAX_P[] PROGMEM = "MINMAX";
+static const char CMD_DEBUG_P[] PROGMEM = "DEBUG";
+static const char CMD_SENS_P[] PROGMEM = "SENS";
+static const char CMD_GATE_P[] PROGMEM = "GATE";
+static const char CMD_MODFUNC_P[] PROGMEM = "MODFUNC";
+static const char CMD_INVERT_P[] PROGMEM = "INVERT";
+static const char CMD_SWITCHXY_P[] PROGMEM = "SWITCHXY";
+static const char CMD_EXLC_P[] PROGMEM = "EXLC";
 
 /**
  * @brief Handles the input received from the serial monitor.
@@ -85,31 +85,31 @@ void AVRCommandHandler::handleInput(char input[], const uint8_t inputsize, const
 
     // DEVNOTE The ESP32 version delegates the command to the registered commands for execution, the AVR version does that on its own.
 
-    if (strcmp_P(words[0], CMD_IDLE) == 0) {
+    if (strcmp_P(words[0], CMD_IDLE_P) == 0) {
         // Handle IDLE command
         executeIdle(words[1], words[2], --wordCount); // Execute the command with the retrieved parameters (wordCount decremented, while the first word is the command name)
-    } else if (strcmp_P(words[0], CMD_MINMAX) == 0) {
+    } else if (strcmp_P(words[0], CMD_MINMAX_P) == 0) {
         // Handle MINMAX command
         executeMinMax(words[1], words[2], --wordCount);
-    } else if (strcmp_P(words[0], CMD_DEBUG) == 0) {
+    } else if (strcmp_P(words[0], CMD_DEBUG_P) == 0) {
         // Handle DEBUG command
         executeDebug(words[1], words[2], --wordCount);
-    } else if (strcmp_P(words[0], CMD_SENS) == 0) {
+    } else if (strcmp_P(words[0], CMD_SENS_P) == 0) {
         // Handle SENS command
         executeSens(words[1], words[2], --wordCount);
-    } else if (strcmp_P(words[0], CMD_GATE) == 0) {
+    } else if (strcmp_P(words[0], CMD_GATE_P) == 0) {
         // Handle GATE command
         executeGate(words[1], words[2], --wordCount);
-    } else if (strcmp_P(words[0], CMD_MODFUNC) == 0) {
+    } else if (strcmp_P(words[0], CMD_MODFUNC_P) == 0) {
         // Handle MODFUNC command
         executeModFunc(words[1], words[2], --wordCount);
-    } else if (strcmp_P(words[0], CMD_INVERT) == 0) {
+    } else if (strcmp_P(words[0], CMD_INVERT_P) == 0) {
         // Handle INVERT command
         executeInvert(words[1], words[2], --wordCount);
-    } else if (strcmp_P(words[0], CMD_SWITCHXY) == 0) {
+    } else if (strcmp_P(words[0], CMD_SWITCHXY_P) == 0) {
         // Handle SWITCHXY command
         executeSwitchXY(words[1], words[2], --wordCount);
-    } else if (strcmp_P(words[0], CMD_EXLC) == 0) {
+    } else if (strcmp_P(words[0], CMD_EXLC_P) == 0) {
         // Handle EXLC command
         executeExlc(words[1], words[2], --wordCount);
     } else {

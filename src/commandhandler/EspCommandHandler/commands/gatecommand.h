@@ -2,7 +2,7 @@
 
 #include "IAxisConfigCommand.h"
 /// @brief command text for the Gate configuration command
-static const char CMD_GATE[] PROGMEM = "GATE";
+static const char CMD_GATE_P[] PROGMEM = "GATE";
 
 /**
  * @brief Class to handle the Gate configuration command.
@@ -18,7 +18,7 @@ public:
      * @param collectionCarrier Pointer to the CollectionCarrier for accessing collections.
      * @details Initializes the command with the CMD_GATE command name.
      */
-    GateCommand(CollectionCarrier *collectionCarrier) : IAxisConfigCommand(CMD_GATE, collectionCarrier) {}
+    GateCommand(CollectionCarrier *collectionCarrier) : IAxisConfigCommand(CMD_GATE_P, collectionCarrier) {}
     ~GateCommand() {}
     void execute(const char *param1, const char *param2, uint8_t paramCount) override;
 };

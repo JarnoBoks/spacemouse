@@ -13,7 +13,7 @@
 // Axes
 #include <Knob\MotionVector\KnobMotionVector.hpp>
 #include <Knob\config\KnobVectorConfig.hpp>
-#include <Knob\config\AxisDirectionConfig.hpp>
+#include <Knob\config\KnobVectorDirectionConfig.hpp>
 
 // Sensors
 #include "sensor/config/SensorConfig.hpp"
@@ -334,14 +334,14 @@ void AVRCommandHandler::executeSens(const char *param1, const char *param2, cons
 
     bool touched = false; // Flag to indicate if the sensitivity was set
     for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-        if (m_AxisDirectionConfig[i]) {
-            m_AxisDirectionConfig[i]->setSensitivity(requestedValue);
+        if (m_knobVectorDirectionConfig[i]) {
+            m_knobVectorDirectionConfig[i]->setSensitivity(requestedValue);
             touched |= true;
         }
     }
 
     if (touched) {
-        m_Axis->getConfig()->persist(m_Axis->getType()); // Store the value in the EEPROM
+        m_knobMotionVector->getConfig()->persist(m_knobMotionVector->getType()); // Store the value in the EEPROM
     }
 }
 
@@ -355,14 +355,14 @@ void AVRCommandHandler::executeGate(const char *param1, const char *param2, cons
 
     bool touched = false; // Flag to indicate if the sensitivity was set
     for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-        if (m_AxisDirectionConfig[i]) {
-            m_AxisDirectionConfig[i]->setGate(requestedValue);
+        if (m_knobVectorDirectionConfig[i]) {
+            m_knobVectorDirectionConfig[i]->setGate(requestedValue);
             touched |= true;
         }
     }
 
     if (touched) {
-        m_Axis->getConfig()->persist(m_Axis->getType()); // Store the value in the EEPROM
+        m_knobMotionVector->getConfig()->persist(m_knobMotionVector->getType()); // Store the value in the EEPROM
     }
 }
 
@@ -373,14 +373,14 @@ void AVRCommandHandler::executeModFunc(const char *param1, const char *param2, c
 
     bool touched = false; // Flag to indicate if the sensitivity was set
     for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-        if (m_AxisDirectionConfig[i]) {
-            m_AxisDirectionConfig[i]->setModFuncType(mF);
+        if (m_knobVectorDirectionConfig[i]) {
+            m_knobVectorDirectionConfig[i]->setModFuncType(mF);
             touched |= true;
         }
     }
 
     if (touched) {
-        m_Axis->getConfig()->persist(m_Axis->getType()); // Store the value in the EEPROM
+        m_knobMotionVector->getConfig()->persist(m_knobMotionVector->getType()); // Store the value in the EEPROM
     }
 }
 
@@ -392,14 +392,14 @@ void AVRCommandHandler::executeInvert(const char *param1, const char *param2, co
     float requestedValue = executeAxis(param1, param2, paramCount);
 
     // Check if the axis has a valid AxisDirectionConfig
-    if (!m_AxisDirectionConfig) {
+    if (!m_knobVectorDirectionConfig) {
         ESP_PRINT(F("InvertCommand::execute: No direction config available"));
         return; // No direction config available, exit the function
     }
 
-    KnobVectorConfig *cfgKnobVector = m_Axis->getConfig(); // Get the axis configuration instance
-    cfgKnobVector->inversion = requestedValue;             // Set the inversion value to the requested value
-    cfgKnobVector->persist(m_Axis->getType());             // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
+    KnobVectorConfig *cfgKnobVector = m_knobMotionVector->getConfig(); // Get the axis configuration instance
+    cfgKnobVector->inversion = requestedValue;                         // Set the inversion value to the requested value
+    cfgKnobVector->persist(m_knobMotionVector->getType());             // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
 }
 
 void AVRCommandHandler::executeSwitchXY(const char *param1, const char *param2, const uint8_t paramCount) {
@@ -476,7 +476,7 @@ void AVRCommandHandler::executeExlc(const char *param1, const char *param2, cons
  * @param paramCount The number of parameters provided.
  * @return The result of the command execution.
  * @retval -1 If no, incorrect or unsufficient parameters are provided.
- * @retval The requested value (float) if two parameters are provided and the command is executed successfully. The m_AxisDirectionConfig array is updated to point to the correct AxisDirectionConfig object(s).
+ * @retval The requested value (float) if two parameters are provided and the command is executed successfully. The m_knobVectorDirectionConfig array is updated to point to the correct AxisDirectionConfig object(s).
  */
 float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uint8_t paramCount) {
     if (paramCount == 0) {
@@ -493,9 +493,9 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
     if (paramCount == 2) {
         // Command received, fe. SENS [+|-]<axisname> <value>
 
-        // Erase the m_AxisDirectionConfig pointers
+        // Erase the m_knobVectorDirectionConfig pointers
         for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-            m_AxisDirectionConfig[i] = nullptr;
+            m_knobVectorDirectionConfig[i] = nullptr;
         }
 
         float requestedValue = 0;
@@ -508,30 +508,30 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
             // The first character is a direction
             // REVIEW - Can the cast (char *)param1 be removed?
             char *reqAxisName = (char *)param1 + 1; // Pointer to the axis name (skip the first character)
-            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(reqAxisName);
-            if (m_Axis == nullptr) {
+            m_knobMotionVector = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(reqAxisName);
+            if (m_knobMotionVector == nullptr) {
                 return -1; // Error: KnobMotionVector not found, exit the function
             }
 
             if (directionChar == '+') {
                 // The positive direction config should be used
-                m_AxisDirectionConfig[0] = &m_Axis->getConfig()->posConfig;
+                m_knobVectorDirectionConfig[0] = &m_knobMotionVector->getConfig()->posConfig;
 
             } else if (directionChar == '-') {
                 // The negative direction config should be used
-                m_AxisDirectionConfig[0] = &m_Axis->getConfig()->negConfig;
+                m_knobVectorDirectionConfig[0] = &m_knobMotionVector->getConfig()->negConfig;
             }
 
         } else {
             // The first character is not a direction, test if the KnobMotionVector name is specified.
-            m_Axis = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(param1);
-            if (m_Axis == nullptr) {
+            m_knobMotionVector = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(param1);
+            if (m_knobMotionVector == nullptr) {
                 return -1; // KnobMotionVector is not found, exit the function
             }
 
             // There is an axis name, but no direction provided. Both directions have to be updated.
-            m_AxisDirectionConfig[0] = &m_Axis->getConfig()->posConfig;
-            m_AxisDirectionConfig[1] = &m_Axis->getConfig()->negConfig;
+            m_knobVectorDirectionConfig[0] = &m_knobMotionVector->getConfig()->posConfig;
+            m_knobVectorDirectionConfig[1] = &m_knobMotionVector->getConfig()->negConfig;
         }
 
         return requestedValue; // Return the requested value

@@ -6,12 +6,12 @@
  * This class reads the default KnobMotionVector parameters from config.h and provides them to the KnobVectorConfig class.
  * It is used to set the default values for the axis configuration when the KnobVectorConfig class is instantiated and the EEPROM is empty or the version number is changed.
  */
-class DefaultAxisConfig {
+class DefaultKnobVectorConfig {
 private:
-    static DefaultAxisConfig *instance;
-    DefaultAxisConfig(); // Private constructor to prevent instantiation
+    static DefaultKnobVectorConfig *instance;
+    DefaultKnobVectorConfig(); // Private constructor to prevent instantiation
 
 public:
-    static DefaultAxisConfig &getInstance();
+    static DefaultKnobVectorConfig &getInstance();
     KnobVectorConfig getDefaultConfig(MotionVector_t type);
 };

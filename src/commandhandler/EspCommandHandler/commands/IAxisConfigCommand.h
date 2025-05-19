@@ -4,7 +4,7 @@
 
 #define NUM_AX_DIRCFG 2 // Number of axis direction configurations per AxisConfig in the software (Current: Positive and Negative)
 
-class AxisDirectionConfig;
+class KnobVectorDirectionConfig;
 class KnobMotionVector;
 
 /**
@@ -16,9 +16,9 @@ class KnobMotionVector;
 class IAxisConfigCommand : public CommandBase {
 private:
 protected:
-    AxisDirectionConfig *m_AxisDirectionConfig[NUM_AX_DIRCFG]; // Array of pointers to AxisDirectionConfig objects
-    KnobMotionVector *m_Axis = nullptr;                        // Pointer to the knob MotionVector object that will be configured
-    float m_requestedValue = 0;                                // Requested value for the knob MotionVector configuration (sensitivity, gate, etc.) derived from the command. -1 if no update is needed.
+    KnobVectorDirectionConfig *m_knobVectorDirectionConfig[NUM_AX_DIRCFG]; // Array of pointers to AxisDirectionConfig objects
+    KnobMotionVector *m_knobVector = nullptr;                              // Pointer to the knob MotionVector object that will be configured
+    float m_requestedValue = 0;                                            // Requested value for the knob MotionVector configuration (sensitivity, gate, etc.) derived from the command. -1 if no update is needed.
 
 public:
     /**
@@ -29,7 +29,7 @@ public:
     // TODO - Make the collectionCarrier a const reference
     IAxisConfigCommand(const char *cmdName, CollectionCarrier *collectionCarrier) : CommandBase(cmdName, collectionCarrier) {
         for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-            m_AxisDirectionConfig[i] = nullptr; // Initialize the axis direction configuration pointers to nullptr
+            m_knobVectorDirectionConfig[i] = nullptr;
         }
     }
     virtual ~IAxisConfigCommand() {};

@@ -1,4 +1,4 @@
-#include "DefaultAxisConfig.hpp"
+#include "DefaultKnobVectorConfig.hpp"
 #include "config.h" // Include the config file to know the hardware type and load the correct defaults for the hardware.
 
 #if defined(HW_HALLEFFECT)
@@ -12,25 +12,25 @@
 // FIXME - Remove the Singleton pattern.
 
 // Initialize the static instance pointer to nullptr
-DefaultAxisConfig *DefaultAxisConfig::instance = nullptr;
+DefaultKnobVectorConfig *DefaultKnobVectorConfig::instance = nullptr;
 
 /**
- * @brief Get the instance of DefaultAxisConfig.
- * @return Reference to the singleton instance of DefaultAxisConfig.
+ * @brief Get the instance of DefaultKnobVectorConfig.
+ * @return Reference to the singleton instance of DefaultKnobVectorConfig.
  */
-DefaultAxisConfig &DefaultAxisConfig::getInstance() {
+DefaultKnobVectorConfig &DefaultKnobVectorConfig::getInstance() {
     if (!instance) {
-        instance = new DefaultAxisConfig();
+        instance = new DefaultKnobVectorConfig();
     }
     return *instance;
 }
 
 /**
- * @brief DefaultAxisConfig constructor.
+ * @brief DefaultKnobVectorConfig constructor.
  * @details This constructor is private to enforce the singleton pattern.
  * It initializes the default axis configuration for the given hardware type.
  */
-DefaultAxisConfig::DefaultAxisConfig() {
+DefaultKnobVectorConfig::DefaultKnobVectorConfig() {
 }
 
 // Preprocessor macros to convert the default values to the correct types
@@ -44,7 +44,7 @@ DefaultAxisConfig::DefaultAxisConfig() {
  * @param type The axis type for which to get the default configuration.
  * @return The default KnobVectorConfig for the specified axis type.
  */
-KnobVectorConfig DefaultAxisConfig::getDefaultConfig(MotionVector_t type) {
+KnobVectorConfig DefaultKnobVectorConfig::getDefaultConfig(MotionVector_t type) {
     // This function will return the default configuration for the given axis type.
     // The default configuration is used if there isn't a configuration in the EEPROM or if the EEPROM version is changed.
     switch (MotionVector_t(type)) {

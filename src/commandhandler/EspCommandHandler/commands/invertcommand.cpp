@@ -21,7 +21,7 @@ void InvertCommand::execute(const char *param1, const char *param2, uint8_t para
         return;
     }
 
-    KnobVectorConfig *cfgKnobVector = m_Axis->getConfig(); // Get the axis configuration instance
-    cfgKnobVector->inversion = m_requestedValue;           // Set the inversion value to the requested value
-    cfgKnobVector->persist(m_Axis->getType());             // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
+    KnobVectorConfig *cfgKnobVector = m_knobVector->getConfig(); // Get the axis configuration instance
+    cfgKnobVector->inversion = m_requestedValue;                 // Set the inversion value to the requested value
+    cfgKnobVector->persist(m_knobVector->getType());             // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
 }

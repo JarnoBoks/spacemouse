@@ -1,7 +1,7 @@
 #pragma once
 
-#include "AxisDirectionConfig.hpp" // For the DirectionConfig class
-#include <Knob/MotionVectorType.h> // For MotionVector_t enum
+#include "KnobVectorDirectionConfig.hpp" // For the DirectionConfig class
+#include <Knob/MotionVectorType.h>       // For MotionVector_t enum
 
 class IPrinterVisitor;
 
@@ -10,9 +10,9 @@ private:
     bool retrieve(const MotionVector_t motionVectorType);
 
 public:
-    AxisDirectionConfig posConfig; // Object for positive direction configuration
-    AxisDirectionConfig negConfig; // Object for negative direction configuration
-    bool inversion = false;        // Inversion flag for the axis
+    KnobVectorDirectionConfig posConfig; // Object for positive direction configuration
+    KnobVectorDirectionConfig negConfig; // Object for negative direction configuration
+    bool inversion = false;              // Inversion flag for the knobVector // REFACTOR - MOve to kinematics
 
     ~KnobVectorConfig() = default; // Default destructor
     KnobVectorConfig();

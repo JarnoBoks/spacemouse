@@ -2,7 +2,7 @@
 #include "KnobVectorConfig.hpp"
 
 #include "eeprom/eepromstore.h"              // To load and save the axis configuration to EEPROM
-#include "DefaultAxisConfig.hpp"             // To get the default axis configuration if the EEPROM is empty or the version is changed
+#include "DefaultKnobVectorConfig.hpp"       // To get the default axis configuration if the EEPROM is empty or the version is changed
 #include <printervisitors/IPrinterVisitor.h> // For the visitor pattern
 
 constexpr uint8_t EEPROM_AXISCONFIG_VERSION = 1;     // Define the version number for the AxisConfig in EEPROM.     // TODO: Add versioning
@@ -12,7 +12,7 @@ constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_NEGCFG = 2; // Offset for the negative 
 /**
  * @brief Constructor with no arguments - used when called with a non-existant axistype
  */
-KnobVectorConfig::KnobVectorConfig() : posConfig(AxisDirectionConfig()), negConfig(AxisDirectionConfig()), inversion(false) {}
+KnobVectorConfig::KnobVectorConfig() : posConfig(KnobVectorDirectionConfig()), negConfig(KnobVectorDirectionConfig()), inversion(false) {}
 
 /**
  * @brief Constructor for KnobVectorConfig class with axis vectorType.
@@ -25,14 +25,14 @@ KnobVectorConfig::KnobVectorConfig() : posConfig(AxisDirectionConfig()), negConf
  */
 KnobVectorConfig::KnobVectorConfig(const MotionVector_t motionVectorType) : inversion(false) {
     if (!retrieve(motionVectorType)) {
-        *this = DefaultAxisConfig::getInstance().getDefaultConfig(motionVectorType);
+        *this = DefaultKnobVectorConfig::getInstance().getDefaultConfig(motionVectorType);
     }
 }
 
 /**
  * @brief Constructor for KnobVectorConfig class with parameterized settings.
  * @details This constructor initializes the KnobVectorConfig object with the given parameters for sensitivity, gate, and function types.
- *          This constructor is used when called from the DefaultAxisConfig class.
+ *          This constructor is used when called from the DefaultKnobVectorConfig class.
  * @param psens Sensitivity for the positive direction.
  * @param nsens Sensitivity for the negative direction.
  * @param pgate Gate for the positive direction.
@@ -49,7 +49,7 @@ KnobVectorConfig::KnobVectorConfig(const float psens,
                                    const ModFunc_t pmf,
                                    const ModFunc_t nmf,
                                    const bool invert)
-    : posConfig(AxisDirectionConfig(psens, pgate, pmf)), negConfig(AxisDirectionConfig(nsens, ngate, nmf)), inversion(invert) {}
+    : posConfig(KnobVectorDirectionConfig(psens, pgate, pmf)), negConfig(KnobVectorDirectionConfig(nsens, ngate, nmf)), inversion(invert) {}
 
 /**
  * @brief  Persist the KnobVectorConfig to EEPROM.

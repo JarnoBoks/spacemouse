@@ -21,10 +21,10 @@ void ModFuncCommand::execute(const char *param1, const char *param2, uint8_t par
     }
 
     for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-        if (m_AxisDirectionConfig[i]) {
-            m_AxisDirectionConfig[i]->setModFuncType(static_cast<ModFunc_t>(m_requestedValue));
+        if (m_knobVectorDirectionConfig[i]) {
+            m_knobVectorDirectionConfig[i]->setModFuncType(static_cast<ModFunc_t>(m_requestedValue));
         }
     }
 
-    m_Axis->getConfig()->persist(m_Axis->getType()); // Store the value in the EEPROM
+    m_knobVector->getConfig()->persist(m_knobVector->getType()); // Store the value in the EEPROM
 }

@@ -35,7 +35,8 @@ SensorConfig::SensorConfig() {};
  */
 SensorConfig::SensorConfig(const int8_t sensorId) {
     if (!retrieve(sensorId)) {
-        *this = DefaultSensorConfig::getInstance().getDefaultConfig(sensorId);
+        DefaultSensorConfig defaultConfig;
+        *this = defaultConfig.create(sensorId);
     }
 };
 

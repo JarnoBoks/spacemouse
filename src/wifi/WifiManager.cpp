@@ -1,6 +1,6 @@
 #ifdef ARDUINO_ARCH_ESP32
 
-// NOTE - This file is only used for the ESP32 architecture. Strings aren't stored in flash memory.
+// NOTE - This file is only used for the ESP32 architecture, so it is not necessary to store strings in flash memory.
 
 #include "WifiManager.h"
 #include "config.h"

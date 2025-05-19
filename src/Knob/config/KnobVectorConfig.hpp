@@ -5,7 +5,7 @@
 
 class IPrinterVisitor;
 
-class AxisConfig {
+class KnobVectorConfig {
 private:
     bool retrieve(const MotionVector_t motionVectorType);
 
@@ -14,18 +14,18 @@ public:
     AxisDirectionConfig negConfig; // Object for negative direction configuration
     bool inversion = false;        // Inversion flag for the axis
 
-    ~AxisConfig() = default; // Default destructor
-    AxisConfig();
+    ~KnobVectorConfig() = default; // Default destructor
+    KnobVectorConfig();
 
-    AxisConfig(const MotionVector_t motionVectorType);
+    KnobVectorConfig(const MotionVector_t motionVectorType);
 
-    AxisConfig(const float psens,
-               const float nsens,
-               const uint8_t pgate,
-               const uint8_t ngate,
-               const ModFunc_t pmf,
-               const ModFunc_t nmf,
-               const bool invert);
+    KnobVectorConfig(const float psens,
+                     const float nsens,
+                     const uint8_t pgate,
+                     const uint8_t ngate,
+                     const ModFunc_t pmf,
+                     const ModFunc_t nmf,
+                     const bool invert);
 
     void persist(const MotionVector_t motionVectorType) const;
 

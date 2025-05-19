@@ -1,6 +1,6 @@
 #include "invertcommand.h"
 #include <Knob/MotionVector/KnobMotionVector.hpp>
-#include "..\..\..\Knob\config\AxisConfig.hpp"
+#include <Knob/config/KnobVectorConfig.hpp>
 
 #include <common/esp_print.h> // For ESP_PRINT
 
@@ -21,7 +21,7 @@ void InvertCommand::execute(const char *param1, const char *param2, uint8_t para
         return;
     }
 
-    AxisConfig *axisConfig = m_Axis->getConfig(); // Get the axis configuration instance
-    axisConfig->inversion = m_requestedValue;     // Set the inversion value to the requested value
-    axisConfig->persist(m_Axis->getAxisType());   // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
+    KnobVectorConfig *cfgKnobVector = m_Axis->getConfig(); // Get the axis configuration instance
+    cfgKnobVector->inversion = m_requestedValue;           // Set the inversion value to the requested value
+    cfgKnobVector->persist(m_Axis->getType());             // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
 }

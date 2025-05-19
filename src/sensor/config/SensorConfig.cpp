@@ -25,8 +25,8 @@ constexpr uint8_t EEPROM_SENSORCONFIG_VERSION = 1; // Define the version number 
 SensorConfig::SensorConfig() {};
 
 /**
- * @brief Constructor for AxisConfig class with axis type.
- * @details This constructor initializes the SensorConfig object with the given sensor ID.
+ * @brief   Constructor for SensorConfig class with sensorId.
+ * @details This constructor initializes the SensorConfig object with the given sensor Id.
  *          It retrieves the configuration from EEPROM using the EEPROMStore class. If loading fails, it sets the configuration to default values.
  * @see config.h for overriding the default values.
  * @see defaults_hall.h for the default values for the HALL Effect hardware.

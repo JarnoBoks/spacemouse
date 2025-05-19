@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <Knob/ModifierFunctionType.h> // Include the header file for ModFunc_t enum
 
-class AxisConfig;
+class KnobVectorConfig;
 
 class AxisDirectionConfig {
 private:

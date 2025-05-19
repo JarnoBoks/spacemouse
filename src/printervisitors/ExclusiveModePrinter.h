@@ -16,7 +16,7 @@ public:
     inline void visit(Sensor &sensor) override {}
     inline void visit(SensorConfig &config) override {}
     inline void visit(KnobMotionVector &axis) override {};
-    inline void visit(AxisConfig &config) override {};
+    inline void visit(KnobVectorConfig &config) override {};
     void visit(KinematicsConfig &config) override {
         bool exclusiveMode = config.getExclusiveMode(); // Get the minimum value from the sensor configuration
         Serial.print(exclusiveMode);

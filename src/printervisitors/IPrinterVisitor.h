@@ -12,7 +12,7 @@ class Sensor;
 class SensorConfig;
 class Hardware;
 class KnobMotionVector;
-class AxisConfig;
+class KnobVectorConfig;
 class KinematicsConfig;
 
 // REFACTOR - We should not need to include all these classes here. We should be able to make one interface for all the classes that need to be visited.
@@ -21,7 +21,7 @@ public:
     virtual void visit(Sensor &sensor) = 0;
     virtual void visit(SensorConfig &config) = 0;
     virtual void visit(KnobMotionVector &axis) = 0;
-    virtual void visit(AxisConfig &config) = 0;
+    virtual void visit(KnobVectorConfig &config) = 0;
     virtual void visit(KinematicsConfig &config) = 0;
     // Add more as needed
 };

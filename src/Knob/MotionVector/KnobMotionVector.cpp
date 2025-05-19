@@ -27,7 +27,7 @@ const bool KnobMotionVector::isCurrent(const char *descriptor) const {
 void KnobMotionVector::evaluate() {
     m_sensorsCalculator->evaluate(this); // Get the raw value from the sensor calculator
 
-    AxisDirectionConfig *dconfig = (m_rawValue > 0) ? &this->m_AxisConfig->posConfig : &this->m_AxisConfig->negConfig; // Get the config for the current axis and direction
+    AxisDirectionConfig *dconfig = (m_rawValue > 0) ? &this->m_Config->posConfig : &this->m_Config->negConfig; // Get the config for the current axis and direction
 
     // Apply the sensitivity for this MotionVector & knob direction (ie. positive or negative movement in the vector)
     m_snsValue = dconfig->getSensitivity() * m_rawValue; // Apply the sensitivity for this axis & direction
@@ -39,7 +39,7 @@ void KnobMotionVector::evaluate() {
     m_finValue = (abs(m_modValue) < dconfig->getGate()) ? 0 : m_modValue; // Apply the gate for this axis & direction
 
     // Invert the motion if necessary
-    m_finValue = (m_AxisConfig->inversion) ? -m_finValue : m_finValue; // Invert the value if necessary
+    m_finValue = (m_Config->inversion) ? -m_finValue : m_finValue; // Invert the value if necessary
 }
 
 /**

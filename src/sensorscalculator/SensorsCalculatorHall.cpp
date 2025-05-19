@@ -27,13 +27,13 @@ void SensorsCalculatorHall::setAnalogReference(const bool isDebug) {
 
 // Macro to simplify the access to the sensor values
 #define VAL(x) value(x)
-void SensorsCalculatorHall::evaluate(KnobMotionVector *axis) {
-    if (!m_sensorCollection || !axis)
+void SensorsCalculatorHall::evaluate(KnobMotionVector *knobVector) {
+    if (!m_sensorCollection || !knobVector)
         return;
 
     int16_t retval = 0;
 
-    switch (axis->getAxisType()) {
+    switch (knobVector->getType()) {
     case MotionVector_t::TRANSX:
         // calculate sensors transX
         retval = (VAL(HES1) - VAL(HES0) + VAL(HES6) - VAL(HES7)) / 2;
@@ -58,9 +58,9 @@ void SensorsCalculatorHall::evaluate(KnobMotionVector *axis) {
         retval = (VAL(HES0) + VAL(HES2) + VAL(HES6) + VAL(HES8) - VAL(HES1) - VAL(HES3) - VAL(HES7) - VAL(HES9)) / 4;
         break;
     default:
-        // Handle invalid axis type if necessary - nothing to do - retval is already 0
+        // Handle invalid knobVector type if necessary - nothing to do - retval is already 0
         break;
     }
-    axis->setRawValue(retval);
+    knobVector->setRawValue(retval);
 }
 #undef VAL

@@ -3,7 +3,7 @@
 #include "common/ICollectable.hpp"
 #include "common/Observable.hpp"
 #include <Knob/MotionVectorType.h>           // Include the header file for MotionVector_t enum
-#include <Knob/config/AxisConfig.hpp>        // Include the header file for AxisConfig class
+#include <Knob/config/KnobVectorConfig.hpp>  // Include the header file for AxisConfig class
 #include <Knob/ModifierFunctionType.h>       // Include the header file for ModFunc_t enum
 #include <printervisitors/IPrinterVisitor.h> // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Use IVisitor instead of IPrinterVisitor
 
@@ -28,7 +28,7 @@ private:
     ISensorsCalculator *m_sensorsCalculator = nullptr;           // Pointer to the sensor calculator
     const MotionVector_t m_type = MotionVector_t::UNINITIALIZED; // Type of the knob MotionVector (translation or rotation)
     const char *m_descriptor = nullptr;                          // Descriptor of the knob MotionVector
-    AxisConfig *m_AxisConfig = nullptr;                          // Pointer to the axis configuration
+    KnobVectorConfig *m_Config = nullptr;                        // Pointer to the configuration object of the MotionVector
 
     int16_t m_rawValue = 0; // Raw computed value for the axis, used to store the value that is calculated by the SensorsCalculator
     int16_t m_snsValue = 0; // KnobMotionVector value after applying sensitivity
@@ -44,9 +44,9 @@ public:
                                                                                          m_sensorsCalculator(sensorsCalculator),
                                                                                          m_type(type),
                                                                                          m_descriptor(c_KNOB_MVECTOR_DESCRIPTORS[static_cast<int>(type)]), // Set the name of the axis based on the MotionVector_t enum
-                                                                                         m_AxisConfig(new AxisConfig(type)) {};                            // Create a new AxisConfig object for this axis
+                                                                                         m_Config(new KnobVectorConfig(type)) {};                          // Create a new KnobVectorConfig object for this axis
 
-    ~KnobMotionVector() { delete m_AxisConfig; } // Destructor (not used in normal SpaceMouse operation)
+    ~KnobMotionVector() { delete m_Config; } // Destructor (not used in normal SpaceMouse operation)
 
     void evaluate() override;
 
@@ -76,8 +76,8 @@ public:
     inline int16_t getFinValue() const { return m_finValue; }
 
     inline const ISensorsCalculator *getSensorsCalculator() const { return m_sensorsCalculator; } // Getter for sensor calculator
-    inline AxisConfig *getConfig() const { return m_AxisConfig; }                                 // Getter for axis configuration
-    inline const MotionVector_t getAxisType() const { return m_type; }                            // Getter for axis type
+    inline KnobVectorConfig *getConfig() const { return m_Config; }                               // Getter for axis configuration
+    inline const MotionVector_t getType() const { return m_type; }                                // Getter for MotionVector type
     inline const char *getName() const { return m_descriptor; }                                   // Getter for axis name
 
     inline void accept(IPrinterVisitor &printerVisitor) { printerVisitor.visit(*this); }

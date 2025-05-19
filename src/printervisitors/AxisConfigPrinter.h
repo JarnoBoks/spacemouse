@@ -2,7 +2,7 @@
 
 #include "IPrinterVisitor.h"
 #include <Knob/MotionVector/KnobMotionVector.hpp>
-#include "..\Knob\config\AxisConfig.hpp"
+#include "..\Knob\config\KnobVectorConfig.hpp"
 #include "kinematics/config/kinematicsconfig.hpp"
 
 #define FMT_NOCOMMA false
@@ -37,7 +37,7 @@ public:
         Serial.println(); // Print a newline after the last axis status was printed to the serial monitor
     }
 
-    inline void visit(AxisConfig &config) override {}
+    inline void visit(KnobVectorConfig &config) override {}
     inline void visit(Sensor &sensor) override {}
     inline void visit(SensorConfig &config) override {}
     inline void visit(KinematicsConfig &config) override {}

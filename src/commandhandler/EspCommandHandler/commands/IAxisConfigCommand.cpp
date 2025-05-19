@@ -2,7 +2,7 @@
 
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
 #include <Knob/KnobMotionVectorCollection.hpp>
-#include <Knob/config/AxisConfig.hpp>
+#include <Knob/config/KnobVectorConfig.hpp>
 #include <printervisitors/AxisConfigPrinter.h>
 
 #include <common/esp_print.h> // For ESP_PRINT

@@ -11,9 +11,9 @@
 #include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
 
 // Axes
-#include "..\..\Knob\MotionVector\KnobMotionVector.hpp"
-#include "..\..\Knob\config\AxisConfig.hpp"
-#include "..\..\Knob\config\AxisDirectionConfig.hpp"
+#include <Knob\MotionVector\KnobMotionVector.hpp>
+#include <Knob\config\KnobVectorConfig.hpp>
+#include <Knob\config\AxisDirectionConfig.hpp>
 
 // Sensors
 #include "sensor/config/SensorConfig.hpp"
@@ -341,7 +341,7 @@ void AVRCommandHandler::executeSens(const char *param1, const char *param2, cons
     }
 
     if (touched) {
-        m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
+        m_Axis->getConfig()->persist(m_Axis->getType()); // Store the value in the EEPROM
     }
 }
 
@@ -362,7 +362,7 @@ void AVRCommandHandler::executeGate(const char *param1, const char *param2, cons
     }
 
     if (touched) {
-        m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
+        m_Axis->getConfig()->persist(m_Axis->getType()); // Store the value in the EEPROM
     }
 }
 
@@ -380,7 +380,7 @@ void AVRCommandHandler::executeModFunc(const char *param1, const char *param2, c
     }
 
     if (touched) {
-        m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
+        m_Axis->getConfig()->persist(m_Axis->getType()); // Store the value in the EEPROM
     }
 }
 
@@ -397,9 +397,9 @@ void AVRCommandHandler::executeInvert(const char *param1, const char *param2, co
         return; // No direction config available, exit the function
     }
 
-    AxisConfig *axisConfig = m_Axis->getConfig(); // Get the axis configuration instance
-    axisConfig->inversion = requestedValue;       // Set the inversion value to the requested value
-    axisConfig->persist(m_Axis->getAxisType());   // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
+    KnobVectorConfig *cfgKnobVector = m_Axis->getConfig(); // Get the axis configuration instance
+    cfgKnobVector->inversion = requestedValue;             // Set the inversion value to the requested value
+    cfgKnobVector->persist(m_Axis->getType());             // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
 }
 
 void AVRCommandHandler::executeSwitchXY(const char *param1, const char *param2, const uint8_t paramCount) {

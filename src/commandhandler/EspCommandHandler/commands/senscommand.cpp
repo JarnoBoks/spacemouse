@@ -1,6 +1,6 @@
 #include "senscommand.h"
 #include <Knob/MotionVector/KnobMotionVector.hpp>
-#include "..\..\..\Knob\config\AxisConfig.hpp"
+#include "..\..\..\Knob\config\KnobVectorConfig.hpp"
 
 #include <common/esp_print.h> // For ESP_PRINT
 
@@ -27,5 +27,5 @@ void SensCommand::execute(const char *param1, const char *param2, uint8_t paramC
         }
     }
 
-    m_Axis->getConfig()->persist(m_Axis->getAxisType()); // Store the value in the EEPROM
+    m_Axis->getConfig()->persist(m_Axis->getType()); // Store the value in the EEPROM
 }

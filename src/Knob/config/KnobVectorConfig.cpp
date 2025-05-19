@@ -1,5 +1,5 @@
 
-#include "AxisConfig.hpp"
+#include "KnobVectorConfig.hpp"
 
 #include "eeprom/eepromstore.h"              // To load and save the axis configuration to EEPROM
 #include "DefaultAxisConfig.hpp"             // To get the default axis configuration if the EEPROM is empty or the version is changed
@@ -12,55 +12,54 @@ constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_NEGCFG = 2; // Offset for the negative 
 /**
  * @brief Constructor with no arguments - used when called with a non-existant axistype
  */
-AxisConfig::AxisConfig() : posConfig(AxisDirectionConfig()), negConfig(AxisDirectionConfig()), inversion(false) {}
+KnobVectorConfig::KnobVectorConfig() : posConfig(AxisDirectionConfig()), negConfig(AxisDirectionConfig()), inversion(false) {}
 
 /**
- * @brief Constructor for AxisConfig class with axis type.
- * @details This constructor initializes the AxisConfig object with the given axis type.
+ * @brief Constructor for KnobVectorConfig class with axis vectorType.
+ * @details This constructor initializes the KnobVectorConfig object with the given axis vectorType.
  *          It retrieves the configuration from EEPROM using the EEPROMStore class. If loading fails, it sets the configuration to default values.
  * @see config.h for overriding the default values.
  * @see defaults_hall.h for the default values for the HALL Effect hardware.
  * @see defaults_joystick.h for the default values for the JOYSTICK hardware.
- * @param axisType The type of the axis being configured.
+ * @param vectorType The vectorType of the axis being configured.
  */
-AxisConfig::AxisConfig(const MotionVector_t motionVectorType) : inversion(false) {
+KnobVectorConfig::KnobVectorConfig(const MotionVector_t motionVectorType) : inversion(false) {
     if (!retrieve(motionVectorType)) {
         *this = DefaultAxisConfig::getInstance().getDefaultConfig(motionVectorType);
     }
 }
 
 /**
- * @brief Constructor for AxisConfig class with parameterized settings.
- * @details This constructor initializes the AxisConfig object with the given parameters for sensitivity, gate, and function types.
+ * @brief Constructor for KnobVectorConfig class with parameterized settings.
+ * @details This constructor initializes the KnobVectorConfig object with the given parameters for sensitivity, gate, and function types.
  *          This constructor is used when called from the DefaultAxisConfig class.
  * @param psens Sensitivity for the positive direction.
  * @param nsens Sensitivity for the negative direction.
  * @param pgate Gate for the positive direction.
  * @param ngate Gate for the negative direction.
- * @param pmf Modifier function type for the positive direction.
- * @param nmf Modifier function type for the negative direction.
+ * @param pmf Modifier function vectorType for the positive direction.
+ * @param nmf Modifier function vectorType for the negative direction.
  * @param invert Inversion flag for the axis.
  * @note The constructor initializes the posConfig and negConfig members with the given parameters.
  */
-AxisConfig::AxisConfig(const float psens,
-                       const float nsens,
-                       const uint8_t pgate,
-                       const uint8_t ngate,
-                       const ModFunc_t pmf,
-                       const ModFunc_t nmf,
-                       const bool invert)
+KnobVectorConfig::KnobVectorConfig(const float psens,
+                                   const float nsens,
+                                   const uint8_t pgate,
+                                   const uint8_t ngate,
+                                   const ModFunc_t pmf,
+                                   const ModFunc_t nmf,
+                                   const bool invert)
     : posConfig(AxisDirectionConfig(psens, pgate, pmf)), negConfig(AxisDirectionConfig(nsens, ngate, nmf)), inversion(invert) {}
 
 /**
- * @brief  Persist the AxisConfig to EEPROM.
- * @details This function saves the AxisConfig object to EEPROM using the EEPROMStore class.
- * @param axisType The type of the axis being persisted, used to identify the correct location in EEPROM.
+ * @brief  Persist the KnobVectorConfig to EEPROM.
+ * @details This function saves the KnobVectorConfig object to EEPROM using the EEPROMStore class.
+ * @param vectorType The type of the MotionVector being persisted, used to identify the correct location in EEPROM.
  */
+void KnobVectorConfig::persist(const MotionVector_t vectorType) const {
 
-void AxisConfig::persist(const MotionVector_t axisType) const {
-
-    // Calculate the EEPROM tableId for the AxisConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
-    const int tableId = (static_cast<int>(axisType) * EEPROM_AXIS_ID_RESERVATIONS) + EEPROM_AXIS_ID_BASE; // Calculated Id for the AxisConfig in EEPROM
+    // Calculate the EEPROM tableId for the KnobVectorConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
+    const int tableId = (static_cast<int>(vectorType) * EEPROM_AXIS_ID_RESERVATIONS) + EEPROM_AXIS_ID_BASE; // Calculated Id for the MotionVectorConfiguration in EEPROM
 
     // Persist the data stored in this class
     EEPROMStore::save(tableId, &inversion, sizeof(inversion)); // Store the inversion flag in the EEPROM
@@ -72,15 +71,15 @@ void AxisConfig::persist(const MotionVector_t axisType) const {
 
 /**
  * @brief Loads the sensor configuration from EEPROM.
- * @param axisType The type of the axis being loaded, used to calculate the correct location in EEPROM.
+ * @param vectorType The type of the MotionVector being loaded, used to calculate the correct location in EEPROM.
  * @return The result of the load operation.
  * @retval True if the configuration was successfully loaded.
  * @retval False if the configuration could not be loaded.
  */
-bool AxisConfig::retrieve(const MotionVector_t axisType) {
+bool KnobVectorConfig::retrieve(const MotionVector_t vectorType) {
 
-    // Calculate the EEPROM tableId for the AxisConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
-    const int tableId = (static_cast<int>(axisType) * EEPROM_AXIS_ID_RESERVATIONS) + EEPROM_AXIS_ID_BASE; // Calculated Id for the AxisConfig in EEPROM
+    // Calculate the EEPROM tableId for the KnobVectorConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
+    const int tableId = (static_cast<int>(vectorType) * EEPROM_AXIS_ID_RESERVATIONS) + EEPROM_AXIS_ID_BASE; // Calculated Id for the AxisConfig in EEPROM
 
     // Retrieve the data stored in the EEPROM
     if (EEPROMStore::load(tableId, &inversion, sizeof(inversion)) != ERR_EEPROMSTORE_SUCCESS) {
@@ -100,9 +99,9 @@ bool AxisConfig::retrieve(const MotionVector_t axisType) {
 
 /**
  * @brief Accept a visitor for the visitor pattern.
- * @details This function accepts a visitor that will process this AxisConfig object. Mostly used for serial output.
- * @param visitor The visitor that will process this AxisConfig object.
+ * @details This function accepts a visitor that will process this KnobVectorConfig object. Mostly used for serial output.
+ * @param visitor The visitor that will process this KnobVectorConfig object.
  */
-void AxisConfig::accept(IPrinterVisitor &visitor) {
+void KnobVectorConfig::accept(IPrinterVisitor &visitor) {
     visitor.visit(*this);
 }

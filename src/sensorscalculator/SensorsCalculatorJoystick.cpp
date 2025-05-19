@@ -6,13 +6,13 @@
 
 // Macro to simplify the access to the sensor values
 #define VAL(x) value(x)
-void SensorsCalculatorJoystick::evaluate(KnobMotionVector *axis) {
-    if (!m_sensorCollection || !axis)
+void SensorsCalculatorJoystick::evaluate(KnobMotionVector *knobVector) {
+    if (!m_sensorCollection || !knobVector)
         return;
 
     int16_t retval = 0;
 
-    switch (axis->getAxisType()) {
+    switch (knobVector->getType()) {
     case MotionVector_t::TRANSX:
         retval = (-VAL(CY) + VAL(AY));
         break;
@@ -32,10 +32,10 @@ void SensorsCalculatorJoystick::evaluate(KnobMotionVector *axis) {
         retval = (VAL(AY) + VAL(BY) + VAL(CY) + VAL(DY));
         break;
     default:
-        // Handle invalid axis type if necessary
+        // Handle invalid knobVector type if necessary
         break;
     }
 
-    axis->setRawValue(retval);
+    knobVector->setRawValue(retval);
 }
 #undef VAL

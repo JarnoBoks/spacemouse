@@ -28,12 +28,14 @@ private:
     void _applyExclusiveMode();
     void _applySwitchYZ();
 
+#if 0 // REMOVE
     void _applyKillSwitch(const AxisType_t start, const AxisType_t end, const bool killSwitchActive) {
         // Set strategy for the rotation axes to kill switch
         for (uint8_t i = start; i <= end; i++) {
             static_cast<Axis *>(m_axisCollection->getItem(i))->setKillSwitchActive(killSwitchActive); // Set the kill switch state for the axis
         }
     };
+#endif
 
 public:
     static Kinematics *getInstance();
@@ -51,7 +53,7 @@ public:
     }
 
     const AxisType_t getMainAxis(Axis *axis); // Get the main and secondary axis for the kinematics
-
+#if 0
     // Functionality for the kill switches
     void killRotation(const bool killSwitchActive = true) {
         _applyKillSwitch(AxisType_t::ROTX, AxisType_t::ROTZ, killSwitchActive); // Set strategy for the rotation axes to kill switch
@@ -60,4 +62,5 @@ public:
     void killTranslation(const bool killSwitchActive = true) {
         _applyKillSwitch(AxisType_t::TRANSX, AxisType_t::TRANSZ, killSwitchActive);
     };
+#endif
 };

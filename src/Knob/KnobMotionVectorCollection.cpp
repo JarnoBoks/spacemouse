@@ -17,19 +17,21 @@ void KnobMotionVectorCollection::setup(ISensorsCalculator *sensorsCalculator) {
     m_itemCount = 6;
 };
 
+#if 0 // REMOVE - Obseervers are attached to kinematicsvectors
 void KnobMotionVectorCollection::setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation) {
     // Call the setup function to initialize the axes
     setup(sensorsCalculator);
 
-    // Attach the HIDEventBuffers to the axes
+// Attach the HIDEventBuffers to the axes
+
     static_cast<KnobTranslation *>(m_items[TRANSX])->attachObserver(hidEventBufferTranslation);
     static_cast<KnobTranslation *>(m_items[TRANSY])->attachObserver(hidEventBufferTranslation);
     static_cast<KnobTranslation *>(m_items[TRANSZ])->attachObserver(hidEventBufferTranslation);
     static_cast<KnobRotation *>(m_items[ROTX])->attachObserver(hidEventBufferRotation);
     static_cast<KnobRotation *>(m_items[ROTY])->attachObserver(hidEventBufferRotation);
     static_cast<KnobRotation *>(m_items[ROTZ])->attachObserver(hidEventBufferRotation);
-};
-
+}
+#endif
 /**
  * @brief Get the axis at the specified index.
  * @param id Index of the axis to retrieve.

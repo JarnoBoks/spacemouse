@@ -25,6 +25,10 @@ private:
     void _applyExclusiveMode();
     void _applySwitchYZ();
 
+    void _createVector(const KnobMotionVectorCollection *knobVectors,
+                       const MotionVector_t type,
+                       IObserver *observer);
+
 #if 0 // REMOVE
     void _applyKillSwitch(const AxisType_t start, const AxisType_t end, const bool killSwitchActive) {
         // Set strategy for the rotation axes to kill switch
@@ -36,7 +40,11 @@ private:
 
 public:
     Kinematics();
-    Kinematics(KnobMotionVectorCollection *knobMotionVectors);
+    ~Kinematics();
+
+    void setup(const KnobMotionVectorCollection *knobMotionVectors,
+               IObserver *hidEventBufferTranslation,
+               IObserver *hidEventBufferRotation);
 
     void evaluate() {
         _applyExclusiveMode(); // Apply exclusive mode if enabled

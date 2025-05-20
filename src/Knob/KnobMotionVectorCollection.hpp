@@ -40,7 +40,7 @@ public:
      *          It creates instances of the motionvectors and configures them according to the provided configuration.
      */
     void setup(ISensorsCalculator *sensorsCalculator);
-    void setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation);
+    // REMOVE void setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation);
 
     KnobMotionVector *getMotionVector(const uint8_t id) const;
     KnobMotionVector *getMotionVector(const char *descriptor) const;

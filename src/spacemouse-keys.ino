@@ -48,7 +48,7 @@ KnobMotionVectorCollection myKnobMotionVectors; // KnobMotionVector collection o
 // Header to calculate the kinematics of the mouse
 // FIXME - Create a factory for the kinematics class and move the creation of the kinematics class to the factory
 #include "kinematics/kinematics.hpp"
-Kinematics myKinematics(&myKnobMotionVectors); // Kinematics object to calculate the kinematics of the mouse
+Kinematics myKinematics; // Kinematics object to calculate the kinematics of the mouse
 
 // Include the header files for the command handler that will handle the commands send by the user through the serial monitor.
 // For the ESP32 and AVR architecture, the command handler is different.
@@ -117,9 +117,16 @@ void setup() {
 
     //  Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();
+
     // Setup the KnobMotionVector collection. This will setup the axes and the axis configuration, and attaches the HID event buffers.
     // TODO - Create a AxisFactory that will create the axes based on the configuration.
-    myKnobMotionVectors.setup(&mySensorCalculator, &myHIDEventBufferTranslation, &myHIDEventBufferRotation); // Setup the axis collection with the sensor calculator
+    myKnobMotionVectors.setup(&mySensorCalculator);
+
+    // Setup the Kinematics object. This will create the kinematic axes of the mouse.
+    // TODO - The setup will check the EEPROM for the configuration of the sensors and the axes.
+    myKinematics.setup(&myKnobMotionVectors,
+                       &myHIDEventBufferTranslation,
+                       &myHIDEventBufferRotation);
 
     // Populate the key collection with the keys that are configured in config.h
     myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h

@@ -10,35 +10,36 @@
 #include <visitors/ExclusiveMovementVisitor.hpp>
 #include <visitors/SwitchYZVisitor.hpp>
 
-Kinematics::Kinematics(KnobMotionVectorCollection *knobMotionVectors)
+Kinematics::Kinematics()
     : Observable(c_MAX_KINEMATICS_OBSERVERS),
       m_transMotionVectors(new KinematicsMotionVectorCollection()),
       m_rotMotionVectors(new KinematicsMotionVectorCollection()),
-      m_config(new KinematicsConfig()) {
+      m_config(new KinematicsConfig()) {}
 
-    m_transMotionVectors->add(
-        new KinematicsMotionVector(MotionVector_t::TRANSX,
-                                   knobMotionVectors->getMotionVector(MotionVector_t::TRANSX)));
+Kinematics::~Kinematics() {
+    delete m_transMotionVectors; // Delete the translational kinematic MotionVectors collection
+    delete m_rotMotionVectors;   // Delete the rotational kinematic MotionVectors collection
+    delete m_config;             // Delete the kinematics configuration
+}
 
-    m_transMotionVectors->add(
-        new KinematicsMotionVector(MotionVector_t::TRANSY,
-                                   knobMotionVectors->getMotionVector(MotionVector_t::TRANSY)));
+void Kinematics::_createVector(const KnobMotionVectorCollection *knobVectors,
+                               const MotionVector_t type,
+                               IObserver *observer) {
+    KinematicsMotionVector *vector = new KinematicsMotionVector(type, knobVectors->getMotionVector(type));
+    vector->attachObserver(observer);
+    m_transMotionVectors->add(vector);
+}
 
-    m_transMotionVectors->add(
-        new KinematicsMotionVector(MotionVector_t::TRANSZ,
-                                   knobMotionVectors->getMotionVector(MotionVector_t::TRANSZ)));
+void Kinematics::setup(const KnobMotionVectorCollection *knobMotionVectors,
+                       IObserver *hidEventBufferTranslation,
+                       IObserver *hidEventBufferRotation) {
 
-    m_rotMotionVectors->add(
-        new KinematicsMotionVector(MotionVector_t::ROTX,
-                                   knobMotionVectors->getMotionVector(MotionVector_t::ROTX)));
-
-    m_rotMotionVectors->add(
-        new KinematicsMotionVector(MotionVector_t::ROTY,
-                                   knobMotionVectors->getMotionVector(MotionVector_t::ROTY)));
-
-    m_rotMotionVectors->add(
-        new KinematicsMotionVector(MotionVector_t::ROTZ,
-                                   knobMotionVectors->getMotionVector(MotionVector_t::ROTZ)));
+    _createVector(knobMotionVectors, MotionVector_t::TRANSX, hidEventBufferTranslation);
+    _createVector(knobMotionVectors, MotionVector_t::TRANSY, hidEventBufferTranslation);
+    _createVector(knobMotionVectors, MotionVector_t::TRANSZ, hidEventBufferTranslation);
+    _createVector(knobMotionVectors, MotionVector_t::ROTX, hidEventBufferRotation);
+    _createVector(knobMotionVectors, MotionVector_t::ROTY, hidEventBufferRotation);
+    _createVector(knobMotionVectors, MotionVector_t::ROTZ, hidEventBufferRotation);
 }
 
 #if 0 // REMOVE

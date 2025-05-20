@@ -7,5 +7,5 @@ public:
     HIDEventBufferRotation() = default;
     virtual ~HIDEventBufferRotation() = default;
 
-    void update(IObservable *rotationAxis) override final;
+    void update(IObservable *kinVectorRotation) override final;
 };

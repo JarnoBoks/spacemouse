@@ -28,8 +28,8 @@ public:
         delete[] observers;
     }
 
-    void attachObserver(IObserver *observer) override;
-    void detachObserver(IObserver *observer) override;
+    void attachObserver(IObserver *observer);
+    void detachObserver(IObserver *observer);
     void clearObservers() override;
     virtual void notifyObservers() override; // REVIEW - Should this be public or protected? The class knows if there has to be notification. // REVIEW - Why are all these functions virtual? Necessary to override by Derived classes?
 };

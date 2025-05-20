@@ -5,7 +5,7 @@
 
 #ifdef LEDRING
 #include "ledring.h"
-#include "kinematics/kinematics.h"
+#include "kinematics\kinematics.hpp"
 #include "axis/config/AxisConfig.hpp"
 
 LedRing::LedRing() {

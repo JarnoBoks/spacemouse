@@ -30,4 +30,6 @@ public:
     void persist(const MotionVector_t motionVectorType) const;
 
     void accept(IPrinterVisitor &visitor);
+
+    const bool getInvert() const { return inversion; }
 };

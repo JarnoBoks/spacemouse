@@ -19,7 +19,7 @@
 #include "sensor/config/SensorConfig.hpp"
 
 // Kinematics
-#include "kinematics/kinematics.h"
+#include "..\..\kinematics\kinematics.hpp"
 #include "kinematics/config/kinematicsconfig.hpp"
 
 // Visitors

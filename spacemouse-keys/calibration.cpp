@@ -4,7 +4,7 @@
 #include "text.h"
 #include "eepromStorage.h"
 #include "calibration.h"
-#include "kinematics.h"
+#include "..\src\kinematics\kinematics.hpp"
 #include "config.h"
 #include "hardware/SpaceMouseHW.h"
 

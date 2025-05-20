@@ -1,6 +1,9 @@
-#include "kinematics.h"
+#include "kinematics.hpp"
 #include "config.h"
 #include "kinematics/config/kinematicsconfig.hpp"
+#include <kinematics/MotionVectorsCollection/DirectionalMotionVectorCollection.hpp>
+#include <kinematics/MotionVector/KinematicsMotionVector.hpp>
+
 #include <Knob/KnobMotionVectorCollection.hpp>
 #include <Knob/MotionVector/KnobMotionVector.hpp>
 
@@ -27,9 +30,40 @@ Kinematics *Kinematics::getInstance() {
  * @details Initializes a Kinematics object by initializing its config and initializing the
  *          axes with their respective configurations and hardware.
  * @note   This constructor sets up all the axes for the Spacemouse functionality.
+ * //REMOVE
  */
 Kinematics::Kinematics() : Observable(c_MAX_KINEMATICS_OBSERVERS),
-                           config(new KinematicsConfig()) {
+                           m_config(new KinematicsConfig()) {}
+
+Kinematics::Kinematics(KnobMotionVectorCollection *knobMotionVectors)
+    : Observable(c_MAX_KINEMATICS_OBSERVERS),
+      m_config(new KinematicsConfig()),
+      m_transMotionVectors(new KinematicsMotionVectorCollection()),
+      m_rotMotionVectors(new KinematicsMotionVectorCollection()) {
+
+    m_transMotionVectors->add(
+        new KinematicsMotionVector(MotionVector_t::TRANSX,
+                                   knobMotionVectors->getMotionVector(MotionVector_t::TRANSX)));
+
+    m_transMotionVectors->add(
+        new KinematicsMotionVector(MotionVector_t::TRANSY,
+                                   knobMotionVectors->getMotionVector(MotionVector_t::TRANSY)));
+
+    m_transMotionVectors->add(
+        new KinematicsMotionVector(MotionVector_t::TRANSZ,
+                                   knobMotionVectors->getMotionVector(MotionVector_t::TRANSZ)));
+
+    m_rotMotionVectors->add(
+        new KinematicsMotionVector(MotionVector_t::ROTX,
+                                   knobMotionVectors->getMotionVector(MotionVector_t::ROTX)));
+
+    m_rotMotionVectors->add(
+        new KinematicsMotionVector(MotionVector_t::ROTY,
+                                   knobMotionVectors->getMotionVector(MotionVector_t::ROTY)));
+
+    m_rotMotionVectors->add(
+        new KinematicsMotionVector(MotionVector_t::ROTZ,
+                                   knobMotionVectors->getMotionVector(MotionVector_t::ROTZ)));
 }
 
 #if 0 // REMOVE
@@ -37,13 +71,13 @@ Kinematics::Kinematics() : Observable(c_MAX_KINEMATICS_OBSERVERS),
 #define ABSVAL(x) abs(static_cast<Axis *>(m_axisCollection->getItem(x))->getFinValue())
 #endif
 void Kinematics::_applyExclusiveMode() {
-    if (config && config->getExclusiveMode()) {
+    if (m_config && m_config->getExclusiveMode()) {
         // Create a visitor for the exclusive movement
         ExclusiveMovementVisitor EMvisitor;
-        m_knobMotionVectors->accept(EMvisitor); // Accept the visitor to apply the exclusive movement
+        // m_knobMotionVectors->accept(EMvisitor); // Accept the visitor to apply the exclusive movement
     }
 #if 0 // REMOVE - After testing
-    if (config && config->getExclusiveMode()) {
+    if (m_config && m_config->getExclusiveMode()) {
         uint16_t totalRot = ABSVAL(ROTX) + ABSVAL(ROTY) + ABSVAL(ROTZ);         // Total rotation value
         uint16_t totalTrans = ABSVAL(TRANSX) + ABSVAL(TRANSY) + ABSVAL(TRANSZ); // Total translation value
 
@@ -97,10 +131,10 @@ void Kinematics::_applySwitchYZ() {
 #endif
 
 void Kinematics::_applySwitchYZ() {
-    if (config != nullptr && config->getSwitchYZ()) {
+    if (m_config != nullptr && m_config->getSwitchYZ()) {
         // Create a visitor for the switch YZ
         SwitchYZVisitor YZvisitor;
-        m_knobMotionVectors->accept(YZvisitor); // Accept the visitor to apply the switch YZ
+        // m_knobMotionVectors->accept(YZvisitor); // Accept the visitor to apply the switch YZ
     }
 }
 
@@ -122,19 +156,19 @@ const MotionVector_t Kinematics::getMainAxis(KnobMotionVector *motionVector) {
 
     // Loop through all axes to find the one with the biggest velocity
     for (int i = 0; i < MotionVector_t::MV_LENGTH; i++) {
-        int16_t absvalue = abs(m_knobMotionVectors->getMotionVector(i)->getFinValue()); // Get the value of the motionVector
+        // TODO int16_t absvalue = abs(m_knobMotionVectors->getMotionVector(i)->getFinValue()); // Get the value of the motionVector
 
         // Is the value of this motionVector greater than deadzone and greater than any of the motionVector before?
-        if ((absvalue > maximumVelocity) && (absvalue > VELOCITYDEADZONEFORLED)) {
+        /* TODO if ((absvalue > maximumVelocity) && (absvalue > VELOCITYDEADZONEFORLED)) {
             maximumVelocity = absvalue;
             idMainAxis = static_cast<MotionVector_t>(i);
-        }
+        } */
     }
     if (idMainAxis == MotionVector_t::MV_UNINITIALIZED) {
         motionVector = nullptr; // Set the motionVector to nullptr if no motionVector is found
     } else {
-        motionVector = static_cast<KnobMotionVector *>(m_knobMotionVectors->getItem(idMainAxis));
-        // REVIEW - Check if the pointer assignment is correct. It should be a reference to the motionVector, not a pointer.
+        // TODO motionVector = static_cast<KnobMotionVector *>(m_knobMotionVectors->getItem(idMainAxis));
+        //  REVIEW - Check if the pointer assignment is correct. It should be a reference to the motionVector, not a pointer.
     }
     return idMainAxis;
 }

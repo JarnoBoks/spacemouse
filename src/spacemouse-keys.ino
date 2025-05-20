@@ -11,7 +11,7 @@
 #include "config.h"
 
 // Header to calculate the kinematics of the mouse
-#include "kinematics/kinematics.h"
+#include "kinematics/kinematics.hpp"
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
 // if an encoder wheel is used
@@ -193,7 +193,7 @@ void loop() {
 #endif
 
     // Decorators for the Axes / Keys (SwitchYZ, ExclusiveMode)
-    Kinematics::getInstance()->execute(); // Set the axis collection for the kinematics object
+    Kinematics::getInstance()->evaluate();
 
     mySpaceMouseHID.execute();
 

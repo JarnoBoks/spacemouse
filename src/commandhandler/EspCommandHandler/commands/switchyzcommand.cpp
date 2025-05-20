@@ -1,5 +1,5 @@
 #include "switchyzcommand.h"
-#include "kinematics/kinematics.h"
+#include "..\..\..\kinematics\kinematics.hpp"
 #include "kinematics/config/kinematicsconfig.hpp"
 #include <printervisitors/SwitchYZPrinter.h>
 #include <common/esp_print.h>

@@ -4,7 +4,7 @@
 #include "eepromStorage.h"
 #include "text.h"
 #include "config.h"
-#include "kinematics.h" // Definition of the velocity array positions (TRANSzz/ROTXzz)
+#include "..\..\src\kinematics\kinematics.hpp" // Definition of the velocity array positions (TRANSzz/ROTXzz)
 
 static const char *Joystick_sensorNames[NUM_SENSORS] = JOYSTICK_SENSOR_NAMES;
 

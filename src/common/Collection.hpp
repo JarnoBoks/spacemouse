@@ -8,7 +8,8 @@
 /**
  * @brief Base class representing a collection of items for the SpaceMouse.
  * @details This class implements the ICollection interface and provides functionality for managing a collection of axes.
- *          It allows adding, removing, and notifying observers of changes in the sensor collection.
+ *          It has methods for adding, removing, retrieving, evaluating of collection items, as well as methods for
+ *          and notifying observers of (all) items in the collection.
  */
 class Collection : public ICollection {
 private:
@@ -77,12 +78,12 @@ public:
         return nullptr; // Return nullptr if the index is out of bounds
     }
 
-    /// @brief Get the item with the specified name
-    /// @param name The name of the item to retrieve
-    /// @return A pointer to the item with the specified name, or nullptr if no matching item is found
-    ICollectable *getItem(const char *name) const override {
+    /// @brief Get the item with the specified descriptor
+    /// @param descriptor The descriptor of the item to retrieve
+    /// @return A pointer to the item with the specified descriptor, or nullptr if no matching item is found
+    ICollectable *getItem(const char *descriptor) const override {
         for (uint8_t i = 0; i < m_itemCount; i++) {
-            if (m_items[i] != nullptr && m_items[i]->isCurrent(name)) {
+            if (m_items[i] != nullptr && m_items[i]->hasDescriptor(descriptor)) {
                 return m_items[i];
             }
         }

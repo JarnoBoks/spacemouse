@@ -3,7 +3,7 @@
 
 // Header file for calibration specific functions and variables
 #include "hardware/SpaceMouseHW.h"
-#include "kinematics.h"
+#include "..\src\kinematics\kinematics.hpp"
 #include "spaceKeys.h"
 
 enum DebugLevel_t : uint8_t {

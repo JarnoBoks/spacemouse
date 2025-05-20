@@ -69,6 +69,6 @@ public:
     // Real functionality to be implemented in derived classes
     virtual void evaluate() override = 0; // Pure virtual function to evaluate the key state and call the appropriate functionality
 
-    // NOTE: isCurrent is not used for this collection, but is part of the ICollectable interface.
-    const bool isCurrent(const char *name) const override { return false; };
+    // NOTE: hasDescriptor is not used for this collection, but is part of the ICollectable interface.
+    const bool hasDescriptor(const char *descriptor) const override { return false; };
 };

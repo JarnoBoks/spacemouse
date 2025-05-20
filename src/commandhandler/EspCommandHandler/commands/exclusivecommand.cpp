@@ -1,5 +1,5 @@
 #include "exclusivecommand.h"
-#include "kinematics/kinematics.h"
+#include <kinematics/kinematics.hpp>
 #include "kinematics/config/kinematicsconfig.hpp"
 #include <printervisitors/ExclusiveModePrinter.h>
 #include "common/esp_print.h"

@@ -43,14 +43,14 @@ public:
         : Observable(c_KNOB_MAX_MOTIONVECTOR_OBSERVERS),
           m_sensorsCalculator(sensorsCalculator),
           m_type(type),
-          m_descriptor(c_MOTIONVECTOR_DESCRIPTORS[static_cast<int>(type)]), // Set the name of the axis based on the MotionVector_t enum
+          m_descriptor(c_TEMP_MOTIONVECTOR_DESCRIPTORS[static_cast<int>(type)]), // Set the name of the axis based on the MotionVector_t enum
           m_Config(new KnobVectorConfig(type)) {};                          // Create a new KnobVectorConfig object for this axis
 
     ~KnobMotionVector() { delete m_Config; } // Destructor (not used in normal SpaceMouse operation)
 
     void evaluate() override;
 
-    const bool isCurrent(const char *name) const override;
+    const bool hasDescriptor(const char *descriptor) const override;
 
     virtual const bool isTranslation() const = 0;
 

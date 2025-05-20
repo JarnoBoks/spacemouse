@@ -30,6 +30,8 @@ private:
     void applyCalibration();
 
 protected:
+    // REFACTOR - Should be descriptor
+    // REFACTOR - Move to PROGMEM
     const char *name = nullptr;
 
 public:
@@ -37,7 +39,7 @@ public:
     Sensor(const int8_t pin, const int8_t id);
     virtual ~Sensor();
 
-    const bool isCurrent(const char *name) const override;
+    const bool hasDescriptor(const char *descriptor) const override;
 
     inline SensorConfig *getConfig() const { return config; };
 

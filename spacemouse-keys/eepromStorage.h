@@ -2,8 +2,8 @@
 #define EEPROMSTORAGE_h
 
 #include <Arduino.h>
-#include "config.h"     // Include the config file for the hardware and the kinematics
-#include "kinematics.h" // Necessary for "VelocityConfig_t" struct
+#include "config.h"                         // Include the config file for the hardware and the kinematics
+#include "..\src\kinematics\kinematics.hpp" // Necessary for "VelocityConfig_t" struct
 
 /**
  * @brief If the version number defined in the EEPROM is not equal to the version number defined in this file, the EEPROM will be erased and initialized with the default values.

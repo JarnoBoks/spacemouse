@@ -41,11 +41,9 @@ public:
         // Get the inversion setting from the knob MotionVector
         const bool invert = m_knobMotionVector->getConfig()->getInvert();
         int16_t value = m_knobMotionVector->getFinValue(); // Get the final value from the knob MotionVector
-        value = (invert) ? -value : value;                 // Invert the value if the inversion setting is enabled
-        setFinValue(value);                                // Set the final value for the Kinematics MotionVector
+        m_finValue = (invert) ? -value : value;            // Invert the value if the inversion setting is enabled
 
         // Notify observers of changes in the Kinematics MotionVector
-        // REVIEW - Not necessary while the SetFinal triggers the observers already if changed.
-        // Observable::notifyObservers();
+        Observable::notifyObservers();
     };
 };

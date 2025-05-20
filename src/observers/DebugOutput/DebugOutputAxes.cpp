@@ -20,14 +20,14 @@ void DebugOutputAxes::update(IObservable *knobMotionVectors) {
     for (uint8_t id = 0; id < static_cast<KnobMotionVectorCollection *>(knobMotionVectors)->getItemCount(); id++) {
         TextHelper::printLeadingComma(id); // Print a komma if it's not the first axis
 
-        KnobMotionVector *axis = static_cast<KnobMotionVectorCollection *>(knobMotionVectors)->getMotionVector(static_cast<MotionVector_t>(id)); // Pointer to the axis
-        if (!axis)
+        KnobMotionVector *motionVector = static_cast<KnobMotionVectorCollection *>(knobMotionVectors)->getMotionVector(static_cast<MotionVector_t>(id)); // Pointer to the axis
+        if (!motionVector)
             continue;
 
-        Serial.print(axis->getName()); // Print the sensor name
+        Serial.print(motionVector->getDescriptor()); // Print the MotionVector name
         Serial.print(F(":"));
-        const int value = getAxisValue(axis); // Get the axis value using the virtual function
-        TextHelper::alignValue(value, 4);     // Align the value to the right with spaces
+        const int value = getAxisValue(motionVector); // Get the value using the function defined in the derived class
+        TextHelper::alignValue(value, 4);             // Align the value to the right with spaces
         Serial.print(value);
     }
 }

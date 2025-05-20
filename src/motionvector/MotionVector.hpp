@@ -18,9 +18,9 @@ private:
     const MotionVector_t m_type = MotionVector_t::MV_UNINITIALIZED; // Type of the MotionVector (translation or rotation) // REVIEW - If the collections are split just like the kinematics setup, we don't need this member anymore in the vector class
     const char *m_descriptor = nullptr;                             // Descriptor of the MotionVector
 
+protected:
     int16_t m_finValue = 0; // The final value of the MotionVector after applying internal modifications.
 
-protected:
 public:
     MotionVector() = delete; // Delete default constructor, do not allow instantiation without parameters
     MotionVector(const MotionVector_t type, const uint8_t maxObservers)

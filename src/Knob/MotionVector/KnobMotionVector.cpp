@@ -6,18 +6,6 @@
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
 
 /**
- * @brief Checks if the provided descriptor matches the MotionVector's descriptor.
- * @param descriptor The descriptor to compare against the MotionVector's descriptor.
- * @return True if the descriptors match, false otherwise.
- */
-const bool KnobMotionVector::hasDescriptor(const char *descriptor) const {
-    if (m_descriptor != nullptr) {
-        return (strcmp(m_descriptor, descriptor) == 0); // NOTE - Change necessary if PROGMEN is used.
-    }
-    return false;
-}
-
-/**
  * @brief   Evaluates the KnobMotionVector by processing the sensor data and applying configurations.
  * @details This function retrieves the raw value from the sensor calculator, applies sensitivity, modifier function, and gate settings,
  *          and inverts the value if necessary. It also handles the kill switch functionality.
@@ -39,7 +27,7 @@ void KnobMotionVector::evaluate() {
     m_finValue = (abs(m_modValue) < dconfig->getGate()) ? 0 : m_modValue; // Apply the gate for this axis & direction
 
     // Invert the motion if necessary
-    m_finValue = (m_Config->inversion) ? -m_finValue : m_finValue; // Invert the value if necessary
+    m_finValue = (m_Config->inversion) ? -m_finValue : m_finValue; // Invert the value if necessary // REFACTOR - Move to kinematics
 }
 
 /**

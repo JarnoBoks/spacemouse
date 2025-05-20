@@ -2,8 +2,7 @@
 
 #include "IPrinterVisitor.h"
 #include <Knob/MotionVector/KnobMotionVector.hpp>
-#include "..\Knob\config\KnobVectorConfig.hpp"
-#include "kinematics/config/kinematicsconfig.hpp"
+#include <Knob/config/KnobVectorConfig.hpp>
 
 #define FMT_NOCOMMA false
 #define FMT_COMMA true
@@ -21,19 +20,31 @@ private:
 public:
     AxisConfigPrinter() {}
 
-    void visit(KnobMotionVector &axis) override {
+    void visit(KnobMotionVector &motionVector) override {
 
         // Print the sensitivity
-        _helper_PrintConfig(axis.getName(), axis.getConfig()->posConfig.getSensitivity(), axis.getConfig()->negConfig.getSensitivity(), FMT_NOCOMMA, NO_PREFIX, TWO_DECIMALS, 21);
+        _helper_PrintConfig(motionVector.getDescriptor(),
+                            motionVector.getConfig()->posConfig.getSensitivity(),
+                            motionVector.getConfig()->negConfig.getSensitivity(),
+                            FMT_NOCOMMA, NO_PREFIX, TWO_DECIMALS, 21);
 
         // Print the gate
-        _helper_PrintConfig(axis.getName(), axis.getConfig()->posConfig.getGate(), axis.getConfig()->negConfig.getGate(), FMT_COMMA, "G", NO_DECIMALS, 21);
+        _helper_PrintConfig(motionVector.getDescriptor(),
+                            motionVector.getConfig()->posConfig.getGate(),
+                            motionVector.getConfig()->negConfig.getGate(),
+                            FMT_COMMA, "G", NO_DECIMALS, 21);
 
         // Print the modfunc
-        _helper_PrintConfig(axis.getName(), axis.getConfig()->posConfig.getModFuncType(), axis.getConfig()->negConfig.getModFuncType(), FMT_COMMA, "M", NO_DECIMALS, 19);
+        _helper_PrintConfig(motionVector.getDescriptor(),
+                            motionVector.getConfig()->posConfig.getModFuncType(),
+                            motionVector.getConfig()->negConfig.getModFuncType(),
+                            FMT_COMMA, "M", NO_DECIMALS, 19);
 
         // Print the inversion
-        _helper_PrintConfig(axis.getName(), axis.getConfig()->inversion, axis.getConfig()->inversion, FMT_COMMA, "I", NO_DECIMALS, -1);
+        _helper_PrintConfig(motionVector.getDescriptor(),
+                            motionVector.getConfig()->inversion,
+                            motionVector.getConfig()->inversion,
+                            FMT_COMMA, "I", NO_DECIMALS, -1);
         Serial.println(); // Print a newline after the last axis status was printed to the serial monitor
     }
 

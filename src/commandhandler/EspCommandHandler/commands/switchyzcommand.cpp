@@ -1,6 +1,7 @@
 #include "switchyzcommand.h"
-#include "..\..\..\kinematics\kinematics.hpp"
-#include "kinematics/config/kinematicsconfig.hpp"
+#include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
+#include <kinematics/kinematics.hpp>
+#include <kinematics/config/kinematicsconfig.hpp>
 #include <printervisitors/SwitchYZPrinter.h>
 #include <common/esp_print.h>
 
@@ -10,8 +11,7 @@ void SwitchYZCommand::execute(const char *param1, const char *param2, uint8_t pa
     if (paramCount == 0) {
         // No parameters provided, handle accordingly
         SwitchYZPrinter printer;
-        Kinematics *kinematics = Kinematics::getInstance();
-        kinematics->getConfig()->accept(printer); // Accept the printer visitor to print the YZ switch configuration
+        m_CollectionCarrier->getKinematics()->getConfig()->accept(printer); // Accept the printer visitor to print the YZ switch configuration
         return;
     }
 
@@ -28,7 +28,7 @@ void SwitchYZCommand::execute(const char *param1, const char *param2, uint8_t pa
             return; // Invalid parameter value
         }
 #endif
-        KinematicsConfig *config = Kinematics::getInstance()->getConfig(); // Get the kinematics configuration instance
+        KinematicsConfig *config = m_CollectionCarrier->getKinematics()->getConfig(); // Get the kinematics configuration instance
         // TODO - Check for Null pointer (on ESP)
         config->setSwitchYZ(requestedLevel);
         config->persist();

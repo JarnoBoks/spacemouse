@@ -1,8 +1,10 @@
 #include "exclusivecommand.h"
+#include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
 #include <kinematics/kinematics.hpp>
-#include "kinematics/config/kinematicsconfig.hpp"
+#include <kinematics/config/kinematicsconfig.hpp>
 #include <printervisitors/ExclusiveModePrinter.h>
-#include "common/esp_print.h"
+
+#include <common/esp_print.h>
 
 void ExclusiveCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     ESP_DBG(F("ExclusiveCommand executed"));
@@ -10,8 +12,7 @@ void ExclusiveCommand::execute(const char *param1, const char *param2, uint8_t p
     if (paramCount == 0) {
         // No parameters provided, handle accordingly
         ExclusiveModePrinter printer;
-        Kinematics *kinematics = Kinematics::getInstance();
-        kinematics->getConfig()->accept(printer); // Accept the printer visitor to print the YZ switch configuration
+        m_CollectionCarrier->getKinematics()->getConfig()->accept(printer); // Accept the printer visitor to print the exclusive mode configuration
         return;
     }
 
@@ -29,7 +30,7 @@ void ExclusiveCommand::execute(const char *param1, const char *param2, uint8_t p
             return; // Invalid parameter value
         }
 #endif
-        KinematicsConfig *config = Kinematics::getInstance()->getConfig(); // Get the kinematics configuration instance
+        KinematicsConfig *config = m_CollectionCarrier->getKinematics()->getConfig(); // Get the kinematics configuration instance
         // TODO - Check for Null pointer (on ESP)
         config->setExclusiveMode(requestedLevel);
         config->persist();

@@ -13,7 +13,6 @@ class KinematicsConfig;
 class KinematicsMotionVectorCollection;
 class KnobMotionVector; // REMOVE
 
-// --- Kinematics Singleton ---
 class Kinematics : public Observable {
 private:
     static Kinematics *instance;
@@ -21,9 +20,7 @@ private:
     KinematicsMotionVectorCollection *m_transMotionVectors = nullptr; // Pointer to the translational kinematic MotionVectors collection
     KinematicsMotionVectorCollection *m_rotMotionVectors = nullptr;   // Pointer to the rotational kinematic MotionVectors collection
 
-    KinematicsConfig *m_config = nullptr;
-
-    Kinematics();
+    KinematicsConfig *m_config = nullptr; // Pointer to the kinematics configuration
 
     void _applyExclusiveMode();
     void _applySwitchYZ();
@@ -38,7 +35,7 @@ private:
 #endif
 
 public:
-    static Kinematics *getInstance(); // REFACTOR - Remove Singleton pattern
+    Kinematics();
     Kinematics(KnobMotionVectorCollection *knobMotionVectors);
 
     void evaluate() {

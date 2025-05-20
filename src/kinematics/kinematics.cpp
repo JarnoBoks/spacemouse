@@ -10,36 +10,11 @@
 #include <visitors/ExclusiveMovementVisitor.hpp>
 #include <visitors/SwitchYZVisitor.hpp>
 
-// Static pointer for the Singleton instance of Kinematics
-// This pointer is initialized to nullptr, indicating that the instance has not been created yet.
-Kinematics *Kinematics::instance = nullptr;
-
-/**
- * @brief  Retrieves the singleton instance of the Kinematics class.
- * @return A reference to the Kinematics instance.
- */
-Kinematics *Kinematics::getInstance() {
-    if (!instance) {
-        instance = new Kinematics();
-    }
-    return instance;
-}
-
-/**
- * @brief  Constructor for the Kinematics class.
- * @details Initializes a Kinematics object by initializing its config and initializing the
- *          axes with their respective configurations and hardware.
- * @note   This constructor sets up all the axes for the Spacemouse functionality.
- * //REMOVE
- */
-Kinematics::Kinematics() : Observable(c_MAX_KINEMATICS_OBSERVERS),
-                           m_config(new KinematicsConfig()) {}
-
 Kinematics::Kinematics(KnobMotionVectorCollection *knobMotionVectors)
     : Observable(c_MAX_KINEMATICS_OBSERVERS),
-      m_config(new KinematicsConfig()),
       m_transMotionVectors(new KinematicsMotionVectorCollection()),
-      m_rotMotionVectors(new KinematicsMotionVectorCollection()) {
+      m_rotMotionVectors(new KinematicsMotionVectorCollection()),
+      m_config(new KinematicsConfig()) {
 
     m_transMotionVectors->add(
         new KinematicsMotionVector(MotionVector_t::TRANSX,

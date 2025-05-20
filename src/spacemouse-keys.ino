@@ -10,9 +10,6 @@
 // Please open config_sample.h, adjust your settings and save it as config.h
 #include "config.h"
 
-// Header to calculate the kinematics of the mouse
-#include "kinematics/kinematics.hpp"
-
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
 // if an encoder wheel is used
 #include "encoderWheel.h"
@@ -48,6 +45,11 @@ SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection);
 #include <Knob/KnobMotionVectorCollection.hpp>  // Include the axis collection header file
 KnobMotionVectorCollection myKnobMotionVectors; // KnobMotionVector collection object to hold the axes and the axis configuration (initialized empty)
 
+// Header to calculate the kinematics of the mouse
+// FIXME - Create a factory for the kinematics class and move the creation of the kinematics class to the factory
+#include "kinematics/kinematics.hpp"
+Kinematics myKinematics(&myKnobMotionVectors); // Kinematics object to calculate the kinematics of the mouse
+
 // Include the header files for the command handler that will handle the commands send by the user through the serial monitor.
 // For the ESP32 and AVR architecture, the command handler is different.
 #include "commandhandler/factory/CommandHandlerFactory.hpp"
@@ -61,7 +63,10 @@ CommandHandler *myCommandHandler; // Command handler object to handle the comman
 
 // Include the header file for the collections carrier
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
-CollectionCarrier myCollections(&mySensorCollection, &myKnobMotionVectors, &myKeyCollection); // Collection identifier object to identify the collection of the command
+CollectionCarrier myCollections(&mySensorCollection,
+                                &myKnobMotionVectors,
+                                &myKeyCollection,
+                                &myKinematics); // Collection identifier object to identify the collection of the command
 
 // Include the header file for the calibration manager (used to calibrate center position of the sensors on startup)
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp" // Include the sensor calibration manager header file
@@ -193,7 +198,7 @@ void loop() {
 #endif
 
     // Decorators for the Axes / Keys (SwitchYZ, ExclusiveMode)
-    Kinematics::getInstance()->evaluate();
+    myKinematics.evaluate();
 
     mySpaceMouseHID.execute();
 

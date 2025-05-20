@@ -409,7 +409,7 @@ void AVRCommandHandler::executeSwitchXY(const char *param1, const char *param2, 
     if (paramCount == 0) {
         // No parameters provided, handle accordingly
         SwitchYZPrinter printer;
-        Kinematics *kinematics = Kinematics::getInstance();
+        Kinematics *kinematics = m_CollectionCarrier->getKinematics();
         kinematics->getConfig()->accept(printer); // Accept the printer visitor to print the YZ switch configuration
         return;
     }
@@ -422,7 +422,7 @@ void AVRCommandHandler::executeSwitchXY(const char *param1, const char *param2, 
             return; // First parameter is not a number
         }
 
-        KinematicsConfig *config = Kinematics::getInstance()->getConfig(); // Get the kinematics configuration instance
+        KinematicsConfig *config = m_CollectionCarrier->getKinematics()->getConfig(); // Get the kinematics configuration instance
         // TODO - Check for Null pointer (on ESP)
         config->setSwitchYZ(requestedLevel);
         config->persist();
@@ -442,7 +442,7 @@ void AVRCommandHandler::executeExlc(const char *param1, const char *param2, cons
     if (paramCount == 0) {
         // No parameters provided, handle accordingly
         ExclusiveModePrinter printer;
-        Kinematics *kinematics = Kinematics::getInstance();
+        Kinematics *kinematics = m_CollectionCarrier->getKinematics();
         kinematics->getConfig()->accept(printer); // Accept the printer visitor to print the YZ switch configuration
         return;
     }
@@ -454,7 +454,7 @@ void AVRCommandHandler::executeExlc(const char *param1, const char *param2, cons
             return; // First parameter is not a number
         }
 
-        KinematicsConfig *config = Kinematics::getInstance()->getConfig(); // Get the kinematics configuration instance
+        KinematicsConfig *config = m_CollectionCarrier->getKinematics()->getConfig(); // Get the kinematics configuration instance
         // TODO - Check for Null pointer (on ESP)
         config->setExclusiveMode(requestedLevel);
         config->persist();

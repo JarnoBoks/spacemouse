@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/Observable.hpp" // For IObservable interface & Base class
-
-#include <motionvector/MotionVectorType.h> // For MotionVector_t enum
+#include "common/Observable.hpp"                                                    // For IObservable interface & Base class
+#include <kinematics/MotionVectorsCollection/DirectionalMotionVectorCollection.hpp> // For KinematicsMotionVectorCollection
+#include <motionvector/MotionVectorType.h>                                          // For MotionVector_t enum
 #include <observers/IObserver.hpp>
 
 /// @brief Number of observers that can be added to this object
@@ -47,11 +47,15 @@ public:
                IObserver *hidEventBufferRotation);
 
     void evaluate() {
+        m_transMotionVectors->evaluate(); // Evaluate all translational kinematics vectors
+        m_rotMotionVectors->evaluate();   // Evaluate all rotational kinematics vectors
+
         _applyExclusiveMode(); // Apply exclusive mode if enabled
         _applySwitchYZ();      // Apply switch YZ if enabled
 
         Observable::notifyObservers(); // Notify observers of changes in the kinematics
     }
+
     KinematicsConfig *getConfig() const { return m_config; }  // Getter for config
     const MotionVector_t getMainAxis(KnobMotionVector *axis); // Get the main and secondary axis for the kinematics
 #if 0

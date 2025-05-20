@@ -39,4 +39,6 @@ public:
 
     // Extend the Collection class to add a function to get the MotionVector by type
     KinematicsMotionVector *getItem(MotionVector_t type) const;
+
+    void setAllToZero(); // Set all motion vectors in the collection to zero
 };

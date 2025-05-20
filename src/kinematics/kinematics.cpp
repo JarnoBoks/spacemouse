@@ -42,42 +42,25 @@ void Kinematics::setup(const KnobMotionVectorCollection *knobMotionVectors,
     _createVector(knobMotionVectors, MotionVector_t::ROTZ, hidEventBufferRotation);
 }
 
-#if 0 // REMOVE
-// Define a macro to simplify the access to the sensor values
-#define ABSVAL(x) abs(static_cast<Axis *>(m_axisCollection->getItem(x))->getFinValue())
-#endif
 void Kinematics::_applyExclusiveMode() {
-    if (m_config && m_config->getExclusiveMode()) {
-        // Create a visitor for the exclusive movement
-        ExclusiveMovementVisitor EMvisitor;
-        // m_knobMotionVectors->accept(EMvisitor); // Accept the visitor to apply the exclusive movement
+    if (!m_config || !m_config->getExclusiveMode()) {
+        return; // Exit if exclusive mode is not enabled
     }
-#if 0 // REMOVE - After testing
-    if (m_config && m_config->getExclusiveMode()) {
-        uint16_t totalRot = ABSVAL(ROTX) + ABSVAL(ROTY) + ABSVAL(ROTZ);         // Total rotation value
-        uint16_t totalTrans = ABSVAL(TRANSX) + ABSVAL(TRANSY) + ABSVAL(TRANSZ); // Total translation value
 
-        // If the total rotation is greater than the total translation, set translation axes to 0
-        // Otherwise, set rotation axes to 0
-        int8_t startAxis = -1;
-        int8_t endAxis = -1;
-        if (totalRot > totalTrans) {
-            startAxis = TRANSX;
-            endAxis = TRANSZ; // Set translation axes to 0
-        } else {
-            startAxis = ROTX;
-            endAxis = ROTZ; // Set translation axes to 0
-        }
-
-        for (int i = startAxis; i <= endAxis; i++) {
-            static_cast<Axis *>(m_knobMotionVectors->getItem(i))->setFinValue(0); // Set translation axes to 0
-        }
+    // Create a visitor for the exclusive movement
+    // ExclusiveMovementVisitor EMvisitor;
+    // m_knobMotionVectors->accept(EMvisitor); // Accept the visitor to apply the exclusive movement
+    /* REFACTOR - For now the collection passes the Zeroing to the motionVector, but this isn't SOLID
+    design and we cannot store the intermediate value for debugging. Furthermore, we should make this
+    function an observer.
+    */
+    if (m_transMotionVectors->getTotalVelocity() > m_rotMotionVectors->getTotalVelocity()) {
+        // If the total translation is greater than the total rotation, set rotation axes to 0
+        m_rotMotionVectors->setAllToZero();
+    } else {
+        m_transMotionVectors->setAllToZero(); // Set translation axes to 0
     }
-#endif
 }
-#if 0 // REMOVE
-#undef ABSVAL
-#endif
 
 #if 0 // REMOVE - After testing
 // REVIEW - What is the order of the exclusive mode and switch YZ?

@@ -4,7 +4,7 @@
 
 #define MAX_AXES 6
 
-#include <Knob/MotionVectorType.h> // For MotionVector_t enum
+#include <motionvector/MotionVectorType.h> // For MotionVector_t enum
 #include <Knob/MotionVector/KnobMotionVector.hpp>
 #include <observers/IObserver.hpp>
 #include <Knob/KnobMotionVectorCollection.hpp>

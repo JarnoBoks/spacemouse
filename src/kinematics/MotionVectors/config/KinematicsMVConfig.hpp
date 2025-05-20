@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Knob/MotionVectorType.h> // For MotionVector_t enum
+#include <motionvector/MotionVectorType.h> // For MotionVector_t enum
 
 class IPrinterVisitor;
 

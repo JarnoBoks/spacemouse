@@ -2,7 +2,7 @@
 
 #include "common/ICollectable.hpp"
 #include "common/Observable.hpp"
-#include <Knob/MotionVectorType.h>           // Include the header file for MotionVector_t enum
+#include <motionvector/MotionVectorType.h>   // Include the header file for MotionVector_t enum
 #include <Knob/config/KnobVectorConfig.hpp>  // Include the header file for AxisConfig class
 #include <Knob/ModifierFunctionType.h>       // Include the header file for ModFunc_t enum
 #include <printervisitors/IPrinterVisitor.h> // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Use IVisitor instead of IPrinterVisitor

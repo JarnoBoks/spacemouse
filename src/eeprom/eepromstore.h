@@ -6,6 +6,10 @@
 #define EEPROM_KNOB_MOTIONVECTOR_ID_BASE 1         // Base ID for knob Motion Vector configurations. There are 6 vectors in total.
 #define EEPROM_KNOB_MOTIONVECTOR_ID_RESERVATIONS 5 // Reserved ID's for each knob motion vector (1 for the KnobMotionVectorConfig, 2 for both KnobMotionVectorDirectionConfig's, 2 spare)
 
+// Documentation for the EEPROM layout / IDs
+#define EEPROM_MVCONFIG_ID_BASE 1         // Base ID for motion vector configurations. There are 6 vectors in total.
+#define EEPROM_MVCONFIG_ID_RESERVATIONS 5 // Reserved ID's for each motion vector (1 for the MotionVectorConfig, 2 for both MotionVectorDirectionConfig's, 2 spare)
+
 #define EEPROM_SENSOR_ID_BASE 75        // Base ID for sensor configurations. There are 8 sensors in total.
 #define EEPROM_SENSOR_ID_RESERVATIONS 3 // Reserved ID's for each sensor (1 for the SensorConfig, 2 spare)
 

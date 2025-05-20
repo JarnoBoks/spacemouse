@@ -4,6 +4,8 @@
 #include <stdint.h>  // For uint8_t
 #include <Arduino.h> // For PROGMEM
 
+// NOTE - See https://github.com/hathach/tinyusb/pull/1363/files for extension.
+
 // USB Device Identification
 // -------------------------
 // !!  For Arduino the USB VID and PID for this emulated space mouse must be set in the boards.txt file when

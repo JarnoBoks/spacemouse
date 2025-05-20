@@ -1,6 +1,6 @@
 #include "SensorsCalculatorHall.hpp"
-#include "sensor/sensors/HallSensor.hpp" // Include the header file for the Hall sensor
-#include <Knob/MotionVectorType.h>       // For MotionVector_t enum
+#include "sensor/sensors/HallSensor.hpp"   // Include the header file for the Hall sensor
+#include <motionvector/MotionVectorType.h> // For MotionVector_t enum
 #include <Knob/MotionVector/KnobMotionVector.hpp>
 
 #ifndef INTERNAL

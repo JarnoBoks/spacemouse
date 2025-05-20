@@ -3,7 +3,7 @@
 #include "common/Observable.hpp" // Include the ICollection interface header file
 
 #include <Knob/MotionVector/IMotionVector.hpp>
-#include <Knob/MotionVectorType.h> // Include the header file for MotionVector_t enum
+#include <motionvector/MotionVectorType.h> // Include the header file for MotionVector_t enum
 
 #include <kinematics/MotionVectors/config/KinematicsMVConfig.hpp>
 

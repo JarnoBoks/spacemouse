@@ -15,6 +15,8 @@ class KnobMotionVector;
 class KnobVectorConfig;
 class KinematicsConfig;
 class KinematicsMVConfig;
+class MotionVector;
+class MotionVectorConfig;
 
 // REFACTOR - We should not need to include all these classes here. We should be able to make one interface for all the classes that need to be visited.
 class IPrinterVisitor {
@@ -25,5 +27,7 @@ public:
     virtual void visit(KnobVectorConfig &config) = 0;
     virtual void visit(KinematicsConfig &config) = 0;
     virtual void visit(KinematicsMVConfig &config) {};
+    virtual void visit(MotionVector &config) {};
+    virtual void visit(MotionVectorConfig &config) {};
     // Add more as needed
 };

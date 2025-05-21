@@ -5,9 +5,10 @@
 
 class IObserver;
 
+/**
+ * @brief Observable class that maintains a list of observers and notifies them of changes.
+ */
 class Observable : public IObservable {
-    // REFACTOR - Can we use a template function in the base class for all these getItem functions in the collection classes?
-    // REFACTOR - Can we add consts to the function parameters?
 private:
     IObserver **observers;     // Array of pointers to observers
     uint8_t observerCount = 0; // Number of observers attached

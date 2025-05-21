@@ -4,12 +4,13 @@
 #include "ICollectable.hpp" // Include the ICollectable interface header file
 
 #include <stdint.h>
-
+// REFACTOR - Split to hpp and cpp file.
 /**
  * @brief Base class representing a collection of items for the SpaceMouse.
- * @details This class implements the ICollection interface and provides functionality for managing a collection of axes.
+ * @details Implements ICollection and provides functionality for managing a collection of axes.
  *          It has methods for adding, removing, retrieving, evaluating of collection items, as well as methods for
  *          and notifying observers of (all) items in the collection.
+ * @note Used to store sensors, knob motionvectors and kinematics motionvectors.
  */
 class Collection : public ICollection {
 private:

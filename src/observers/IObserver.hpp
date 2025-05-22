@@ -4,10 +4,10 @@
 // Forward declaration of classes that are observed (to avoid circular dependencies)
 class Kinematics;
 class KeyCollection;
-class KnobMotionVectorCollection;
+class KnobAxisCollection;
 class SensorCollection;
-class KnobRotation;
-class KnobTranslation;
+class KnobAxisRotation;
+class KnobAxisTranslation;
 
 class IObservable; // REVIEW - Can probably be removed, not using the Observable interface in the observer class
 

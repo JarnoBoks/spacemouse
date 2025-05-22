@@ -1,7 +1,7 @@
 #pragma once
 
 class SensorCollection;
-class KnobMotionVectorCollection;
+class KnobAxisCollection;
 class KeyCollection;
 class Kinematics;
 
@@ -12,10 +12,10 @@ class Kinematics;
  */
 class CollectionCarrier {
 private:
-    SensorCollection *m_SensorCollection = nullptr;            // Pointer to the sensor collection
-    KnobMotionVectorCollection *m_KnobMotionVectors = nullptr; // Pointer to the knob motionvectors collection
-    KeyCollection *m_KeyCollection = nullptr;                  // Pointer to the key collection
-    Kinematics *m_Kinematics = nullptr;                        // Pointer to the kinematics collection
+    SensorCollection *m_SensorCollection = nullptr;     // Pointer to the sensor collection
+    KnobAxisCollection *m_KnobAxisCollection = nullptr; // Pointer to the knob motionvectors collection
+    KeyCollection *m_KeyCollection = nullptr;           // Pointer to the key collection
+    Kinematics *m_Kinematics = nullptr;                 // Pointer to the kinematics collection
 
 public:
     CollectionCarrier() = delete;                                     // Delete the default constructor to prevent instantiation without parameters
@@ -27,22 +27,22 @@ public:
     /**
      * @brief Constructor for the CollectionIdentifier class.
      * @param sensorCollection Pointer to the SensorCollection instance.
-     * @param knobMotionVectors Pointer to the AxisCollection instance.
+     * @param knobAxisCollection Pointer to the AxisCollection instance.
      * @param keyCollection Pointer to the KeyCollection instance.
      * @param kinematics Pointer to the Kinematics instance.
      * @details Initializes the collection identifier with the provided collections.
      */
     CollectionCarrier(SensorCollection *sensorCollection,
-                      KnobMotionVectorCollection *knobMotionVectors,
+                      KnobAxisCollection *knobAxisCollection,
                       KeyCollection *keyCollection,
                       Kinematics *kinematics)
         : m_SensorCollection(sensorCollection),
-          m_KnobMotionVectors(knobMotionVectors),
+          m_KnobAxisCollection(knobAxisCollection),
           m_KeyCollection(keyCollection),
           m_Kinematics(kinematics) {}
 
-    inline SensorCollection *getSensorCollection() const { return m_SensorCollection; }             // Get the sensor collection
-    inline KnobMotionVectorCollection *getKnobMotionVectors() const { return m_KnobMotionVectors; } // Get the axis collection
-    inline KeyCollection *getKeyCollection() const { return m_KeyCollection; }                      // Get the key collection
-    inline Kinematics *getKinematics() const { return m_Kinematics; }                               // Get the kinematics collection
+    inline SensorCollection *getSensorCollection() const { return m_SensorCollection; } // Get the sensor collection
+    inline KnobAxisCollection *getKnobAxes() const { return m_KnobAxisCollection; }     // Get the axis collection
+    inline KeyCollection *getKeyCollection() const { return m_KeyCollection; }          // Get the key collection
+    inline Kinematics *getKinematics() const { return m_Kinematics; }                   // Get the kinematics collection
 };

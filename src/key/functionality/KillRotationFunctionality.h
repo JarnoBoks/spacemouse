@@ -1,7 +1,7 @@
 // KillRotationFunctionality.h
 #pragma once
 #include "KillSwitchFunctionality.h"
-#include "..\..\kinematics\kinematics.hpp" // For Kinematics class
+#include <kinematics/Kinematics.hpp>
 
 class KillRotationFunctionality : public KillSwitchFunctionality {
 public:

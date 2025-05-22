@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DebugOutputAxes.hpp"
-#include <Knob/MotionVector/KnobMotionVector.hpp>
+#include <knob/axis/KnobAxis.hpp>
 
 /**
  * @brief Output class for axis values with sensitivity applied.
@@ -10,7 +10,7 @@
  */
 class DebugOutputAxesSensitivity : public DebugOutputAxes {
 private:
-    inline const int getAxisValue(const KnobMotionVector *axis) const override {
+    inline const int getAxisValue(const KnobAxis *axis) const override {
         // Class need the sensitivity value for printing.
         return axis->getSnsValue(); // Get the axis value
     }

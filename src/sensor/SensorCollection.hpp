@@ -1,7 +1,7 @@
 #pragma once
 
-#include "..\collection\Collection.hpp" // Include the ICollection interface header file
-#include "common/Observable.hpp" // Include the ICollection interface header file
+#include <base/collection/CollectionBase.hpp> // Include the ICollection interface header file
+#include <common/Observable.hpp>              // Include the ICollection interface header file
 #include <stdint.h>
 
 /// @brief Number of sensors that can be added to the collection.
@@ -21,10 +21,10 @@ class Sensor;
  *          It allows adding, removing, and notifying observers of changes in the sensor collection.
  * @note The SensorCollection class is designed to manage a fixed number of sensors and their associated observers.
  */
-class SensorCollection : public Collection, public Observable {
+class SensorCollection : public CollectionBase, public Observable {
 public:
     /// @brief Constructor for empty SensorCollection
-    SensorCollection() : Collection(cHW_MAX_SENSORS), Observable(c_MAX_SENSORCOLLECTION_OBSERVERS) {}
+    SensorCollection() : CollectionBase(cHW_MAX_SENSORS), Observable(c_MAX_SENSORCOLLECTION_OBSERVERS) {}
     ~SensorCollection() {}
 
     /**
@@ -44,7 +44,7 @@ public:
      * @note Derived classes are allowed to override this method to provide custom evaluation logic.
      */
     void evaluate() override {
-        Collection::evaluate();        // Evaluate the sensors in the collection
+        CollectionBase::evaluate();    // Evaluate the sensors in the collection
         Observable::notifyObservers(); // Notify observers of changes in the sensor collection
     };
 };

@@ -4,7 +4,7 @@
 
 #include <Arduino.h>
 #include "config.h"
-#include "..\src\kinematics\kinematics.hpp"
+#include "..\src\kinematics\Kinematics.hpp"
 #include "spaceKeys.h"
 
 void initEncoderWheel();

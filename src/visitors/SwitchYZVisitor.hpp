@@ -1,8 +1,8 @@
 #pragma once
-#include "IVisitor.hpp" // Include the IVisitor interface header file
+#include <common/IVisitor.hpp> // Include the IVisitor interface header file
 
-#include <Knob/MotionVector/KnobMotionVector.hpp> // Include the Axis class header file
-#include <Knob/KnobMotionVectorCollection.hpp>
+#include <knob/axis/KnobAxis.hpp> // Include the Axis class header file
+#include <knob/KnobAxisCollection.hpp>
 
 /**
  * @brief Visitor class for switching the Y and Z axes in the AxisCollection.
@@ -14,26 +14,26 @@ public:
     SwitchYZVisitor() = default;  // Default constructor
     ~SwitchYZVisitor() = default; // Destructor
 
-    void visit(Visitable &knobMotionVectors) override {
+    void visit(VisitableBase &knobMotionVectors) override {
 
-        // Cast the Visitable to AxisCollection
-        KnobMotionVectorCollection *axisCol = static_cast<KnobMotionVectorCollection *>(&knobMotionVectors);
+        // Cast the VisitableBase to AxisCollection
+        KnobAxisCollection *axisCol = static_cast<KnobAxisCollection *>(&knobMotionVectors);
 
         if (!axisCol) {
             Serial.println(F("Invalid AxisCollection"));
             return;
         }
 
-        KnobMotionVector *axisY = axisCol->getMotionVector(TRANSY);
-        KnobMotionVector *axisZ = axisCol->getMotionVector(TRANSZ);
+        KnobAxis *axisY = axisCol->getAxis(TRANSY);
+        KnobAxis *axisZ = axisCol->getAxis(TRANSZ);
 
         int16_t tmp = 0;
         tmp = axisY->getFinValue();
         axisY->setFinValue(axisZ->getFinValue());
         axisZ->setFinValue(tmp);
 
-        axisY = axisCol->getMotionVector(ROTY);
-        axisZ = axisCol->getMotionVector(ROTZ);
+        axisY = axisCol->getAxis(ROTY);
+        axisZ = axisCol->getAxis(ROTZ);
 
         tmp = axisY->getFinValue();
         axisY->setFinValue(axisZ->getFinValue());

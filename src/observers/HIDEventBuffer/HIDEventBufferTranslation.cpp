@@ -1,5 +1,5 @@
 #include "HIDEventBufferTranslation.hpp"
-#include <kinematics/Axis/KinematicsAxis.hpp>
+#include <kinematics/axis/KinematicsAxis.hpp>
 
 void HIDEventBufferTranslation::update(IObservable *kinVectorTranslation) {
     if (!kinVectorTranslation) {

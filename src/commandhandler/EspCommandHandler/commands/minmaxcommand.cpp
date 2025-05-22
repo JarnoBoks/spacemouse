@@ -3,7 +3,7 @@
 #include <sensor/calibration/SensorCalibrationManagerMinMax.hpp>
 #include <sensor/SensorCollection.hpp>
 #include <sensor/config/SensorConfig.hpp>
-#include <printervisitors/MinMaxPrinter.h>
+#include <visitors/printers/MinMaxPrinter.hpp>
 
 #include <common/esp_print.h> // For ESP_PRINT
 

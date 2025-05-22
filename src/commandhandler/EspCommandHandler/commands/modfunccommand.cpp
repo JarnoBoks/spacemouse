@@ -1,6 +1,6 @@
 #include "modfunccommand.h"
-#include <Knob/MotionVector/KnobMotionVector.hpp>
-#include <Knob/config/KnobVectorConfig.hpp>
+#include <knob/axis/KnobAxis.hpp>
+#include <knob/axis/config/KnobAxisConfig.hpp>
 
 #include <common/esp_print.h> // For ESP_PRINT
 

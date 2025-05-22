@@ -2,7 +2,7 @@
 #include "SpaceMouseHW_Hall.h"
 #include "config.h"
 #include "text.h"
-#include "..\..\src\kinematics\kinematics.hpp" // Definition of the velocity array positions (TRANSzz/ROTXzz)
+#include "..\..\src\kinematics\Kinematics.hpp" // Definition of the velocity array positions (TRANSzz/ROTXzz)
 
 static const char *Hall_sensorNames[NUM_SENSORS] = HALL_SENSOR_NAMES;
 

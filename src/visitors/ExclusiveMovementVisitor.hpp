@@ -1,8 +1,8 @@
 #pragma once
-#include "IVisitor.hpp"
+#include <common/IVisitor.hpp>
 
-#include <Knob/MotionVector/KnobMotionVector.hpp>
-#include <Knob/KnobMotionVectorCollection.hpp>
+#include <knob/axis/KnobAxis.hpp>
+#include <knob/KnobAxisCollection.hpp>
 
 /**
  * @brief Visitor class for handling exclusive mode for translational or rotational movement.
@@ -18,10 +18,10 @@ public:
      * @details This method calculates the total rotation and translation values of the axes in the collection.
      *          It then sets the fin value of either the translation or rotation axes to 0, depending on which has a greater total value.
      */
-    void visit(Visitable &knobMotionVectors) override {
+    void visit(VisitableBase &knobMotionVectors) override {
 
-        // Cast the Visitable to AxisCollection
-        KnobMotionVectorCollection *axisCol = static_cast<KnobMotionVectorCollection *>(&knobMotionVectors);
+        // Cast the VisitableBase to AxisCollection
+        KnobAxisCollection *axisCol = static_cast<KnobAxisCollection *>(&knobMotionVectors);
 
         if (!axisCol) {
             Serial.println(F("Invalid AxisCollection"));
@@ -32,7 +32,7 @@ public:
         uint16_t totalTranslation = 0; // Total translation value
 
         for (uint8_t i = 0; i < axisCol->getItemCount(); i++) {
-            KnobMotionVector *axis = static_cast<KnobMotionVector *>(axisCol->getItem(i));
+            KnobAxis *axis = static_cast<KnobAxis *>(axisCol->getItem(i));
             if (axis) {
                 if (axis->isTranslation()) {
                     totalTranslation += abs(axis->getFinValue());
@@ -52,7 +52,7 @@ public:
         }
 
         for (uint8_t i = 0; i < axisCol->getItemCount(); i++) {
-            KnobMotionVector *axis = static_cast<KnobMotionVector *>(axisCol->getItem(i));
+            KnobAxis *axis = static_cast<KnobAxis *>(axisCol->getItem(i));
             if (axis && (axis->isTranslation() == actOnTranslationAxis)) {
                 axis->setFinValue(0); // Set the fin value to 0 for the selected axes
             }

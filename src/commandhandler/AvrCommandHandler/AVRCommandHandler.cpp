@@ -3,7 +3,7 @@
 
 // Collections
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
-#include <Knob/KnobMotionVectorCollection.hpp>
+#include <knob/KnobAxisCollection.hpp>
 #include "sensor/SensorCollection.hpp"
 
 // Calibration managers
@@ -11,22 +11,22 @@
 #include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
 
 // Axes
-#include <Knob\MotionVector\KnobMotionVector.hpp>
-#include <Knob\config\KnobVectorConfig.hpp>
-#include <Knob\config\KnobVectorDirectionConfig.hpp>
+#include <knob/axis/KnobAxis.hpp>
+#include <knob/axis/config/KnobAxisConfig.hpp>
+#include <knob/axis/config/KnobAxisDirectionConfig.hpp>
 
 // Sensors
 #include "sensor/config/SensorConfig.hpp"
 
 // Kinematics
-#include "..\..\kinematics\kinematics.hpp"
-#include "kinematics/config/kinematicsconfig.hpp"
+#include <kinematics/Kinematics.hpp>
+#include <kinematics/config/kinematicsconfig.hpp>
 
 // Visitors
-#include <printervisitors/AxisConfigPrinter.h>
-#include <printervisitors/SwitchYZPrinter.h>
-#include <printervisitors/ExclusiveModePrinter.h>
-#include <printervisitors/MinMaxPrinter.h>
+#include <visitors/printers/AxisConfigPrinter.hpp>
+#include <visitors/printers/SwitchYZPrinter.hpp>
+#include <visitors/printers/ExclusiveModePrinter.hpp>
+#include <visitors/printers/MinMaxPrinter.hpp>
 
 // Observers
 #include "observers/DebugOutput/DebugOutputSensorsRaw.hpp"
@@ -334,14 +334,14 @@ void AVRCommandHandler::executeSens(const char *param1, const char *param2, cons
 
     bool touched = false; // Flag to indicate if the sensitivity was set
     for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-        if (m_knobVectorDirectionConfig[i]) {
-            m_knobVectorDirectionConfig[i]->setSensitivity(requestedValue);
+        if (m_knobAxisDirectionConfig[i]) {
+            m_knobAxisDirectionConfig[i]->setSensitivity(requestedValue);
             touched |= true;
         }
     }
 
     if (touched) {
-        m_knobMotionVector->getConfig()->persist(m_knobMotionVector->getType()); // Store the value in the EEPROM
+        m_knobAxis->getConfig()->persist(m_knobAxis->getType()); // Store the value in the EEPROM
     }
 }
 
@@ -355,14 +355,14 @@ void AVRCommandHandler::executeGate(const char *param1, const char *param2, cons
 
     bool touched = false; // Flag to indicate if the sensitivity was set
     for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-        if (m_knobVectorDirectionConfig[i]) {
-            m_knobVectorDirectionConfig[i]->setGate(requestedValue);
+        if (m_knobAxisDirectionConfig[i]) {
+            m_knobAxisDirectionConfig[i]->setGate(requestedValue);
             touched |= true;
         }
     }
 
     if (touched) {
-        m_knobMotionVector->getConfig()->persist(m_knobMotionVector->getType()); // Store the value in the EEPROM
+        m_knobAxis->getConfig()->persist(m_knobAxis->getType()); // Store the value in the EEPROM
     }
 }
 
@@ -373,14 +373,14 @@ void AVRCommandHandler::executeModFunc(const char *param1, const char *param2, c
 
     bool touched = false; // Flag to indicate if the sensitivity was set
     for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-        if (m_knobVectorDirectionConfig[i]) {
-            m_knobVectorDirectionConfig[i]->setModFuncType(mF);
+        if (m_knobAxisDirectionConfig[i]) {
+            m_knobAxisDirectionConfig[i]->setModFuncType(mF);
             touched |= true;
         }
     }
 
     if (touched) {
-        m_knobMotionVector->getConfig()->persist(m_knobMotionVector->getType()); // Store the value in the EEPROM
+        m_knobAxis->getConfig()->persist(m_knobAxis->getType()); // Store the value in the EEPROM
     }
 }
 
@@ -392,14 +392,14 @@ void AVRCommandHandler::executeInvert(const char *param1, const char *param2, co
     float requestedValue = executeAxis(param1, param2, paramCount);
 
     // Check if the axis has a valid AxisDirectionConfig
-    if (!m_knobVectorDirectionConfig) {
+    if (!m_knobAxisDirectionConfig) {
         ESP_PRINT(F("InvertCommand::execute: No direction config available"));
         return; // No direction config available, exit the function
     }
 
-    KnobVectorConfig *cfgKnobVector = m_knobMotionVector->getConfig(); // Get the axis configuration instance
-    cfgKnobVector->inversion = requestedValue;                         // Set the inversion value to the requested value
-    cfgKnobVector->persist(m_knobMotionVector->getType());             // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
+    KnobAxisConfig *cfgKnobVector = m_knobAxis->getConfig(); // Get the axis configuration instance
+    cfgKnobVector->inversion = requestedValue;               // Set the inversion value to the requested value
+    cfgKnobVector->persist(m_knobAxis->getType());           // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
 }
 
 void AVRCommandHandler::executeSwitchXY(const char *param1, const char *param2, const uint8_t paramCount) {
@@ -476,13 +476,13 @@ void AVRCommandHandler::executeExlc(const char *param1, const char *param2, cons
  * @param paramCount The number of parameters provided.
  * @return The result of the command execution.
  * @retval -1 If no, incorrect or unsufficient parameters are provided.
- * @retval The requested value (float) if two parameters are provided and the command is executed successfully. The m_knobVectorDirectionConfig array is updated to point to the correct AxisDirectionConfig object(s).
+ * @retval The requested value (float) if two parameters are provided and the command is executed successfully. The m_knobAxisDirectionConfig array is updated to point to the correct AxisDirectionConfig object(s).
  */
 float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uint8_t paramCount) {
     if (paramCount == 0) {
         // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
-        m_CollectionCarrier->getKnobMotionVectors()->acceptAxesVisitor(printer);
+        m_CollectionCarrier->getKnobAxes()->acceptAxesVisitor(printer);
         return -1;
     }
 
@@ -493,9 +493,9 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
     if (paramCount == 2) {
         // Command received, fe. SENS [+|-]<axisname> <value>
 
-        // Erase the m_knobVectorDirectionConfig pointers
+        // Erase the m_knobAxisDirectionConfig pointers
         for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-            m_knobVectorDirectionConfig[i] = nullptr;
+            m_knobAxisDirectionConfig[i] = nullptr;
         }
 
         float requestedValue = 0;
@@ -508,30 +508,30 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
             // The first character is a direction
             // REVIEW - Can the cast (char *)param1 be removed?
             char *reqAxisName = (char *)param1 + 1; // Pointer to the axis name (skip the first character)
-            m_knobMotionVector = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(reqAxisName);
-            if (m_knobMotionVector == nullptr) {
-                return -1; // Error: KnobMotionVector not found, exit the function
+            m_knobAxis = m_CollectionCarrier->getKnobAxes()->getAxis(reqAxisName);
+            if (m_knobAxis == nullptr) {
+                return -1; // Error: KnobAxis not found, exit the function
             }
 
             if (directionChar == '+') {
                 // The positive direction config should be used
-                m_knobVectorDirectionConfig[0] = &m_knobMotionVector->getConfig()->posConfig;
+                m_knobAxisDirectionConfig[0] = &m_knobAxis->getConfig()->posConfig;
 
             } else if (directionChar == '-') {
                 // The negative direction config should be used
-                m_knobVectorDirectionConfig[0] = &m_knobMotionVector->getConfig()->negConfig;
+                m_knobAxisDirectionConfig[0] = &m_knobAxis->getConfig()->negConfig;
             }
 
         } else {
-            // The first character is not a direction, test if the KnobMotionVector name is specified.
-            m_knobMotionVector = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(param1);
-            if (m_knobMotionVector == nullptr) {
-                return -1; // KnobMotionVector is not found, exit the function
+            // The first character is not a direction, test if the KnobAxis name is specified.
+            m_knobAxis = m_CollectionCarrier->getKnobAxes()->getAxis(param1);
+            if (m_knobAxis == nullptr) {
+                return -1; // KnobAxis is not found, exit the function
             }
 
             // There is an axis name, but no direction provided. Both directions have to be updated.
-            m_knobVectorDirectionConfig[0] = &m_knobMotionVector->getConfig()->posConfig;
-            m_knobVectorDirectionConfig[1] = &m_knobMotionVector->getConfig()->negConfig;
+            m_knobAxisDirectionConfig[0] = &m_knobAxis->getConfig()->posConfig;
+            m_knobAxisDirectionConfig[1] = &m_knobAxis->getConfig()->negConfig;
         }
 
         return requestedValue; // Return the requested value
@@ -613,9 +613,9 @@ void AVRCommandHandler::DebugParamSensorInformationFiltered() {
 void AVRCommandHandler::DebugParamAxisInformation() {
     DetachCurrentObservers(); // Detach the previous observer if it exists
 
-    // Instantiate the Observer for the KnobMotionVector values and attach it to the hardware
+    // Instantiate the Observer for the KnobAxis values and attach it to the hardware
     m_AxisObserver = new DebugOutputAxesSensitivity();
-    getCollectionCarrier()->getKnobMotionVectors()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
+    getCollectionCarrier()->getKnobAxes()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
 }
 
 void AVRCommandHandler::DebugParamSensorAxisInformation() {
@@ -626,7 +626,7 @@ void AVRCommandHandler::DebugParamSensorAxisInformation() {
     m_AxisObserver = new DebugOutputAxesModified();
 
     getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
-    getCollectionCarrier()->getKnobMotionVectors()->attachObserver(m_AxisObserver);  // Attach the axis observer to the axis collection
+    getCollectionCarrier()->getKnobAxes()->attachObserver(m_AxisObserver);           // Attach the axis observer to the axis collection
 }
 
 void AVRCommandHandler::DebugParamSensorAxisKeysInformation() {
@@ -637,7 +637,7 @@ void AVRCommandHandler::DebugParamSensorAxisKeysInformation() {
     m_AxisObserver = new DebugOutputAxesModified();
 
     getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
-    getCollectionCarrier()->getKnobMotionVectors()->attachObserver(m_AxisObserver);  // Attach the axis observer to the axis collection
+    getCollectionCarrier()->getKnobAxes()->attachObserver(m_AxisObserver);           // Attach the axis observer to the axis collection
 }
 
 void AVRCommandHandler::DebugParamLoopFrequency() {
@@ -645,14 +645,14 @@ void AVRCommandHandler::DebugParamLoopFrequency() {
 
     // Instantiate the Observer for the Loop Frequency values and attach it to the hardware
     m_LoopFrequencyObserver = new DebugOutputLoopFrequency();
-    getCollectionCarrier()->getKnobMotionVectors()->attachObserver(m_LoopFrequencyObserver); // Attach the observer to the axis collection
+    getCollectionCarrier()->getKnobAxes()->attachObserver(m_LoopFrequencyObserver); // Attach the observer to the axis collection
 }
 
 void AVRCommandHandler::DetachCurrentObservers() {
     if (m_AxisObserver != nullptr) {
-        getCollectionCarrier()->getKnobMotionVectors()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
-        delete m_AxisObserver;                                                          // Delete the previous observer if it exists
-        m_AxisObserver = nullptr;                                                       // Set the observer pointer to null
+        getCollectionCarrier()->getKnobAxes()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
+        delete m_AxisObserver;                                                 // Delete the previous observer if it exists
+        m_AxisObserver = nullptr;                                              // Set the observer pointer to null
     }
 
     if (m_SensorObserver != nullptr) {
@@ -662,8 +662,8 @@ void AVRCommandHandler::DetachCurrentObservers() {
     }
 
     if (m_LoopFrequencyObserver != nullptr) {
-        getCollectionCarrier()->getKnobMotionVectors()->detachObserver(m_LoopFrequencyObserver); // Detach the observer from the axis collection
-        delete m_LoopFrequencyObserver;                                                          // Delete the previous observer if it exists
-        m_LoopFrequencyObserver = nullptr;                                                       // Set the observer pointer to null
+        getCollectionCarrier()->getKnobAxes()->detachObserver(m_LoopFrequencyObserver); // Detach the observer from the axis collection
+        delete m_LoopFrequencyObserver;                                                 // Delete the previous observer if it exists
+        m_LoopFrequencyObserver = nullptr;                                              // Set the observer pointer to null
     }
 }

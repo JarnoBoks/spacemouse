@@ -5,7 +5,7 @@
 
 #include <Arduino.h>
 #include "config.h"                         // Include the config file for the hardware and the kinematics
-#include "..\src\kinematics\kinematics.hpp" // Our header file for the kinematics
+#include "..\src\kinematics\Kinematics.hpp" // Our header file for the kinematics
 #include "eepromStorage.h"                  // Include the EEPROM address map
 #include <EEPROM.h>
 #include "text.h" // Include the text file for the debug output

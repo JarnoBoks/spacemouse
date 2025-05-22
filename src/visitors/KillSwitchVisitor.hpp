@@ -1,8 +1,8 @@
 #pragma once
-#include "IVisitor.hpp" // Include the IVisitor interface header file
+#include <common/IVisitor.hpp> // Include the IVisitor interface header file
 
-#include <Knob/MotionVector/KnobMotionVector.hpp> // Include the Axis class header file
-#include <Knob/KnobMotionVectorCollection.hpp>
+#include <knob/axis/KnobAxis.hpp> // Include the Axis class header file
+#include <knob/KnobAxisCollection.hpp>
 
 /**
  * @brief Visitor class for handling exclusive mode for translational or rotational movement.
@@ -13,10 +13,10 @@ public:
     KillSwitchVisitor() = default;  // Default constructor
     ~KillSwitchVisitor() = default; // Destructor
 
-    void visit(Visitable &knobMotionVectors) override {
+    void visit(VisitableBase &knobMotionVectors) override {
 
-        // Cast the Visitable to AxisCollection
-        KnobMotionVectorCollection *axisCol = static_cast<KnobMotionVectorCollection *>(&knobMotionVectors);
+        // Cast the VisitableBase to AxisCollection
+        KnobAxisCollection *axisCol = static_cast<KnobAxisCollection *>(&knobMotionVectors);
 
         if (!axisCol) {
             Serial.println(F("Invalid AxisCollection"));
@@ -34,7 +34,7 @@ public:
         }
 
         for (uint8_t i = 0; i < axisCol->getItemCount(); i++) {
-            KnobMotionVector *axis = static_cast<KnobMotionVector *>(axisCol->getItem(i));
+            KnobAxis *axis = static_cast<KnobAxis *>(axisCol->getItem(i));
             if (axis && (axis->isTranslation() == actOnTranslationAxis)) {
                 axis->setFinValue(0); // Set the fin value to 0 for the selected axes
             }

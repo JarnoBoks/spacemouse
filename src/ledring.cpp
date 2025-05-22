@@ -5,7 +5,7 @@
 
 #ifdef LEDRING
 #include "ledring.h"
-#include "kinematics\kinematics.hpp"
+#include "kinematics\Kinematics.hpp"
 #include "axis/config/AxisConfig.hpp"
 
 LedRing::LedRing() {
@@ -22,7 +22,7 @@ LedRing::LedRing() {
 void LedRing::ProcessLED(boolean ledCmd) {
     unsigned long now = millis();
     static unsigned long lastLEDupdate = now;
-    KnobMotionVector *axis; // pointer to the axis object
+    KnobAxis *axis; // pointer to the axis object
 
     if (now - lastLEDupdate >= LEDUPDATERATE_MS) {
         _setAllLEDs(CRGB::Black);

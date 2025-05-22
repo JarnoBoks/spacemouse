@@ -3,8 +3,8 @@
 #include <stdint.h>
 
 // Documentation for the EEPROM layout / IDs
-#define EEPROM_KNOB_MOTIONVECTOR_ID_BASE 1         // Base ID for knob Motion Vector configurations. There are 6 vectors in total.
-#define EEPROM_KNOB_MOTIONVECTOR_ID_RESERVATIONS 5 // Reserved ID's for each knob motion vector (1 for the KnobMotionVectorConfig, 2 for both KnobMotionVectorDirectionConfig's, 2 spare)
+#define EEPROM_KNOB_AXIS_ID_BASE 1         // Base ID for KnobAxis configurations. There are 6 axes in total.
+#define EEPROM_KNOB_AXIS_ID_RESERVATIONS 5 // Reserved ID's for each knob axis (1 for the KnobAxisConfig, 2 for both KnobAxisDirectionConfig's, 2 spare)
 
 // Documentation for the EEPROM layout / IDs
 #define EEPROM_MVCONFIG_ID_BASE 1         // Base ID for motion vector configurations. There are 6 vectors in total.

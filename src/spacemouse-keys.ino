@@ -41,14 +41,14 @@ SensorsCalculatorHall mySensorCalculator(&mySensorCollection);
 SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection);
 #endif
 
-// Include the header file for the KnobMotionVector and the KnobMotionVector collection
-#include <Knob/KnobMotionVectorCollection.hpp>  // Include the axis collection header file
-KnobMotionVectorCollection myKnobMotionVectors; // KnobMotionVector collection object to hold the axes and the axis configuration (initialized empty)
+// Include the header file for the KnobAxis and the KnobAxisCollection
+#include <knob/KnobAxisCollection.hpp> // Include the axis collection header file
+KnobAxisCollection myKnobAxes;         // KnobAxisCollection object to hold the axes and the axis configuration (initialized empty)
 
 // Header to calculate the kinematics of the mouse
-// FIXME - Create a factory for the kinematics class and move the creation of the kinematics class to the factory
-#include "kinematics/kinematics.hpp"
-Kinematics myKinematics; // Kinematics object to calculate the kinematics of the mouse
+// FIXME - Create a factory for the Kinematics class and move the creation of the kinematics class to the factory
+#include "kinematics/Kinematics.hpp"
+Kinematics myKinematics; // Kinematics object to evaluate the kinematics of the mouse
 
 // Include the header files for the command handler that will handle the commands send by the user through the serial monitor.
 // For the ESP32 and AVR architecture, the command handler is different.
@@ -64,7 +64,7 @@ CommandHandler *myCommandHandler; // Command handler object to handle the comman
 // Include the header file for the collections carrier
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
 CollectionCarrier myCollections(&mySensorCollection,
-                                &myKnobMotionVectors,
+                                &myKnobAxes,
                                 &myKeyCollection,
                                 &myKinematics); // Collection identifier object to identify the collection of the command
 
@@ -72,7 +72,7 @@ CollectionCarrier myCollections(&mySensorCollection,
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp" // Include the sensor calibration manager header file
 SensorCalibrationManagerIdle *mySensorCalibrationManagerIdle;  // Sensor calibration manager object to handle the calibration of the sensors
 
-// Include the header file for the HID Event Buffer (used as interface between KnobMotionVector & Keys and the HID Handler)
+// Include the header file for the HID Event Buffer (used as interface between KnobAxis & Keys and the HID Handler)
 #include "observers/HIDEventBuffer/HIDEventBufferKeys.hpp"
 #include "observers/HIDEventBuffer/HIDEventBufferRotation.hpp"
 #include "observers/HIDEventBuffer/HIDEventBufferTranslation.hpp"
@@ -118,13 +118,13 @@ void setup() {
     //  Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();
 
-    // Setup the KnobMotionVector collection. This will setup the axes and the axis configuration, and attaches the HID event buffers.
+    // Setup the KnobAxis collection. This will setup the axes and the axis configuration, and attaches the HID event buffers.
     // TODO - Create a AxisFactory that will create the axes based on the configuration.
-    myKnobMotionVectors.setup(&mySensorCalculator);
+    myKnobAxes.setup(&mySensorCalculator);
 
     // Setup the Kinematics object. This will create the kinematic axes of the mouse.
     // TODO - The setup will check the EEPROM for the configuration of the sensors and the axes.
-    myKinematics.setup(&myKnobMotionVectors,
+    myKinematics.setup(&myKnobAxes,
                        &myHIDEventBufferTranslation,
                        &myHIDEventBufferRotation);
 
@@ -136,7 +136,7 @@ void setup() {
     // The setup will check the EEPROM for the configuration of the sensors and the axes.
     // If the configuration is not available, the default values as set in config.h will be used (and stored in the EEPROM)
     // FIXME - Kinematics should be removed
-    // FIXME Kinematics::getInstance()->setAxisCollection(&myKnobMotionVectors); // Set the axis collection for the kinematics object
+    // FIXME Kinematics::getInstance()->setAxisCollection(&myKnobAxes); // Set the axis collection for the kinematics object
 
     // Call the setup function of the button factory. This will setup the buttons and the button configuration.
     // REVIEW - Not necessary for now: KeyFactory::getInstance()->setupKeys(); // Updated from setupButtons() to setupKeys()
@@ -189,7 +189,7 @@ void loop() {
     mySensorCollection.evaluate();
 
     // Calculate from sensor data and apply all config- & calibration settings to the axis values & notify collection observers
-    myKnobMotionVectors.evaluate();
+    myKnobAxes.evaluate();
 
 #if (ROTARY_AXIS > 0) && ROTARY_AXIS < 7
     // If an encoder wheel is used, calculate the velocity of the wheel and replace one of the former calculated velocities

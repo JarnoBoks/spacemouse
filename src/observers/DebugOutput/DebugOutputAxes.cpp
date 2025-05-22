@@ -1,6 +1,6 @@
 #include "DebugOutputAxes.hpp"
-#include <Knob/KnobMotionVectorCollection.hpp>
-#include <Knob/MotionVector/KnobMotionVector.hpp>
+#include <knob/KnobAxisCollection.hpp>
+#include <knob/axis/KnobAxis.hpp>
 #include <common/TextHelper.h>
 
 /**
@@ -17,17 +17,17 @@ void DebugOutputAxes::update(IObservable *knobMotionVectors) {
 
     // REFACTOR - Do the loop constraint(itemCount) for all collections (sensors, keys, axes) in the base class
     // REVIEW - Test - static cast is not necessary, but it is more readable
-    for (uint8_t id = 0; id < static_cast<KnobMotionVectorCollection *>(knobMotionVectors)->getItemCount(); id++) {
-        TextHelper::printLeadingComma(id); // Print a komma if it's not the first axis
+    for (uint8_t i = 0; i < static_cast<KnobAxisCollection *>(knobMotionVectors)->getItemCount(); i++) {
+        TextHelper::printLeadingComma(i); // Print a komma if it's not the first axis
 
-        KnobMotionVector *motionVector = static_cast<KnobMotionVectorCollection *>(knobMotionVectors)->getMotionVector(static_cast<MotionVector_t>(id)); // Pointer to the axis
-        if (!motionVector)
+        KnobAxis *axis = static_cast<KnobAxisCollection *>(knobMotionVectors)->getAxis(i); // Pointer to the axis
+        if (!axis)
             continue;
 
-        Serial.print(motionVector->getDescriptor()); // Print the MotionVector name
+        Serial.print(axis->getDescriptor());
         Serial.print(F(":"));
-        const int value = getAxisValue(motionVector); // Get the value using the function defined in the derived class
-        TextHelper::alignValue(value, 4);             // Align the value to the right with spaces
+        const int value = getAxisValue(axis); // Get the value using the function defined in the derived class
+        TextHelper::alignValue(value, 4);
         Serial.print(value);
     }
 }

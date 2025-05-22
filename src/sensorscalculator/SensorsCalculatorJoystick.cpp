@@ -1,12 +1,12 @@
 
 #include "SensorsCalculatorJoystick.hpp"
 #include "sensor/sensors/JoystickSensor.hpp"
-#include <motionvector/MotionVectorType.h> // For MotionVector_t enum
-#include <Knob/MotionVector/KnobMotionVector.hpp>
+#include <base/axis/MotionVectorType.h> // For MotionVector_t enum
+#include <knob/axis/KnobAxis.hpp>
 
 // Macro to simplify the access to the sensor values
 #define VAL(x) value(x)
-void SensorsCalculatorJoystick::evaluate(KnobMotionVector *knobVector) {
+void SensorsCalculatorJoystick::evaluate(KnobAxis *knobVector) {
     if (!m_sensorCollection || !knobVector)
         return;
 

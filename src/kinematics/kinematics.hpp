@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/Observable.hpp"                                                    // For IObservable interface & Base class
-#include <kinematics/MotionVectorsCollection/KinematicsAxisCollection.hpp> // For KinematicsMotionVectorCollection
-#include <motionvector/MotionVectorType.h>                                          // For MotionVector_t enum
+#include "common/Observable.hpp"                                  // For IObservable interface & Base class
+#include <kinematics/axiscollection/KinematicsAxisCollection.hpp> // For KinematicsMotionVectorCollection
+#include <base/axis/MotionVectorType.h>                           // For MotionVector_t enum
 #include <observers/IObserver.hpp>
 
 /// @brief Number of observers that can be added to this object
@@ -11,12 +11,10 @@ constexpr uint8_t c_MAX_KINEMATICS_OBSERVERS = 4; // Maximum number of observers
 
 class KinematicsConfig;
 class KinematicsAxisCollection;
-class KnobMotionVector; // REMOVE
+class KnobAxis; // REMOVE
 
 class Kinematics : public Observable {
 private:
-    static Kinematics *instance;
-
     KinematicsAxisCollection *m_transMotionVectors = nullptr; // Pointer to the translational kinematic MotionVectors collection
     KinematicsAxisCollection *m_rotMotionVectors = nullptr;   // Pointer to the rotational kinematic MotionVectors collection
 
@@ -25,9 +23,9 @@ private:
     void _applyExclusiveMode();
     void _applySwitchYZ();
 
-    void _createVector(const KnobMotionVectorCollection *knobVectors,
-                       const MotionVector_t type,
-                       IObserver *observer);
+    void _createAxis(const KnobAxisCollection *knobVectors,
+                     const MotionVector_t type,
+                     IObserver *observer);
 
 #if 0 // REMOVE
     void _applyKillSwitch(const AxisType_t start, const AxisType_t end, const bool killSwitchActive) {
@@ -42,7 +40,7 @@ public:
     Kinematics();
     ~Kinematics();
 
-    void setup(const KnobMotionVectorCollection *knobMotionVectors,
+    void setup(const KnobAxisCollection *knobMotionVectors,
                IObserver *hidEventBufferTranslation,
                IObserver *hidEventBufferRotation);
 
@@ -56,8 +54,8 @@ public:
         Observable::notifyObservers(); // Notify observers of changes in the kinematics
     }
 
-    KinematicsConfig *getConfig() const { return m_config; }  // Getter for config
-    const MotionVector_t getMainAxis(KnobMotionVector *axis); // Get the main and secondary axis for the kinematics
+    KinematicsConfig *getConfig() const { return m_config; } // Getter for config
+    const MotionVector_t getMainAxis(KnobAxis *axis);        // Get the main and secondary axis for the kinematics
 #if 0
     // Functionality for the kill switches
     void killRotation(const bool killSwitchActive = true) {

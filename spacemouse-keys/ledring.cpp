@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #ifdef LEDRING
 #include "ledring.h"
-#include "..\src\kinematics\kinematics.hpp"
+#include "..\src\kinematics\Kinematics.hpp"
 
 LedRing::LedRing(Kinematics &SMKIN) : _SMKIN(&SMKIN) {
     FastLED.addLeds<WS2811, LEDpin, GRB>(_leds, LEDRING);

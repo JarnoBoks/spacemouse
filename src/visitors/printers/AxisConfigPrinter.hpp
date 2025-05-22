@@ -1,0 +1,55 @@
+#pragma once
+
+#include "IPrinterVisitor.h"
+#include <knob/axis/KnobAxis.hpp>
+#include <knob/axis/config/KnobAxisConfig.hpp>
+
+#define FMT_NOCOMMA false
+#define FMT_COMMA true
+#define NO_PREFIX ""
+#define NO_SIGN " "
+#define TWO_DECIMALS 2
+#define ONE_DECIMAL 1
+#define NO_DECIMALS 0
+
+class AxisConfigPrinter : public IPrinterVisitor {
+private:
+    void _helper_PrintConfig(const char *name, const float posval, const float negval, const boolean printseparator, const char *typeprefix, const uint8_t precision, const int8_t minwidth);
+    size_t _helper_PrintItem(const char *separator, const char *typeprefix, const char *name, const char *sign);
+
+public:
+    AxisConfigPrinter() {}
+
+    void visit(KnobAxis &axis) override {
+
+        // Print the sensitivity
+        _helper_PrintConfig(axis.getDescriptor(),
+                            axis.getConfig()->posConfig.getSensitivity(),
+                            axis.getConfig()->negConfig.getSensitivity(),
+                            FMT_NOCOMMA, NO_PREFIX, TWO_DECIMALS, 21);
+
+        // Print the gate
+        _helper_PrintConfig(axis.getDescriptor(),
+                            axis.getConfig()->posConfig.getGate(),
+                            axis.getConfig()->negConfig.getGate(),
+                            FMT_COMMA, "G", NO_DECIMALS, 21);
+
+        // Print the modfunc
+        _helper_PrintConfig(axis.getDescriptor(),
+                            axis.getConfig()->posConfig.getModFuncType(),
+                            axis.getConfig()->negConfig.getModFuncType(),
+                            FMT_COMMA, "M", NO_DECIMALS, 19);
+
+        // Print the inversion
+        _helper_PrintConfig(axis.getDescriptor(),
+                            axis.getConfig()->inversion,
+                            axis.getConfig()->inversion,
+                            FMT_COMMA, "I", NO_DECIMALS, -1);
+        Serial.println(); // Print a newline after the last axis status was printed to the serial monitor
+    }
+
+    inline void visit(KnobAxisConfig &config) override {}
+    inline void visit(Sensor &sensor) override {}
+    inline void visit(SensorConfig &config) override {}
+    inline void visit(KinematicsConfig &config) override {}
+};

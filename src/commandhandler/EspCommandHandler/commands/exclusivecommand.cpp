@@ -1,8 +1,8 @@
 #include "exclusivecommand.h"
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
-#include <kinematics/kinematics.hpp>
+#include <kinematics/Kinematics.hpp>
 #include <kinematics/config/kinematicsconfig.hpp>
-#include <printervisitors/ExclusiveModePrinter.h>
+#include <visitors/printers/ExclusiveModePrinter.hpp>
 
 #include <common/esp_print.h>
 

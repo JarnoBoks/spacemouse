@@ -1,11 +1,13 @@
-#include "kinematics.hpp"
+#include "Kinematics.hpp"
 #include "config.h"
-#include "kinematics/config/kinematicsconfig.hpp"
-#include <kinematics/MotionVectorsCollection/KinematicsAxisCollection.hpp>
-#include <kinematics/Axis/KinematicsAxis.hpp>
+#include <kinematics/config/kinematicsconfig.hpp>
+#include <kinematics/axiscollection/KinematicsAxisCollection.hpp>
+// #include <kinematics/axis/KinematicsAxis.hpp>
+#include <kinematics/axis/KinematicsAxisRotation.hpp>
+#include <kinematics/axis/KinematicsAxisTranslation.hpp>
 
-#include <Knob/KnobMotionVectorCollection.hpp>
-#include <Knob/MotionVector/KnobMotionVector.hpp>
+#include <Knob/KnobAxisCollection.hpp>
+#include <Knob/Axis/KnobAxis.hpp>
 
 #include <visitors/ExclusiveMovementVisitor.hpp>
 #include <visitors/SwitchYZVisitor.hpp>
@@ -22,24 +24,36 @@ Kinematics::~Kinematics() {
     delete m_config;             // Delete the kinematics configuration
 }
 
-void Kinematics::_createVector(const KnobMotionVectorCollection *knobVectors,
-                               const MotionVector_t type,
-                               IObserver *observer) {
-    KinematicsAxis *vector = new KinematicsAxis(type, knobVectors->getMotionVector(type));
-    vector->attachObserver(observer);
-    m_transMotionVectors->add(vector);
+void Kinematics::_createAxis(const KnobAxisCollection *knobVectors,
+                             const MotionVector_t type,
+                             IObserver *hidEventbuffer) {
+
+    KnobAxis *knobAxis = knobVectors->getAxis(type);
+    if (knobAxis == nullptr) {
+        return; // Error: KnobAxis not found, exit the function
+    }
+
+    KinematicsAxis *kinAxis = nullptr;
+    if (knobAxis->isTranslation()) {
+        kinAxis = new KinematicsAxisTranslation(type, knobAxis);
+        m_transMotionVectors->add(kinAxis);
+    } else {
+        kinAxis = new KinematicsAxisRotation(type, knobAxis);
+        m_rotMotionVectors->add(kinAxis);
+    }
+    kinAxis->attachObserver(hidEventbuffer);
 }
 
-void Kinematics::setup(const KnobMotionVectorCollection *knobMotionVectors,
+void Kinematics::setup(const KnobAxisCollection *knobAxisCollection,
                        IObserver *hidEventBufferTranslation,
                        IObserver *hidEventBufferRotation) {
 
-    _createVector(knobMotionVectors, MotionVector_t::TRANSX, hidEventBufferTranslation);
-    _createVector(knobMotionVectors, MotionVector_t::TRANSY, hidEventBufferTranslation);
-    _createVector(knobMotionVectors, MotionVector_t::TRANSZ, hidEventBufferTranslation);
-    _createVector(knobMotionVectors, MotionVector_t::ROTX, hidEventBufferRotation);
-    _createVector(knobMotionVectors, MotionVector_t::ROTY, hidEventBufferRotation);
-    _createVector(knobMotionVectors, MotionVector_t::ROTZ, hidEventBufferRotation);
+    _createAxis(knobAxisCollection, MotionVector_t::TRANSX, hidEventBufferTranslation);
+    _createAxis(knobAxisCollection, MotionVector_t::TRANSY, hidEventBufferTranslation);
+    _createAxis(knobAxisCollection, MotionVector_t::TRANSZ, hidEventBufferTranslation);
+    _createAxis(knobAxisCollection, MotionVector_t::ROTX, hidEventBufferRotation);
+    _createAxis(knobAxisCollection, MotionVector_t::ROTY, hidEventBufferRotation);
+    _createAxis(knobAxisCollection, MotionVector_t::ROTZ, hidEventBufferRotation);
 }
 
 void Kinematics::_applyExclusiveMode() {
@@ -109,13 +123,13 @@ void Kinematics::_applySwitchYZ() {
 #endif
 
 // REFACTOR - Shoud return a pointer to the motionVector instead of the MotionVector_t enum. This will make it easier to use in the LED ring and other classes.
-const MotionVector_t Kinematics::getMainAxis(KnobMotionVector *motionVector) {
+const MotionVector_t Kinematics::getMainAxis(KnobAxis *motionVector) {
     MotionVector_t idMainAxis = MotionVector_t::MV_UNINITIALIZED;
     int16_t maximumVelocity = 0;
 
     // Loop through all axes to find the one with the biggest velocity
     for (int i = 0; i < MotionVector_t::MV_LENGTH; i++) {
-        // TODO int16_t absvalue = abs(m_knobMotionVectors->getMotionVector(i)->getFinValue()); // Get the value of the motionVector
+        // TODO int16_t absvalue = abs(m_knobMotionVectors->getAxis(i)->getFinValue()); // Get the value of the motionVector
 
         // Is the value of this motionVector greater than deadzone and greater than any of the motionVector before?
         /* TODO if ((absvalue > maximumVelocity) && (absvalue > VELOCITYDEADZONEFORLED)) {

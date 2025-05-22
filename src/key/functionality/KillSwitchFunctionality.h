@@ -1,4 +1,3 @@
-// KillSwitchButtonFunctionality.h
 #pragma once
 #include "IKeyFunctionality.h"
 

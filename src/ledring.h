@@ -5,7 +5,7 @@
 
 #include <FastLED.h>
 #include "config.h"
-#include "kinematics\kinematics.hpp"
+#include "kinematics\Kinematics.hpp"
 
 class LedRing {
 private:

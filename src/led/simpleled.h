@@ -9,7 +9,7 @@ private:
     uint8_t pin;
 
 public:
-    void applyTo(KnobMotionVector *axis) override;
+    void applyTo(KnobAxis *axis) override;
     void setPin(uint8_t pin);
 };
 

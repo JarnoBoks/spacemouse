@@ -1,7 +1,7 @@
 #include "SensorsCalculatorHall.hpp"
-#include "sensor/sensors/HallSensor.hpp"   // Include the header file for the Hall sensor
-#include <motionvector/MotionVectorType.h> // For MotionVector_t enum
-#include <Knob/MotionVector/KnobMotionVector.hpp>
+#include "sensor/sensors/HallSensor.hpp" // Include the header file for the Hall sensor
+#include <base/axis/MotionVectorType.h>  // For MotionVector_t enum
+#include <knob/axis/KnobAxis.hpp>
 
 #ifndef INTERNAL
 #define INTERNAL 0x03 // Define the INTERNAL constant if not already defined (necessary for ESP32)
@@ -27,7 +27,7 @@ void SensorsCalculatorHall::setAnalogReference(const bool isDebug) {
 
 // Macro to simplify the access to the sensor values
 #define VAL(x) value(x)
-void SensorsCalculatorHall::evaluate(KnobMotionVector *knobVector) {
+void SensorsCalculatorHall::evaluate(KnobAxis *knobVector) {
     if (!m_sensorCollection || !knobVector)
         return;
 

@@ -1,8 +1,8 @@
 #include "switchyzcommand.h"
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
-#include <kinematics/kinematics.hpp>
+#include <kinematics/Kinematics.hpp>
 #include <kinematics/config/kinematicsconfig.hpp>
-#include <printervisitors/SwitchYZPrinter.h>
+#include <visitors/printers/SwitchYZPrinter.hpp>
 #include <common/esp_print.h>
 
 void SwitchYZCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {

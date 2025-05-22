@@ -4,8 +4,8 @@
 
 #define NUM_AX_DIRCFG 2 // Number of axis direction configurations per AxisConfig in the software (Current: Positive and Negative)
 
-class KnobVectorDirectionConfig;
-class KnobMotionVector;
+class KnobAxisDirectionConfig;
+class KnobAxis;
 
 /**
  * @brief   Interface for knob MotionVector configuration commands.
@@ -16,9 +16,9 @@ class KnobMotionVector;
 class IAxisConfigCommand : public CommandBase {
 private:
 protected:
-    KnobVectorDirectionConfig *m_knobVectorDirectionConfig[NUM_AX_DIRCFG]; // Array of pointers to AxisDirectionConfig objects
-    KnobMotionVector *m_knobVector = nullptr;                              // Pointer to the knob MotionVector object that will be configured
-    float m_requestedValue = 0;                                            // Requested value for the knob MotionVector configuration (sensitivity, gate, etc.) derived from the command. -1 if no update is needed.
+    KnobAxisDirectionConfig *m_knobVectorDirectionConfig[NUM_AX_DIRCFG]; // Array of pointers to AxisDirectionConfig objects
+    KnobAxis *m_knobVector = nullptr;                                    // Pointer to the knob MotionVector object that will be configured
+    float m_requestedValue = 0;                                          // Requested value for the knob MotionVector configuration (sensitivity, gate, etc.) derived from the command. -1 if no update is needed.
 
 public:
     /**

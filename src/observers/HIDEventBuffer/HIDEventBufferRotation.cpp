@@ -1,5 +1,5 @@
 #include "HIDEventBufferRotation.hpp"
-#include <kinematics/Axis/KinematicsAxis.hpp>
+#include <kinematics/axis/KinematicsAxis.hpp>
 
 void HIDEventBufferRotation::update(IObservable *kinVectorRotation) {
     if (!kinVectorRotation) {

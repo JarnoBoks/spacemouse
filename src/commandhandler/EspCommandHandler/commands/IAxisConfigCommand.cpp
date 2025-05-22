@@ -1,14 +1,14 @@
 #include "IAxisConfigCommand.h"
 
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
-#include <Knob/KnobMotionVectorCollection.hpp>
-#include <Knob/config/KnobVectorConfig.hpp>
-#include <printervisitors/AxisConfigPrinter.h>
+#include <knob/KnobAxisCollection.hpp>
+#include <knob/axis/config/KnobAxisConfig.hpp>
+#include <visitors/printers/AxisConfigPrinter.hpp>
 
 #include <common/esp_print.h> // For ESP_PRINT
 
 /**
- * @brief Executes axis-related commands. Updates the m_knobVectorDirectionConfig array to point to the correct AxisDirectionConfig object(s) and sets m_requestedValue to -1 if no update is needed.
+ * @brief Executes axis-related commands. Updates the m_knobAxisDirectionConfig array to point to the correct AxisDirectionConfig object(s) and sets m_requestedValue to -1 if no update is needed.
  * @details This function handles the execution of axis-related commands based on the provided parameters. It can be used to set the sensitivity, gate, or mod function type for a specific axis.
  *          If the command leads to an update of the configuration parameters, the m_requestedValue is set to the requested value.
  *          If the command does not lead to an update of the configuration parameters, the m_requestedValue is set to -1.
@@ -21,7 +21,7 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
     if (paramCount == 0) {
         // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
-        m_CollectionCarrier->getKnobMotionVectors()->acceptAxesVisitor(printer);
+        m_CollectionCarrier->getKnobAxes()->acceptAxesVisitor(printer);
         return;
     }
 
@@ -34,7 +34,7 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
     if (paramCount == 2) {
         // F.e. command received: SENS [+|-]<axisname> <value>
 
-        // Erase the m_knobVectorDirectionConfig pointers
+        // Erase the m_knobAxisDirectionConfig pointers
         for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
             m_knobVectorDirectionConfig[i] = nullptr;
         }
@@ -50,9 +50,9 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
             // The first character is a direction
             // REVIEW - Can the cast (char *)param1 be removed?
             char *reqAxisName = (char *)param1 + 1; // Pointer to the axis name (skip the first character)
-            m_knobVector = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(reqAxisName);
+            m_knobVector = m_CollectionCarrier->getKnobAxes()->getAxis(reqAxisName);
             if (m_knobVector == nullptr) {
-                ESP_INFO("KnobMotionVector not found");
+                ESP_INFO("KnobAxis not found");
                 m_requestedValue = -1;
                 return;
             }
@@ -67,10 +67,10 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
             }
 
         } else {
-            // The first character is not a direction, test if the KnobMotionVector name is specified.
-            m_knobVector = m_CollectionCarrier->getKnobMotionVectors()->getMotionVector(param1);
+            // The first character is not a direction, test if the KnobAxis name is specified.
+            m_knobVector = m_CollectionCarrier->getKnobAxes()->getAxis(param1);
             if (m_knobVector == nullptr) {
-                ESP_INFO("KnobMotionVector not found");
+                ESP_INFO("KnobAxis not found");
                 m_requestedValue = -1; // Update the requested value to -1, indicating no update/storage needed
                 return;
             }

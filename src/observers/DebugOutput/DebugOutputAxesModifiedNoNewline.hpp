@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DebugOutputAxes.hpp"
-#include <Knob/MotionVector/KnobMotionVector.hpp>
+#include <knob/axis/KnobAxis.hpp>
 
 /**
  * @brief Output class for modified axes values.
@@ -17,7 +17,7 @@ private:
      * @param axis Pointer to the Axis object.
      * @return The modified value of the axis.
      */
-    inline const int getAxisValue(const KnobMotionVector *axis) const override {
+    inline const int getAxisValue(const KnobAxis *axis) const override {
         return axis->getModValue(); // Get the axis value
     }
 };

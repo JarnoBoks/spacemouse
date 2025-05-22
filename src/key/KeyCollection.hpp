@@ -1,8 +1,8 @@
 #pragma once
 
-#include "..\collection\Collection.hpp" // Include the ICollection interface header file
-#include "common/Observable.hpp" // Include the ICollection interface header file
-#include "config.h"              // Include the configuration header file, to retrieve the number of keys (allowed while this is a collection class)
+#include <base/collection/CollectionBase.hpp> // Include the ICollection interface header file
+#include <common/Observable.hpp>              // Include the ICollection interface header file
+#include <config.h>                           // Include the configuration header file, to retrieve the number of keys (allowed while this is a collection class)
 #include <stdint.h>
 
 /// @brief Number of keys that will be added to the collection.
@@ -20,11 +20,11 @@ class Key;
  * @details This class manages the keys, their states, and observers.
  *          It provides methods to evaluate the keys, get HID commands, and manage observers.
  */
-class KeyCollection : public Collection, public Observable {
+class KeyCollection : public CollectionBase, public Observable {
 
 public:
     /// @brief Constructor for empty KeyCollection
-    KeyCollection() : Collection(CFG_NUMBER_OF_KEYS), Observable(c_MAX_KEYCOLLECTION_OBSERVERS) {};
+    KeyCollection() : CollectionBase(CFG_NUMBER_OF_KEYS), Observable(c_MAX_KEYCOLLECTION_OBSERVERS) {};
     ~KeyCollection() {}
 
     Key *getKey(const uint8_t id) const;
@@ -37,7 +37,7 @@ public:
      * @note Derived classes are allowed to override this method to provide custom evaluation logic.
      */
     void evaluate() override {
-        Collection::evaluate();        // Evaluate the keys in the collection
+        CollectionBase::evaluate();    // Evaluate the keys in the collection
         Observable::notifyObservers(); // Notify observers of changes in the key collection
     };
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/Observable.hpp"                                                    // For IObservable interface & Base class
-#include <kinematics/MotionVectorsCollection/DirectionalMotionVectorCollection.hpp> // For KinematicsMotionVectorCollection
+#include <kinematics/MotionVectorsCollection/KinematicsAxisCollection.hpp> // For KinematicsMotionVectorCollection
 #include <motionvector/MotionVectorType.h>                                          // For MotionVector_t enum
 #include <observers/IObserver.hpp>
 
@@ -10,15 +10,15 @@
 constexpr uint8_t c_MAX_KINEMATICS_OBSERVERS = 4; // Maximum number of observers for the kinematics collection
 
 class KinematicsConfig;
-class KinematicsMotionVectorCollection;
+class KinematicsAxisCollection;
 class KnobMotionVector; // REMOVE
 
 class Kinematics : public Observable {
 private:
     static Kinematics *instance;
 
-    KinematicsMotionVectorCollection *m_transMotionVectors = nullptr; // Pointer to the translational kinematic MotionVectors collection
-    KinematicsMotionVectorCollection *m_rotMotionVectors = nullptr;   // Pointer to the rotational kinematic MotionVectors collection
+    KinematicsAxisCollection *m_transMotionVectors = nullptr; // Pointer to the translational kinematic MotionVectors collection
+    KinematicsAxisCollection *m_rotMotionVectors = nullptr;   // Pointer to the rotational kinematic MotionVectors collection
 
     KinematicsConfig *m_config = nullptr; // Pointer to the kinematics configuration
 

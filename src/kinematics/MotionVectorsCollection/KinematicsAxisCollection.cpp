@@ -1,5 +1,5 @@
-#include "DirectionalMotionVectorCollection.hpp"
-#include <kinematics/MotionVector/KinematicsMotionVector.hpp>
+#include "KinematicsAxisCollection.hpp"
+#include <kinematics/Axis/KinematicsAxis.hpp>
 #include <Arduino.h> // For abs()
 
 /**
@@ -8,7 +8,7 @@
  *          This allows each item to perform its own evaluation and update its state accordingly.
  * @note Derived classes are allowed to override this method to provide custom evaluation logic.
  */
-void KinematicsMotionVectorCollection::evaluate() {
+void KinematicsAxisCollection::evaluate() {
     m_totalVelocity = 0; // Reset total velocity before evaluation
 
     // Evaluate all items (ie. KinematicsMotionVectors) in the collection.
@@ -16,15 +16,15 @@ void KinematicsMotionVectorCollection::evaluate() {
 
     // Calculate the total velocity of the motion vectors
     for (uint8_t i = 0; i < m_itemCount; i++) {
-        m_totalVelocity += abs(static_cast<KinematicsMotionVector *>(m_items[i])->getFinValue());
+        m_totalVelocity += abs(static_cast<KinematicsAxis *>(m_items[i])->getFinValue());
     }
 
     // Notify observers of changes in the kinematicsVector collection
     Observable::notifyObservers();
 };
 
-void KinematicsMotionVectorCollection::setAllToZero() {
+void KinematicsAxisCollection::setAllToZero() {
     for (uint8_t i = 0; i < m_itemCount; i++) {
-        static_cast<KinematicsMotionVector *>(m_items[i])->setFinValue(0); // Set the final value of each motion vector to 0
+        static_cast<KinematicsAxis *>(m_items[i])->setFinValue(0); // Set the final value of each motion vector to 0
     }
 }

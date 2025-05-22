@@ -18,19 +18,19 @@ constexpr uint8_t c_KIN_MAX_MOTIONVECTOR_OBSERVERS = 1;
 
 // REVIEW - What to do if the MotionVector hasn't any observers at all? Should the base class be observable?
 
-class KinematicsMotionVector : public MotionVector {
+class KinematicsAxis : public MotionVector {
 private:
     const KnobMotionVector *m_knobMotionVector = nullptr; // Pointer to the knob MotionVector
-    // TODO - Add debug values for the KinematicsMotionVector, when we want to print values before fe. applying killswitches
+    // TODO - Add debug values for the KinematicsAxis, when we want to print values before fe. applying killswitches
 
 public:
-    KinematicsMotionVector() = delete; // Delete default constructor, do not allow instantiation without parameters
+    KinematicsAxis() = delete; // Delete default constructor, do not allow instantiation without parameters
 
-    KinematicsMotionVector(MotionVector_t type, KnobMotionVector *knobMotionVector)
+    KinematicsAxis(MotionVector_t type, KnobMotionVector *knobMotionVector)
         : MotionVector(type, c_KIN_MAX_MOTIONVECTOR_OBSERVERS),
           m_knobMotionVector(knobMotionVector) {} // Constructor with parameters
 
-    ~KinematicsMotionVector() = default;
+    ~KinematicsAxis() = default;
 
     void evaluate() override final {
         if (m_knobMotionVector == nullptr) {

@@ -1,8 +1,8 @@
 #include "kinematics.hpp"
 #include "config.h"
 #include "kinematics/config/kinematicsconfig.hpp"
-#include <kinematics/MotionVectorsCollection/DirectionalMotionVectorCollection.hpp>
-#include <kinematics/MotionVector/KinematicsMotionVector.hpp>
+#include <kinematics/MotionVectorsCollection/KinematicsAxisCollection.hpp>
+#include <kinematics/Axis/KinematicsAxis.hpp>
 
 #include <Knob/KnobMotionVectorCollection.hpp>
 #include <Knob/MotionVector/KnobMotionVector.hpp>
@@ -12,8 +12,8 @@
 
 Kinematics::Kinematics()
     : Observable(c_MAX_KINEMATICS_OBSERVERS),
-      m_transMotionVectors(new KinematicsMotionVectorCollection()),
-      m_rotMotionVectors(new KinematicsMotionVectorCollection()),
+      m_transMotionVectors(new KinematicsAxisCollection()),
+      m_rotMotionVectors(new KinematicsAxisCollection()),
       m_config(new KinematicsConfig()) {}
 
 Kinematics::~Kinematics() {
@@ -25,7 +25,7 @@ Kinematics::~Kinematics() {
 void Kinematics::_createVector(const KnobMotionVectorCollection *knobVectors,
                                const MotionVector_t type,
                                IObserver *observer) {
-    KinematicsMotionVector *vector = new KinematicsMotionVector(type, knobVectors->getMotionVector(type));
+    KinematicsAxis *vector = new KinematicsAxis(type, knobVectors->getMotionVector(type));
     vector->attachObserver(observer);
     m_transMotionVectors->add(vector);
 }

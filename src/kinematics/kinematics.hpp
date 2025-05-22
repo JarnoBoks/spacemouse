@@ -11,7 +11,7 @@ constexpr uint8_t c_MAX_KINEMATICS_OBSERVERS = 4; // Maximum number of observers
 
 class KinematicsConfig;
 class KinematicsAxisCollection;
-class KnobAxis; // REMOVE
+class KnobAxisCollection;
 
 class Kinematics : public Observable {
 private:

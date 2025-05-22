@@ -2,9 +2,9 @@
 
 #include <base/axis/AxisBase.hpp>
 #include <base/axis/MotionVectorType.h>        // Include the header file for MotionVector_t enum
-#include <Knob/Axis/config/KnobAxisConfig.hpp> // Include the header file for AxisConfig class
-#include <Knob/Axis/ModifierFunctionType.h>    // Include the header file for ModFunc_t enum
-#include <visitors/printers/IPrinterVisitor.h>   // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Use IVisitor instead of IPrinterVisitor
+#include <knob/Axis/config/KnobAxisConfig.hpp> // Include the header file for AxisConfig class
+#include <knob/Axis/ModifierFunctionType.h>    // Include the header file for ModFunc_t enum
+#include <visitors/printers/IPrinterVisitor.h> // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Use IVisitor instead of IPrinterVisitor
 
 class SensorCollection;
 class ISensorsCalculator;

@@ -61,6 +61,8 @@ public:
         }
         return ret;
     }
+
     virtual const uint8_t *getStaged() const { return m_message; }
+
     virtual inline void clearStaged() { memset(m_message, 0, HID_MESSAGE_SIZE); }
 };

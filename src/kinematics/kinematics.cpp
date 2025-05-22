@@ -2,15 +2,11 @@
 #include "config.h"
 #include <kinematics/config/kinematicsconfig.hpp>
 #include <kinematics/axiscollection/KinematicsAxisCollection.hpp>
-// #include <kinematics/axis/KinematicsAxis.hpp>
 #include <kinematics/axis/KinematicsAxisRotation.hpp>
 #include <kinematics/axis/KinematicsAxisTranslation.hpp>
 
-#include <Knob/KnobAxisCollection.hpp>
-#include <Knob/Axis/KnobAxis.hpp>
-
-#include <visitors/ExclusiveMovementVisitor.hpp>
-#include <visitors/SwitchYZVisitor.hpp>
+#include <knob/KnobAxisCollection.hpp>
+#include <knob/Axis/KnobAxis.hpp>
 
 Kinematics::Kinematics()
     : Observable(c_MAX_KINEMATICS_OBSERVERS),
@@ -58,7 +54,7 @@ void Kinematics::setup(const KnobAxisCollection *knobAxisCollection,
 
 void Kinematics::_applyExclusiveMode() {
     if (!m_config || !m_config->getExclusiveMode()) {
-        return; // Exit if exclusive mode is not enabled
+        return;
     }
 
     // Create a visitor for the exclusive movement
@@ -76,39 +72,15 @@ void Kinematics::_applyExclusiveMode() {
     }
 }
 
-#if 0 // REMOVE - After testing
-// REVIEW - What is the order of the exclusive mode and switch YZ?
-// REVIEW - Can we switch the entire motionVector at once in the array?
-#define ATRANSY m_axisCollection->getAxis(TRANSY)
-#define ATRANSZ m_axisCollection->getAxis(TRANSZ)
-#define AROTY m_axisCollection->getAxis(ROTY)
-#define AROTZ m_axisCollection->getAxis(ROTZ)
-
 void Kinematics::_applySwitchYZ() {
-    if (config != nullptr && config->getSwitchYZ()) {
-        int16_t tmp = 0;
-        tmp = ATRANSY->getFinValue();
-
-        ATRANSY->setFinValue(ATRANSZ->getFinValue());
-        ATRANSZ->setFinValue(tmp);
-
-        tmp = AROTY->getFinValue();
-        AROTY->setFinValue(AROTZ->getFinValue());
-        AROTZ->setFinValue(tmp);
+    if (!m_config || !m_config->getSwitchYZ()) {
+        return;
     }
-}
-#undef ATRANSY
-#undef ATRANSZ
-#undef AROTY
-#undef AROTZ
-#endif
 
-void Kinematics::_applySwitchYZ() {
-    if (m_config != nullptr && m_config->getSwitchYZ()) {
-        // Create a visitor for the switch YZ
-        SwitchYZVisitor YZvisitor;
-        // m_knobMotionVectors->accept(YZvisitor); // Accept the visitor to apply the switch YZ
-    }
+    static_cast<KinematicsAxisTranslation *>(m_transMotionVectors->getItem(MotionVector_t::TRANSY))->setType(MotionVector_t::TRANSZ);
+    static_cast<KinematicsAxisTranslation *>(m_transMotionVectors->getItem(MotionVector_t::TRANSZ))->setType(MotionVector_t::TRANSY);
+    static_cast<KinematicsAxisRotation *>(m_rotMotionVectors->getItem(MotionVector_t::ROTY))->setType(MotionVector_t::ROTZ);
+    static_cast<KinematicsAxisRotation *>(m_rotMotionVectors->getItem(MotionVector_t::ROTZ))->setType(MotionVector_t::ROTY);
 }
 
 /**

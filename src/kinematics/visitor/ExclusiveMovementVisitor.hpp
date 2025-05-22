@@ -1,3 +1,4 @@
+#if 0 // NOT USED - Only for future development
 #pragma once
 
 #include <common/IVisitor.hpp>
@@ -48,3 +49,4 @@ public:
         }
     }
 };
+#endif

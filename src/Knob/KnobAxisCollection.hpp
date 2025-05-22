@@ -44,6 +44,7 @@ public:
 
     KnobAxis *getAxis(const uint8_t id) const;
     KnobAxis *getAxis(const char *descriptor) const;
+    KnobAxis *getAxis(const MotionVector_t type) const;
 
     /**
      * @brief Evaluate all items in the collection and notify observers of the changes.

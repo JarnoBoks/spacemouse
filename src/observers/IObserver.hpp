@@ -1,15 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-// Forward declaration of classes that are observed (to avoid circular dependencies)
-class Kinematics;
-class KeyCollection;
-class KnobAxisCollection;
-class SensorCollection;
-class KnobAxisRotation;
-class KnobAxisTranslation;
-
-class IObservable; // REVIEW - Can probably be removed, not using the Observable interface in the observer class
+class IObservable;
 
 /**
  * @brief Interface for observer classes that respond to updates from observed objects.

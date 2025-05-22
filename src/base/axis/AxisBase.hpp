@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/ICollectable.hpp"
-#include "common/Observable.hpp"
+#include <common/ICollectable.hpp>
+#include <common/Observable.hpp>
 #include <base/axis/MotionVectorType.h>        // Include the header file for MotionVector_t enum
 #include <visitors/printers/IPrinterVisitor.h> // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Use IVisitor instead of IPrinterVisitor
 
@@ -15,8 +15,8 @@ constexpr const char *c_AXIS_DESCRIPTORS[] = {"TX", "TY", "TZ", "RX", "RY", "RZ"
  */
 class AxisBase : public ICollectable, public Observable {
 private:
-    const MotionVector_t m_type = MotionVector_t::MV_UNINITIALIZED; // Type of the Axis (translation or rotation) // REVIEW - If the collections are split just like the kinematics setup, we don't need this member anymore in the vector class
-    const char *m_descriptor = nullptr;                             // Descriptor of the Axis
+    MotionVector_t m_type = MotionVector_t::MV_UNINITIALIZED; // Type of the Axis (translation or rotation) // REVIEW - If the collections are split just like the kinematics setup, we don't need this member anymore in the vector class
+    const char *m_descriptor = nullptr;                       // Descriptor of the Axis
 
 protected:
     int16_t m_finValue = 0; // The final value of the Axis after applying internal modifications.
@@ -50,6 +50,7 @@ public:
     /// @return The final MotionVector value.
     inline int16_t getFinValue() const { return m_finValue; }
 
+    void setType(const MotionVector_t type) { m_type = type; }        // Setter for the Axis type
     inline const MotionVector_t getType() const { return m_type; }    // Getter for Axis type
     inline const char *getDescriptor() const { return m_descriptor; } // Getter for Axis descriptor
 

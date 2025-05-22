@@ -17,23 +17,8 @@ void KnobAxisCollection::setup(ISensorsCalculator *sensorsCalculator) {
     m_itemCount = 6;
 };
 
-#if 0 // REMOVE - Obseervers are attached to kinematicsvectors
-void KnobAxisCollection::setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation) {
-    // Call the setup function to initialize the axes
-    setup(sensorsCalculator);
-
-// Attach the HIDEventBuffers to the axes
-
-    static_cast<KnobAxisTranslation *>(m_items[TRANSX])->attachObserver(hidEventBufferTranslation);
-    static_cast<KnobAxisTranslation *>(m_items[TRANSY])->attachObserver(hidEventBufferTranslation);
-    static_cast<KnobAxisTranslation *>(m_items[TRANSZ])->attachObserver(hidEventBufferTranslation);
-    static_cast<KnobAxisRotation *>(m_items[ROTX])->attachObserver(hidEventBufferRotation);
-    static_cast<KnobAxisRotation *>(m_items[ROTY])->attachObserver(hidEventBufferRotation);
-    static_cast<KnobAxisRotation *>(m_items[ROTZ])->attachObserver(hidEventBufferRotation);
-}
-#endif
 /**
- * @brief Get the axis at the specified index.
+ * @brief Get the axis at the specified index in the collection.
  * @param id Index of the axis to retrieve.
  * @return Pointer to the axis at the specified index, or nullptr if the index is out of bounds.
  * @note The base class CollectionBase::getItem() can be used too, but it returns a pointer to the ICollectable interface.
@@ -50,6 +35,16 @@ KnobAxis *KnobAxisCollection::getAxis(uint8_t id) const {
  */
 KnobAxis *KnobAxisCollection::getAxis(const char *name) const {
     return static_cast<KnobAxis *>(getItem(name));
+}
+
+/**
+ * @brief Get the axis with the specified type.
+ * @param type Type of the axis to retrieve.
+ * @return Pointer to the axis with the specified type, or nullptr if not found.
+ * @note The base class method 'CollectionBase::getItem()' can be used too, but it returns a pointer to the ICollectable interface.
+ */
+KnobAxis *KnobAxisCollection::getAxis(const MotionVector_t type) const {
+    return static_cast<KnobAxis *>(getItem(type)); // Return the axis with the specified type
 }
 
 /**

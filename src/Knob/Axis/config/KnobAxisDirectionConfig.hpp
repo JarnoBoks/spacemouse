@@ -1,6 +1,6 @@
 #pragma once
 #include <Arduino.h>
-#include <Knob/Axis/ModifierFunctionType.h> // Include the header file for ModFunc_t enum
+#include <knob/Axis/ModifierFunctionType.h> // Include the header file for ModFunc_t enum
 
 class KnobAxisConfig;
 

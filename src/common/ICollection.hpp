@@ -3,7 +3,6 @@
 #include "IObservable.hpp" // Include the IObservable interface header file
 #include <stdint.h>
 
-// Forward declaration of ICollectable class
 class ICollectable;
 
 class ICollection {
@@ -16,4 +15,5 @@ public:
 
     virtual ICollectable *getItem(uint8_t id) const = 0;
     virtual ICollectable *getItem(const char *name) const = 0;
+    virtual uint8_t getItemCount() const = 0;
 };

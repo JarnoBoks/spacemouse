@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/Collection.hpp" // Include the ICollection interface header file
+#include "..\collection\Collection.hpp" // Include the ICollection interface header file
 #include "common/Observable.hpp" // Include the ICollection interface header file
 #include "config.h"              // Include the configuration header file, to retrieve the number of keys (allowed while this is a collection class)
 #include <stdint.h>

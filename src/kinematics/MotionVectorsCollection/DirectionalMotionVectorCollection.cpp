@@ -23,16 +23,6 @@ void KinematicsMotionVectorCollection::evaluate() {
     Observable::notifyObservers();
 };
 
-KinematicsMotionVector *KinematicsMotionVectorCollection::getItem(MotionVector_t type) const {
-    for (uint8_t i = 0; i < getItemCount(); i++) {
-        KinematicsMotionVector *motionVector = static_cast<KinematicsMotionVector *>(Collection::getItem(i));
-        if (motionVector != nullptr && motionVector->getType() == type) {
-            return motionVector;
-        }
-    }
-    return nullptr; // Return nullptr if no matching sensor is found
-}
-
 void KinematicsMotionVectorCollection::setAllToZero() {
     for (uint8_t i = 0; i < m_itemCount; i++) {
         static_cast<KinematicsMotionVector *>(m_items[i])->setFinValue(0); // Set the final value of each motion vector to 0

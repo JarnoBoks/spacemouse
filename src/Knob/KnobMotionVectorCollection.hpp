@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/Collection.hpp"  // Include the ICollection interface header file
-#include "common/Observable.hpp"  // Include the ICollection interface header file
-#include "visitors/Visitable.hpp" // Include the IVisitable interface header file
+#include <collection/MotionVectorCollection.hpp> // Base class for the collection of MotionVectors
+#include <common/Observable.hpp>                 // Include the ICollection interface header file
+#include <visitors/Visitable.hpp>                // Include the IVisitable interface header file
 
 #include <stdint.h>
 
@@ -26,13 +26,13 @@ constexpr uint8_t c_KNOB_MAX_MOTIONVECTORCOLLECTION_OBSERVERS = 4;
  *         The class implements the Visitable interface, allowing it to accept visitors.
  * @note The KnobMotionVectorCollection class is designed to manage a fixed number of motionvectors and their associated observers.
  */
-class KnobMotionVectorCollection : public Collection, public Observable, public Visitable {
+class KnobMotionVectorCollection : public MotionVectorCollection, public Observable, public Visitable {
 private:
 public:
-    /// @brief Constructor for empty KnobMotionVectorCollection
-    KnobMotionVectorCollection() : Collection(c_KNOB_MAX_MOTIONVECTORS), Observable(c_KNOB_MAX_MOTIONVECTORCOLLECTION_OBSERVERS) {}
-    ~KnobMotionVectorCollection() {
-    }
+    KnobMotionVectorCollection()
+        : MotionVectorCollection(c_KNOB_MAX_MOTIONVECTORS),
+          Observable(c_KNOB_MAX_MOTIONVECTORCOLLECTION_OBSERVERS) {}
+    ~KnobMotionVectorCollection() {}
 
     /**
      * @brief Set up the knob motionvector collection based on the configuration.

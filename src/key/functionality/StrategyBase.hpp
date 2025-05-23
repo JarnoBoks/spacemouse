@@ -5,7 +5,7 @@ class Key;
 /**
  * @brief Interface for key functionality management.
  */
-class IKeyFunctionality {
+class StrategyBase {
 private:
     Key *m_context = nullptr; // Pointer to the key associated with this functionality
 
@@ -14,9 +14,9 @@ protected:
     void setContext(Key *context) { m_context = context; }
 
 public:
-    IKeyFunctionality() = default;                          // Default constructor
-    IKeyFunctionality(Key *context) : m_context(context) {} // Constructor with context
-    virtual ~IKeyFunctionality() = default;
+    StrategyBase() = default;                          // Default constructor
+    StrategyBase(Key *context) : m_context(context) {} // Constructor with context
+    virtual ~StrategyBase() = default;
 
     virtual void onPress() = 0;   // Pure virtual function to handle key press events
     virtual void onRelease() = 0; // Pure virtual function to handle key release events

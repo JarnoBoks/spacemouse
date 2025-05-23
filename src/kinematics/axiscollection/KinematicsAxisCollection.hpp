@@ -37,5 +37,5 @@ public:
 
     const int16_t getTotalVelocity() const { return m_totalVelocity; }; // Getter for the total velocity of the motion vectors in the collection
 
-    void setAllToZero(); // Set all motion vectors in the collection to zero
+    void setAllToZero(); // Set all motion vectors in the collection to zero    // REVIEW - Should be a visitor to the Axis instead of a function in the AxisCollection and the Axis.
 };

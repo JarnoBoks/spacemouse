@@ -1,43 +1,28 @@
 #pragma once
 #include <common/IVisitor.hpp> // Include the IVisitor interface header file
 
-#include <knob/axis/KnobAxis.hpp> // Include the Axis class header file
-#include <knob/KnobAxisCollection.hpp>
+#include <kinematics/axis/KinematicsAxis.hpp>                     // Include the Axis class header file
+#include <kinematics/axiscollection/KinematicsAxisCollection.hpp> // Include the AxisCollection class header file
 
 /**
  * @brief Visitor class for handling exclusive mode for translational or rotational movement.
- * @warning This class should only be used for visiting AxisCollection objects.
+ * @warning This class should only be used for visiting KinematicsAxis objects.
  */
 class KillSwitchVisitor : public IVisitor {
 public:
     KillSwitchVisitor() = default;  // Default constructor
     ~KillSwitchVisitor() = default; // Destructor
 
-    void visit(VisitableBase &knobMotionVectors) override {
+    void visit(VisitableBase &kinematicsAxes) override {
 
         // Cast the VisitableBase to AxisCollection
-        KnobAxisCollection *axisCol = static_cast<KnobAxisCollection *>(&knobMotionVectors);
+        KinematicsAxisCollection *axisCol = static_cast<KinematicsAxisCollection *>(&kinematicsAxes);
 
         if (!axisCol) {
             Serial.println(F("Invalid AxisCollection"));
             return;
         }
 
-        // If the total rotation is greater than the total translation, set translation axes to 0
-        // Otherwise, set rotation axes to 0
-        bool actOnTranslationAxis = true; // Zero the translation (true) or the rotation (false) axes   //FIXME!!!
-
-        if (actOnTranslationAxis) {
-            Serial.println(F("Zeroing translation axes"));
-        } else {
-            Serial.println(F("Zeroing rotation axes"));
-        }
-
-        for (uint8_t i = 0; i < axisCol->getItemCount(); i++) {
-            KnobAxis *axis = static_cast<KnobAxis *>(axisCol->getItem(i));
-            if (axis && (axis->isTranslation() == actOnTranslationAxis)) {
-                axis->setFinValue(0); // Set the fin value to 0 for the selected axes
-            }
-        }
+        axisCol->setAllToZero(); // Set all axis in the collection to zero
     }
 };

@@ -3,13 +3,11 @@
 #include "IKey.h"
 #include "common/ICollectable.hpp"
 #include "common/Observable.hpp"
-// REMOVE ? #include "hidhandler/commands/ICommand.hpp" // For Command interface
 
-#include "key/functionality/IKeyFunctionality.h"
-#include "key/functionality/CommandType.hpp" // For CommandType enum
+#include <key/functionality/StrategyBase.hpp>
+#include <key/functionality/CommandType.hpp> // For CommandType enum
 
 class KeyCollection; // Forward declaration of KeyCollection class
-// REMOVE class IObservable;   // Forward declaration of IObservable interface
 
 #include <stdint.h>
 
@@ -27,7 +25,7 @@ constexpr uint8_t c_MAX_KEY_OBSERVERS = 1;
  */
 class Key : public ICollectable, public Observable {
 protected:
-    IKeyFunctionality *m_keystrategy = nullptr;  // Pointer to the key functionality
+    StrategyBase *m_keystrategy = nullptr;       // Pointer to the key strategy, which defines the functionality of the key
     bool m_keyState = false;                     // Current state of the key (true = pressed, false = released)
     int8_t m_id = -1;                            // ID of the key, used for identification in f.e. printing
     CommandType commandType = CommandType::NONE; // Command type for the key        //FIXME - This is not part of the common confuguration!
@@ -48,8 +46,8 @@ public:
     }
 
     // Getters and setters for key properties
-    inline IKeyFunctionality *getStrategy() const { return m_keystrategy; }
-    void setStrategy(IKeyFunctionality *strategy) {
+    inline StrategyBase *getStrategy() const { return m_keystrategy; }
+    void setStrategy(StrategyBase *strategy) {
         delete m_keystrategy; // Delete any previous strategy instance      // REVIEW - Deleting an externally created object is not a good idea!
         m_keystrategy = strategy;
     }

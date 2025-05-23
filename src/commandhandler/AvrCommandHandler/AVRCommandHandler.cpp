@@ -482,7 +482,7 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
     if (paramCount == 0) {
         // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
-        m_CollectionCarrier->getKnobAxes()->acceptAxesVisitor(printer);
+        m_CollectionCarrier->getKnobAxes()->acceptAxesPrinter(printer);
         return -1;
     }
 

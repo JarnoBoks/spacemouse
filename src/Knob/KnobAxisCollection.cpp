@@ -22,6 +22,19 @@ void KnobAxisCollection::setup(ISensorsCalculator *sensorsCalculator) {
     m_itemCount = 6;
 };
 
+void KnobAxisCollection::setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation) {
+    // Call the setup function to initialize the axes
+    setup(sensorsCalculator);
+
+    // Attach the HIDEventBuffers to the axes
+    static_cast<KnobAxis *>(m_items[TRANSX])->attachObserver(hidEventBufferTranslation);
+    static_cast<KnobAxis *>(m_items[TRANSY])->attachObserver(hidEventBufferTranslation);
+    static_cast<KnobAxis *>(m_items[TRANSZ])->attachObserver(hidEventBufferTranslation);
+    static_cast<KnobAxis *>(m_items[ROTX])->attachObserver(hidEventBufferRotation);
+    static_cast<KnobAxis *>(m_items[ROTY])->attachObserver(hidEventBufferRotation);
+    static_cast<KnobAxis *>(m_items[ROTZ])->attachObserver(hidEventBufferRotation);
+};
+
 /**
  * @brief Get the axis at the specified index in the collection.
  * @param id Index of the axis to retrieve.
@@ -70,8 +83,19 @@ void KnobAxisCollection::attachAxesObserver(IObserver *observer) {
  * @param printerVisitor Reference to the printer visitor to be used for printing.
  * @details This function iterates through all axes in the collection and calls the accept method on each axis,
  */
-void KnobAxisCollection::acceptAxesVisitor(IPrinterVisitor &printerVisitor) {
+void KnobAxisCollection::acceptAxesPrinter(IPrinterVisitor &printerVisitor) {
     for (int i = 0; i < m_itemCount; i++) {
         static_cast<KnobAxis *>(m_items[i])->accept(printerVisitor);
+    }
+}
+
+/**
+ * @brief Distribute the visitor to all axes in the collection
+ * @param visitor Reference to the visitor to be used for processing.
+ * @details This function iterates through all axes in the collection and calls the accept method on each axis,
+ */
+void KnobAxisCollection::acceptAxesVisitor(IVisitor &visitor) {
+    for (int i = 0; i < m_itemCount; i++) {
+        static_cast<KnobAxis *>(m_items[i])->accept(visitor);
     }
 }

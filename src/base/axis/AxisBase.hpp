@@ -2,6 +2,7 @@
 
 #include <common/ICollectable.hpp>
 #include <common/Observable.hpp>
+#include <base/visitable/VisitableBase.hpp>    // Include the VisitableBase header file for the VisitableBase class
 #include <base/axis/MotionVectorType.h>        // Include the header file for MotionVector_t enum
 #include <visitors/printers/IPrinterVisitor.h> // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Use IVisitor instead of IPrinterVisitor
 
@@ -13,9 +14,9 @@ constexpr const char *c_AXIS_DESCRIPTORS[] = {"TX", "TY", "TZ", "RX", "RY", "RZ"
  * @details This class implements the ICollectable interface and provides functionality for managing the Axis configuration and state.
  *          It allows evaluating the Axis state and checking if the Axis is current based on its name.
  */
-class AxisBase : public ICollectable, public Observable {
+class AxisBase : public ICollectable, public Observable, public VisitableBase {
 private:
-    MotionVector_t m_type = MotionVector_t::MV_UNINITIALIZED; // Type of the Axis (translation or rotation) // REVIEW - If the collections are split just like the kinematics setup, we don't need this member anymore in the vector class
+    MotionVector_t m_type = MotionVector_t::MV_UNINITIALIZED; // Type of the Axis (translation or rotation)
     const char *m_descriptor = nullptr;                       // Descriptor of the Axis
 
 protected:

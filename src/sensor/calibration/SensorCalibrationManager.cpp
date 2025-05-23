@@ -32,6 +32,9 @@ void SensorCalibrationManager::activate() {
 void SensorCalibrationManager::deactivate(const bool warningsOccurred) {
     m_SensorCollection->detachObserver(currentCalibration);
     delete currentCalibration;
+
+    // The SensorCalibration Manager can be deleted when there are no more calibrations running.
+    // TODO - Test if deleting this; works as expected.
 }
 
 #if 0 // REVIEW - What to do with this code?

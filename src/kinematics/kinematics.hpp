@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/Observable.hpp"                                  // For IObservable interface & Base class
-#include <kinematics/axiscollection/KinematicsAxisCollection.hpp> // For KinematicsMotionVectorCollection
-#include <base/axis/MotionVectorType.h>                           // For MotionVector_t enum
+#include "common/Observable.hpp"        // For IObservable interface & Base class
+#include <knob/KnobAxisCollection.hpp>  // For KnobAxisCollection
+#include <base/axis/MotionVectorType.h> // For MotionVector_t enum
 #include <observers/IObserver.hpp>
 
 /// @brief Number of observers that can be added to this object
@@ -15,17 +15,11 @@ class KnobAxisCollection;
 
 class Kinematics : public Observable {
 private:
-    KinematicsAxisCollection *m_transMotionVectors = nullptr; // Pointer to the translational kinematic MotionVectors collection
-    KinematicsAxisCollection *m_rotMotionVectors = nullptr;   // Pointer to the rotational kinematic MotionVectors collection
-
+    KnobAxisCollection *m_knobAxisCollection = nullptr;
     KinematicsConfig *m_config = nullptr; // Pointer to the kinematics configuration
 
     void _applyExclusiveMode();
     void _applySwitchYZ();
-
-    void _createAxis(const KnobAxisCollection *knobVectors,
-                     const MotionVector_t type,
-                     IObserver *observer);
 
 #if 0 // REMOVE
     void _applyKillSwitch(const AxisType_t start, const AxisType_t end, const bool killSwitchActive) {
@@ -38,16 +32,11 @@ private:
 
 public:
     Kinematics();
+    Kinematics(KnobAxisCollection *knobAxisCollection);
+
     ~Kinematics();
 
-    void setup(const KnobAxisCollection *knobMotionVectors,
-               IObserver *hidEventBufferTranslation,
-               IObserver *hidEventBufferRotation);
-
     void evaluate() {
-        m_transMotionVectors->evaluate(); // Evaluate all translational kinematics vectors
-        m_rotMotionVectors->evaluate();   // Evaluate all rotational kinematics vectors
-
         _applyExclusiveMode(); // Apply exclusive mode if enabled
         _applySwitchYZ();      // Apply switch YZ if enabled
 

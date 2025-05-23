@@ -40,7 +40,7 @@ public:
      *          It creates instances of the axes and configures them according to the provided configuration.
      */
     void setup(ISensorsCalculator *sensorsCalculator);
-    // REMOVE void setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation);
+    void setup(ISensorsCalculator *sensorsCalculator, IObserver *hidEventBufferTranslation, IObserver *hidEventBufferRotation);
 
     KnobAxis *getAxis(const uint8_t id) const;
     KnobAxis *getAxis(const char *descriptor) const;
@@ -65,5 +65,6 @@ public:
     /**
      * @brief Accept the Printer Visitor for all Axes in the collection.
      */
-    void acceptAxesVisitor(IPrinterVisitor &printerVisitor);
+    void acceptAxesPrinter(IPrinterVisitor &printerVisitor);
+    void acceptAxesVisitor(IVisitor &visitor);
 };

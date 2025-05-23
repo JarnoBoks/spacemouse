@@ -1,39 +1,39 @@
-#if 0 // NOT USED - Only for future development
 #pragma once
 
 #include <common/IVisitor.hpp>
 
-class KinematicsAxis;
-#include <kinematics/axis/KinematicsAxis.hpp>
+class KnobAxis;
+#include <knob/axis/KnobAxis.hpp>
 
 class ExclusiveMovementVisitor : public IVisitor {
     int _transTotal = 0;
     int _rotTotal = 0;
-    KinematicsAxis *_transAxes[3];
-    KinematicsAxis *_rotAxes[3];
+    KnobAxis *_transAxes[3];
+    KnobAxis *_rotAxes[3];
     uint8_t _transCount = 0;
     uint8_t _rotCount = 0;
 
 public:
     ExclusiveMovementVisitor() = default;
 
-    void visit(KinematicsAxis *ax) {
-        int16_t v = abs(ax->getFinValue());
-        if (ax->isTranslation()) {
+    void visit(VisitableBase &ax) {
+        KnobAxis *axis = static_cast<KnobAxis *>(&ax);
+        int16_t v = abs(axis->getFinValue());
+        if (axis->isTranslation()) {
             if (_transCount < 3) {
-                _transAxes[_transCount++] = ax;
+                _transAxes[_transCount++] = axis;
                 _transTotal += v;
             }
         } else {
             if (_rotCount < 3) {
-                _rotAxes[_rotCount++] = ax;
+                _rotAxes[_rotCount++] = axis;
                 _rotTotal += v;
             }
         }
     }
 
     void finalize() {
-        KinematicsAxis **loser = nullptr;
+        KnobAxis **loser = nullptr;
         uint8_t count = 0;
 
         if (_transTotal > _rotTotal) {
@@ -49,4 +49,3 @@ public:
         }
     }
 };
-#endif

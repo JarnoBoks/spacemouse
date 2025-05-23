@@ -1,3 +1,6 @@
+#if 0
+/// Depreated class - KillSwitchVisitor
+/// @deprecated This class is not used
 #pragma once
 #include <common/IVisitor.hpp> // Include the IVisitor interface header file
 
@@ -27,3 +30,4 @@ public:
         axisCol->setAllToZero(); // Set all axis in the collection to zero
     }
 };
+#endif

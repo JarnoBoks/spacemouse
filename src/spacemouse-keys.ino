@@ -46,7 +46,6 @@ SensorsCalculatorJoystick mySensorCalculator(&mySensorCollection);
 KnobAxisCollection myKnobAxes;         // KnobAxisCollection object to hold the axes and the axis configuration (initialized empty)
 
 // Header to calculate the kinematics of the mouse
-// FIXME - Create a factory for the Kinematics class and move the creation of the kinematics class to the factory
 #include "kinematics/Kinematics.hpp"
 Kinematics myKinematics; // Kinematics object to evaluate the kinematics of the mouse
 
@@ -119,24 +118,13 @@ void setup() {
     mySensorCollection.setup();
 
     // Setup the KnobAxis collection. This will setup the axes and the axis configuration, and attaches the HID event buffers.
-    // TODO - Create a AxisFactory that will create the axes based on the configuration.
-    myKnobAxes.setup(&mySensorCalculator);
-
-    // Setup the Kinematics object. This will create the kinematic axes of the mouse.
-    // TODO - The setup will check the EEPROM for the configuration of the sensors and the axes.
-    myKinematics.setup(&myKnobAxes,
-                       &myHIDEventBufferTranslation,
-                       &myHIDEventBufferRotation);
+    myKnobAxes.setup(&mySensorCalculator,
+                     &myHIDEventBufferTranslation,
+                     &myHIDEventBufferRotation);
 
     // Populate the key collection with the keys that are configured in config.h
     myKeyCollection.setup(); // Setup the keys for the key collection, based on the configuration in config.h
     myKeyCollection.attachKeysObserver(&myHIDEventBufferKeys);
-
-    // Setup the Kinematics object. This will setup the kinematic axes of the mouse.
-    // The setup will check the EEPROM for the configuration of the sensors and the axes.
-    // If the configuration is not available, the default values as set in config.h will be used (and stored in the EEPROM)
-    // FIXME - Kinematics should be removed
-    // FIXME Kinematics::getInstance()->setAxisCollection(&myKnobAxes); // Set the axis collection for the kinematics object
 
     CommandHandlerFactory myCommandHandlerFactory(&myCollections);     // Create the command handler factory
     myCommandHandler = myCommandHandlerFactory.createCommandHandler(); // Create the command handler object
@@ -150,8 +138,6 @@ void setup() {
 #endif
 
     // Start the idle calibration of the sensors. This will zero the sensors during the loop.
-    // TODO - We do not want to send output to the HID while the calibration isn't finished.
-    // FIXME - Cleanup the calibration manager when the calibration is finished.
     mySensorCalibrationManagerIdle = new SensorCalibrationManagerIdle(&mySensorCollection); // Initialize the sensor calibration manager
     mySensorCalibrationManagerIdle->activate();                                             // Start the idle calibration with 500 iterations
 
@@ -176,7 +162,6 @@ void setup() {
 }
 
 void loop() {
-    FreeRAM::printFreeRAM(); // Print the free RAM to the serial monitor
 
     //  Check if the user entered a command through the Serial monitor
     if (Serial.available()) {

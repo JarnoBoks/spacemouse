@@ -53,5 +53,6 @@ public:
     inline const ISensorsCalculator *getSensorsCalculator() const { return m_sensorsCalculator; } // Getter for sensor calculator
     inline KnobAxisConfig *getConfig() const { return m_Config; }                                 // Getter for axis configuration
 
+    using VisitableBase::accept; // Inherit the accept method from VisitableBase
     inline void accept(IPrinterVisitor &printerVisitor) { printerVisitor.visit(*this); }
 };

@@ -1,59 +1,24 @@
 #include "Kinematics.hpp"
 #include "config.h"
 #include <kinematics/config/kinematicsconfig.hpp>
-#include <kinematics/axiscollection/KinematicsAxisCollection.hpp>
-#include <kinematics/axis/KinematicsAxis.hpp>
-#if 0
-//NOTE See AxisBase.hpp for the reason why we don't use this
-#include <kinematics/axis/deprecated/KinematicsAxisRotation.hpp>
-#include <kinematics/axis/deprecated/KinematicsAxisTranslation.hpp>
-#endif
 
 #include <knob/KnobAxisCollection.hpp>
-#include <knob/Axis/KnobAxis.hpp>
+// #include <knob/Axis/KnobAxis.hpp>
+
+#include <kinematics/visitor/ExclusiveMovementVisitor.hpp>
 
 Kinematics::Kinematics()
     : Observable(c_MAX_KINEMATICS_OBSERVERS),
-      m_transMotionVectors(new KinematicsAxisCollection()),
-      m_rotMotionVectors(new KinematicsAxisCollection()),
+      m_knobAxisCollection(nullptr),
       m_config(new KinematicsConfig()) {}
 
+Kinematics::Kinematics(KnobAxisCollection *knobAxisCollection)
+    : Observable(c_MAX_KINEMATICS_OBSERVERS),
+      m_knobAxisCollection(knobAxisCollection),
+      m_config(new KinematicsConfig()) {} // Constructor with knob axis collection
+
 Kinematics::~Kinematics() {
-    delete m_transMotionVectors; // Delete the translational kinematic MotionVectors collection
-    delete m_rotMotionVectors;   // Delete the rotational kinematic MotionVectors collection
-    delete m_config;             // Delete the kinematics configuration
-}
-
-void Kinematics::_createAxis(const KnobAxisCollection *knobVectors,
-                             const MotionVector_t type,
-                             IObserver *hidEventbuffer) {
-
-    KnobAxis *knobAxis = knobVectors->getAxis(type);
-    if (knobAxis == nullptr) {
-        return; // Error: KnobAxis not found, exit the function
-    }
-
-    KinematicsAxis *kinAxis = nullptr;
-    if (knobAxis->isTranslation()) {
-        kinAxis = new KinematicsAxis(type, knobAxis);
-        m_transMotionVectors->add(kinAxis);
-    } else {
-        kinAxis = new KinematicsAxis(type, knobAxis);
-        m_rotMotionVectors->add(kinAxis);
-    }
-    kinAxis->attachObserver(hidEventbuffer);
-}
-
-void Kinematics::setup(const KnobAxisCollection *knobAxisCollection,
-                       IObserver *hidEventBufferTranslation,
-                       IObserver *hidEventBufferRotation) {
-
-    _createAxis(knobAxisCollection, MotionVector_t::TRANSX, hidEventBufferTranslation);
-    _createAxis(knobAxisCollection, MotionVector_t::TRANSY, hidEventBufferTranslation);
-    _createAxis(knobAxisCollection, MotionVector_t::TRANSZ, hidEventBufferTranslation);
-    _createAxis(knobAxisCollection, MotionVector_t::ROTX, hidEventBufferRotation);
-    _createAxis(knobAxisCollection, MotionVector_t::ROTY, hidEventBufferRotation);
-    _createAxis(knobAxisCollection, MotionVector_t::ROTZ, hidEventBufferRotation);
+    delete m_config; // Delete the kinematics configuration
 }
 
 void Kinematics::_applyExclusiveMode() {
@@ -62,18 +27,8 @@ void Kinematics::_applyExclusiveMode() {
     }
 
     // Create a visitor for the exclusive movement
-    // ExclusiveMovementVisitor EMvisitor;
-    // m_knobMotionVectors->accept(EMvisitor); // Accept the visitor to apply the exclusive movement
-    /* REFACTOR - For now the collection passes the Zeroing to the motionVector, but this isn't SOLID
-    design and we cannot store the intermediate value for debugging. Furthermore, we should make this
-    function an observer.
-    */
-    if (m_transMotionVectors->getTotalVelocity() > m_rotMotionVectors->getTotalVelocity()) {
-        // If the total translation is greater than the total rotation, set rotation axes to 0
-        m_rotMotionVectors->setAllToZero();
-    } else {
-        m_transMotionVectors->setAllToZero(); // Set translation axes to 0
-    }
+    ExclusiveMovementVisitor EMvisitor;
+    m_knobAxisCollection->acceptAxesVisitor(EMvisitor); // Accept the visitor to apply the exclusive movement
 }
 
 void Kinematics::_applySwitchYZ() {
@@ -81,10 +36,10 @@ void Kinematics::_applySwitchYZ() {
         return;
     }
 
-    static_cast<KinematicsAxis *>(m_transMotionVectors->getItem(MotionVector_t::TRANSY))->setType(MotionVector_t::TRANSZ);
-    static_cast<KinematicsAxis *>(m_transMotionVectors->getItem(MotionVector_t::TRANSZ))->setType(MotionVector_t::TRANSY);
-    static_cast<KinematicsAxis *>(m_rotMotionVectors->getItem(MotionVector_t::ROTY))->setType(MotionVector_t::ROTZ);
-    static_cast<KinematicsAxis *>(m_rotMotionVectors->getItem(MotionVector_t::ROTZ))->setType(MotionVector_t::ROTY);
+    static_cast<KnobAxis *>(m_knobAxisCollection->getItem(MotionVector_t::TRANSY))->setType(MotionVector_t::TRANSZ);
+    static_cast<KnobAxis *>(m_knobAxisCollection->getItem(MotionVector_t::TRANSZ))->setType(MotionVector_t::TRANSY);
+    static_cast<KnobAxis *>(m_knobAxisCollection->getItem(MotionVector_t::ROTY))->setType(MotionVector_t::ROTZ);
+    static_cast<KnobAxis *>(m_knobAxisCollection->getItem(MotionVector_t::ROTZ))->setType(MotionVector_t::ROTY);
 }
 
 /**

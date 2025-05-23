@@ -4,6 +4,7 @@ config*.h
 .vscode
 .idea
 test*.*
+developer*.*
 
 
 // Except for the files that meet the following patterns (f.e config_sample.h, config_physicalkey.h)

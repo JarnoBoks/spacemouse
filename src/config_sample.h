@@ -256,6 +256,7 @@ Expected outcome:
 
 */
 
+// TODO - This should be rewritten to use the DZ command
 // The deadzone default value can be overridden in the config.h file by using the following defines format:
 // #define DEADZONE <value>
 
@@ -337,7 +338,7 @@ Insert measured Values like this:
  *
  */
 
-/* Fourth calibration: Base Sensitivity   (command: SENS | SENS [G}<axisname>[+|-] <value>) | SENS 99999)
+/* Fourth calibration: Sensitivity & GATE  (command: SENS | SENS <axisname>[+|-] <value>, GATE | GATE <axisname>[+|-] <value>)
 ==========================================================================================================
 Use debug mode 4 or use for example your CAD program to verify changes.
 Note: Neither the modifier function nor the inversion are applied in debug mode 4.
@@ -365,18 +366,15 @@ To store the sensitivity values for a single axis in the EEPROM, you can use the
 
 Examples:
    To adjust the sensitivity for positive rotation around the x axis to 0.5, you can use the command "SENS +RX 0.5"
-   To adjuist the sensitivity for positive and negative translation in the y direction to 3, you can use the command "SENS TY 3.0"
+   To adjust the sensitivity for positive and negative translation in the y direction to 3, you can use the command "SENS TY 3.0".
 
 To suppress small movements around zero, you can add an additional gate to each axis and even each axis direction. Use the command
-   SENS G<axisname>[+|-] <value>    (Note the 'G' in front of the axis name)
+   GATE <axisname>[+|-] <value>
       <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
       [+|-]        - Optional indication of the direction for which the value will be set. + for positive, - for negative. If not set, the value is set for both directions.
       <value>      - The sensitivity value to set for the axis. Should be an integer value.
 
-Use the command "SENS" (without any parameter) to show the current modifier function for all axes.
-
-Use the command "SENS 99999" to restore the default sensitivity, modifier, gate and inversion values for all axes to start
-the sensitivity calibration from scratch.
+Use the command "SENS" or "GATE" (without any parameter) to show the current settings for all axes.
 */
 
 // All sensitivity defaults can be overridden in the config.h file by using the following defines format:
@@ -391,7 +389,7 @@ the sensitivity calibration from scratch.
 
 // >>> Place your default values here. These values will be used if the EEPROM is empty or if the version number (SM_VERSION) is changed.
 
-/* Fifth calibration: Modifier Function      (command: SENS | SENS M<axisname>[+|-] <value>) | SENS 99999)
+/* Fifth calibration: Modifier Function      (command: MODFUNC | MODFUNC <axisname>[+|-] <value>) )
 ==============================================================================================================
 Use debug mode 5 ("DEBUG 5") or use for example your CAD program to verify changes.
 In debug mode 5 the modifier function and the inversion are applied to the translation & rotation values.
@@ -411,15 +409,12 @@ The available modifier functions are:
 
 Update the modifier function for a single axis by sending the command
 
-      SENS M<axisname>[+|-] <value>           (Note the 'M' in front of the axis name)
+      MODFUNC <axisname>[+|-] <value>
          <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
          [+|-]        - Optional indication of the direction for which the value will be set. + for positive, - for negative. If not set, the value is set for both directions.
          <value>      - The modifier function to set for the axis (0-4, one of the functions described above).
 
-Use the command "SENS" (without any parameter) to show the current modifier function for all axes.
-
-Use the command "SENS 99999" to restore the default sensitivity, modifier, gate and inversion values for all axes to start
-the sensitivity calibration from scratch.
+Use the command "MODFUNC" (without any parameter) to show the current modifier function for all axes.
 
 Note: See below - after setting up any connected keys / rotary encoders - for fine-tuning of the translation & rotation values.
 
@@ -441,7 +436,7 @@ Note: See below - after setting up any connected keys / rotary encoders - for fi
 
 // >>> Place your default values here. These values will be used if the EEPROM is empty or if the version number (SM_VERSION) is changed.
 
-/* Sixth Calibration: Direction           (command: SENS | SENS I<axisname>[+|-] <value>) | SENS 99999)
+/* Sixth Calibration: Direction           (command: INVERT | INVERT <axisname>[+|-] <value>) )
 ========================================================================================================
 Modify the direction of translation/rotation depending on the CAD program you are using on your PC.
 Use debug mode 6 ("DEBUG 6") or use for example your CAD program to verify changes.
@@ -450,16 +445,12 @@ If no inversions are set the resulting X, Y and Z axis correspond to the picture
 
 Update the inversion for a single axis by sending the command
 
-      SENS I<axisname>[+|-] <value>           (Note the 'I' in front of the axis name)
+      INVERT <axisname>[+|-] <value>
          <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
          [+|-]        - Optional indication of the value to set. + for positive, - for negative. If not set, the value is set for both directions.
          <value>      - The inversion value to set for the axis (0 or 1).
 
-Use the command "SENS" (without any parameter) to show the current modifier function for all axes.
-
-Use the command "SENS 99999" to restore the default sensitivity, modifier, gate and inversion values for all axes to start
-the sensitivity calibration from scratch.
-
+Use the command "INVERT" (without any parameter) to show the current inversion settings for all axes.
 */
 
 // To set or overwrite the default settings from within config.h, you can use the following settings:

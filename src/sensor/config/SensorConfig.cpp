@@ -2,8 +2,7 @@
 #include "SensorConfig.hpp"
 #include "config.h" // Include the config file to know the hardware type
 #include "DefaultSensorConfig.hpp"
-#include "eeprom/eepromstore.h"                // To load and save the sensor configuration to EEPROM
-#include <visitors/printers/IPrinterVisitor.h> // For IPrinterVisitor interface
+#include "eeprom/eepromstore.h" // To load and save the sensor configuration to EEPROM
 
 #include <Arduino.h> // For abs() function
 
@@ -166,8 +165,4 @@ bool SensorConfig::retrieve(const uint8_t sensorId) {
 
     // Retrieve the data stored in the EEPROM
     return (EEPROMStore::load(tableId, &data, sizeof(data)) == ERR_EEPROMSTORE_SUCCESS);
-}
-
-void SensorConfig::accept(IPrinterVisitor &visitor) {
-    visitor.visit(*this); // Accept the visitor and call the visit method for this class
 }

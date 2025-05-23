@@ -1,6 +1,5 @@
 #include "Sensor.hpp"
 #include "sensor/config/SensorConfig.hpp"
-#include <visitors/printers/IPrinterVisitor.h>
 
 #include <wiring_private.h> // for analogRead & map function
 
@@ -74,8 +73,4 @@ void Sensor::applyCalibration() {
             m_finValue = map(m_cntValue, config->getMin(), (-1 * _deadzone), -TOTALSENSITIVITY, 0);
         }
     }
-}
-
-void Sensor::accept(IPrinterVisitor &visitor) {
-    visitor.visit(*this); // Call the visit method of the visitor with this sensor as an argument
 }

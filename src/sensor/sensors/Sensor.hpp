@@ -1,13 +1,10 @@
 #pragma once
 
-#include "common\ICollectable.hpp" // Include the ICollectable interface header file
-#include <stdint.h>                // Include the standard integer types header for fixed-width integer types
+#include <common/ICollectable.hpp>
+#include <base/visitable/VisitableBase.hpp>
+#include <stdint.h>
 
-class SensorConfig;    // Forward declaration of SensorConfig class
-class IPrinterVisitor; // Forward declaration of IPrinterVisitor class
-
-// FOR DEBUGGING: //REMOVE
-#include <Arduino.h> // Include Arduino library for Serial communication & PROGMEM
+class SensorConfig; // Forward declaration of SensorConfig class
 
 /**
  * @brief Base class representing a sensor, implementing the ICollectable interface.
@@ -15,7 +12,7 @@ class IPrinterVisitor; // Forward declaration of IPrinterVisitor class
  * @note The Sensor class is designed to be inherited by specific sensor types, such as HallSensor or JoystickSensor.
  *        It provides a common interface for reading and processing sensor values, as well as managing the sensor's configuration.
  */
-class Sensor : public ICollectable {
+class Sensor : public ICollectable, public VisitableBase {
 private:
     const int8_t pin = -1;          // Default pin value to indicate uninitialized state
     const int8_t id = -1;           // Default id value to indicate uninitialized state
@@ -64,6 +61,4 @@ public:
     };
 
     virtual void setContext(ICollection *Collection) override {};
-
-    void accept(IPrinterVisitor &visitor);
 };

@@ -1,9 +1,8 @@
 
 #include "KnobAxisConfig.hpp"
 
-#include "eeprom/eepromstore.h"              // To load and save the axis configuration to EEPROM
-#include "DefaultKnobAxisConfig.hpp"         // To get the default axis configuration if the EEPROM is empty or the version is changed
-#include <visitors/printers/IPrinterVisitor.h> // For the visitor pattern
+#include "eeprom/eepromstore.h"      // To load and save the axis configuration to EEPROM
+#include "DefaultKnobAxisConfig.hpp" // To get the default axis configuration if the EEPROM is empty or the version is changed
 
 constexpr uint8_t EEPROM_AXISCONFIG_VERSION = 1;     // Define the version number for the AxisConfig in EEPROM.     // TODO: Add versioning
 constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_POSCFG = 1; // Offset for the positive direction configuration ID
@@ -100,13 +99,4 @@ bool KnobAxisConfig::retrieve(const MotionVector_t vectorType) {
     }
 
     return true;
-}
-
-/**
- * @brief Accept a visitor for the visitor pattern.
- * @details This function accepts a visitor that will process this KnobAxisConfig object. Mostly used for serial output.
- * @param visitor The visitor that will process this KnobAxisConfig object.
- */
-void KnobAxisConfig::accept(IPrinterVisitor &visitor) {
-    visitor.visit(*this);
 }

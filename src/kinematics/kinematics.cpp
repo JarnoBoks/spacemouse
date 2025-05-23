@@ -28,7 +28,7 @@ void Kinematics::_applyExclusiveMode() {
 
     // Create a visitor for the exclusive movement
     ExclusiveMovementVisitor EMvisitor;
-    m_knobAxisCollection->acceptAxesVisitor(EMvisitor); // Accept the visitor to apply the exclusive movement
+    m_knobAxisCollection->accept(EMvisitor); // Accept the visitor to apply the exclusive movement
 }
 
 void Kinematics::_applySwitchYZ() {

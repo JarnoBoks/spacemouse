@@ -2,8 +2,11 @@
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
 #include <sensor/calibration/SensorCalibrationManagerMinMax.hpp>
 #include <sensor/SensorCollection.hpp>
+#include <sensor/sensors/Sensor.hpp>
 #include <sensor/config/SensorConfig.hpp>
+
 #include <visitors/printers/MinMaxPrinter.hpp>
+#include <visitors/printers/SensorNamePrinter.hpp>
 
 #include <common/esp_print.h> // For ESP_PRINT
 
@@ -35,15 +38,16 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
 
     if (paramCount == 0) {
         // No params provided, show config
-        MinMaxPrinter Printer;
+        MinMaxPrinter MinMaxPrinter;
+        SensorNamePrinter NamePrinter;
 
         for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
             Sensor *sensor = sensorCollection->getSensor(id); // Pointer to the sensor
             if (sensor == nullptr) {
                 continue; // Skip if the sensor is not available
             }
-            sensor->accept(Printer);              // Let the sensor accept the Printer visitor to print the sensor name
-            sensor->getConfig()->accept(Printer); // Let the sensorconfig accept the Printer visitor to print the sensor configuration values
+            sensor->accept(NamePrinter);                // Let the sensor accept the Printer visitor to print the sensor name
+            sensor->getConfig()->accept(MinMaxPrinter); // Let the sensorconfig accept the Printer visitor to print the sensor configuration values
         }
         return;
     }

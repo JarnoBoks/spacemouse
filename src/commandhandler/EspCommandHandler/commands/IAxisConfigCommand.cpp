@@ -21,7 +21,7 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
     if (paramCount == 0) {
         // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
-        m_CollectionCarrier->getKnobAxes()->acceptAxesPrinter(printer);
+        m_CollectionCarrier->getKnobAxes()->accept(printer);
         return;
     }
 

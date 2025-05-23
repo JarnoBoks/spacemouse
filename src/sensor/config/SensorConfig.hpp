@@ -1,8 +1,8 @@
 #pragma once
+#include <base/visitable/VisitableBase.hpp>
 #include <stdint.h>
-class IPrinterVisitor; // Forward declaration of IPrinterVisitor class
 
-class SensorConfig {
+class SensorConfig : public VisitableBase {
 private:
     struct SensorConfigData_t {
         int minv = 0;
@@ -45,6 +45,4 @@ public:
     inline void setDeadzone(const uint8_t dz) { data.deadzone = dz; }
 
     void persist(const uint8_t sensorId) const;
-
-    void accept(IPrinterVisitor &visitor);
 };

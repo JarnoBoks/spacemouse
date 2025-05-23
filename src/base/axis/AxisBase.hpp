@@ -2,9 +2,8 @@
 
 #include <common/ICollectable.hpp>
 #include <common/Observable.hpp>
-#include <base/visitable/VisitableBase.hpp>    // Include the VisitableBase header file for the VisitableBase class
-#include <base/axis/MotionVectorType.h>        // Include the header file for MotionVector_t enum
-#include <visitors/printers/IPrinterVisitor.h> // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Use IVisitor instead of IPrinterVisitor
+#include <base/visitable/VisitableBase.hpp>
+#include <base/axis/MotionVectorType.h> // Include the header file for MotionVector_t enum
 
 // REFACTOR - Move to PROGMEM
 constexpr const char *c_AXIS_DESCRIPTORS[] = {"TX", "TY", "TZ", "RX", "RY", "RZ"}; // Axis names for serial output, ordered by the MotionVector_t.
@@ -58,6 +57,4 @@ public:
     void setType(const MotionVector_t type) { m_type = type; }        // Setter for the Axis type
     inline const MotionVector_t getType() const { return m_type; }    // Getter for Axis type
     inline const char *getDescriptor() const { return m_descriptor; } // Getter for Axis descriptor
-
-    inline void accept(IPrinterVisitor &printerVisitor) { printerVisitor.visit(*this); }
 };

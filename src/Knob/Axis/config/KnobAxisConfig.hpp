@@ -1,9 +1,7 @@
 #pragma once
 
-#include "KnobAxisDirectionConfig.hpp"          // For the DirectionConfig class
+#include "KnobAxisDirectionConfig.hpp"  // For the DirectionConfig class
 #include <base/axis/MotionVectorType.h> // For MotionVector_t enum
-
-class IPrinterVisitor;
 
 class KnobAxisConfig {
 private:
@@ -28,8 +26,6 @@ public:
                    const bool invert);
 
     void persist(const MotionVector_t motionVectorType) const;
-
-    void accept(IPrinterVisitor &visitor);
 
     const bool getInvert() const { return inversion; }
 };

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "IPrinterVisitor.h"
-#include "sensor/sensors/Sensor.hpp"
-#include "common/TextHelper.h"
+#include <common/IVisitor.hpp>
+#include <sensor/sensors/Sensor.hpp>
+#include <common/TextHelper.h>
 
-class IdlePositionPrinter : public IPrinterVisitor {
+class IdlePositionPrinter : public IVisitor {
 private:
     int minValue = 0; // Minimum read value during Idle calibration
     int maxValue = 0; // Maximum read value during Idle calibration
@@ -22,7 +22,10 @@ public:
         deadzone = dz;  // Set the deadzone value
     }
 
-    void visit(Sensor &sensor) override {
+    void visit(VisitableBase &visitable) override {
+        // Cast the VisitableBase to Sensor
+        Sensor &sensor = static_cast<Sensor &>(visitable);
+
         // name
         Serial.print(sensor.getName());
         Serial.print(F(": "));
@@ -45,9 +48,4 @@ public:
 
         Serial.println();
     }
-
-    inline void visit(SensorConfig &config) override {}
-    inline void visit(KnobAxis &axis) override {};
-    inline void visit(KnobAxisConfig &config) override {};
-    inline void visit(KinematicsConfig &config) override {}
 };

@@ -79,22 +79,11 @@ void KnobAxisCollection::attachAxesObserver(IObserver *observer) {
 };
 
 /**
- * @brief Distribute the printer visitor to all axes in the collection
- * @param printerVisitor Reference to the printer visitor to be used for printing.
- * @details This function iterates through all axes in the collection and calls the accept method on each axis,
- */
-void KnobAxisCollection::acceptAxesPrinter(IPrinterVisitor &printerVisitor) {
-    for (int i = 0; i < m_itemCount; i++) {
-        static_cast<KnobAxis *>(m_items[i])->accept(printerVisitor);
-    }
-}
-
-/**
  * @brief Distribute the visitor to all axes in the collection
  * @param visitor Reference to the visitor to be used for processing.
  * @details This function iterates through all axes in the collection and calls the accept method on each axis,
  */
-void KnobAxisCollection::acceptAxesVisitor(IVisitor &visitor) {
+void KnobAxisCollection::accept(IVisitor &visitor) {
     for (int i = 0; i < m_itemCount; i++) {
         static_cast<KnobAxis *>(m_items[i])->accept(visitor);
     }

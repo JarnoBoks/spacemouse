@@ -1,8 +1,8 @@
 #pragma once
 
-class IPrinterVisitor;
+#include <base/visitable/VisitableBase.hpp>
 
-class KinematicsConfig {
+class KinematicsConfig : public VisitableBase {
 private:
     struct KinematicsConfigData_t {
         bool exclusiveMode; // Flag to indicate if exclusive mode is enabled
@@ -27,6 +27,4 @@ public:
     inline void setSwitchYZ(const bool switchYZ) { m_data.switchYZ = switchYZ; }                     // Setter for YZ switching
 
     void persist() const;
-
-    void accept(IPrinterVisitor &visitor);
 };

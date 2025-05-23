@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IPrinterVisitor.h"
+#include <common/IVisitor.hpp>
 #include <knob/axis/KnobAxis.hpp>
 #include <knob/axis/config/KnobAxisConfig.hpp>
 
@@ -12,7 +12,7 @@
 #define ONE_DECIMAL 1
 #define NO_DECIMALS 0
 
-class AxisConfigPrinter : public IPrinterVisitor {
+class AxisConfigPrinter : public IVisitor {
 private:
     void _helper_PrintConfig(const char *name, const float posval, const float negval, const boolean printseparator, const char *typeprefix, const uint8_t precision, const int8_t minwidth);
     size_t _helper_PrintItem(const char *separator, const char *typeprefix, const char *name, const char *sign);
@@ -20,36 +20,33 @@ private:
 public:
     AxisConfigPrinter() {}
 
-    void visit(KnobAxis &axis) override {
+    void visit(VisitableBase &visitable) override {
+        // Cast the VisitableBase to KnobAxis
+        KnobAxis &knobAxis = static_cast<KnobAxis &>(visitable);
 
         // Print the sensitivity
-        _helper_PrintConfig(axis.getDescriptor(),
-                            axis.getConfig()->posConfig.getSensitivity(),
-                            axis.getConfig()->negConfig.getSensitivity(),
+        _helper_PrintConfig(knobAxis.getDescriptor(),
+                            knobAxis.getConfig()->posConfig.getSensitivity(),
+                            knobAxis.getConfig()->negConfig.getSensitivity(),
                             FMT_NOCOMMA, NO_PREFIX, TWO_DECIMALS, 21);
 
         // Print the gate
-        _helper_PrintConfig(axis.getDescriptor(),
-                            axis.getConfig()->posConfig.getGate(),
-                            axis.getConfig()->negConfig.getGate(),
+        _helper_PrintConfig(knobAxis.getDescriptor(),
+                            knobAxis.getConfig()->posConfig.getGate(),
+                            knobAxis.getConfig()->negConfig.getGate(),
                             FMT_COMMA, "G", NO_DECIMALS, 21);
 
         // Print the modfunc
-        _helper_PrintConfig(axis.getDescriptor(),
-                            axis.getConfig()->posConfig.getModFuncType(),
-                            axis.getConfig()->negConfig.getModFuncType(),
+        _helper_PrintConfig(knobAxis.getDescriptor(),
+                            knobAxis.getConfig()->posConfig.getModFuncType(),
+                            knobAxis.getConfig()->negConfig.getModFuncType(),
                             FMT_COMMA, "M", NO_DECIMALS, 19);
 
         // Print the inversion
-        _helper_PrintConfig(axis.getDescriptor(),
-                            axis.getConfig()->inversion,
-                            axis.getConfig()->inversion,
+        _helper_PrintConfig(knobAxis.getDescriptor(),
+                            knobAxis.getConfig()->inversion,
+                            knobAxis.getConfig()->inversion,
                             FMT_COMMA, "I", NO_DECIMALS, -1);
-        Serial.println(); // Print a newline after the last axis status was printed to the serial monitor
+        Serial.println(); // Print a newline after the last knobAxis status was printed to the serial monitor
     }
-
-    inline void visit(KnobAxisConfig &config) override {}
-    inline void visit(Sensor &sensor) override {}
-    inline void visit(SensorConfig &config) override {}
-    inline void visit(KinematicsConfig &config) override {}
 };

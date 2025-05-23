@@ -26,6 +26,7 @@
 #include <visitors/printers/AxisConfigPrinter.hpp>
 #include <visitors/printers/SwitchYZPrinter.hpp>
 #include <visitors/printers/ExclusiveModePrinter.hpp>
+#include <visitors/printers/SensorNamePrinter.hpp>
 #include <visitors/printers/MinMaxPrinter.hpp>
 
 // Observers
@@ -178,15 +179,17 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
         // No params provided, show config
         ESP_PRINT(F("MinMaxCommand::execute: Show config"));
 
-        MinMaxPrinter Printer;
+        MinMaxPrinter MinMaxPrinter;
+        SensorNamePrinter NamePrinter;
 
         for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
             Sensor *sensor = sensorCollection->getSensor(id); // Pointer to the sensor
             if (sensor == nullptr) {
                 continue; // Skip if the sensor is not available
             }
-            sensor->accept(Printer);              // Let the sensor accept the Printer visitor to print the sensor name
-            sensor->getConfig()->accept(Printer); // Let the sensorconfig accept the Printer visitor to print the sensor configuration values
+
+            sensor->accept(NamePrinter);                // Let the sensor accept the Printer visitor to print the sensor name
+            sensor->getConfig()->accept(MinMaxPrinter); // Let the sensorconfig accept the Printer visitor to print the sensor configuration values
         }
         return;
     }
@@ -482,7 +485,7 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
     if (paramCount == 0) {
         // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
-        m_CollectionCarrier->getKnobAxes()->acceptAxesPrinter(printer);
+        m_CollectionCarrier->getKnobAxes()->accept(printer);
         return -1;
     }
 

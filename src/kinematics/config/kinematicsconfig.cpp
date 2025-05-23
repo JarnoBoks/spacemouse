@@ -1,9 +1,8 @@
 
 #include "kinematicsconfig.hpp"
 
-#include "eeprom/eepromstore.h"                // To load and save the axis configuration to EEPROM
-#include "defaultkinematicsconfig.hpp"         // To get the default axis configuration if the EEPROM is empty or the version is changed
-#include <visitors/printers/IPrinterVisitor.h> // For the visitor pattern
+#include "eeprom/eepromstore.h"        // To load and save the axis configuration to EEPROM
+#include "defaultkinematicsconfig.hpp" // To get the default axis configuration if the EEPROM is empty or the version is changed
 
 constexpr uint8_t EEPROM_KINEMATICS_VERSION = 1; // Define the version number for the KinematicsConfig in EEPROM.     // TODO: Add versioning
 
@@ -54,8 +53,4 @@ bool KinematicsConfig::retrieve() {
     }
 
     return true;
-}
-
-void KinematicsConfig::accept(IPrinterVisitor &visitor) {
-    visitor.visit(*this);
 }

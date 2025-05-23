@@ -1,11 +1,10 @@
 #pragma once
 
-#include "IPrinterVisitor.h"
-#include "sensor/sensors/Sensor.hpp"
-#include "sensor/config/SensorConfig.hpp"
-#include "common/TextHelper.h"
+#include <common/IVisitor.hpp>
+#include <sensor/config/SensorConfig.hpp>
+#include <common/TextHelper.h>
 
-class MinMaxPrinter : public IPrinterVisitor {
+class MinMaxPrinter : public IVisitor {
 public:
     MinMaxPrinter() {
         // Constructor to initialize the MinMaxPrinter object
@@ -14,19 +13,13 @@ public:
     }
 
     /**
-     * @brief Visit the Sensor object and print its name.
-     * @param sensor The Sensor object to visit.
-     */
-    void visit(Sensor &sensor) override {
-        Serial.print(sensor.getName());
-        Serial.print(F(":  "));
-    }
-
-    /**
      * @brief Visit the SensorConfig object and print its configuration values.
      * @param config The SensorConfig object to visit.
      */
-    void visit(SensorConfig &config) override {
+    void visit(VisitableBase &visitable) override {
+        // Cast the VisitableBase to SensorConfig
+        SensorConfig &config = static_cast<SensorConfig &>(visitable);
+
         // Initialize the flags for min-, max- and workingrange warnings
         bool warningsOccurred = false, minWarning = false, maxWarning = false, rangeWarning = false;
 
@@ -73,8 +66,4 @@ public:
 
         Serial.println();
     }
-
-    inline void visit(KnobAxis &axis) override {};
-    inline void visit(KnobAxisConfig &config) override {};
-    inline void visit(KinematicsConfig &config) override {}
 };

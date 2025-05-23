@@ -9,7 +9,6 @@
 class ISensorsCalculator;
 class KnobAxis;
 class HIDEventBuffer;
-class IPrinterVisitor;
 
 /// @brief Number of axes that can be added to the collection.
 /// @details This is a constant value that defines the maximum number of axes that can be added to the collection.
@@ -63,8 +62,7 @@ public:
     void attachAxesObserver(IObserver *observer);
 
     /**
-     * @brief Accept the Printer Visitor for all Axes in the collection.
+     * @brief Accept the Visitor for all Axes in the collection.
      */
-    void acceptAxesPrinter(IPrinterVisitor &printerVisitor);
-    void acceptAxesVisitor(IVisitor &visitor);
+    void accept(IVisitor &visitor) override;
 };

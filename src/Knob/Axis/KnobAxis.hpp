@@ -4,7 +4,6 @@
 #include <base/axis/MotionVectorType.h>        // Include the header file for MotionVector_t enum
 #include <knob/Axis/config/KnobAxisConfig.hpp> // Include the header file for AxisConfig class
 #include <knob/Axis/ModifierFunctionType.h>    // Include the header file for ModFunc_t enum
-#include <visitors/printers/IPrinterVisitor.h> // Include the header file for IPrinterVisitor interface, for visitor.visit() method  // REFACTOR - Use IVisitor instead of IPrinterVisitor
 
 class SensorCollection;
 class ISensorsCalculator;
@@ -52,7 +51,4 @@ public:
 
     inline const ISensorsCalculator *getSensorsCalculator() const { return m_sensorsCalculator; } // Getter for sensor calculator
     inline KnobAxisConfig *getConfig() const { return m_Config; }                                 // Getter for axis configuration
-
-    using VisitableBase::accept; // Inherit the accept method from VisitableBase
-    inline void accept(IPrinterVisitor &printerVisitor) { printerVisitor.visit(*this); }
 };

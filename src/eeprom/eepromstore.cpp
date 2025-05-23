@@ -1,3 +1,4 @@
+#ifdef ARDUINO_ARCH_AVR // Only for AVR architecture
 #include "eepromStore.h"
 #include "config.h" // Include the config.h file for EEPROM_VERSION
 #include "common/esp_print.h"
@@ -28,33 +29,22 @@ constexpr int EEPROM_ADDRESS_DATA = 4;    // Address in the EEPROM where the dat
  * @see config.h for the version number.
  */
 void EEPROMStore::setup() {
-#if 0 // FIXME - DEBUG
-#ifdef ARDUINO_ARCH_ESP32
-    EEPROM.begin(1024); // Initialize the EEPROM with 1024 bytes (same as the size of the Arduino EEPROM)
-#endif
     uint8_t version = 0; // The SpaceMouse version number as stored in the EEPROM
     EEPROM.get(EEPROM_ADDRESS_VERSION, version);
 
     if (version != EEPROM_VERSION) {
         Serial.println(F("Initializing EEPROM"));
-#if 0
         // FIXME - This routine somehow has issues when debugging on the AtMega2560. There is an exception thrown when the EEPROM is cleared.
         //  Version number has changed, that implies that the EEPROM is not initialized. Clear the EEPROM and write the new version number.
         for (uint16_t i = 0; i <= EEPROM.length(); i++) {
             Serial.print(i);
             // REVIEW - Check if put can be used for Arduino too.
-#ifdef ARDUINO_ARCH_AVR
             EEPROM.update(i, 0); // Clear the EEPROM
-#else
-            EEPROM.put(i, 0); // Clear the EEPROM
-#endif
         }
 
         // Initialize the EEPROM with the default values from config.h
         EEPROM.put(EEPROM_ADDRESS_VERSION, EEPROM_VERSION); // Store the (new) version number in the EEPROM
-#endif
     }
-#endif
 }
 
 /**
@@ -164,3 +154,4 @@ int8_t EEPROMStore::load(const int tableID, void *data, const int dataLen) {
 
     return ERR_EEPROMSTORE_SUCCESS; // Return success
 }
+#endif // ARDUINO_ARCH_AVR

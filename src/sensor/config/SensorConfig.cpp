@@ -2,7 +2,14 @@
 #include "SensorConfig.hpp"
 #include "config.h" // Include the config file to know the hardware type
 #include "DefaultSensorConfig.hpp"
-#include "eeprom/eepromstore.h" // To load and save the sensor configuration to EEPROM
+
+#if defined(ARDUINO_ARCH_AVR)
+#include "eeprom/eepromstore.h"                    // To load and save the sensor configuration to EEPROM
+constexpr uint8_t EEPROM_SENSORCONFIG_VERSION = 1; // Define the version number for the SensorConfig in EEPROM.     // TODO: Add versioning
+#endif
+#if defined(ARDUINO_ARCH_ESP32)
+#include "eeprom/preferencesstore.h" // To load and save the sensor configuration to Preferences
+#endif
 
 #include <Arduino.h> // For abs() function
 
@@ -13,8 +20,6 @@
 #else
 #error "No hardwaretype defined"
 #endif
-
-constexpr uint8_t EEPROM_SENSORCONFIG_VERSION = 1; // Define the version number for the SensorConfig in EEPROM.     // TODO: Add versioning
 
 /**
  * @brief Default constructor for SensorConfig.
@@ -139,9 +144,39 @@ const int SensorConfig::getRange(bool *warning) const {
     return (abs(data.minv - data.maxv)); // Calculate the working range
 }
 
+#if defined(ARDUINO_ARCH_ESP32)
+#define KEY_PREF_SENSORCFG "snsr%d" // Key prefix for sensor configuration in Preferences
+
 /**
  * @brief Saves the sensor configuration to EEPROM.
- * @param id The ID of the sensor to save the configuration for.
+ * @param sensorId The ID of the sensor to save the configuration for.
+ * @note This function uses the EEPROMStore class to save the configuration.
+ */
+void SensorConfig::persist(const uint8_t sensorId) const {
+    char buffer[8] = "\0"; // Ensure the buffer is null-terminated
+    sprintf(buffer, KEY_PREF_SENSORCFG, sensorId);
+    PreferencesStore::save(buffer, &data, sizeof(data)); // Store the data structure in the Preferences
+}
+
+/**
+ * @brief Loads the sensor configuration from EEPROM.
+ * @param sensorId The ID of the sensor to load the configuration for.
+ * @return The result of the load operation.
+ * @retval True if the configuration was successfully loaded.
+ * @retval False if the configuration could not be loaded.
+ */
+bool SensorConfig::retrieve(const uint8_t sensorId) {
+    char buffer[8] = "\0"; // Ensure the buffer is null-terminated
+    sprintf(buffer, KEY_PREF_SENSORCFG, sensorId);
+    return (PreferencesStore::load(buffer, &data, sizeof(data)) == ERR_PREFSTORE_SUCCESS);
+}
+
+#endif // End of ESP32 specific code
+
+#if defined(ARDUINO_ARCH_AVR)
+/**
+ * @brief Saves the sensor configuration to EEPROM.
+ * @param sensorId The ID of the sensor to save the configuration for.
  * @note This function uses the EEPROMStore class to save the configuration.
  */
 void SensorConfig::persist(const uint8_t sensorId) const {
@@ -154,7 +189,7 @@ void SensorConfig::persist(const uint8_t sensorId) const {
 
 /**
  * @brief Loads the sensor configuration from EEPROM.
- * @param address The ID of the sensor to load the configuration for.
+ * @param sensorId The ID of the sensor to load the configuration for.
  * @return The result of the load operation.
  * @retval True if the configuration was successfully loaded.
  * @retval False if the configuration could not be loaded.
@@ -166,3 +201,4 @@ bool SensorConfig::retrieve(const uint8_t sensorId) {
     // Retrieve the data stored in the EEPROM
     return (EEPROMStore::load(tableId, &data, sizeof(data)) == ERR_EEPROMSTORE_SUCCESS);
 }
+#endif

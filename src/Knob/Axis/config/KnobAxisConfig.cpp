@@ -4,9 +4,16 @@
 #include "eeprom/eepromstore.h"      // To load and save the axis configuration to EEPROM
 #include "DefaultKnobAxisConfig.hpp" // To get the default axis configuration if the EEPROM is empty or the version is changed
 
+#if defined(ARDUINO_ARCH_AVR)
+#include "eeprom/eepromstore.h" // To load and save the sensor configuration to EEPROM
+
 constexpr uint8_t EEPROM_AXISCONFIG_VERSION = 1;     // Define the version number for the AxisConfig in EEPROM.     // TODO: Add versioning
 constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_POSCFG = 1; // Offset for the positive direction configuration ID
 constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_NEGCFG = 2; // Offset for the negative direction configuration ID
+#endif
+#if defined(ARDUINO_ARCH_ESP32)
+#include "eeprom/preferencesstore.h" // To load and save the sensor configuration to Preferences
+#endif
 
 /**
  * @brief Constructor with no arguments - used when called with a non-existant axistype
@@ -55,6 +62,50 @@ KnobAxisConfig::KnobAxisConfig(const float psens,
       negConfig(KnobAxisDirectionConfig(nsens, ngate, nmf)),
       inversion(invert) {}
 
+#if defined(ARDUINO_ARCH_ESP32)
+#define KEY_PREF_AXISCFG "axcfg%d" // Key prefix for axis configuration in Preferences
+#define BUF_AXISCFG_LEN 8          // 5 characters for the key + 2 for the vectorType + 1 for null terminator
+/**
+ * @brief  Persist the KnobAxisConfig to EEPROM.
+ * @details This function saves the KnobAxisConfig object to EEPROM using the EEPROMStore class.
+ * @param vectorType The type of the MotionVector being persisted, used to identify the correct location in EEPROM.
+ */
+void KnobAxisConfig::persist(const MotionVector_t vectorType) const {
+
+    char buffer[BUF_AXISCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
+    sprintf(buffer, KEY_PREF_AXISCFG, vectorType);
+    PreferencesStore::save(buffer, &inversion, sizeof(inversion)); // Store the data structure in the Preferences
+
+    posConfig.persist(static_cast<uint8_t>(vectorType));
+    negConfig.persist(-static_cast<uint8_t>(vectorType));
+}
+
+/**
+ * @brief Loads the sensor configuration from EEPROM.
+ * @param vectorType The type of the KnobAxis being loaded, used to calculate the correct location in EEPROM.
+ * @return The result of the load operation.
+ * @retval True if the configuration was successfully loaded.
+ * @retval False if the configuration could not be loaded.
+ */
+bool KnobAxisConfig::retrieve(const MotionVector_t vectorType) {
+
+    char buffer[BUF_AXISCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
+    sprintf(buffer, KEY_PREF_AXISCFG, vectorType);
+    return (PreferencesStore::load(buffer, &inversion, sizeof(inversion)) == ERR_PREFSTORE_SUCCESS);
+
+    // Retrieve the AxisDirectionConfig objects
+    if (posConfig.retrieve(static_cast<uint8_t>(vectorType)) != ERR_PREFSTORE_SUCCESS) {
+        return false;
+    }
+    if (negConfig.retrieve(-static_cast<uint8_t>(vectorType)) != ERR_PREFSTORE_SUCCESS) {
+        return false;
+    }
+
+    return true;
+}
+#endif
+
+#if defined(ARDUINO_ARCH_AVR)
 /**
  * @brief  Persist the KnobAxisConfig to EEPROM.
  * @details This function saves the KnobAxisConfig object to EEPROM using the EEPROMStore class.
@@ -100,3 +151,4 @@ bool KnobAxisConfig::retrieve(const MotionVector_t vectorType) {
 
     return true;
 }
+#endif

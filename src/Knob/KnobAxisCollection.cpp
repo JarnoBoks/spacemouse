@@ -1,6 +1,11 @@
 #include "KnobAxisCollection.hpp"
-#include <knob/axis/KnobAxisRotation.hpp>
-#include <knob/axis/KnobAxisTranslation.hpp>
+
+#include <knob/axis/KnobAxis.hpp>
+#if 0
+//NOTE See AxisBase.hpp for the reason why we don't use this
+#include <knob/axis/deprecated/KnobAxisRotation.hpp>
+#include <knob/axis/deprecated/KnobAxisTranslation.hpp>
+#endif
 
 /**
  * @brief Setup the axis collection according to the configuration.
@@ -8,12 +13,12 @@
  *          It creates instances of the axes and sets their context to this KnobAxisCollection instance.
  */
 void KnobAxisCollection::setup(ISensorsCalculator *sensorsCalculator) {
-    m_items[TRANSX] = new KnobAxisTranslation(TRANSX, sensorsCalculator);
-    m_items[TRANSY] = new KnobAxisTranslation(TRANSY, sensorsCalculator);
-    m_items[TRANSZ] = new KnobAxisTranslation(TRANSZ, sensorsCalculator);
-    m_items[ROTX] = new KnobAxisRotation(ROTX, sensorsCalculator);
-    m_items[ROTY] = new KnobAxisRotation(ROTY, sensorsCalculator);
-    m_items[ROTZ] = new KnobAxisRotation(ROTZ, sensorsCalculator);
+    m_items[TRANSX] = new KnobAxis(TRANSX, sensorsCalculator);
+    m_items[TRANSY] = new KnobAxis(TRANSY, sensorsCalculator);
+    m_items[TRANSZ] = new KnobAxis(TRANSZ, sensorsCalculator);
+    m_items[ROTX] = new KnobAxis(ROTX, sensorsCalculator);
+    m_items[ROTY] = new KnobAxis(ROTY, sensorsCalculator);
+    m_items[ROTZ] = new KnobAxis(ROTZ, sensorsCalculator);
     m_itemCount = 6;
 };
 

@@ -1,4 +1,4 @@
-#include "KinematicsAxis.hpp"
+#include "..\KinematicsAxis.hpp"
 
 class KnobAxis;
 
@@ -6,6 +6,7 @@ class KnobAxis;
  * @brief Class representing a translation KnobAxis in the system
  * @details This class inherits from the Axis class and provides functionality for managing the translation KnobAxis configuration and state.
  *          It includes methods for evaluating the KnobAxis state and notifying observers of changes.
+ * @deprecated This class is not used in the Arduino architecture and may be removed in future versions. It is kept for future usage in the ESP32 architecture.
  */
 class KinematicsAxisTranslation : public KinematicsAxis {
 
@@ -16,7 +17,7 @@ public:
 
     ~KinematicsAxisTranslation() = default; // Destructor
 
-    const bool isTranslation() const override { return true; }
+    // NOTE const bool isTranslation() const override { return true; }
 
     void evaluate() override final {
         // Call the base class evaluate method

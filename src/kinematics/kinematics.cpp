@@ -2,8 +2,12 @@
 #include "config.h"
 #include <kinematics/config/kinematicsconfig.hpp>
 #include <kinematics/axiscollection/KinematicsAxisCollection.hpp>
-#include <kinematics/axis/KinematicsAxisRotation.hpp>
-#include <kinematics/axis/KinematicsAxisTranslation.hpp>
+#include <kinematics/axis/KinematicsAxis.hpp>
+#if 0
+//NOTE See AxisBase.hpp for the reason why we don't use this
+#include <kinematics/axis/deprecated/KinematicsAxisRotation.hpp>
+#include <kinematics/axis/deprecated/KinematicsAxisTranslation.hpp>
+#endif
 
 #include <knob/KnobAxisCollection.hpp>
 #include <knob/Axis/KnobAxis.hpp>
@@ -31,10 +35,10 @@ void Kinematics::_createAxis(const KnobAxisCollection *knobVectors,
 
     KinematicsAxis *kinAxis = nullptr;
     if (knobAxis->isTranslation()) {
-        kinAxis = new KinematicsAxisTranslation(type, knobAxis);
+        kinAxis = new KinematicsAxis(type, knobAxis);
         m_transMotionVectors->add(kinAxis);
     } else {
-        kinAxis = new KinematicsAxisRotation(type, knobAxis);
+        kinAxis = new KinematicsAxis(type, knobAxis);
         m_rotMotionVectors->add(kinAxis);
     }
     kinAxis->attachObserver(hidEventbuffer);
@@ -77,10 +81,10 @@ void Kinematics::_applySwitchYZ() {
         return;
     }
 
-    static_cast<KinematicsAxisTranslation *>(m_transMotionVectors->getItem(MotionVector_t::TRANSY))->setType(MotionVector_t::TRANSZ);
-    static_cast<KinematicsAxisTranslation *>(m_transMotionVectors->getItem(MotionVector_t::TRANSZ))->setType(MotionVector_t::TRANSY);
-    static_cast<KinematicsAxisRotation *>(m_rotMotionVectors->getItem(MotionVector_t::ROTY))->setType(MotionVector_t::ROTZ);
-    static_cast<KinematicsAxisRotation *>(m_rotMotionVectors->getItem(MotionVector_t::ROTZ))->setType(MotionVector_t::ROTY);
+    static_cast<KinematicsAxis *>(m_transMotionVectors->getItem(MotionVector_t::TRANSY))->setType(MotionVector_t::TRANSZ);
+    static_cast<KinematicsAxis *>(m_transMotionVectors->getItem(MotionVector_t::TRANSZ))->setType(MotionVector_t::TRANSY);
+    static_cast<KinematicsAxis *>(m_rotMotionVectors->getItem(MotionVector_t::ROTY))->setType(MotionVector_t::ROTZ);
+    static_cast<KinematicsAxis *>(m_rotMotionVectors->getItem(MotionVector_t::ROTZ))->setType(MotionVector_t::ROTY);
 }
 
 /**

@@ -32,7 +32,11 @@ public:
 
     const bool hasDescriptor(const char *descriptor) const;
 
-    virtual const bool isTranslation() const = 0;
+    // NOTE - We shoud use derived classes for the different types of Axis (translation and rotation) instead of using this function.
+    // However, the Arduino has very limited memory and we have to reduce the number of virtual functions.
+    const bool isTranslation() const {
+        return (m_type >= MotionVector_t::TRANSX && m_type <= MotionVector_t::TRANSZ);
+    }
 
     /// @brief Setter for the final value of the Axis.
     /// @details This function sets the final value of the Axis and notifies observers if the value has changed.

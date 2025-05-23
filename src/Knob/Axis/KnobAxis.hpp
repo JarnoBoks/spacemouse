@@ -42,7 +42,7 @@ public:
 
     void evaluate() override;
 
-    virtual const bool isTranslation() const = 0;
+    // REMOVE virtual const bool isTranslation() const = 0;
 
     inline void setRawValue(const int16_t value) { m_rawValue = value; } // Setter for raw axis value, used by SensorsCalculator
 

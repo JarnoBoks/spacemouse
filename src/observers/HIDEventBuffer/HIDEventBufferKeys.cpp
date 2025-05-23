@@ -27,6 +27,7 @@ void HIDEventBufferKeys::update(IObservable *key) {
     // Set the staged flag to true to indicate that data has been staged for sending
     m_isStaged = true;
 
+#if 0
     // REFACTOR - Move the debug output to a separate function / observer
     const bool DEBUG = true;
     if (DEBUG) {
@@ -42,4 +43,5 @@ void HIDEventBufferKeys::update(IObservable *key) {
         Serial.print(F(" / 0x"));
         Serial.println(m_key_message[(rawcmd / 8)], HEX);
     }
+#endif
 }

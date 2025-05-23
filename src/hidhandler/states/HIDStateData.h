@@ -1,4 +1,3 @@
-// HIDStateData.h
 #pragma once
 
 #include <stdint.h>                      // for uint8_t
@@ -20,9 +19,9 @@ public:
         lastHIDsentRep = now; // Set the last HID report time to now
     }
 
+#if defined(ARCH_ESP32)
     /**
      * @brief This function prints the current state data for debugging purposes.
-     * //REFACTOR - Should be set between precompiler directives
      */
     void printHIDStateData() {
         // Output the state data for debugging purposes
@@ -38,6 +37,7 @@ public:
         Serial.print(countRotZeros);
         Serial.println();
     }
+#endif
 
     // State variables - these are used to manage the state(or state transitions) of the HID report sending
     unsigned long lastHIDsentRep; // Last time the HID report was sent

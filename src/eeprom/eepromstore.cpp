@@ -28,6 +28,7 @@ constexpr int EEPROM_ADDRESS_DATA = 4;    // Address in the EEPROM where the dat
  * @see config.h for the version number.
  */
 void EEPROMStore::setup() {
+#if 0 // FIXME - DEBUG
 #ifdef ARDUINO_ARCH_ESP32
     EEPROM.begin(1024); // Initialize the EEPROM with 1024 bytes (same as the size of the Arduino EEPROM)
 #endif
@@ -36,7 +37,7 @@ void EEPROMStore::setup() {
 
     if (version != EEPROM_VERSION) {
         Serial.println(F("Initializing EEPROM"));
-#ifndef SIMULATOR_DEBUGGING
+#if 0
         // FIXME - This routine somehow has issues when debugging on the AtMega2560. There is an exception thrown when the EEPROM is cleared.
         //  Version number has changed, that implies that the EEPROM is not initialized. Clear the EEPROM and write the new version number.
         for (uint16_t i = 0; i <= EEPROM.length(); i++) {
@@ -53,6 +54,7 @@ void EEPROMStore::setup() {
         EEPROM.put(EEPROM_ADDRESS_VERSION, EEPROM_VERSION); // Store the (new) version number in the EEPROM
 #endif
     }
+#endif
 }
 
 /**
@@ -128,9 +130,10 @@ void EEPROMStore::save(const int tableId, const void *data, const int dataLen) {
  * @retval ERR_EEPROMSTORE_SIMULATOR indicates the simulator is running.
  */
 int8_t EEPROMStore::load(const int tableID, void *data, const int dataLen) {
-#if SIMULATOR_DEBUGGING
+
+    // FIXME #if SIMULATOR_DEBUGGING
     return ERR_EEPROMSTORE_SIMULATOR;
-#endif
+    // #endif
 
     EEPROMTable table;
     int address = getEEPROMTable(tableID, table);

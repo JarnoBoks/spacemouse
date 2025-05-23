@@ -62,10 +62,7 @@ CommandHandler *myCommandHandler; // Command handler object to handle the comman
 
 // Include the header file for the collections carrier
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
-CollectionCarrier myCollections(&mySensorCollection,
-                                &myKnobAxes,
-                                &myKeyCollection,
-                                &myKinematics); // Collection identifier object to identify the collection of the command
+CollectionCarrier myCollections(&mySensorCollection, &myKnobAxes, &myKeyCollection, &myKinematics); // Collection identifier object to identify the collection of the command
 
 // Include the header file for the calibration manager (used to calibrate center position of the sensors on startup)
 #include "sensor/calibration/SensorCalibrationManagerIdle.hpp" // Include the sensor calibration manager header file
@@ -79,25 +76,30 @@ HIDEventBufferKeys myHIDEventBufferKeys;
 HIDEventBufferRotation myHIDEventBufferRotation;
 HIDEventBufferTranslation myHIDEventBufferTranslation;
 
-// Include the header file for the USB interface (used to connect to the computer)
-#include "usbstack/USBInterface.hpp"
-
 // Include the header file for the HID handler (used to handle the HID events)
 #include "hidhandler/HIDHandlerController.h"
 #include "hidhandler/SpaceMouseHID.h"
 SpaceMouseHID mySpaceMouseHID;
 
+// Include the header file for the EEPROM storage (used to store the configuration of the sensors and axes)
+#include "eeprom/eepromstore.h"
+
 #include "common/CustomDelay.h" // Include the custom delay header
 #include "common/FreeRAM.h"     // Include the free RAM header
+
+// Include the header file for the USB interface (used to connect to the computer)
+#include "usbstack/USBInterface.hpp"
 
 // Include the header file for the WiFi manager (used to connect to WiFi and handle OTA updates)
 #include "wifi/WifiManager.h"
 
-// Include the header file for the EEPROM storage (used to store the configuration of the sensors and axes)
-#include "eeprom/eepromstore.h"
-
 // #include <ArduinoShrink.h>
 void setup() {
+
+    // Setup USB, WiFi and OTA
+    USBStart;
+    WifiManager::setup_Wifi(); // Setup the WiFi connection (only if ESP32 and if configured in config.h)
+    WifiManager::setup_OTA();  // Setup the OTA connection (only if ESP32 and if selected environment)
 
     CustomDelay::delay(100); // Wait for the serial interface to be ready
     // Begin Serial for debugging or calibration
@@ -105,14 +107,6 @@ void setup() {
     CustomDelay::delay(100); // Wait for the serial interface to be ready
     Serial.setTimeout(2);    // The serial interface will look for new commands and it will only wait 2ms
     CustomDelay::delay(100); // Wait for CPU to start all peripherals
-
-    // Initialize the EEPROM
-    EEPROMStore::setup(); // Setup the EEPROM storage
-
-    // Setup USB, WiFi and OTA
-    USBStart;
-    WifiManager::setup_Wifi(); // Setup the WiFi connection (only if ESP32 and if configured in config.h)
-    WifiManager::setup_OTA();  // Setup the OTA connection (only if ESP32 and if selected environment)
 
     //  Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();
@@ -129,7 +123,6 @@ void setup() {
     CommandHandlerFactory myCommandHandlerFactory(&myCollections);     // Create the command handler factory
     myCommandHandler = myCommandHandlerFactory.createCommandHandler(); // Create the command handler object
     myCommandHandlerFactory.setupCommandHandler(myCommandHandler);     // Setup the command handler and register the commands
-
 #if SIMULATOR_DEBUGGING
     // When debugging with SimAVR through PlatformIO the serial monitor is not available.
     // Use this line to initialize a debug state if necessary and the corresponding output.
@@ -162,16 +155,15 @@ void setup() {
 }
 
 void loop() {
+    WifiManager::handle_OTA(); // Handle the OTA connection (only if configured in platformio.ini)
 
     //  Check if the user entered a command through the Serial monitor
     if (Serial.available()) {
         myCommandHandler->parseSerialMonitorInput();
     }
-    WifiManager::handle_OTA(); // Handle the OTA connection (only if configured in platformio.ini)
 
     // Update all the sensor values & apply the calibration to the read sensor values & notify collection observers
     mySensorCollection.evaluate();
-
     // Calculate from sensor data and apply all config- & calibration settings to the axis values & notify collection observers
     myKnobAxes.evaluate();
 

@@ -10,7 +10,7 @@
 Kinematics::Kinematics()
     : Observable(c_MAX_KINEMATICS_OBSERVERS),
       m_knobAxisCollection(nullptr),
-      m_config(new KinematicsConfig()) {}
+      m_config(nullptr) {}
 
 Kinematics::Kinematics(KnobAxisCollection *knobAxisCollection)
     : Observable(c_MAX_KINEMATICS_OBSERVERS),

@@ -7,7 +7,6 @@
 // NOTE - See https://github.com/hathach/tinyusb/pull/1363/files for extension.
 
 // USB Device Identification
-// -------------------------
 // !!  For Arduino the USB VID and PID for this emulated space mouse must be set in the boards.txt file when
 // !!  using Arduino IDE or in 'set_hwids.py' when using platformIO.
 #define SM_USB_VID 0x256f

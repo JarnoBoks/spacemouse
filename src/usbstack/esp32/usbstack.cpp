@@ -13,14 +13,20 @@ USBStack::USBStack() {
 
 void USBStack::setup_USB() {
     // Initialize the USB stack
-    TinyUSBDevice.setID(SM_USB_VID, SM_USB_PID);
+    TinyUSBDevice.setID(SM_USB_VID, SM_USB_PID); // TODO - set_hwids.py can be removed for ESP32, setting the VID/PID should be done in the code
     TinyUSBDevice.setManufacturerDescriptor("Printables");
     TinyUSBDevice.setProductDescriptor("CAD Mouse / SpaceMouse");
-    TinyUSBDevice.begin();
+
+#if 0
+        // Manual begin() is required on core without built-in support e.g. mbed rp2040
+        if (!TinyUSBDevice.isInitialized()) {
+            TinyUSBDevice.begin(0);
+        }
+#endif
 
     m_usb_hid->begin();
 
-    // If already enumerated, additional class driverr begin() e.g msc, hid, midi won't take effect until re-enumeration
+    // If already enumerated, additional class driver begin() e.g msc, hid, midi won't take effect until re-enumeration
     if (TinyUSBDevice.mounted()) {
         TinyUSBDevice.detach();
         delay(10);

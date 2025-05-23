@@ -18,11 +18,14 @@ void WifiManager::setup_Wifi() {
     WiFi.mode(WIFI_STA);
     WiFi.setAutoReconnect(true);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    // FIXME - What to do if not connected?
+/*
     while (WiFi.waitForConnectResult() != WL_CONNECTED) {
         Serial.println(F("Connection Failed! Rebooting..."));
         delay(5000);
         ESP.restart();
     }
+*/
 #endif // WIFI_SSID &&WIFI_PASSWORD &&WIFI_HOSTNAME
 
 #ifdef DEBUG
@@ -41,11 +44,11 @@ void WifiManager::setup_Wifi() {
 }
 
 void WifiManager::setup_OTA() {
-#if defined(INI_OTAHOSTNAME) && defined(WIFI_SSID) && defined(WIFI_PASSWORD) && defined(WIFI_HOSTNAME)
+#if defined(WIFI_SSID) && defined(WIFI_PASSWORD) && defined(WIFI_HOSTNAME)
     // Port defaults to 3232
     ArduinoOTA.setPort(3232);
 
-    ArduinoOTA.setHostname(INI_OTAHOSTNAME);
+    ArduinoOTA.setHostname(WIFI_HOSTNAME);
 
     // No authentication by default
     // ArduinoOTA.setPassword("admin");
@@ -89,14 +92,14 @@ void WifiManager::setup_OTA() {
 
     ArduinoOTA.begin();
     // REVIEW - Should the setHostname be executed before or after the begin?
-    // ArduinoOTA.setHostname("SpaceMouse");
+    ArduinoOTA.setHostname(WIFI_HOSTNAME);
 
-#endif // WIFI_SSID &&WIFI_PASSWORD &&WIFI_HOSTNAME &&INI_OTAHOSTNAME
+#endif // WIFI_SSID &&WIFI_PASSWORD &&WIFI_HOSTNAME
 }
 
 void WifiManager::handle_OTA() {
-#if defined(INI_OTAHOSTNAME) && defined(WIFI_SSID) && defined(WIFI_PASSWORD) && defined(WIFI_HOSTNAME)
+#if defined(WIFI_SSID) && defined(WIFI_PASSWORD) && defined(WIFI_HOSTNAME)
     ArduinoOTA.handle();
-#endif // INI_OTAHOSTNAME && WIFI_SSID && WIFI_PASSWORD && WIFI_HOSTNAME
+#endif // WIFI_SSID && WIFI_PASSWORD && WIFI_HOSTNAME
 }
 #endif // ARDUINO_ARCH_ESP32

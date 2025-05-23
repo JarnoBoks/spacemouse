@@ -36,7 +36,9 @@ void EEPROMStore::setup() {
 
     if (version != EEPROM_VERSION) {
         Serial.println(F("Initializing EEPROM"));
-        // Version number has changed, that implies that the EEPROM is not initialized. Clear the EEPROM and write the new version number.
+#ifndef SIMULATOR_DEBUGGING
+        // FIXME - This routine somehow has issues when debugging on the AtMega2560. There is an exception thrown when the EEPROM is cleared.
+        //  Version number has changed, that implies that the EEPROM is not initialized. Clear the EEPROM and write the new version number.
         for (uint16_t i = 0; i <= EEPROM.length(); i++) {
             Serial.print(i);
             // REVIEW - Check if put can be used for Arduino too.
@@ -47,8 +49,9 @@ void EEPROMStore::setup() {
 #endif
         }
 
-        // Store the new version number in the EEPROM, to avoid reinitializing the EEPROM on the next run.
+        // Initialize the EEPROM with the default values from config.h
         EEPROM.put(EEPROM_ADDRESS_VERSION, EEPROM_VERSION); // Store the (new) version number in the EEPROM
+#endif
     }
 }
 

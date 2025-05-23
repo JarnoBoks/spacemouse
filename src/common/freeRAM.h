@@ -4,12 +4,12 @@
 class FreeRAM {
 public:
 #if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_ESP32)
-    static void display_freeram() {
+    static void printFreeRAM() {
         Serial.print(F("- SRAM left: "));
         Serial.println(freeRam());
     }
 #else
-    static void display_freeram() {
+    static void printFreeRAM() {
         Serial.println(F("Free RAM not available on this architecture."));
     }
 #endif

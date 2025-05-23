@@ -138,9 +138,6 @@ void setup() {
     // FIXME - Kinematics should be removed
     // FIXME Kinematics::getInstance()->setAxisCollection(&myKnobAxes); // Set the axis collection for the kinematics object
 
-    // Call the setup function of the button factory. This will setup the buttons and the button configuration.
-    // REVIEW - Not necessary for now: KeyFactory::getInstance()->setupKeys(); // Updated from setupButtons() to setupKeys()
-
     CommandHandlerFactory myCommandHandlerFactory(&myCollections);     // Create the command handler factory
     myCommandHandler = myCommandHandlerFactory.createCommandHandler(); // Create the command handler object
     myCommandHandlerFactory.setupCommandHandler(myCommandHandler);     // Setup the command handler and register the commands
@@ -179,6 +176,8 @@ void setup() {
 }
 
 void loop() {
+    FreeRAM::printFreeRAM(); // Print the free RAM to the serial monitor
+
     //  Check if the user entered a command through the Serial monitor
     if (Serial.available()) {
         myCommandHandler->parseSerialMonitorInput();

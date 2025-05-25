@@ -4,7 +4,7 @@
 #include "CommandBase.hpp"
 
 /// @brief command text for the Exclusive mode command
-static const char CMD_EXCLUSIVE_P[] PROGMEM = "EXCL"; // Command name for the SHOW command
+static const char CMD_EXCLUSIVE_P[] PROGMEM = "EXCL"; // Command name for the Exclusive mode command
 
 /**
  * @brief Class to handle the EXCLUSIVE command.

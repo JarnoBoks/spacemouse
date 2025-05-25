@@ -54,7 +54,7 @@ static const char CMD_GATE_P[] PROGMEM = "GATE";
 static const char CMD_MODFUNC_P[] PROGMEM = "MODFUNC";
 static const char CMD_INVERT_P[] PROGMEM = "INVERT";
 static const char CMD_SWITCHXY_P[] PROGMEM = "SWITCHXY";
-static const char CMD_EXLC_P[] PROGMEM = "EXLC";
+static const char CMD_EXCL_P[] PROGMEM = "EXCL"; // Note: Old versions of the SpaceMouse used "EXLC" as command, but this is now deprecated.
 
 /**
  * @brief Handles the input received from the serial monitor.
@@ -110,7 +110,7 @@ void AVRCommandHandler::handleInput(char input[], const uint8_t inputsize, const
     } else if (strcmp_P(words[0], CMD_SWITCHXY_P) == 0) {
         // Handle SWITCHXY command
         executeSwitchXY(words[1], words[2], --wordCount);
-    } else if (strcmp_P(words[0], CMD_EXLC_P) == 0) {
+    } else if (strcmp_P(words[0], CMD_EXCL_P) == 0) {
         // Handle EXLC command
         executeExlc(words[1], words[2], --wordCount);
     } else {

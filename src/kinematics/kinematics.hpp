@@ -31,7 +31,7 @@ private:
 #endif
 
 public:
-    Kinematics();
+    Kinematics() = delete; // Default constructor is deleted to prevent instantiation without parameters
     Kinematics(KnobAxisCollection *knobAxisCollection);
 
     ~Kinematics();

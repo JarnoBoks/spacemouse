@@ -3,14 +3,14 @@
 #include <kinematics/config/kinematicsconfig.hpp>
 
 #include <knob/KnobAxisCollection.hpp>
-// #include <knob/Axis/KnobAxis.hpp>
-
 #include <kinematics/visitor/ExclusiveMovementVisitor.hpp>
 
+#if 0
 Kinematics::Kinematics()
     : Observable(c_MAX_KINEMATICS_OBSERVERS),
       m_knobAxisCollection(nullptr),
       m_config(nullptr) {}
+#endif
 
 Kinematics::Kinematics(KnobAxisCollection *knobAxisCollection)
     : Observable(c_MAX_KINEMATICS_OBSERVERS),

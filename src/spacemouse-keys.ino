@@ -47,7 +47,7 @@ KnobAxisCollection myKnobAxes;         // KnobAxisCollection object to hold the 
 
 // Header to calculate the kinematics of the mouse
 #include "kinematics/Kinematics.hpp"
-Kinematics myKinematics; // Kinematics object to evaluate the kinematics of the mouse
+Kinematics myKinematics(&myKnobAxes); // Kinematics object to evaluate the kinematics of the mouse
 
 // Include the header files for the command handler that will handle the commands send by the user through the serial monitor.
 // For the ESP32 and AVR architecture, the command handler is different.
@@ -93,7 +93,6 @@ SpaceMouseHID mySpaceMouseHID;
 // Include the header file for the WiFi manager (used to connect to WiFi and handle OTA updates)
 #include "wifi/WifiManager.h"
 
-// #include <ArduinoShrink.h>
 void setup() {
 
     // Setup USB, WiFi and OTA

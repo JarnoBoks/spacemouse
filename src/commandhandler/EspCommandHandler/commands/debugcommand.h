@@ -7,7 +7,7 @@
 
 // TODO - Add the STARTUPDEBUG definition to the default constructor
 
-/// @brief command text for the command
+/// @brief command text for the debug command
 static const char CMD_DEBUG_P[] PROGMEM = "DEBUG";
 
 class IDebugParam;       // Forward declaration of IDebugParam class

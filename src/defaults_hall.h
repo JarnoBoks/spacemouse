@@ -205,7 +205,7 @@
 #define DEF_SWITCHYZ 0 // change to 1 to switch Y and Z axis
 #endif
 #ifndef DEF_EXCLUSIVEMODE
-#define DEF_EXCLUSIVEMODE 0 // change to 1 to enable exclusive mode
+#define DEF_EXCLUSIVEMODE 1 // change to 1 to enable exclusive mode
 #endif
 
 // ------------------ PREPOCESSOR DIRECTIVES USED IN THE SOFTWARE

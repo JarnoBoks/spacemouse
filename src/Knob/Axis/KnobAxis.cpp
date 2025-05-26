@@ -5,6 +5,8 @@
 #include <math.h>
 #define sign(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0)) // Define Signum Function
 
+#include <common/esp_print.h> // Include the header file for ESP print functions
+
 /**
  * @brief   Evaluates the KnobAxis by processing the sensor data and applying configurations.
  * @details This function retrieves the raw value from the sensor calculator, applies sensitivity, modifier function, and gate settings,
@@ -13,9 +15,22 @@
  *          The final value is stored in m_finValue, which is the processed value after applying all configurations.
  */
 void KnobAxis::evaluate() {
+
+    // Check if preconditions are met for evaluation
+    if (!m_sensorsCalculator || !m_Config) {
+        ESP_WARN("Preconditions not met")
+        return; // If the sensors calculator or configuration is not set, do not evaluate
+    }
+
+    int16_t prevValue = m_finValue; // Store the previous value for comparison
+
     m_sensorsCalculator->evaluate(this); // Get the raw value from the sensor calculator
 
     KnobAxisDirectionConfig *dconfig = (m_rawValue > 0) ? &this->m_Config->posConfig : &this->m_Config->negConfig; // Get the config for the current axis and direction
+    if (dconfig == nullptr) {
+        ESP_WARN("Directionconfig not set");
+        return; // If the direction config is not set, do not evaluate
+    }
 
     // Apply the sensitivity for this KnobAxis & knob direction (ie. positive or negative movement in the vector)
     m_snsValue = dconfig->getSensitivity() * m_rawValue; // Apply the sensitivity for this axis & direction
@@ -28,6 +43,8 @@ void KnobAxis::evaluate() {
 
     // Invert the motion if necessary
     m_finValue = (m_Config->inversion) ? -m_finValue : m_finValue; // Invert the value if necessary // REFACTOR - Move to kinematics
+
+    notifyObservers();
 }
 
 /**

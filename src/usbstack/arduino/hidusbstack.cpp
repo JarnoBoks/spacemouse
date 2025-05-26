@@ -107,10 +107,10 @@ int HidUSBStack::write(const uint8_t *buffer, size_t size) {
  * @return Length of data sent (including 1 byte for report id)
  */
 int HidUSBStack::SendReport(uint8_t id, const void *data, int len) {
-    auto ret = USB_Send(USBControllerTX, &id, 1);
+    auto ret = USB_Send(USBControllerTX, &id, 1); // Send first byte of the message, which is the report id
     if (ret < 0)
         return ret;
-    auto ret2 = USB_Send(USBControllerTX | TRANSFER_RELEASE, data, len);
+    auto ret2 = USB_Send(USBControllerTX | TRANSFER_RELEASE, data, len); // Send the rest of the message
     if (ret2 < 0)
         return ret2;
     return ret + ret2;

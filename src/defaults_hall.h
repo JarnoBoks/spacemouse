@@ -202,10 +202,10 @@
 // The values can be overridden by the user in the config.h file.
 // Switch Zoom direction with Up/Down Movement
 #ifndef DEF_SWITCHYZ
-#define DEF_SWITCHYZ 0 // change to 1 to switch Y and Z axis
+#define DEF_SWITCHYZ 0 // 1: Y and Z axes are switched, 0: Y and Z axes are not switched
 #endif
 #ifndef DEF_EXCLUSIVEMODE
-#define DEF_EXCLUSIVEMODE 1 // change to 1 to enable exclusive mode
+#define DEF_EXCLUSIVEMODE 1 // 1: Exclusive mode enabled, 0: Exclusive mode disabled    // FIXME - Change to 0 to disable the exclusive mode by default
 #endif
 
 // ------------------ PREPOCESSOR DIRECTIVES USED IN THE SOFTWARE

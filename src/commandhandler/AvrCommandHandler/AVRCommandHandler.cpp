@@ -87,30 +87,39 @@ void AVRCommandHandler::handleInput(char input[], const uint8_t inputsize, const
     // DEVNOTE The ESP32 version delegates the command to the registered commands for execution, the AVR version does that on its own.
 
     if (strcmp_P(words[0], CMD_IDLE_P) == 0) {
+        DetachCurrentObservers(); // Detach the previous observer if it exists
         // Handle IDLE command
         executeIdle(words[1], words[2], --wordCount); // Execute the command with the retrieved parameters (wordCount decremented, while the first word is the command name)
     } else if (strcmp_P(words[0], CMD_MINMAX_P) == 0) {
+        DetachCurrentObservers(); // Detach the previous observer if it exists
         // Handle MINMAX command
         executeMinMax(words[1], words[2], --wordCount);
     } else if (strcmp_P(words[0], CMD_DEBUG_P) == 0) {
+        DetachCurrentObservers(); // Detach the previous observer if it exists
         // Handle DEBUG command
         executeDebug(words[1], words[2], --wordCount);
     } else if (strcmp_P(words[0], CMD_SENS_P) == 0) {
+        DetachCurrentObservers(); // Detach the previous observer if it exists
         // Handle SENS command
         executeSens(words[1], words[2], --wordCount);
     } else if (strcmp_P(words[0], CMD_GATE_P) == 0) {
+        DetachCurrentObservers(); // Detach the previous observer if it exists
         // Handle GATE command
         executeGate(words[1], words[2], --wordCount);
     } else if (strcmp_P(words[0], CMD_MODFUNC_P) == 0) {
+        DetachCurrentObservers(); // Detach the previous observer if it exists
         // Handle MODFUNC command
         executeModFunc(words[1], words[2], --wordCount);
     } else if (strcmp_P(words[0], CMD_INVERT_P) == 0) {
+        DetachCurrentObservers(); // Detach the previous observer if it exists
         // Handle INVERT command
         executeInvert(words[1], words[2], --wordCount);
     } else if (strcmp_P(words[0], CMD_SWITCHXY_P) == 0) {
+        DetachCurrentObservers(); // Detach the previous observer if it exists
         // Handle SWITCHXY command
         executeSwitchXY(words[1], words[2], --wordCount);
     } else if (strcmp_P(words[0], CMD_EXCL_P) == 0) {
+        DetachCurrentObservers(); // Detach the previous observer if it exists
         // Handle EXLC command
         executeExlc(words[1], words[2], --wordCount);
     } else {
@@ -583,14 +592,14 @@ const bool AVRCommandHandler::convertWordFloat(const char *str, float *value) co
 }
 
 void AVRCommandHandler::DebugParamOff() {
-    DetachCurrentObservers(); // Detach the previous observer if it exists
-    // Implementation for DebugParamOff command
+    // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
+    //  Implementation for DebugParamOff command
     ESP_PRINT(F("DebugParamOff executed"));
     // TODO - Add functionality for the DebugParamOff command
 }
 
 void AVRCommandHandler::DebugParamSensorInformationRaw() {
-    DetachCurrentObservers(); // Detach the previous observer if it exists
+    // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
 
     // Instantiate the Observer for the RawSensor values and attach it to the hardware
     m_SensorObserver = new DebugOutputSensorsRaw();
@@ -598,7 +607,7 @@ void AVRCommandHandler::DebugParamSensorInformationRaw() {
 }
 
 void AVRCommandHandler::DebugParamSensorInformationCentered() {
-    DetachCurrentObservers(); // Detach the previous observer if it exists
+    // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
 
     // Instantiate the Observer for the CenteredSensor values and attach it to the hardware
     m_SensorObserver = new DebugOutputSensorsCentered();
@@ -606,7 +615,7 @@ void AVRCommandHandler::DebugParamSensorInformationCentered() {
 }
 
 void AVRCommandHandler::DebugParamSensorInformationFiltered() {
-    DetachCurrentObservers(); // Detach the previous observer if it exists
+    // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
 
     // Instantiate the Observer for the FilteredSensor values and attach it to the hardware
     m_SensorObserver = new DebugOutputSensorsFiltered();
@@ -614,7 +623,7 @@ void AVRCommandHandler::DebugParamSensorInformationFiltered() {
 }
 
 void AVRCommandHandler::DebugParamAxisInformation() {
-    DetachCurrentObservers(); // Detach the previous observer if it exists
+    // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
 
     // Instantiate the Observer for the KnobAxis values and attach it to the hardware
     m_AxisObserver = new DebugOutputAxesSensitivity();
@@ -622,7 +631,7 @@ void AVRCommandHandler::DebugParamAxisInformation() {
 }
 
 void AVRCommandHandler::DebugParamSensorAxisInformation() {
-    DetachCurrentObservers(); // Detach the previous observer if it exists
+    // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
 
     // Instantiate the Observers and attach them to the hardware
     m_SensorObserver = new DebugOutputSensorsCenteredNoNewline();
@@ -633,7 +642,7 @@ void AVRCommandHandler::DebugParamSensorAxisInformation() {
 }
 
 void AVRCommandHandler::DebugParamSensorAxisKeysInformation() {
-    DetachCurrentObservers(); // Detach the previous observer if it exists
+    // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
 
     // Instantiate the Observers and attach them to the hardware
     m_SensorObserver = new DebugOutputSensorsCenteredNoNewline();
@@ -644,7 +653,7 @@ void AVRCommandHandler::DebugParamSensorAxisKeysInformation() {
 }
 
 void AVRCommandHandler::DebugParamLoopFrequency() {
-    DetachCurrentObservers(); // Detach the previous observer if it exists
+    // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
 
     // Instantiate the Observer for the Loop Frequency values and attach it to the hardware
     m_LoopFrequencyObserver = new DebugOutputLoopFrequency();

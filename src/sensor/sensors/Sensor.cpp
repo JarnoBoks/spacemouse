@@ -33,7 +33,7 @@ const bool Sensor::hasDescriptor(const char *descriptor) const {
 }
 
 /**
- * @brief Reads the raw value from the sensor pin.
+ * @brief Reads the raw value from the sensor pin and applies centering if the configuration is set.
  * @details This function reads the analog value from the specified pin and calculates the centered value.
  *          If a configuration is set, it adjusts the centered value based on the idle position.
  */
@@ -56,21 +56,32 @@ bool Sensor::setIdlePosition(int val) {
 }
 
 /**
- * @brief Applies calibration to the sensor value.
- * @details This function adjusts the filtered value based on the sensor's configuration.
+ * @brief Applies calibration values (deadzone, min/max & inversion) to the sensor value.
+ * @details This function sets the final value of the reading based on the sensor's configuration.
+ *          Apply deadzone correction, mapping, and inversion based on the configuration
+ *          If the absolute value of the centered value is within the deadzone, set the final value to 0
+ *          If the centered value is greater than the deadzone, map it to a positive range
+ *          If the centered value is less than the negative deadzone, map it to a negative range
+ *          The mapping is done to a range of -TOTALSENSITIVITY to TOTALSENSITIVITY
  */
 #define TOTALSENSITIVITY 350
 void Sensor::applyCalibration() {
     m_finValue = m_cntValue;
 
-    if (config) {
-        uint8_t _deadzone = config->getDeadzone(); // Get the deadzone value from the configuration
-        if (abs(m_cntValue) < _deadzone) {
-            m_finValue = 0;
-        } else if (m_cntValue > _deadzone) {
-            m_finValue = map(m_cntValue, _deadzone, config->getMax(), 0, TOTALSENSITIVITY);
-        } else { // if the value is smaller than -DEADZONE
-            m_finValue = map(m_cntValue, config->getMin(), (-1 * _deadzone), -TOTALSENSITIVITY, 0);
-        }
+    if (!config) {
+        return; // If no configuration is set, exit the function
     }
+
+    uint8_t deadZone = config->getDeadzone();
+
+    if (abs(m_cntValue) <= deadZone) {
+        m_finValue = 0;
+    } else if (m_cntValue > deadZone) {
+        m_finValue = map(m_cntValue, deadZone, config->getMax(), 0, TOTALSENSITIVITY);
+    } else {
+        m_finValue = map(m_cntValue, config->getMin(), (-1 * deadZone), -TOTALSENSITIVITY, 0);
+    }
+
+    // Invert the final value if the configuration is set to inverted
+    m_finValue = (config->isInverted()) ? -m_finValue : m_finValue;
 }

@@ -189,7 +189,9 @@ If you have the joystick TeachingTech recommended:
 #ifdef HW_HALLEFFECT // Hardware definition for the Hall effect version - does not apply to the joystick version
 /* First Calibration: Hall effect sensors pin assignment
 ==============================================
-Default assembly when looking from above on top of the space mouse
+Default assembly when looking from above on top of the SpaceMouse.
+
+ *                        ARDUINO PRO MICRO PCB VERSION
  *
  *    back(USB)     resulting axis (top view)                  Key locations
  *
@@ -201,37 +203,60 @@ Default assembly when looking from above on top of the space mouse
  *        |                .                                         |
  *      0   1              Y-                                        K0
  *
+ *
+ *                        ESP32S3 ZERO PCB VERSION
+ *
+ * *    back(USB)     resulting axis (top view)                  Key locations
+ * *      1   2              Y+
+ * *        |                .                                         |
+ * *   8    |    3           .                                         |
+ * *     ---+---        X-...Z+...X+                            S1  ---+--- S3
+ * *   7    |    4           .                                         |
+ * *        |                .                                         |
+ * *      6   5              Y-                                        S2
+ *
 
-Each sensor is affected by the position of the magnet. If the magnet moves closer to the sensor the output values should decrease.
-If you have mounted the magnets upside-down, the values will be inverted.
 
-1. Try to write down the each HES sensor with the corresponding pin number you chose. If you use the PCB version, the pins are shown
-   on the silk screen.
-2. Compile the script, type 1 into the serial interface and hit enter to enable debug output 1.
-3. With the spacemouse in front of you (ie. USB connection at the backside ie. @ north), move the knob from south to north and observe the debug output:
-  3.a) HES0 & HES1 both increase when moving the knob north (magnets further away) and decrease when moving the knob south -> Everything is correct.
-  3.b) HES0 & HES1 both decrease when moving the knob south (magnets closer by) -> Everything is correct.
-  3.c) The sensorpair acts in the opposite direction (ie. increasing when the magnets get closer by ). You probably have mixed up the poles of the magnets.
-       Invert the sensorpair in the INVERTLIST.
-  3.c) Another output is showing movement: Swap the pins in the PINLIST. This shouldn't happen when the PCB is used. Debugging is rather difficult when
-       the spacemouse is assembled, due to the fact that all sensors act on the same movement.
+Each sensor is affected by the position of the magnet. The design of the Hall effect SpaceMouse is such that the
+northpole of the magnet is on the lower side of the magnet plate. If the northpole is facing nearing the sensor
+(ie. the mouse knob is pushed down), the output values of the sensors should decrease. If you have positioned the
+magnets upside-down, the values will be inverted. Ie. when you pull the knob down, the values will increase.
 
-4. Continue with the other sensor pairs. Moving the magnet closer to the sensor should decrease the value.
+1. Try to write down the each HES sensor with the corresponding pin number you chose. If you use the PCB for the
+   Arduino Micro Pro the pinnumbers are shown on the silkscreen of the PCB. If you use the PCB for the ESP32S3 Zero
+   spacemouse, the pin numbers can be retrieved from the PCB design. The configuration file has both options available.
+   // TODO - Create a configuration option for the ESP32S3 to enter the Pins and store them in the EEPROM.
 
-5. Optimally when not moving the knob, all sensors should output approximately the same value. You can adjuist the values a little bit
-   by adjusting the height of the sensor plate using the spacernuts.
+2. Configure the PINLIST according to your hardware version and compile the script. Connect to the Serial interface
+   and type "DEBUG 1" to show the sensor readings.
 
-5. Repeat this with every axis and every sensor pair until you have a valid PINLIST and maybe an INVERTLIST
+3. First check if the magnets are positioned correctly. Push the knob down and observe if the values of each individual
+   sensor decrease. If they do, the magnets are positioned correctly. If they don't you can swap the poles of the magnets,
+   or you can invert the sensor in the INVERTLIST below. After updateing the INVERTLIST, recompile the software and upload
+   it again.
+
+4. With the SpaceMouse in front of you (ie. the USB connection is away from you), move the knob from east to west and north to south.
+   and observe the debug output. Check if the expected sensor(pairs) react as expected.
+  4.a) One pair should increase when moving the knob west (magnets further away) and decrease when moving the knob east
+       -> Everything is correct.
+  4.b) If the pairs are mixed up, you probably have made a mistake in the PINLIST. Check your configuration. Debugging these motions
+       rather difficult when the spacemouse is assembled, due to the fact that all sensors act on the same movement.
+
+5. Optimally when not moving the knob, all sensors should output approximately the same value. If there are large differences
+   between the sensors there may be a hardware issue. You can check if the magnets are the same strength or if the magnet
+   plate is not positioned correctly. In the next calibration steps you can finetune differences.
+
 */
 
 // HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9
 #define PINLIST \
-    {A0, A1, A2, A3, A6, A7, A8, A9}
-// Check the correct wiring with the debug output=1
+    {A0, A1, A2, A3, A6, A7, A8, A9} // Arduino Pro Micro PCB version
+//  {GPIO1, GPIO2, GPIO3, GPIO4, GPIO5, GPIO6, GPIO8, GPIO7} // ESP32S3 Zero PCB version, // DEVNOTE - Pin 7/8 are swapped in the schematics.
 
-// Set to 1 to invert one hall sensor.
-// Values should decrease when the magnet is nearing the sensor, but if the magnet is placed with the poles reversed, you can
-// invert the value. Usually the inversion should be configured by HES-pair (ie. 0 & 1, 2 & 3, 6 & 7, 8 & 9)
+// Set to 1 to invert one Hall sensor.
+// Values should decrease when the magnet is nearing the sensor, but if the magnet is positioned with
+// the northpole on the top side, you can invert the value. If the magnet is not positioned correctly,
+// normally the inversion should be applied by HES-pair.
 #define INVERTLIST \
     {0, 0, 0, 0, 0, 0, 0, 0}
 // HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9
@@ -239,21 +264,22 @@ If you have mounted the magnets upside-down, the values will be inverted.
 
 /* Second calibration: Tune deadzone   (command: DZ | DZ <value>)
 ==============================================================================
-The Hardware deadzone is used to filter out unintended movements. Increase the deadzone if the space mouse has small movements when it should be idle or
-when the mouse is too sensitive to subtle movements. On the other hand a small deadzone is recommended to allow full range of motion. There are two ways to calibrate the deadzone:
+The Hardware deadzone is used to filter out unintended movements. Increase the deadzone if the space mouse has small
+movements when it should be idle or when the mouse is too sensitive to subtle movements. On the other hand a small
+deadzone is recommended to allow full range of motion. There are two ways to calibrate the deadzone:
 
-Semi-automatic: Use the command "DZ" (without a value) in the serial monitor. The command will automatically calculate the deadzone based on the current sensor values.
-                Don't touch the mouse and observe the automatic output and the suggested value for the deadzone.
-                Use the command "DZ <value>" to set the deadzone and store it.
+Semi-automatic: Use the command "DZ" (without a value) in the serial monitor. The command will automatically calculate
+                the deadzone based on the current sensor values. Don't touch the mouse and observe the automatic output
+                and the suggested value for the deadzone.
+                Use the command "DZ <value>" to set the deadzone for all sensors and store it.
                 Alternatively, you can apply the suggested value to one of the DEADZONE variables below.
 
-Manual:         Set debug = 2.  Don't touch the mouse but observe the values. They should be nearly to zero.
-                                Every value around zero which is noise or should be neglected afterwards is in the following deadzone.
+Manual:         Use the command "DEBUG 2". Don't touch the mouse but observe the values. They should be nearly to zero.
+                Every value around zero which is noise or should be neglected afterwards is in the following deadzone.
 
 Expected outcome:
    Joystick:    The joystick is less prone to unintended movements. Deadzone is expected to be around 2-5
    Hall Effect: The sensor are more sensitive due to magnetic environmental influences. Deadzone is expected to be around 7-15
-
 */
 
 // TODO - This should be rewritten to use the DZ command

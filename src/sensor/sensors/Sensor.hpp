@@ -51,6 +51,8 @@ public:
     inline const char *getName() const { return name; }
     inline const uint8_t getId() const { return static_cast<uint8_t>(id); };
 
+    virtual void setContext(ICollection *Collection) override {};
+
     /**
      * @brief Evaluate the sensor value and apply calibration.
      * @details This function reads the sensor value and applies calibration to it.
@@ -59,6 +61,4 @@ public:
         readValue();        // Call the readValue function to update the sensor value
         applyCalibration(); // Call the applyCalibration function to process the sensor value
     };
-
-    virtual void setContext(ICollection *Collection) override {};
 };

@@ -3,24 +3,36 @@
 #include <observers/HIDEventBuffer/HIDEventBufferKeys.hpp> // For HIDEventBuffer
 #include <hidhandler/sender/HIDSenderKeys.hpp>             // For HIDSenderKeys
 
+#include <usbstack/HIDReportDescriptor.h> // for ReportIDs
+#include <usbstack/USBInterface.hpp>      // For USB interface functions (AVR/ESP32 independent)
+
+#include <common/esp_print.h>
+
 // Includes for the possible target states
 #include "HIDStateSendtranslation.h"
 
 void HIDStateSendkeys::apply() {
+    // Failsafe check to ensure that the context and data are set
+    if (!context || !m_data || !context->getHIDEventBufferKeys()) {
+        ESP_WARN("Context, data or eventbuffer not set");
+        return;
+    }
+
+    // If no data is staged for sending, go to the next state.
+    if (!context->getHIDEventBufferKeys()->isStaged()) {
+        context->setState(new HIDStateSendtranslation());
+        return;
+    }
+
+    // If a new HID report is not due, stay in the current state.
+    // TODO - Add the 'isReady' check here to avoid sending data if the USB stack is not ready.
     if (!isNewHidReportDue()) {
         return;
     }
 
-    //  Send a message if new data is staged or if the zero counter is less than 3
-    const bool staged = context->getHIDEventBufferKeys()->isStaged();
-    if (staged) {
-        HIDSenderKeys hidSender(context->getHIDEventBufferKeys()->getStaged()); // Create a new HIDSender instance with the staged keys data
-        hidSender.sendData();                                                   // Send the keys data
-        context->getHIDEventBufferKeys()->clearStaged();                        // Clear the staged keys data
+    USBSendReport(REPORTID_KEYS, context->getHIDEventBufferKeys()->getStaged(), HIDKEYDATASIZE); // Send new keys values to the Host
+    context->getHIDEventBufferKeys()->clearStaged();                                             // Clear the staged keys data
 
-        m_data->lastHIDsentRep += HIDUPDATERATE_MS;
-        m_data->hasSentNewData = true; // REFACTOR - Is this used anywhere?
-    }
-
-    context->setState(new HIDStateSendtranslation());
+    m_data->lastHIDsentRep += HIDUPDATERATE_MS;
+    m_data->hasSentNewData = true; // REFACTOR - Is this used anywhere?
 }

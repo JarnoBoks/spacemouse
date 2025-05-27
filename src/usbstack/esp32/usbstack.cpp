@@ -8,7 +8,6 @@
 USBStack *USBStack::m_instance = nullptr;
 
 USBStack::USBStack() {
-    m_usb_hid = new Adafruit_USBD_HID(desc_hid_report, sizeof(desc_hid_report), HID_ITF_PROTOCOL_NONE, 2, false);
 }
 
 void USBStack::setup_USB() {
@@ -18,13 +17,18 @@ void USBStack::setup_USB() {
     TinyUSBDevice.setProductDescriptor("CAD Mouse / SpaceMouse");
 
 #if 0
+// REVIEW - Is this necessary for ESP32? Does it damage the connection? If not damaging, keep it in the code for consistency with other platforms.
         // Manual begin() is required on core without built-in support e.g. mbed rp2040
         if (!TinyUSBDevice.isInitialized()) {
             TinyUSBDevice.begin(0);
         }
 #endif
 
-    m_usb_hid->begin();
+    // Set up HID
+    m_usb_hid.setPollInterval(2);
+    m_usb_hid.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));
+    m_usb_hid.setStringDescriptor("TinyUSB HID Composite");
+    m_usb_hid.begin();
 
     // If already enumerated, additional class driver begin() e.g msc, hid, midi won't take effect until re-enumeration
     if (TinyUSBDevice.mounted()) {
@@ -48,17 +52,37 @@ void USBStack::setup_USB() {
  * @return true if the data was sent successfully, false otherwise
  */
 bool USBStack::SendReport(uint8_t id, const void *data, int len) {
-    bool ret = m_usb_hid->sendReport(0, &id, 1);
 
-    if (ret) {
-        ret = m_usb_hid->sendReport(id, data, len);
-    }
-
-    // TODO - REMOVE
+    bool ret = m_usb_hid.sendReport(id, data, len);
     if (!ret) {
         Serial.println(F("USBStack::SendReport failed"));
     }
     return ret;
+}
+
+void USBStack::process_USB() {
+// TODO - Remote wakeup (see example in Adafruit_TinyUSB_Library/examples/HID/hid_composite/hid_composite.ino)
+#if 0
+    // Remote wakeup
+    if (TinyUSBDevice.suspended() && // SOMETHING TO DO) {
+        // Wake up host if we are in suspend mode
+        // and REMOTE_WAKEUP feature is enabled by host
+        TinyUSBDevice.remoteWakeup();
+    }
+#endif
+    bool ret = false;
+    if (m_usb_hid.ready()) {
+        // Process the HID reports
+        // REMOVE ret = m_usb_hid.mouseMove(RID_MOUSE, 5, 5); // Example: move mouse right + down
+
+        // REMOVE ret = tud_hid_n_mouse_report(RID_MOUSE, 5, 5, 0, 0, 0); // Example: move mouse right + down
+    }
+
+    // Process the USB stack
+    // TinyUSBDevice.task();
+
+    // Call the HID task to process any incoming reports
+    // m_usb_hid.task();
 }
 
 #endif // ARDUINO_ARCH_ESP32

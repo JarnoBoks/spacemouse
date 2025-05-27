@@ -6,15 +6,17 @@
 #define HID_MESSAGE_SIZE 6 // Size of the HID message buffer for translation and rotation axes
 
 /**
- * @brief Base class for HID event buffers
+ * @brief   Base class for HID event buffers
  * @details This class is used to store and manage HID event messages. It implements the IObserver interface,
- *          allowing it to receive updates from observed objects.
+ *          allowing it to receive updates from observed objects. The buffer observes various items of the
+ *          SpaceMouse (Axes, Keys, etc.), translates the axis value to the message buffer and stores the messages
+ *          in a buffer.
  *          The HID event buffer is used to store the HID messages that are sent to the host computer.
- *          The buffer observes various items of the SpaceMouse (Axes, Keys, etc.) and stores the HID messages in a buffer.
  *          The HID handler will then send the messages to the host computer and clear the buffer.
  */
 class HIDEventBuffer : public IObserver {
 private:
+#if 0
     const bool isBufferEmpty(const uint8_t *buffer) const {
         for (uint8_t i = 0; i < HID_MESSAGE_SIZE; i++) {
             if (buffer[i] != 0) {
@@ -22,10 +24,11 @@ private:
             }
         }
         return true;
+    }
+#endif
 #if 0 // REVIEW
         return (m_message[0]==0 && memcmp(m_message, m_message+1, HID_MESSAGE_SIZE-1) ) == 0)
 #endif
-    }
 
 protected:
     uint8_t m_message[HID_MESSAGE_SIZE]; // Buffer for the HID messages.

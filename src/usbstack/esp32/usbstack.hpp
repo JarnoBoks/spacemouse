@@ -2,6 +2,7 @@
 
 #if defined(ARDUINO_ARCH_ESP32)
 
+#include <Adafruit_TinyUSB.h> // Include the Adafruit TinyUSB library for USB functionality
 #include <stdint.h>
 
 class Adafruit_USBD_HID;
@@ -26,8 +27,8 @@ public:
 
     void setup_USB();
 
-    bool SendReport(uint8_t id, const void *data, int len);
-    inline bool Ready() const {
+    const bool SendReport(uint8_t id, const void *data, int len);
+    inline const bool Ready() {
         return m_usb_hid.ready();
     }
 

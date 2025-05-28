@@ -10,6 +10,9 @@
 // Please open config_sample.h, adjust your settings and save it as config.h
 #include "config.h"
 
+// Architecture specific includes
+#include <sensor/sensors/ArchitectureADC.hpp> // Include the architecture specific ADC functions
+
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
 // if an encoder wheel is used
 #include "encoderWheel.h"
@@ -99,6 +102,8 @@ void setup() {
     USBStart;
     WifiManager::setup_Wifi(); // Setup the WiFi connection (only if ESP32 and if configured in config.h)
     WifiManager::setup_OTA();  // Setup the OTA connection (only if ESP32 and if selected environment)
+
+    ArchitectureADC::setupADC(); // Initialize the ADC for the architecture (ESP32 or AVR)
 
     CustomDelay::delay(100); // Wait for the serial interface to be ready
     // Begin Serial for debugging or calibration

@@ -51,7 +51,7 @@ void USBStack::setup_USB() {
  *
  * @return true if the data was sent successfully, false otherwise
  */
-bool USBStack::SendReport(uint8_t id, const void *data, int len) {
+const bool USBStack::SendReport(uint8_t id, const void *data, int len) {
 
     bool ret = m_usb_hid.sendReport(id, data, len);
     if (!ret) {

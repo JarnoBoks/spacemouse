@@ -41,6 +41,7 @@ public:
     inline SensorConfig *getConfig() const { return config; };
 
     inline int getIdlePosition() const { return idleposition; }
+
     virtual bool setIdlePosition(int val);
     virtual bool idlePositionWarning(const int val) const = 0; // Pure virtual function to be implemented by derived classes
 

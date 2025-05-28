@@ -19,16 +19,8 @@ Sensor *SensorFactoryHall::create(uint8_t id) {
     }
 
     // Get the pinNumber from the config.h object for this sensor
-    constexpr uint8_t sensorPins[NUM_HALL_SENSORS] = HALL_SENSOR_PINLIST;                 // Pins for the sensors, as defined in config.h
+    constexpr uint8_t sensorPins[NUM_HALL_SENSORS] = HALL_SENSOR_PINLIST; // Pins for the sensors, as defined in config.h
+
     Sensor *newSensor = new HallSensor(sensorPins[id], static_cast<HallSensorsId_t>(id)); // Create a new hall sensor instance
-    // FIXME setupFunctionality(newKey);                        // Set up the functionality for the new key
-
-    // REVIEW - Does the ESP32 have something alike this
-#ifdef ARDUINO_ARCH_AVR
-                                                                                          // Set the ADC Prescaler to 16 in order to read the ADC much faster.
-    // NOTE: Maybe this is relevant for the Joystick sensors as well, but cannot test it.
-    ADCSRA = (ADCSRA & B11111000) | 4; // Set prescaler to 16 for ADC
-#endif
-
-    return newSensor; // Return the new Hall sensor instance
+    return newSensor;                                                                     // Return the new Hall sensor instance
 }

@@ -1,7 +1,8 @@
 #include "Sensor.hpp"
-#include "sensor/config/SensorConfig.hpp"
+#include <sensor/config/SensorConfig.hpp>
+#include <sensor/sensors/ArchitectureADC.hpp> // Abstraction from Architecture specific ADC functions
 
-#include <wiring_private.h> // for analogRead & map function
+#include <wiring_private.h> // for 'map' function
 
 /**
  * @brief Constructor for Sensor.
@@ -14,6 +15,8 @@ Sensor::Sensor(const int8_t pin, const int8_t id)
     : pin(pin),
       id(id),
       config(new SensorConfig(id)) {
+    // Configure this sensor's pin for ADC reading
+    ArchitectureADC::connectADC(pin); // Setup the ADC for the specified pin
 }
 
 Sensor::~Sensor() {
@@ -38,7 +41,7 @@ const bool Sensor::hasDescriptor(const char *descriptor) const {
  *          If a configuration is set, it adjusts the centered value based on the idle position.
  */
 void Sensor::readValue() {
-    m_rawValue = analogRead(pin);
+    m_rawValue = ArchitectureADC::readADC(pin);
 
     if (config) {
         m_cntValue = m_rawValue - idleposition;

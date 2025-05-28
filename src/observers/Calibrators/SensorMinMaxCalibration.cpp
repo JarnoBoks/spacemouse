@@ -16,10 +16,10 @@ SensorMinMaxCalibration::SensorMinMaxCalibration(SensorCalibrationManager *calmg
         m_maxValue[id] = -1023; // Initialize maximum values to minimum possible value (-1023)
     }
 
-    _initialize(); // Call the initialize function to start the calibration process
+    _startCalibration(); // Call the initialize function to start the calibration process
 }
 
-void SensorMinMaxCalibration::_initialize() {
+void SensorMinMaxCalibration::_startCalibration() {
     // Initialize the calibration process
     m_startCalibrationTime = millis();
     Serial.print(F("Move the spacemouse for "));
@@ -27,7 +27,7 @@ void SensorMinMaxCalibration::_initialize() {
     Serial.println(F(" sec."));
 }
 
-void SensorMinMaxCalibration::_finalize(IObservable *sensorCollection) {
+void SensorMinMaxCalibration::_finishCalibration(IObservable *sensorCollection) {
     bool warningsOccurred = false; // Flag to track if any warnings occurred during calibration
 
     MinMaxPrinter printer;
@@ -58,7 +58,7 @@ void SensorMinMaxCalibration::update(IObservable *sensorCollection) {
 
     // Finish the calibration process if the configured time has elapsed iterations are reached
     if (millis() - m_startCalibrationTime > (MINMAXDURATION * 1000)) {
-        _finalize(sensorCollection); // Finish the calibration process
+        _finishCalibration(sensorCollection); // Finish the calibration process
         return;
     }
 

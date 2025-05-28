@@ -1,30 +1,41 @@
-#include "MinMaxCommand.h"
+#include "deadzonecommand.h"
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
-#include <sensor/calibration/SensorCalibrationManagerMinMax.hpp>
 #include <sensor/SensorCollection.hpp>
 #include <sensor/sensors/Sensor.hpp>
 #include <sensor/config/SensorConfig.hpp>
 
-#include <visitors/printers/MinMaxPrinter.hpp>
+#include <visitors/printers/DeadzonePrinter.hpp>
 #include <visitors/printers/SensorNamePrinter.hpp>
 
 #include <common/esp_print.h> // For ESP_PRINT
 
 /**
- * @brief Destructor for the MinMaxCommand class.
- * @details Cleans up the sensor calibration manager instance when switching to another debug state.
- */
-MinMaxCommand::~MinMaxCommand() {
-    delete m_SensorCalibrationManager;
-}
-
-/**
- * @brief Executes the minmax command based on the provided parameters.
+ * @brief Executes the deadzone command based on the provided input parameters.
  * @param param1 First parameter
  * @param param2 Second parameter
  * @param paramCount Number of parameters provided.
+ * @details This function handles the deadzone command for sensors, allowing users to view or set deadzone values.
+ *          If no parameters are provided, it prints the current deadzone values of all sensors.
+ *
  */
-void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
+void DeadzoneCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
+#if 0
+    // Call the base class execute function to parse the parameters.
+    IAxisConfigCommand::execute(param1, param2, paramCount);
+
+    // No update of the configuration parameters possible or needed if the requested value is less than 0
+    if (m_requestedValue < 0) {
+        return;
+    }
+
+    for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
+        if (m_knobVectorDirectionConfig[i]) {
+            m_knobVectorDirectionConfig[i]->setSensitivity(m_requestedValue);
+        }
+    }
+
+    m_knobVector->getConfig()->persist(m_knobVector->getType()); // Store the value in the EEPROM
+#endif
 
     if (!getCollectionIdentifier()) {
         ESP_ERROR("No collection identifier");
@@ -38,23 +49,25 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
     }
 
     if (paramCount == 0) {
-        // No params provided, show current configuration values of the sensors.
-        MinMaxPrinter MinMaxPrinter;
-        SensorNamePrinter NamePrinter;
+        // No params provided, show current deadzone values of the sensors.
+        DeadzonePrinter deadzonePrinter;
+        SensorNamePrinter namePrinter;
 
         for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
             Sensor *sensor = sensorCollection->getSensor(id); // Pointer to the sensor
             if (sensor == nullptr) {
                 continue; // Skip if the sensor is not available
             }
-            sensor->accept(NamePrinter);                // Let the sensor accept the Printer visitor to print the sensor name
-            sensor->getConfig()->accept(MinMaxPrinter); // Let the sensorconfig accept the Printer visitor to print the sensor configuration values
+            sensor->accept(namePrinter);                  // Let the sensor accept the Printer visitor to print the sensor name
+            sensor->getConfig()->accept(deadzonePrinter); // Let the sensorconfig accept the Printer visitor to print the sensor configuration values
         }
         return;
     }
 
     if (paramCount == 1) {
-        const long requestedCalibration = 0;
+#if 0
+        // One parameter received: set deadzone for all sensors
+        const long requestedDeadzone = 0;
         if (!convertWordNumber(param1, (long *)&requestedCalibration)) {
             ESP_WARN("Param not float");
             return;
@@ -72,23 +85,26 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         } else {
             ESP_WARN("Unknown command");
         }
+#endif
     }
     if (paramCount == 2) {
+#if 0
         // Command received: MINMAX <+|-><sensorname> <value>
 
         // Get the value that has to be set
-        const long requestedValue = 0; // Default value for the second word
+        long requestedValue = 0; // Default value for the second word
         if (!convertWordNumber(param2, (long *)&requestedValue)) {
             return; // Second parameter is not a number
         }
 
         // Get the direction (+ is maximum, - is minimum)
-        const char direction = param1[0]; // Get the first character of the first parameter
+        char direction = param1[0]; // Get the first character of the first parameter
 
         // Get the sensor from the sensorname (fe. HES0 = 1, HES1 = 2, etc.)
-        const char *reqSensorName = (char *)param1 + 1;              // Get the sensor name (skip the first character)
+        char *reqSensorName = (char *)param1 + 1;                    // Get the sensor name (skip the first character)
         Sensor *sensor = sensorCollection->getSensor(reqSensorName); // Get the sensor by its name
 
+        // REVIEW - Failsafe: Sensor not found can be removed from Arduino.
         if (!sensor) {
             ESP_ERROR("Sensor not found");
             return;
@@ -115,5 +131,6 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         // Store the value in the EEPROM
         sensor->getConfig()->persist(sensor->getId());
         ESP_INFO("Store minmax for sensor");
+#endif
     }
 }

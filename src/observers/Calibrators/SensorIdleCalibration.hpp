@@ -7,10 +7,10 @@
 class SensorCalibrationManager;
 
 /**
- * @brief Class to calibrate the idle position of the hardware sensors of the spacemouse.
- * This class inherits from IObserver.
- *
+ * @brief Class to calibrate the idle position of the hardware sensors of the spacemouse. This class inherits from IObserver.
  * @details The class is an observer of the SensorCollection class and is instantiated by the SensorCalibrationManager.
+ *          It calculates the average position of the sensors over a number of iterations and sets the idle position.
+ *          The class also checks for warnings if the dead zone is too high.
  */
 class SensorIdleCalibration : public IObserver {
 private:
@@ -21,14 +21,14 @@ private:
     bool m_warningsOccurred = false;
     uint8_t m_maxDeadZone = 0; // Maximum dead zone value (of all sensors)
 
-    uint32_t m_sumReads[cHW_MAX_SENSORS]; // Array to store sum of reads, necessaru for the average calculation
+    uint32_t m_sumReads[cHW_MAX_SENSORS]; // Array to store sum of reads, used for the average calculation
     int m_minIdleValue[cHW_MAX_SENSORS];  // Array to store minimum idle values for each sensor
     int m_maxIdleValue[cHW_MAX_SENSORS];  // Array to store maximum idle values for each sensor
 
     SensorCalibrationManager *m_CalibrationManager = nullptr; // Pointer to the Sensor Calibration manager
 
-    void _initialize();                            // Initialize the calibration process
-    void _finalize(IObservable *sensorCollection); // Finish the calibration process
+    void _startCalibration();                               // Start the calibration process
+    void _finishCalibration(IObservable *sensorCollection); // Finish the calibration process
 
 protected:
 public:

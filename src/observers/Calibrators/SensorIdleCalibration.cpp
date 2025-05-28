@@ -22,14 +22,14 @@ SensorIdleCalibration::SensorIdleCalibration(SensorCalibrationManager *calmgr, c
         m_maxIdleValue[id] = 0;
     }
 
-    _initialize(); // Call the initialize function to start the calibration process
+    _startCalibration(); // Call the initialize function to start the calibration process
 }
 
 /**
  * @brief Initialize the Idle calibration
  * @details This function is called to initialize the idle calibration process.
  */
-void SensorIdleCalibration::_initialize() {
+void SensorIdleCalibration::_startCalibration() {
     m_startCalibrationTime = millis(); // Store the start time of the calibration process
     Serial.println(F("Starting calibration..."));
 }
@@ -41,7 +41,7 @@ void SensorIdleCalibration::_initialize() {
  *          It also checks for any warnings that occurred during the calibration process.
  * @param sensorCollection Pointer to the SensorCollection
  */
-void SensorIdleCalibration::_finalize(IObservable *sensorCollection) {
+void SensorIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
 
     IdlePositionPrinter printer;
 
@@ -74,31 +74,29 @@ void SensorIdleCalibration::_finalize(IObservable *sensorCollection) {
 
     // Notify the creator of this observer so it can be deleted.
     m_CalibrationManager->deactivate(m_warningsOccurred); // Finish the calibration process
-
-} // Finish calibration process
+}
 
 /**
  * @brief Update the sensor calibration process
- * @param sensorCollection Pointer to the SensorCollection
- * @details This function is called to update the calibration process.
- *          It reads the raw values from the sensors and updates the sum of reads, minimum and maximum values.
+ * @param sensorCollection Pointer to the collection of sensors being observed
+ * @details This function reads the raw values for each sensor and updates the sum of reads, minimum and maximum values.
  *          It also checks if the requested number of iterations has been reached and calls the finalizer.
  */
 void SensorIdleCalibration::update(IObservable *sensorCollection) {
     // Finish the calibration process if the requested iterations are reached
     if (m_processedIterations >= m_requestedIterations) {
-        _finalize(sensorCollection); // Finish the calibration process
+        _finishCalibration(sensorCollection); // Finish the calibration process
         return;
     }
 
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
         // Get the sensor by ID
         Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id);
-        if (sensor == nullptr) {
+        if (!sensor) {
             continue; // Skip if the sensor is not available
         }
 
-        // Update the mean value (= Idle position) for the sensor
+        // Add the current read value to the total of readings for the sensor
         int _rawValue = sensor->getRawValue();
         m_sumReads[id] += _rawValue;
 

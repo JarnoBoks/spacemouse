@@ -10,6 +10,7 @@
  * @brief   Class is responsible for sending translation data to the USB HID interface of the connected computer.
  * @details It inherits from the HIDSender class and implements the sendData method to send the translation data.
  *          The class uses the SpaceMouseUSBInterface to send the data.
+ * @deprecated
  */
 class HIDSenderKeys : public HIDSender {
 

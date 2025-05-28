@@ -6,6 +6,8 @@
 // Forward declaration of classes to avoid circular dependencies
 class SensorCalibrationManager;
 
+// REFACTOR - For ESP32 there should be an interface class for Calibrator Observers.
+
 /**
  * @brief Class to calibrate the minimum and maximum values of the hardware sensors of the spacemouse.
  * This class inherits from IObserver.
@@ -21,8 +23,8 @@ private:
 
     SensorCalibrationManager *m_CalibrationManager = nullptr; // Pointer to the calibration manager
 
-    void _initialize();                            // Initialize the calibration process
-    void _finalize(IObservable *sensorCollection); // Finalize the calibration process
+    void _startCalibration();                               // Initialize the calibration process
+    void _finishCalibration(IObservable *sensorCollection); // Finalize the calibration process
 
 public:
     SensorMinMaxCalibration(SensorCalibrationManager *calibrationManager);

@@ -3,6 +3,7 @@
 #include <common/IVisitor.hpp>
 #include <sensor/config/SensorConfig.hpp>
 #include <common/TextHelper.h>
+#include <common/esp_print.h> // For ESP_PRINT
 
 class MinMaxPrinter : public IVisitor {
 public:
@@ -17,6 +18,12 @@ public:
      * @param config The SensorConfig object to visit.
      */
     void visit(VisitableBase &visitable) override {
+        // REFACTOR - The check has to be implented in all visitors
+        if (!&visitable) {
+            ESP_WARN("Visitable null");
+            return;
+        }
+
         // Cast the VisitableBase to SensorConfig
         SensorConfig &config = static_cast<SensorConfig &>(visitable);
 
@@ -24,9 +31,9 @@ public:
         bool warningsOccurred = false, minWarning = false, maxWarning = false, rangeWarning = false;
 
         // Retrieve the sensor configuration values & warningstate
-        int min = config.getMin(&minWarning);
-        int max = config.getMax(&maxWarning);
-        int range = config.getRange(&rangeWarning);
+        const int min = config.getMin(&minWarning);
+        const int max = config.getMax(&maxWarning);
+        const int range = config.getRange(&rangeWarning);
 
         TextHelper::alignValue(min, 4);
         Serial.print(min);

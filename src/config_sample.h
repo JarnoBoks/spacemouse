@@ -291,7 +291,7 @@ Expected outcome:
                 Deadzone is expected to be around 7-15.
 */
 
-#define IDLE_ITERATIONS 500 // Default number of iterations for idle calibration during startup
+// #define IDLE_ITERATIONS 500 // Default number of iterations for idle calibration during startup
 
 /* Third calibration: Getting MIN and MAX values   (command: MINMAX | MINMAX <+|-><sensorname> <value>)
 =====================================================================================================

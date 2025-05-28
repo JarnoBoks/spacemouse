@@ -21,5 +21,5 @@ void SensorCalibrationManagerIdle::activate(const int iterations) {
  * @see SensorCalibrationManagerIdle::activate(int iterations)
  */
 void SensorCalibrationManagerIdle::activate() {
-    activate(500); // Default number of iterations is 500
+    activate(IDLE_ITERATIONS); // Default number of iterations is 500
 }

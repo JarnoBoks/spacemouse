@@ -36,13 +36,3 @@ void SensorCalibrationManager::deactivate(const bool warningsOccurred) {
     // The SensorCalibration Manager can be deleted when there are no more calibrations running.
     // TODO - Test if deleting this; works as expected.
 }
-
-#if 0 // REVIEW - What to do with this code?
-void SensorCalibrationManager::calibrateDeadzone(Sensor *sensor, const uint8_t deadzone) {
-
-    SensorConfig *config = sensor->getConfig(); // Get the configuration of the sensor
-    config->setDeadzone(deadzone);              // Set the dead zone for the sensor
-    config->saveInEEPROM(sensor->getId());  // Save the updated configuration to EEPROM
-
-}
-#endif

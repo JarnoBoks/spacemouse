@@ -2,6 +2,10 @@
 
 #include "SensorCalibrationManager.hpp"
 
+#ifndef IDLE_ITERATIONS
+#define IDLE_ITERATIONS 500 // Default number of iterations for idle calibration during startup
+#endif
+
 class SensorCalibrationManagerIdle : public SensorCalibrationManager {
 protected:
 public:

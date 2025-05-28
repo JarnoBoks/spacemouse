@@ -57,11 +57,12 @@ The spacemouse is calibrated through the serial monitor (preferred) or through t
 in this file. To view the current calibrated values of the spacemouse, you can use the command "SHOW" in the
 serial monitor.
 
-In normal operation, the values from config.h are used only for initialization/default values. If the spacemouse
-is initialized updating values in config.h WILL NOT BE APPLIED without changing the version number too.
+In normal operation, the configuration values are read from non-volatile storage. The values in config.h
+are used only when there is not yet any configuration stored. If you want the SpaceMouse to use the
+values from config.h, you have to change the version number below and upload the code again.
 
-Important: If the version number is changed, all stored calibration parameters will be replaced with the
-           values from config.h
+!!Important!!: If the version number is changed, ALL stored calibration parameters will be erased
+               and the SpaceMouse will start with the default values from config.h.
 */
 
 /// Change the version number to force the spacemouse to use the values from config.h
@@ -142,7 +143,7 @@ Debug Modes:
 #define HW_HALLEFFECT // or HW_JOYSTICK
 
 #ifdef HW_JOYSTICK // Hardware definition for the joystick version - does not apply to the Hall effect version
-/* First Calibration: Joystick axis pin assignment
+/** First configuration: Joystick axis pin assignment
 ==============================================
 Default Assembly when looking from above on top of the space mouse
    back    resulting axis (not from the single joystick)
@@ -187,7 +188,7 @@ If you have the joystick TeachingTech recommended:
 #endif // JOYSTICK
 
 #ifdef HW_HALLEFFECT // Hardware definition for the Hall effect version - does not apply to the joystick version
-/* First Calibration: Hall effect sensors pin assignment
+/* First configuration: Hall effect sensors pin assignment
 ==============================================
 Default assembly when looking from above on top of the SpaceMouse.
 
@@ -262,29 +263,35 @@ magnets upside-down, the values will be inverted. Ie. when you pull the knob dow
 // HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9
 #endif
 
-/* Second calibration: Tune deadzone   (command: DZ | DZ <value>)
-==============================================================================
-The Hardware deadzone is used to filter out unintended movements. Increase the deadzone if the space mouse has small
-movements when it should be idle or when the mouse is too sensitive to subtle movements. On the other hand a small
-deadzone is recommended to allow full range of motion. There are two ways to calibrate the deadzone:
+/* Second calibration: Tune Sensor Idle Position & Deadzone   (command: IDLE | IDLE <iterations>)
+=================================================================================================
+The nature of the hardware setup is such that sensor readings  are in the middle of the ADC range
+when the knob is not moved. This is called the idle position. Furthermore, the ADC readings are not
+perfectly stable and can fluctuate around the idle position. During startup of the SpaceMouse, the
+idle position is determined by reading the sensors 500 times and calculating the mean value.
+The differences between the raw sensor values and the mean idle value are used to calculate the
+deadzone.
 
-Semi-automatic: Use the command "DZ" (without a value) in the serial monitor. The command will automatically calculate
-                the deadzone based on the current sensor values. Don't touch the mouse and observe the automatic output
-                and the suggested value for the deadzone.
-                Use the command "DZ <value>" to set the deadzone for all sensors and store it.
-                Alternatively, you can apply the suggested value to one of the DEADZONE variables below.
+The command "IDLE" will show the Idle positions and deadzone for each sensor in the serial monitor.
+You can request a new idle position and deadzone configuration by using the command "IDLE <iterations>".
+The iteration parameter should be a number beteween 500 and 5000, which defines how many times the
+sensors are read to calculate the idle position and deadzone. Be aware that the newly calculated
+values won't be stored in the EEPROM and lost at reboot.
 
-Manual:         Use the command "DEBUG 2". Don't touch the mouse but observe the values. They should be nearly to zero.
-                Every value around zero which is noise or should be neglected afterwards is in the following deadzone.
+You can check the results of the idle position in the serial monitor, by using the command "DEBUG 2".
+The values should be around zero, but can fluctuate a bit due to noise. In normal operation the
+fluctuations should be less than the calculated deadzone to avoid unintended movements.
+
+Note: If you still have issues with unintended movements, you can configure an additional deadzone
+      using the 'GATE' configuration option in step 4.
 
 Expected outcome:
    Joystick:    The joystick is less prone to unintended movements. Deadzone is expected to be around 2-5
-   Hall Effect: The sensor are more sensitive due to magnetic environmental influences. Deadzone is expected to be around 7-15
+   Hall Effect: The sensor are more sensitive due to magnetic environmental influences.
+                Deadzone is expected to be around 7-15.
 */
 
-// TODO - This should be rewritten to use the DZ command
-// The deadzone default value can be overridden in the config.h file by using the following defines format:
-// #define DEADZONE <value>
+#define IDLE_ITERATIONS 500 // Default number of iterations for idle calibration during startup
 
 /* Third calibration: Getting MIN and MAX values   (command: MINMAX | MINMAX <+|-><sensorname> <value>)
 =====================================================================================================

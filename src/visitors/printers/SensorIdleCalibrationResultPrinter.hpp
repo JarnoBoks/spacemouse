@@ -4,24 +4,36 @@
 #include <sensor/sensors/Sensor.hpp>
 #include <common/TextHelper.h>
 
-class IdlePositionPrinter : public IVisitor {
+/**
+ * @brief Prints the min, mean, max readings and the calculated deadzone for a sensor during
+ *        idle calibration.
+ * @note This class implements the IVisitor interface and is used to visit Sensors.
+ */
+class SensorIdleCalibrationResultPrinter : public IVisitor {
 private:
     int minValue = 0; // Minimum read value during Idle calibration
     int maxValue = 0; // Maximum read value during Idle calibration
     int deadzone = 0; // Deadzone value during Idle calibration
 public:
-    IdlePositionPrinter() {
-        // Constructor to initialize the MinMaxPrinter object
+    /**
+     * @brief Constructor for SensorIdleCalibrationResultPrinter
+     * @details Initializes the printer and prints the header for the idle position output.
+     */
+    SensorIdleCalibrationResultPrinter() {
         // Print the header for the idle position output
         Serial.println(F("\n#####  Min | Mean |  Max | Deadzone"));
     }
 
     inline void setPrintParams(const int min, const int max, const int dz) {
-        minValue = min; // Set the minimum value
-        maxValue = max; // Set the maximum value
-        deadzone = dz;  // Set the deadzone value
+        minValue = min;
+        maxValue = max;
+        deadzone = dz;
     }
 
+    /**
+     * @brief Visits a sensor and prints its idle position information.
+     * @param visitable The sensor to visit.
+     */
     void visit(VisitableBase &visitable) override {
         // Cast the VisitableBase to Sensor
         Sensor &sensor = static_cast<Sensor &>(visitable);

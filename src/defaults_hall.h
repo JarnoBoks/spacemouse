@@ -32,11 +32,6 @@
 #define MAXVALS {131, 166, 100, 168, 186, 250, 215, 235}
 #endif
 
-// DEADZONE value for the HALL sensors
-#ifndef DEADZONE
-#define DEADZONE 5
-#endif
-
 // ---------------------- AXES DEFAULTS --------------------------
 
 // Default axis configuration for spacemouse with HALL sensors.

@@ -27,7 +27,8 @@
 #include <visitors/printers/SwitchYZPrinter.hpp>
 #include <visitors/printers/ExclusiveModePrinter.hpp>
 #include <visitors/printers/SensorNamePrinter.hpp>
-#include <visitors/printers/MinMaxPrinter.hpp>
+#include <visitors/printers/SensorConfigMinMaxPrinter.hpp>
+#include <visitors/printers/SensorIdleDeadzonePrinter.hpp>
 
 // Observers
 #include "observers/DebugOutput/DebugOutputSensorsRaw.hpp"
@@ -156,7 +157,10 @@ void AVRCommandHandler::parseSerialMonitorInput() {
     handleInput(inputBuffer, sizeof(inputBuffer), bytesRead); // Call the handleInput function to process the input
 }
 
+#define PRM_MIN_IT 500  // Minimum number of iterations for idle calibration
+#define PRM_MAX_IT 5000 // Maximum number of iterations for idle calibration
 void AVRCommandHandler::executeIdle(const char *param1, const char *param2, const uint8_t paramCount) {
+#if 0
     // Implementation for IDLE command
     if (!getCollectionCarrier()) {
         ESP_ERROR("Carrier N/A");
@@ -169,7 +173,48 @@ void AVRCommandHandler::executeIdle(const char *param1, const char *param2, cons
     SensorCollection *sensorCollection = getCollectionCarrier()->getSensorCollection();
 
     SensorCalibrationManagerIdle *m_SensorCalibrationManager = new SensorCalibrationManagerIdle(sensorCollection); // Create a new instance of the sensor calibration manager
-    m_SensorCalibrationManager->activate(2000);                                                                    // Start the idle calibration with 2000 iterations
+    m_SensorCalibrationManager->activate(2000);
+#endif // Start the idle calibration with 2000 iterations
+
+    if (!getCollectionCarrier()) {
+        ESP_ERROR("No collection identifier");
+        return;
+    }
+
+    SensorCollection *sensorCollection = getCollectionCarrier()->getSensorCollection();
+    if (!sensorCollection) {
+        ESP_ERROR("No sensor collection");
+        return;
+    }
+
+    if (paramCount == 0) {
+        // No params provided, show the current idle positions and deadzone values of the sensors
+        SensorIdleDeadzonePrinter printer;
+        sensorCollection->accept(printer); // Accept the printer visitor to print the information for this sensor
+        return;
+    }
+
+    if (paramCount == 1) {
+
+        long requestedIterations = 0;
+        if (!convertWordNumber(param1, (long *)&requestedIterations)) {
+            ESP_WARN("Param not number");
+            return;
+        }
+
+        requestedIterations = (requestedIterations < PRM_MIN_IT) ? PRM_MIN_IT : requestedIterations; // Ensure minimum iterations
+        requestedIterations = (requestedIterations > PRM_MAX_IT) ? PRM_MAX_IT : requestedIterations; // Ensure maximum iterations
+
+        SensorCalibrationManagerIdle *m_SensorCalibrationManager = new SensorCalibrationManagerIdle(sensorCollection);
+        m_SensorCalibrationManager->activate(requestedIterations);
+        return;
+    }
+
+    if (paramCount == 2) {
+        // Not used - Ignore commands that have two parameters
+        ESP_WARN("Too many parameters for IDLE command");
+        return;
+    }
 }
 
 void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, const uint8_t paramCount) {
@@ -188,7 +233,7 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
         // No params provided, show config
         ESP_PRINT(F("MinMaxCommand::execute: Show config"));
 
-        MinMaxPrinter MinMaxPrinter;
+        SensorConfigMinMaxPrinter MinMaxPrinter;
         SensorNamePrinter NamePrinter;
 
         for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {

@@ -5,7 +5,7 @@
 #include <sensor/sensors/Sensor.hpp>
 #include <sensor/config/SensorConfig.hpp>
 
-#include <visitors/printers/MinMaxPrinter.hpp>
+#include <visitors/printers/SensorConfigMinMaxPrinter.hpp>
 #include <visitors/printers/SensorNamePrinter.hpp>
 
 #include <common/esp_print.h> // For ESP_PRINT
@@ -39,9 +39,10 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
 
     if (paramCount == 0) {
         // No params provided, show current configuration values of the sensors.
-        MinMaxPrinter MinMaxPrinter;
+        SensorConfigMinMaxPrinter MinMaxPrinter;
         SensorNamePrinter NamePrinter;
 
+        // REFACTOR - Visitor should be applied to the collection, not to each sensor
         for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
             Sensor *sensor = sensorCollection->getSensor(id); // Pointer to the sensor
             if (sensor == nullptr) {

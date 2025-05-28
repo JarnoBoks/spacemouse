@@ -5,7 +5,7 @@
 #endif
 
 #ifndef ARDUINO_ARCH_AVR
-
+#include <Arduino.h> // For Serial
 #ifndef ESP_PRINT
 #define ESP_PRINT(x) Serial.println(x)
 #endif

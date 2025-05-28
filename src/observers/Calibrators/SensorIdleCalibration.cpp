@@ -1,10 +1,12 @@
 #include "SensorIdleCalibration.hpp"
 #include "sensor/sensors/Sensor.hpp" // For Sensor class
 #include "sensor/calibration/SensorCalibrationManager.hpp"
-#include <visitors/printers/IdlePositionPrinter.hpp> // For IdlePositionPrinter class
+#include <visitors/printers/SensorIdleCalibrationResultPrinter.hpp> // For IdlePositionPrinter class
 
-#include "common/freeRAM.h"
+#include <common/freeRAM.h>
+#include <common/esp_print.h>
 
+// REFACTOR - Warninglevel should be set in the SensorConfig class, not here
 #define DEADZONEWARNING 10 // Define a threshold for dead zone warning
 // NOTE - At the moment the dead zone warning threshold is non hardware type specific. This could be changed in the future.
 
@@ -43,22 +45,32 @@ void SensorIdleCalibration::_startCalibration() {
  */
 void SensorIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
 
-    IdlePositionPrinter printer;
+    SensorIdleCalibrationResultPrinter printer;
 
     // Calculating average position by dividing the sum of all readings by the number of iterations
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
+        if (m_processedIterations == 0) {
+            ESP_ERROR("Iterations = 0");
+            continue; // Skip if no iterations were processed
+        }
 
-        // Calculate the dead zone for the sensor
-        int sensorDZ = m_maxIdleValue[id] - m_minIdleValue[id];
+        // Calculate the idle position for the sensor
+        const int idlePosition = m_sumReads[id] / m_processedIterations;
 
-        // Update the maximum dead zone seen for all sensors if necessary
+        // Calculate the deadzone for the sensor
+        const int lowDZ = idlePosition - m_minIdleValue[id];          // Idle - lowest reading
+        const int highDZ = m_maxIdleValue[id] - idlePosition;         // Highest reading - Idle
+        const int sensorDZ = ((lowDZ > highDZ) ? lowDZ : highDZ) + 2; // Use the larger of the two deadzones and add failsafe value
+
+        // Update the maximum deadzone seen for all the sensors if necessary
         m_maxDeadZone = (sensorDZ > m_maxDeadZone) ? sensorDZ : m_maxDeadZone;
 
         // Update the idlePosition for each sensor (returns true if the idle position is in the predefined normal zone)
-        // Secondary check: Check if the dead zone is above the warning threshold.
         Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id); // Get the sensor from the collection
-        bool positionWarning = !(sensor->setIdlePosition(m_sumReads[id] / m_processedIterations));
-        m_warningsOccurred = m_warningsOccurred || positionWarning || (sensorDZ > DEADZONEWARNING);
+        const bool positionWarning = !(sensor->setIdlePosition(m_sumReads[id] / m_processedIterations));
+
+        // Secondary check: Check if the deadzone is above the warning threshold.
+        const bool m_warningsOccurred = m_warningsOccurred || positionWarning || (sensorDZ > DEADZONEWARNING);
 
         printer.setPrintParams(m_minIdleValue[id], m_maxIdleValue[id], sensorDZ); // Set the print parameters for the printer visitor
         sensor->accept(printer);                                                  // Accept the printer visitor to print the information for this sensor
@@ -107,3 +119,21 @@ void SensorIdleCalibration::update(IObservable *sensorCollection) {
 
     m_processedIterations++; // Increment the number of processed iterations
 }
+
+/**
+ * The knob is in Idle position, so optimally the raw value should allways be around 512 and stable.
+ * Practically this is not the case and the raw value won't be exactly in the middle of the range
+ * and will fluctuate around the 'idle' value.
+ *
+ * Let's visualize this with an example:
+ *
+ * #    read value       sum of reads     min idle value     max idle value
+ * 0    500              500               500                500
+ * 1    520              1020              500                520
+ * 2    510              1530              500                520
+ * 3    530              2060              500                530
+ *
+ * The values are fluctuating between 500 and 530, so the average value is 510.
+ * The minimum idle value is 500 and the maximum idle value is 530.
+ * The deadzone is 30 (530 - 500).
+ */

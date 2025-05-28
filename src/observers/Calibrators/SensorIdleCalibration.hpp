@@ -9,8 +9,8 @@ class SensorCalibrationManager;
 /**
  * @brief Class to calibrate the idle position of the hardware sensors of the spacemouse. This class inherits from IObserver.
  * @details The class is an observer of the SensorCollection class and is instantiated by the SensorCalibrationManager.
- *          It calculates the average position of the sensors over a number of iterations and sets the idle position.
- *          The class also checks for warnings if the dead zone is too high.
+ *          It calculates the average idle position of the sensors over a number of iterations and sets the idle position.
+ *
  */
 class SensorIdleCalibration : public IObserver {
 private:

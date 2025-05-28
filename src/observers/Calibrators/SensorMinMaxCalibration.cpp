@@ -5,7 +5,7 @@
 #include "sensor/config/SensorConfig.hpp"
 #include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
 
-#include <visitors/printers/MinMaxPrinter.hpp> // For MinMaxPrinter class
+#include <visitors/printers/SensorConfigMinMaxPrinter.hpp> // For MinMaxPrinter class
 
 #define MINMAXDURATION 15 // Duration for min/max calibration in seconds
 
@@ -30,7 +30,7 @@ void SensorMinMaxCalibration::_startCalibration() {
 void SensorMinMaxCalibration::_finishCalibration(IObservable *sensorCollection) {
     bool warningsOccurred = false; // Flag to track if any warnings occurred during calibration
 
-    MinMaxPrinter printer;
+    SensorConfigMinMaxPrinter printer;
 
     // REVIEW - Should this loop be moved to the sensorcollection?
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {

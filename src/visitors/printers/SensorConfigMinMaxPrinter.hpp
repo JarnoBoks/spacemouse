@@ -5,9 +5,9 @@
 #include <common/TextHelper.h>
 #include <common/esp_print.h> // For ESP_PRINT
 
-class MinMaxPrinter : public IVisitor {
+class SensorConfigMinMaxPrinter : public IVisitor {
 public:
-    MinMaxPrinter() {
+    SensorConfigMinMaxPrinter() {
         // Constructor to initialize the MinMaxPrinter object
         // Print the header for the min/max output
         Serial.println(F("        Min |  Max | Rnge | Warning"));

@@ -46,3 +46,14 @@ Sensor *SensorCollection::getSensor(uint8_t id) const {
 Sensor *SensorCollection::getSensor(const char *name) const {
     return static_cast<Sensor *>(getItem(name)); // Return the sensor with the specified name
 }
+
+/**
+ * @brief Distribute the visitor to all sensors in the collection
+ * @param visitor Reference to the visitor to be used for processing.
+ * @details This function iterates through all sensors in the collection and calls the accept method on each sensor.
+ */
+void SensorCollection::accept(IVisitor &visitor) {
+    for (int i = 0; i < m_itemCount; i++) {
+        static_cast<Sensor *>(m_items[i])->accept(visitor);
+    }
+}

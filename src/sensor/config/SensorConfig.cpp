@@ -22,13 +22,6 @@ constexpr uint8_t EEPROM_SENSORCONFIG_VERSION = 1; // Define the version number 
 #endif
 
 /**
- * @brief Default constructor for SensorConfig.
- * @details Initializes the sensor configuration with zeroed values.
- * @note This constructor is not used in the current implementation.
- */
-SensorConfig::SensorConfig() {};
-
-/**
  * @brief   Constructor for SensorConfig class with sensorId.
  * @details This constructor initializes the SensorConfig object with the given sensor Id.
  *          It retrieves the configuration from EEPROM using the EEPROMStore class. If loading fails, it sets the configuration to default values.
@@ -50,10 +43,8 @@ SensorConfig::SensorConfig(const int8_t sensorId) {
  * @param min The minimum value for the sensor configuration.
  * @param max The maximum value for the sensor configuration.
  * @param invert If true, inverts the sensor values.
- * @param deadzone The deadzone value for the sensor configuration.
  */
-SensorConfig::SensorConfig(const int min, const int max, const bool invert, const uint8_t deadzone) {
-    data.deadzone = deadzone;
+SensorConfig::SensorConfig(const int min, const int max, const bool invert) {
     data.invert = invert;
     data.minv = min;
     data.maxv = max;

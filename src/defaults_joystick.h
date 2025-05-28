@@ -33,11 +33,6 @@
 #define MAXVALS {512, 512, 512, 512, 512, 512, 512, 512}
 #endif
 
-// DEADZONE value for the joystick sensors
-#ifndef DEADZONE
-#define DEADZONE 3
-#endif
-
 // ---------------------- AXES DEFAULTS --------------------------
 
 // Default axis configuration for spacemouse with Joystick sensors.

@@ -33,9 +33,7 @@ public:
      *          With use of the initializer list the state is set to the 'Start' state.
      */
     HIDHandlerController() : currentState(new HIDStateStart()),
-                             stateData(new HIDStateData())
-    // REMOVE m_TranslatorKeys(new TranslatorKeys())
-    {
+                             stateData(new HIDStateData()) {
         currentState->set_context(this);   // Set the context for the current state
         currentState->set_data(stateData); // Initialize the state data
     }
@@ -75,8 +73,8 @@ public:
     /**
      * @brief Sets the current state of the HID handler controller.
      * @param state Pointer to the new HID state to set.
-     *      This function deletes the previous state and sets the new state as the current state.
-     *      It also sets the context for the new state.
+     * @details This function deletes the previous state and sets the new state as the current state.
+     *          It also sets the context for the new state.
      * @note The state data has been set by the previous state.
      */
     void setState(HIDStateBase *state) {

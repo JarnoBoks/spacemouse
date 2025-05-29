@@ -1,7 +1,9 @@
 #include "SensorIdleCalibration.hpp"
 #include "sensor/sensors/Sensor.hpp" // For Sensor class
-#include "sensor/calibration/SensorCalibrationManager.hpp"
+
 #include <visitors/printers/SensorIdleCalibrationResultPrinter.hpp> // For IdlePositionPrinter class
+
+#include <sensor/calibrator/states/CalibratorStateBase.hpp> // For CalibratorStateBase class
 
 #include <common/freeRAM.h>
 #include <common/esp_print.h>
@@ -11,33 +13,37 @@
 // NOTE - At the moment the dead zone warning threshold is non hardware type specific. This could be changed in the future.
 
 /**
- * @brief Constructor for SensorIdleCalibration class
- * @param calmgr Pointer to the SensorCalibrationManager
- * @param numiterations Number of iterations for calibration
+ * Example:
+ * The knob is in Idle position, so optimally the raw value should allways be around 512 and stable.
+ * Practically this is not the case and the raw value won't be exactly in the middle of the range
+ * and will fluctuate around the 'idle' value.
+ *
+ * Let's visualize this with an example:
+ *
+ * #    read value       sum of reads     min idle value     max idle value
+ * 0    500              500               500                500
+ * 1    520              1020              500                520
+ * 2    510              1530              500                520
+ * 3    530              2060              500                530
+ *
+ * The values are fluctuating between 500 and 530, so the average value is 510.
+ * The minimum idle value is 500 and the maximum idle value is 530.
+ * The deadzone is 30 (530 - 500).
  */
-SensorIdleCalibration::SensorIdleCalibration(SensorCalibrationManager *calmgr, const int numiterations)
-    : m_requestedIterations(numiterations), m_CalibrationManager(calmgr) {
+
+SensorIdleCalibration::SensorIdleCalibration(ICalibratorState *calibratorState) {
+
+    m_CalibratorState = calibratorState; // Set the calibrator state
 
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
         m_sumReads[id] = 0;
-        m_minIdleValue[id] = 1023;
-        m_maxIdleValue[id] = 0;
+        m_minIdleValue[id] = 1023; // Initialize minimum idle value to maximum possible value
+        m_maxIdleValue[id] = 0;    // Initialize maximum idle value to minimum possible value
     }
-
-    _startCalibration(); // Call the initialize function to start the calibration process
 }
 
 /**
- * @brief Initialize the Idle calibration
- * @details This function is called to initialize the idle calibration process.
- */
-void SensorIdleCalibration::_startCalibration() {
-    m_startCalibrationTime = millis(); // Store the start time of the calibration process
-    Serial.println(F("Starting calibration..."));
-}
-
-/**
- * @brief Finish the Idle calibration
+ * @brief   Finish the Idle calibration
  * @details This function is called to finish the idle calibration process.
  *          It calculates the average position for each sensor and prints the calibration results.
  *          It also checks for any warnings that occurred during the calibration process.
@@ -49,10 +55,6 @@ void SensorIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
 
     // Calculating average position by dividing the sum of all readings by the number of iterations
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
-        if (m_processedIterations == 0) {
-            ESP_ERROR("Iterations = 0");
-            continue; // Skip if no iterations were processed
-        }
 
         // Calculate the idle position for the sensor
         const int idlePosition = m_sumReads[id] / m_processedIterations;
@@ -75,17 +77,6 @@ void SensorIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
         printer.setPrintParams(m_minIdleValue[id], m_maxIdleValue[id], sensorDZ); // Set the print parameters for the printer visitor
         sensor->accept(printer);                                                  // Accept the printer visitor to print the information for this sensor
     }
-
-    // Output the calibration process information
-    Serial.println(F("Calibration finished!"));
-    Serial.print(F("Took "));
-    Serial.print(millis() - m_startCalibrationTime); // Print the time taken for calibration
-    Serial.println(F(" ms for "));
-    Serial.print(m_processedIterations); // Print the number of processed iterations
-    Serial.println(F(" iterations."));
-
-    // Notify the creator of this observer so it can be deleted.
-    m_CalibrationManager->deactivate(m_warningsOccurred); // Finish the calibration process
 }
 
 /**
@@ -95,11 +86,6 @@ void SensorIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
  *          It also checks if the requested number of iterations has been reached and calls the finalizer.
  */
 void SensorIdleCalibration::update(IObservable *sensorCollection) {
-    // Finish the calibration process if the requested iterations are reached
-    if (m_processedIterations >= m_requestedIterations) {
-        _finishCalibration(sensorCollection); // Finish the calibration process
-        return;
-    }
 
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
         // Get the sensor by ID
@@ -118,22 +104,7 @@ void SensorIdleCalibration::update(IObservable *sensorCollection) {
     }
 
     m_processedIterations++; // Increment the number of processed iterations
-}
 
-/**
- * The knob is in Idle position, so optimally the raw value should allways be around 512 and stable.
- * Practically this is not the case and the raw value won't be exactly in the middle of the range
- * and will fluctuate around the 'idle' value.
- *
- * Let's visualize this with an example:
- *
- * #    read value       sum of reads     min idle value     max idle value
- * 0    500              500               500                500
- * 1    520              1020              500                520
- * 2    510              1530              500                520
- * 3    530              2060              500                530
- *
- * The values are fluctuating between 500 and 530, so the average value is 510.
- * The minimum idle value is 500 and the maximum idle value is 530.
- * The deadzone is 30 (530 - 500).
- */
+    // Notify the calibration manager that an update has been processed
+    m_CalibratorState->update();
+}

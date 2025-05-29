@@ -38,6 +38,7 @@ public:
 
     const bool hasDescriptor(const char *descriptor) const override;
 
+    /// @brief Retrieve the configuration object of the Sensor.
     inline SensorConfig *getConfig() const { return config; };
 
     inline int getIdlePosition() const { return idleposition; }
@@ -45,8 +46,13 @@ public:
     virtual bool setIdlePosition(int val);
     virtual bool idlePositionWarning(const int val) const = 0; // Pure virtual function to be implemented by derived classes
 
+    /// @brief Retrieve the raw sensor value, the value as read from the AD converter.
     inline int getRawValue() const { return m_rawValue; }
+
+    /// @brief Retrieve the centered sensor value, the value after the IdlePosition offset is applied.
     inline int getCntValue() const { return m_cntValue; }
+
+    /// @brief Retrieve the final sensor value, the value after deadzone correction and mapping is applied.
     inline int getFinValue() const { return m_finValue; }
 
     inline const char *getName() const { return name; }

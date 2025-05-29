@@ -10,6 +10,7 @@ protected:
     const bool isWordEmpty(const char *str, const char *errorMsg) const; // REVIEW - Necessary to check for empty command?
     const bool convertWordNumber(const char *str, long *value) const;
     const bool convertWordFloat(const char *str, float *value) const;
+    const bool convertWordBool(const char *str, bool *value) const;
 
     CollectionCarrier *m_CollectionCarrier = nullptr; // Pointer to the collection identifier
 

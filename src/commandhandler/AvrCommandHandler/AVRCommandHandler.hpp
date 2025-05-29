@@ -39,6 +39,7 @@ private:
 
     const bool convertWordNumber(const char *str, long *n) const;
     const bool convertWordFloat(const char *str, float *value) const;
+    const bool convertWordBool(const char *str, bool *n) const;
 
     void DebugParamOff();
     void DebugParamSensorInformationRaw();

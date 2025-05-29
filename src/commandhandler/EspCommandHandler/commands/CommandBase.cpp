@@ -32,6 +32,32 @@ const bool CommandBase::convertWordNumber(const char *str, long *n) const {
 }
 
 /**
+ * @brief Converts a string to a boolean.
+ * @details The function checks if the first character of the string is '0' or '1'.
+ *          If the first character is '0', it sets the boolean to false, otherwise it sets it to true.
+ * @param str The string to convert.
+ * @param n Pointer to the bool to store the result.
+ * @return The result of the conversion.
+ * @retval true Conversion successful
+ * @retval false Conversion failed
+ */
+const bool CommandBase::convertWordBool(const char *str, bool *n) const {
+    if (str == nullptr || *str == '\0') {
+        return false; // If the string is null or empty, conversion fails
+    }
+
+    if (*str == '0') {
+        *n = false; // If the first character is '0', set boolean to false
+    } else if (*str == '1') {
+        *n = true; // If the first character is '1', set boolean to true
+    } else {
+        return false; // If the first character is not '0' or '1', conversion fails
+    }
+
+    return true; // Conversion successful
+}
+
+/**
  * @brief Converts a string to a float.
  * @param str The string to convert.
  * @param value Pointer to the float to store the result.

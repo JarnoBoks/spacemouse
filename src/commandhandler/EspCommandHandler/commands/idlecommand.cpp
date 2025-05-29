@@ -3,21 +3,15 @@
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
 #include <sensor/SensorCollection.hpp>
 
+#include <sensor/calibrator/Calibrator.hpp>
+#include <sensor/calibrator/states/CalibratorStateIdle.hpp>
+
 #include <visitors/printers/SensorIdleDeadzonePrinter.hpp>
-#include <sensor/calibration/SensorCalibrationManagerIdle.hpp>
 
 #include <common/esp_print.h>
 
 #define PRM_MIN_IT 500  // Minimum number of iterations for idle calibration
 #define PRM_MAX_IT 5000 // Maximum number of iterations for idle calibration
-
-/**
- * @brief Destructor for the IdleCommand class.
- * @details Cleans up the sensor calibration manager instance when switching to another debug state.
- */
-IdleCommand::~IdleCommand() {
-    delete m_SensorCalibrationManager; // Clean up the sensor calibration manager instance when switching to another debug state
-}
 
 /**
  * @brief Executes the idle command to start calibration.
@@ -57,8 +51,13 @@ void IdleCommand::execute(const char *param1, const char *param2, uint8_t paramC
         requestedIterations = (requestedIterations < PRM_MIN_IT) ? PRM_MIN_IT : requestedIterations; // Ensure minimum iterations
         requestedIterations = (requestedIterations > PRM_MAX_IT) ? PRM_MAX_IT : requestedIterations; // Ensure maximum iterations
 
-        SensorCalibrationManagerIdle *m_SensorCalibrationManager = new SensorCalibrationManagerIdle(sensorCollection);
-        m_SensorCalibrationManager->activate(requestedIterations);
+        Calibrator *calibrator = sensorCollection->getCalibrator(); // Get the calibrator instance from the sensor collection
+        RETURN_E_IF_NULL(calibrator, "No calibrator found in sensor collection");
+
+        if (!calibrator->start(new CalibratorStateIdle(requestedIterations))) {
+            ESP_WARN("Failed to start idle calibration");
+            return; // Failed to start the calibration, exit the function
+        }
         return;
     }
 

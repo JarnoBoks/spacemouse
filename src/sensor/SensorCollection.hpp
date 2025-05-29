@@ -15,6 +15,7 @@ constexpr uint8_t cHW_MAX_SENSORS = 8;
 constexpr uint8_t c_MAX_SENSORCOLLECTION_OBSERVERS = 4;
 
 class Sensor;
+class Calibrator;
 
 /**
  * @brief Class representing a collection of sensors for the SpaceMouse.
@@ -23,20 +24,26 @@ class Sensor;
  * @note The SensorCollection class is designed to manage a fixed number of sensors and their associated observers.
  */
 class SensorCollection : public CollectionBase, public Observable, public VisitableBase {
+private:
+    Calibrator *m_Calibrator = nullptr; // Pointer to the calibrator instance for this sensor collection
 public:
     /// @brief Constructor for empty SensorCollection
-    SensorCollection() : CollectionBase(cHW_MAX_SENSORS), Observable(c_MAX_SENSORCOLLECTION_OBSERVERS) {}
-    ~SensorCollection() {}
+    SensorCollection();
+    ~SensorCollection();
 
     /**
-     * @brief Set up the sensor collection based on the configuration.
+     * @brief   Set up the sensor collection based on the configuration.
      * @details This function initializes the sensor collection and sets up the sensors based on the configuration.
-     *          It creates instances of the sensors and configures them according to the provided configuration.     *
+     *          It creates instances of the sensors and configures them according to the provided configuration.
+     * @note    This function should be called once during the initialization phase of the application.
+     * @param   None
      */
     void setup();
 
     Sensor *getSensor(const uint8_t id) const;
     Sensor *getSensor(const char *name) const;
+
+    inline Calibrator *getCalibrator() const { return m_Calibrator; }
 
     /**
      * @brief Evaluate all items in the collection and notify observers of the changes.
@@ -45,12 +52,12 @@ public:
      * @note Derived classes are allowed to override this method to provide custom evaluation logic.
      */
     void evaluate() override {
-        CollectionBase::evaluate();    // Evaluate the sensors in the collection
-        Observable::notifyObservers(); // Notify observers of changes in the sensor collection
+        CollectionBase::evaluate();    // Evaluate each Sensor in the collection
+        Observable::notifyObservers(); // Notify observers to this Collection of changes in the Collection
     };
 
     /**
-     * @brief Accept the Visitor for all Sensors in the collection.
+     * @brief Accept the Visitor for each Sensor in the collection.
      */
     void accept(IVisitor &visitor) override;
 };

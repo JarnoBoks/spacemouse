@@ -6,6 +6,25 @@
 #include "factory/SensorFactoryHall.hpp"
 #include "factory/SensorFactoryJoystick.hpp"
 
+// Include the Calibrator header file for the calibration functionality
+#include "calibrator/Calibrator.hpp"
+
+/**
+ * @brief Constructor for the SensorCollection class.
+ * @details Initializes the SensorCollection with a maximum number of sensors and observers.
+ *         It also creates a new Calibrator instance for this collection.
+ * @param None
+ * @note The constructor initializes the base class CollectionBase with the maximum number of sensors defined in config.h.
+ */
+SensorCollection::SensorCollection()
+    : CollectionBase(cHW_MAX_SENSORS),
+      Observable(c_MAX_SENSORCOLLECTION_OBSERVERS),
+      m_Calibrator(new Calibrator(this)) {}
+
+SensorCollection::~SensorCollection() {
+    delete m_Calibrator;
+}
+
 /**
  * @brief Setup the sensor collection according to the configuration.
  * @details This method initializes the sensors based on the configuration defined in config.h.

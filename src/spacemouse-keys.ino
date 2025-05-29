@@ -32,8 +32,12 @@ LedRing *Mouse_LEDRing;
 KeyCollection myKeyCollection; // Key collection object to hold the keys and the key configuration (initialized empty)
 
 // Include the header file for the sensor factory & collection
-#include "sensor/SensorCollection.hpp" // Include the sensor collection header file
+#include <sensor/SensorCollection.hpp> // Include the sensor collection header file
 SensorCollection mySensorCollection;   // Sensor collection object to hold the sensors and the sensor configuration (initialized empty)
+
+// Include the header files for the calibrator and the calibrator state, for starting the IdlePosition calibration on startup.
+#include <sensor/calibrator/Calibrator.hpp>                 // Include the calibrator header file
+#include <sensor/calibrator/states/CalibratorStateIdle.hpp> // Include the idle calibrator state header file
 
 // Include the header file for the calculation from sensors to the axes, this is hardware specific.
 #ifdef HW_HALLEFFECT
@@ -66,10 +70,6 @@ CommandHandler *myCommandHandler; // Command handler object to handle the comman
 // Include the header file for the collections carrier
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
 CollectionCarrier myCollections(&mySensorCollection, &myKnobAxes, &myKeyCollection, &myKinematics); // Collection identifier object to identify the collection of the command
-
-// Include the header file for the calibration manager (used to calibrate center position of the sensors on startup)
-#include "sensor/calibration/SensorCalibrationManagerIdle.hpp" // Include the sensor calibration manager header file
-SensorCalibrationManagerIdle *mySensorCalibrationManagerIdle;  // Sensor calibration manager object to handle the calibration of the sensors
 
 // Include the header file for the HID Event Buffer (used as interface between KnobAxis & Keys and the HID Handler)
 #include "observers/HIDEventBuffer/HIDEventBufferKeys.hpp"
@@ -134,14 +134,13 @@ void setup() {
     myCommandHandler->handleInput(buffer, 32, 1);
 #endif
 
-    // Start the idle calibration of the sensors. This will zero the sensors during the loop.
-    mySensorCalibrationManagerIdle = new SensorCalibrationManagerIdle(&mySensorCollection); // Initialize the sensor calibration manager
-    mySensorCalibrationManagerIdle->activate();                                             // Start the idle calibration with 500 iterations
-
     // Connect the HID interface to the axes and keys
     mySpaceMouseHID.getController()->setHIDEventBufferKeys(&myHIDEventBufferKeys);               // Connect the HID event buffer to the HID interface
     mySpaceMouseHID.getController()->setHIDEventBufferRotation(&myHIDEventBufferRotation);       // Connect the HID event buffer to the HID interface
     mySpaceMouseHID.getController()->setHIDEventBufferTranslation(&myHIDEventBufferTranslation); // Connect the HID event buffer to the HID interface
+
+    // Start the IdlePosition calibration for the sensors
+    mySensorCollection.getCalibrator()->start(new CalibratorStateIdle());
 
 #if ROTARY_AXIS > 0 or ROTARY_KEYS > 0
     initEncoderWheel();

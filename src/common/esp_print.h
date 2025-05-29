@@ -1,7 +1,5 @@
 #if defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_ESP8266)
-
 #else
-
 #endif
 
 #ifndef ARDUINO_ARCH_AVR
@@ -46,5 +44,18 @@
 #define ESP_INFO(x)
 #define ESP_INFO2(x, y)
 #define ESP_OUT(x)
-
 #endif
+
+/// Macro for returning from a function if a pointer is null, with an error message.
+#define RETURN_E_IF_NULL(ptr, msg) \
+    if (!ptr) {                    \
+        ESP_ERROR(msg);            \
+        return;                    \
+    }
+
+/// Macro for returning from a function if a pointer is null, with a warning message.
+#define RETURN_W_IF_NULL(ptr, msg) \
+    if (!ptr) {                    \
+        ESP_WARN(msg);             \
+        return;                    \
+    }

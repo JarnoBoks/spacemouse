@@ -1,23 +1,13 @@
 #include "MinMaxCommand.h"
 #include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
-#include <sensor/calibration/SensorCalibrationManagerMinMax.hpp>
-#include <sensor/SensorCollection.hpp>
-#include <sensor/sensors/Sensor.hpp>
-#include <sensor/config/SensorConfig.hpp>
 
-// REMOVE #include <visitors/printers/SensorConfigMinMaxPrinter.hpp>
-// REMOVE #include <visitors/printers/SensorNamePrinter.hpp>
+#include <sensor/calibrator/Calibrator.hpp>
+#include <sensor/calibrator/states/CalibratorStateMinMax.hpp>
+
+#include <sensor/SensorCollection.hpp>
 #include <visitors/printers/SensorMinMaxPrinter.hpp>
 
 #include <common/esp_print.h> // For ESP_PRINT
-
-/**
- * @brief Destructor for the MinMaxCommand class.
- * @details Cleans up the sensor calibration manager instance when switching to another debug state.
- */
-MinMaxCommand::~MinMaxCommand() {
-    delete m_SensorCalibrationManager;
-}
 
 /**
  * @brief Executes the minmax command based on the provided parameters.
@@ -43,40 +33,25 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         SensorMinMaxPrinter Printer;
         sensorCollection->accept(Printer); // Accept the Printer visitor to print the information for the sensors
 
-#if 0 // REMOVE - This is not needed anymore, the Printer visitor does this
-        for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
-            Sensor *sensor = sensorCollection->getSensor(id); // Pointer to the sensor
-            if (sensor == nullptr) {
-                continue; // Skip if the sensor is not available
-            }
-            sensor->accept(NamePrinter);                // Let the sensor accept the Printer visitor to print the sensor name
-            sensor->getConfig()->accept(MinMaxPrinter); // Let the sensorconfig accept the Printer visitor to print the sensor configuration values
-        }
-#endif
         return;
     }
 
     if (paramCount == 1) {
-        const long requestedCalibration = 0;
-        if (!convertWordNumber(param1, (long *)&requestedCalibration)) {
-            ESP_WARN("Param not float");
+        bool requestedPersistence = false;
+        if (!convertWordBool(param1, &requestedPersistence)) {
+            ESP_WARN("Param not boolean");
             return;
         }
-        ESP_INFO2("MinMax calibration requested", requestedCalibration);
 
-        m_SensorCalibrationManager = new SensorCalibrationManagerMinMax(sensorCollection); // Create a new instance of the sensor calibration manager
+        Calibrator *calibrator = sensorCollection->getCalibrator(); // Get the calibrator instance from the sensor collection
+        RETURN_E_IF_NULL(calibrator, "No calibrator found in sensor collection");
 
-        if (requestedCalibration == 0) {
-            ESP_INFO("Start minmax calibration");
-            m_SensorCalibrationManager->activate();
-        } else if (requestedCalibration == 1) {
-            ESP_INFO("Start minmax calibration and store in EEPROM");
-            m_SensorCalibrationManager->activate();
-            // TODO - Store the values in EEPROM
-        } else {
-            ESP_WARN("Unknown command");
+        if (!calibrator->start(new CalibratorStateMinMax(requestedPersistence))) {
+            ESP_WARN("Failed to start minmax calibration");
+            return; // Failed to start the calibration, exit the function
         }
     }
+
     if (paramCount == 2) {
         // Command received: MINMAX <+|-><sensorname> <value>
 

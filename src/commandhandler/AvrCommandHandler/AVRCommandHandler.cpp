@@ -6,9 +6,10 @@
 #include <knob/KnobAxisCollection.hpp>
 #include "sensor/SensorCollection.hpp"
 
-// Calibration managers
-#include "sensor/calibration/SensorCalibrationManagerIdle.hpp"
-#include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
+// Sensor Calibration
+#include <sensor/calibrator/Calibrator.hpp>
+#include "sensor/calibrator/states/CalibratorStateIdle.hpp"
+#include "sensor/calibrator/states/CalibratorStateMinMax.hpp"
 
 // Axes
 #include <knob/axis/KnobAxis.hpp>
@@ -160,21 +161,6 @@ void AVRCommandHandler::parseSerialMonitorInput() {
 #define PRM_MIN_IT 500  // Minimum number of iterations for idle calibration
 #define PRM_MAX_IT 5000 // Maximum number of iterations for idle calibration
 void AVRCommandHandler::executeIdle(const char *param1, const char *param2, const uint8_t paramCount) {
-#if 0
-    // Implementation for IDLE command
-    if (!getCollectionCarrier()) {
-        ESP_ERROR("Carrier N/A");
-        return;
-    }
-    if (!(getCollectionCarrier()->getSensorCollection())) {
-        ESP_ERROR("No sensor collection available");
-        return;
-    }
-    SensorCollection *sensorCollection = getCollectionCarrier()->getSensorCollection();
-
-    SensorCalibrationManagerIdle *m_SensorCalibrationManager = new SensorCalibrationManagerIdle(sensorCollection); // Create a new instance of the sensor calibration manager
-    m_SensorCalibrationManager->activate(2000);
-#endif // Start the idle calibration with 2000 iterations
 
     if (!getCollectionCarrier()) {
         ESP_ERROR("No collection identifier");
@@ -195,7 +181,6 @@ void AVRCommandHandler::executeIdle(const char *param1, const char *param2, cons
     }
 
     if (paramCount == 1) {
-
         long requestedIterations = 0;
         if (!convertWordNumber(param1, (long *)&requestedIterations)) {
             ESP_WARN("Param not number");
@@ -205,8 +190,13 @@ void AVRCommandHandler::executeIdle(const char *param1, const char *param2, cons
         requestedIterations = (requestedIterations < PRM_MIN_IT) ? PRM_MIN_IT : requestedIterations; // Ensure minimum iterations
         requestedIterations = (requestedIterations > PRM_MAX_IT) ? PRM_MAX_IT : requestedIterations; // Ensure maximum iterations
 
-        SensorCalibrationManagerIdle *m_SensorCalibrationManager = new SensorCalibrationManagerIdle(sensorCollection);
-        m_SensorCalibrationManager->activate(requestedIterations);
+        Calibrator *calibrator = sensorCollection->getCalibrator(); // Get the calibrator instance from the sensor collection
+        RETURN_E_IF_NULL(calibrator, "No calibrator found in sensor collection");
+
+        if (!calibrator->start(new CalibratorStateIdle(requestedIterations))) {
+            ESP_WARN("Failed to start idle calibration");
+            return; // Failed to start the calibration, exit the function
+        }
         return;
     }
 
@@ -249,23 +239,18 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
     }
 
     if (paramCount == 1) {
-        long requestedCalibration = 0;
-        if (!convertWordNumber(param1, (long *)&requestedCalibration)) {
-            ESP_WARN("Param not float");
+        bool requestedPersistence = false;
+        if (!convertWordBool(param1, &requestedPersistence)) {
+            ESP_WARN("Param not boolean");
             return;
         }
-        ESP_INFO2("MinMax calibration requested", requestedCalibration);
 
-        m_SensorCalibrationManager = new SensorCalibrationManagerMinMax(sensorCollection); // Create a new instance of the sensor calibration manager
-        if (requestedCalibration == 0) {
-            ESP_INFO("Start minmax calibration");
-            m_SensorCalibrationManager->activate();
-        } else if (requestedCalibration == 1) {
-            ESP_INFO("Start minmax calibration and store in EEPROM");
-            m_SensorCalibrationManager->activate();
-            // TODO - Store the values in EEPROM
-        } else {
-            ESP_WARN("Unknown command");
+        Calibrator *calibrator = sensorCollection->getCalibrator(); // Get the calibrator instance from the sensor collection
+        RETURN_E_IF_NULL(calibrator, "No calibrator found in sensor collection");
+
+        if (!calibrator->start(new CalibratorStateMinMax(requestedPersistence))) {
+            ESP_WARN("Failed to start minmax calibration");
+            return; // Failed to start the calibration, exit the function
         }
     }
     if (paramCount == 2) {
@@ -614,6 +599,32 @@ const bool AVRCommandHandler::convertWordNumber(const char *str, long *n) const 
     *n = (long)strtod(str, &endptr); // Convert to long integer
 
     return (*endptr == '\0'); // Check if the conversion was successful
+}
+
+/**
+ * @brief Converts a string to a boolean.
+ * @details The function checks if the first character of the string is '0' or '1'.
+ *          If the first character is '0', it sets the boolean to false, otherwise it sets it to true.
+ * @param str The string to convert.
+ * @param n Pointer to the bool to store the result.
+ * @return The result of the conversion.
+ * @retval true Conversion successful
+ * @retval false Conversion failed
+ */
+const bool AVRCommandHandler::convertWordBool(const char *str, bool *n) const {
+    if (str == nullptr || *str == '\0') {
+        return false; // If the string is null or empty, conversion fails
+    }
+
+    if (*str == '0') {
+        *n = false; // If the first character is '0', set boolean to false
+    } else if (*str == '1') {
+        *n = true; // If the first character is '1', set boolean to true
+    } else {
+        return false; // If the first character is not '0' or '1', conversion fails
+    }
+
+    return true; // Conversion successful
 }
 
 /**

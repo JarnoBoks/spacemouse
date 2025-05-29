@@ -17,12 +17,16 @@ static const char CMD_IDLE_P[] PROGMEM = "IDLE";
  */
 class IdleCommand : public CommandBase {
 private:
-    SensorCalibrationManager *m_SensorCalibrationManager = nullptr;
-
 public:
     IdleCommand() = delete;
+
+    /**
+     * @brief Constructor for the IdleCommand class.
+     * @details Initializes the command with the CMD_IDLE command name.
+     * @param collectionCarrier Pointer to the CollectionCarrier for accessing collections.
+     */
     IdleCommand(CollectionCarrier *collectionIdentifier) : CommandBase(CMD_IDLE_P, collectionIdentifier) {}
-    ~IdleCommand();
+    ~IdleCommand() = default;
 
     void execute(const char *param1, const char *param2, const uint8_t paramCount) override;
 };

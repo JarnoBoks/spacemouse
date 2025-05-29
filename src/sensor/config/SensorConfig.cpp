@@ -51,7 +51,7 @@ SensorConfig::SensorConfig(const int min, const int max, const bool invert) {
 };
 
 /**
- * @brief Sets the minimum value for the sensor configuration.
+ * @brief Sets the minimum value for the sensor configuration if the new value is less than the current value.
  * @param val The new minimum value to set.
  * @note Used in calibration routines to update the minimum value.
  */
@@ -60,7 +60,7 @@ void SensorConfig::updateMin(int val) {
 }
 
 /**
- * @brief Sets the maximum value for the sensor configuration.
+ * @brief Updates the maximum value for the sensor configuration if the new value is greater than the current value.
  * @param val The new maximum value to set.
  * @note Used in calibration routines to update the maximum value.
  */

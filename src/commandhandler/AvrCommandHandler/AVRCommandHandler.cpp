@@ -439,9 +439,9 @@ void AVRCommandHandler::executeInvert(const char *param1, const char *param2, co
         return; // No direction config available, exit the function
     }
 
-    KnobAxisConfig *cfgKnobVector = m_knobAxis->getConfig(); // Get the axis configuration instance
-    cfgKnobVector->inversion = requestedValue;               // Set the inversion value to the requested value
-    cfgKnobVector->persist(m_knobAxis->getType());           // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
+    KnobAxisConfig *cfgKnobAxis = m_knobAxis->getConfig(); // Get the axis configuration instance
+    cfgKnobAxis->inversion = requestedValue;               // Set the inversion value to the requested value
+    cfgKnobAxis->persist(m_knobAxis->getType());           // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
 }
 
 void AVRCommandHandler::executeSwitchXY(const char *param1, const char *param2, const uint8_t paramCount) {

@@ -45,7 +45,7 @@ public:
         const int max = config->getMax(&maxWarning);
         const int range = config->getRange(&rangeWarning);
 
-        Serial.print(sensor.getName());
+        Serial.print(sensor.getDescriptor());
         Serial.print(F(": "));
         TextHelper::alignValue(min, 4);
         Serial.print(min);

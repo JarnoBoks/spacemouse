@@ -8,7 +8,7 @@
  */
 HallSensor::HallSensor(const int8_t pin, HallSensorsId_t id) : Sensor(pin, id) {
     const char *names[HallSensorsId_t::HALL_LENGTH] = HALL_SENSOR_NAMES;
-    this->name = names[id];
+    this->descriptor = names[id];
 }
 
 /**

@@ -27,9 +27,8 @@ private:
     void applyCalibration();
 
 protected:
-    // REFACTOR - Should be descriptor
     // REFACTOR - Move to PROGMEM
-    const char *name = nullptr;
+    const char *descriptor = nullptr;
 
 public:
     Sensor() = delete; // Delete the default constructor to prevent instantiation without parameters
@@ -55,7 +54,7 @@ public:
     /// @brief Retrieve the final sensor value, the value after deadzone correction and mapping is applied.
     inline int getFinValue() const { return m_finValue; }
 
-    inline const char *getName() const { return name; }
+    inline const char *getDescriptor() const { return descriptor; }
     inline const uint8_t getId() const { return static_cast<uint8_t>(id); };
 
     virtual void setContext(ICollection *Collection) override {};

@@ -24,13 +24,13 @@ Sensor::~Sensor() {
 }
 
 /**
- * @brief Checks if the provided name matches the sensor's name.
- * @param name The name to compare against the sensor's name.
- * @return True if the names match, false otherwise.
+ * @brief Checks if the provided descriptor matches the sensor's descriptor.
+ * @param descriptor The descriptor to compare against the sensor's descriptor.
+ * @return True if the descriptors match, false otherwise.
  */
 const bool Sensor::hasDescriptor(const char *descriptor) const {
-    if (this->name != nullptr) {
-        return (strcmp(this->name, descriptor) == 0);
+    if (this->descriptor != nullptr) {
+        return (strcmp(this->descriptor, descriptor) == 0);
     }
     return false;
 }

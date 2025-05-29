@@ -4,7 +4,7 @@
 
 JoystickSensor::JoystickSensor(const int8_t pin, JoystickSensorsId_t id) : Sensor(pin, id) {
     const char *names[JoystickSensorsId_t::JS_LENGTH] = JOYSTICK_SENSOR_NAMES;
-    this->name = names[static_cast<uint8_t>(id)];
+    this->descriptor = names[static_cast<uint8_t>(id)];
 }
 
 /**

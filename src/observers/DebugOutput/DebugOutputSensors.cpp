@@ -17,7 +17,7 @@ void DebugOutputSensors::update(IObservable *sensorCollection) {
 
         Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id); // Pointer to the sensor
 
-        Serial.print(sensor->getName()); // Print the sensor name
+        Serial.print(sensor->getDescriptor()); // Print the sensor name
         Serial.print(F(":"));
         const int value = getSensorValue(sensor); // Get the sensor value using the virtual function
         TextHelper::alignValue(value, 4);         // Align the value to the right with spaces

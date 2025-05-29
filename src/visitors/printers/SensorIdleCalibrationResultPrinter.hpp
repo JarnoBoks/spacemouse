@@ -39,7 +39,7 @@ public:
         Sensor &sensor = static_cast<Sensor &>(visitable);
 
         // name
-        Serial.print(sensor.getName());
+        Serial.print(sensor.getDescriptor());
         Serial.print(F(": "));
 
         // min

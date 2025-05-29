@@ -36,7 +36,7 @@ public:
             return; // Handle null case gracefully
         }
         // Print the sensor name
-        Serial.print(sensor.getName());
+        Serial.print(sensor.getDescriptor());
         Serial.print(F(": "));
         // Print the sensor idle position
         TextHelper::alignedPrint(sensor.getIdlePosition(), 4); // Align the value to the right with spaces

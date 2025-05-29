@@ -4,7 +4,8 @@
 #include <esp32-hal-adc.h> // For ESP32 ADC functions
 // #include <esp_adc_cal.h>
 #elif defined(ARDUINO_ARCH_AVR)
-#include <wiring_private.h> // for Arduino Analog functions
+#include <Arduino.h> // For Arduino functions
+// #include <wiring_private.h> // for Arduino Analog functions
 #endif
 
 /**
@@ -39,14 +40,16 @@ public:
 #endif
 
 #if defined(ARDUINO_ARCH_AVR)
+    // DEVNOTE - The Pro Micro has a different ADC as the Arduino ATMega2560, this code is not tested on the latter.
     static void setupADC() {
         // Initialize ADC for AVR
         // Set the ADC Prescaler to 16 in order to read the ADC much faster than default.
         // NOTE: Added this for the Joystick hardware as well, but untested.
         ADCSRA = (ADCSRA & B11111000) | 4; // Set prescaler to 16 for ADC
 
-        // Set the analog reference voltage for the sensors
-        setAnalogReference(INTERNAL);
+        // Set the analog reference voltage for the sensors to 2.56V on the Pro Micro.
+        // See https://docs.arduino.cc/language-reference/en/functions/analog-io/analogReference/
+        analogReference(INTERNAL);
     }
 
     static void connectADC(const int pin) {

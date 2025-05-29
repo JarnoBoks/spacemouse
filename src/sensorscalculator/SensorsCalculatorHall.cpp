@@ -13,6 +13,11 @@ SensorsCalculatorHall::SensorsCalculatorHall() {
     setAnalogReference(INTERNAL);
 }
 
+/**
+ * @brief Sets the analog reference voltage for the sensors.
+ * @param isDebug If true, set the reference voltage to DEFAULT, otherwise set it to INTERNAL.
+ * @deprecated
+ */
 void SensorsCalculatorHall::setAnalogReference(const bool isDebug) {
     referenceVoltage = (isDebug) ? DEFAULT : INTERNAL; // Set the default reference voltage to DEFAULT or INTERNAL based on isDebug
 #ifdef ARDUINO_ARCH_AVR

@@ -3,6 +3,7 @@
 #include <observers/SensorCalibrations/SensorIdleCalibration.hpp> // For SensorIdleCalibration class
 #include <common/esp_print.h>                                     // For ESP_PRINT and other print macros
 
+#include <Arduino.h> // For millis() function
 /**
  * @brief Activates the idle calibration process.
  * @details This function activates the idle calibration process by creating an instance of the SensorIdleCalibration class and attaching it to the sensor collection.

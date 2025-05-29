@@ -73,14 +73,13 @@ values from config.h, you have to change the version number below and upload the
 =========================
 To activate one of the following debugging modes, you can either:
 - Change the STARTDEBUG value below and compile & upload again, or
-- Compile and upload your program. Change to the serial monitor and type
+- Compile and upload your program. Open the serial monitor and type
    DEBUG <value> , using the number of the debug modes as described below and hit <ENTER>.
 
 Debug Modes:
 ------------
--1:  Debugging off. Set to this once everything is working.
-
- 0:  Nothing...
+ 0:  Debugging off.
+     This is the default mode. No debug output is generated.
 
  1:  Report raw values for the sensors and the keys.
      The sensor values are inverted if configured in the INVERTLIST. The key values are the raw readings at the input pins (0 or 1).
@@ -131,9 +130,9 @@ Debug Modes:
 10:  Report details about the encoder wheel, if ROTARY_AXIS > 0 or ROTARY_KEYS>0
 */
 
-/// The debug level that is used when the program is started. This can be changed in the Serial monitor.
+/// The debug command that is used when the program is started. This can be changed through the Serial monitor.
 /// @note Use the command "DEBUG <value>" to change the debug level from within in the Serial monitor.
-#define STARTDEBUG OFF
+// #define STARTDEBUG "DEBUG x" // Where, x = 0 - 10, see above for the available debug modes
 
 /// The hardware that is used for the spacemouse. This is used to select the correct hardware library.
 /// This setting can only be changed in the config.h file.

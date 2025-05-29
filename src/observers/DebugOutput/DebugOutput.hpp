@@ -1,12 +1,6 @@
 #pragma once
 #include "observers/IObserver.hpp"
-#include "config.h" // For STARTDEBUG and DEBUGDELAY
-
-// TODO - Implement STARTDEBUG level, using config.h
-#ifndef STARTDEBUG
-// For fail-safe: If STARTDEBUG is not defined, set it to 0 (no debug output).
-#define STARTDEBUG OFF
-#endif
+#include "config.h" // DEBUGDELAY
 
 #ifndef DEBUGDELAY
 // For fail-safe: If DEBUGDELAY is not defined, set it to 250 ms (0.25 seconds).

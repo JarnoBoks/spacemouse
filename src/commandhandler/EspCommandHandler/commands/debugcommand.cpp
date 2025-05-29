@@ -63,9 +63,6 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
     }
 
     switch (requestedLevel) {
-    case -1:
-        setState(new DebugParamOff());
-        break;
     case 0:
         setState(new DebugParamOff());
         break;

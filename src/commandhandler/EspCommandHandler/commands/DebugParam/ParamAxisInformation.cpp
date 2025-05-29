@@ -4,7 +4,7 @@
 #include <observers/DebugOutput/DebugOutputAxesSensitivity.hpp>
 
 /**
- * @brief Destructor to clean up the observer instance
+ * @brief   Destructor to clean up the observer instance
  * @details This destructor checks if the rawSensorObserver pointer is not null.
  *          If it is not null, it detaches the observer from the hardware and deletes the observer instance.
  *          This ensures that the observer is properly cleaned up and does not cause memory leaks.

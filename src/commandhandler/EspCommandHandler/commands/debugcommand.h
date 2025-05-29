@@ -5,13 +5,11 @@
 // DebugParam classes for default state
 #include "DebugParam\ParamOff.hpp"
 
-// TODO - Add the STARTUPDEBUG definition to the default constructor
-
 /// @brief command text for the debug command
 static const char CMD_DEBUG_P[] PROGMEM = "DEBUG";
 
-class IDebugParam;       // Forward declaration of IDebugParam class
-class CollectionCarrier; // Forward declaration of CollectionIdentifier class
+class IDebugParam;
+class CollectionCarrier;
 
 /**
  * @brief This class handles the debug commands and manages the current debug state.
@@ -27,12 +25,13 @@ public:
     DebugCommand() = delete; // Default constructor is deleted
 
     /**
-     * @brief Constructor for DebugCommand class.
-     * @param sensorCollection Pointer to the SensorCollection instance.
-     * @details Initializes the command with the provided sensor collection and sets the default debug state.
+     * @brief Constructor for the DebugCommand class.
+     * @param collectionCarrier Pointer to the CollectionCarrier instance.
+     * @details Initializes the command with the debug command name and the collection carrier.
+     *          The initial state is set to DebugParamOff, which means no debug output is active.
      */
-    DebugCommand(CollectionCarrier *collectionIdentifer)
-        : CommandBase(CMD_DEBUG_P, collectionIdentifer),
+    DebugCommand(CollectionCarrier *collectionCarrier)
+        : CommandBase(CMD_DEBUG_P, collectionCarrier),
           currentState(new DebugParamOff()) {}
 
     ~DebugCommand() { delete currentState; };

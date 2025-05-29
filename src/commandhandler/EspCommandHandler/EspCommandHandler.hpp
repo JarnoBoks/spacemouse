@@ -10,6 +10,7 @@ private:
     CommandBase *commands[MAX_COMMANDS] = {nullptr}; // Array of command pointers
     uint8_t commandCount = 0;                        // Number of commands registered
     int8_t lastCommandIndex = -1;                    // Index of the last command executed
+
 public:
     ESPCommandHandler();
     ~ESPCommandHandler();

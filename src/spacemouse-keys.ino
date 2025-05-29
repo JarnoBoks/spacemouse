@@ -127,10 +127,9 @@ void setup() {
     CommandHandlerFactory myCommandHandlerFactory(&myCollections);     // Create the command handler factory
     myCommandHandler = myCommandHandlerFactory.createCommandHandler(); // Create the command handler object
     myCommandHandlerFactory.setupCommandHandler(myCommandHandler);     // Setup the command handler and register the commands
-#if SIMULATOR_DEBUGGING
-    // When debugging with SimAVR through PlatformIO the serial monitor is not available.
-    // Use this line to initialize a debug state if necessary and the corresponding output.
-    char buffer[32] = "DEBUG 1";
+
+#ifdef STARTDEBUG
+    char buffer[32] = STARTDEBUG;
     myCommandHandler->handleInput(buffer, 32, 1);
 #endif
 

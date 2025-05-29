@@ -441,7 +441,7 @@ void AVRCommandHandler::executeInvert(const char *param1, const char *param2, co
 
     KnobAxisConfig *cfgKnobAxis = m_knobAxis->getConfig(); // Get the axis configuration instance
     cfgKnobAxis->inversion = requestedValue;               // Set the inversion value to the requested value
-    cfgKnobAxis->persist(m_knobAxis->getType());           // Store the value in the EEPROM                          // REVIEW - Config should have context to the axis so the parameter is not needed
+    cfgKnobAxis->persist(m_knobAxis->getType());           // Store the value in the EEPROM                          // REFACTOR - Add Axis context to config, in order to remove parameter in persist member
 }
 
 void AVRCommandHandler::executeSwitchXY(const char *param1, const char *param2, const uint8_t paramCount) {

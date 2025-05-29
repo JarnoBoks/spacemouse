@@ -22,12 +22,12 @@
  * @param paramCount Number of parameters passed.
  */
 void IdleCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
-    if (getCollectionIdentifier() == nullptr) {
+    if (getCollectionCarrier() == nullptr) {
         ESP_ERROR("No collection identifier");
         return;
     }
 
-    SensorCollection *sensorCollection = getCollectionIdentifier()->getSensorCollection();
+    SensorCollection *sensorCollection = getCollectionCarrier()->getSensorCollection();
     if (!sensorCollection) {
         ESP_ERROR("No sensor collection");
         return;

@@ -27,8 +27,7 @@ public:
         return (strcmp_P(cmdName_P, name_P) == 0); // Compare command name with the provided name
     }
 
-    // REFACTOR - Rename to getCollectionCarrier()
-    inline CollectionCarrier *getCollectionIdentifier() const { return m_CollectionCarrier; }
+    inline CollectionCarrier *getCollectionCarrier() const { return m_CollectionCarrier; }
 
     virtual void execute(const char *param1, const char *param2, const uint8_t paramCount) = 0;
     virtual void stop() {}; // Stop the command execution (if applicable)

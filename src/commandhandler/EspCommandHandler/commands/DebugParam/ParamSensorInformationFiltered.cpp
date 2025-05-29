@@ -10,7 +10,7 @@ void DebugParamSensorInformationFiltered::apply() {
 
     // Instantiate the Observer for the FilteredSensor values and attach it to the hardware
     m_SensorObserver = new DebugOutputSensorsFiltered();
-    m_Context->getCollectionIdentifier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
+    m_Context->getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
 }
 
 void DebugParamSensorInformationFiltered::report() {

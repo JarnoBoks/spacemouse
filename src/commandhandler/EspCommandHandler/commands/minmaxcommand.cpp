@@ -17,12 +17,12 @@
  */
 void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
 
-    if (!getCollectionIdentifier()) {
+    if (!getCollectionCarrier()) {
         ESP_ERROR("No collection identifier");
         return;
     }
 
-    SensorCollection *sensorCollection = getCollectionIdentifier()->getSensorCollection();
+    SensorCollection *sensorCollection = getCollectionCarrier()->getSensorCollection();
     if (!(sensorCollection)) {
         ESP_ERROR("No sensor collection");
         return;

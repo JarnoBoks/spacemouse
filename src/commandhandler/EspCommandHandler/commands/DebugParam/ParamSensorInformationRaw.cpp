@@ -22,7 +22,7 @@ void DebugParamSensorInformationRaw::apply() {
 
     // Instantiate the Observer for the RawSensor values and attach it to the hardware
     m_SensorObserver = new DebugOutputSensorsRaw();
-    m_Context->getCollectionIdentifier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
+    m_Context->getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
 }
 
 void DebugParamSensorInformationRaw::report() {

@@ -34,5 +34,4 @@ void HIDStateSendkeys::apply() {
     context->getHIDEventBufferKeys()->clearStaged();                                             // Clear the staged keys data
 
     m_data->lastHIDsentRep += HIDUPDATERATE_MS;
-    m_data->hasSentNewData = true; // REFACTOR - Is this used anywhere?
-}
+    // REMOVE m_data->hasSentNewData = true;

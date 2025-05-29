@@ -7,8 +7,9 @@ class DebugOutputSensors;
 
 class DebugParamSensorAxisKeysInformation : public DebugParam {
 protected:
-    DebugOutputAxes *m_AxisObserver = nullptr;      // Pointer to the raw sensor observer instance       // REVIEW - Why is this necessary
-    DebugOutputSensors *m_SensorObserver = nullptr; // Pointer to the raw sensor observer instance
+    DebugOutputAxes *m_AxisObserver = nullptr; // REVIEW - Why is this necessary
+    DebugOutputSensors *m_SensorObserver = nullptr;
+
 public:
     DebugParamSensorAxisKeysInformation() = delete; // Constructor
     DebugParamSensorAxisKeysInformation(DebugCommand *context) : DebugParam(context) {}

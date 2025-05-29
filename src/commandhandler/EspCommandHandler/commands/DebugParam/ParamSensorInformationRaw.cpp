@@ -8,14 +8,8 @@
 
 // ----------------- RAW SENSORS ----------------
 
-#if 0
-DebugParamSensorInformationRaw::DebugParamSensorInformationRaw(DebugCommand *context) : DebugParamSensorInformation(context) {
-    Serial.println(F("DebugParamSensorInformationRaw::DebugParamSensorInformationRaw()")); // Debug message to indicate the constructor call
-    // FIXME Hardware::getInstance()->setAnalogReference(true);
-}
-#endif
 DebugParamSensorInformationRaw::~DebugParamSensorInformationRaw() {
-    // FIXME Hardware::getInstance()->setAnalogReference(false);
+    // REVIEW - Check if it is necessary to change the analog reference Voltage to 5V on the Pro Micro.
 }
 
 void DebugParamSensorInformationRaw::apply() {

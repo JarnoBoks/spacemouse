@@ -8,7 +8,6 @@
  * @details This function adds the observer to the observers array and increases the observer count.
  *          If the array is full, it does not add the new observer and can be modified to handle this case.
  */
-// REFACTOR - Can we add consts to the function parameters?
 void Observable::attachObserver(IObserver *observer) {
     if (observerCount < maxObservers && observer != nullptr) {
         // insert the observer into the array, at position observerCount and increase the count after inserting.
@@ -18,7 +17,6 @@ void Observable::attachObserver(IObserver *observer) {
     }
 };
 
-// REFACTOR - Can we add consts to the function parameters?
 void Observable::detachObserver(IObserver *observer) {
     // remove the observer from the array by replacing it with the last observer in the array and decrease the count.
     for (uint8_t i = 0; i < observerCount; i++) {

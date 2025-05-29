@@ -38,7 +38,6 @@ void EEPROMStore::setup() {
         //  Version number has changed, that implies that the EEPROM is not initialized. Clear the EEPROM and write the new version number.
         for (uint16_t i = 0; i <= EEPROM.length(); i++) {
             Serial.print(i);
-            // REVIEW - Check if put can be used for Arduino too.
             EEPROM.update(i, 0); // Clear the EEPROM
         }
 

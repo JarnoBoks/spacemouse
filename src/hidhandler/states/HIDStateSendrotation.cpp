@@ -23,7 +23,7 @@ void HIDStateSendrotation::apply() {
         m_data->countRotZeros = (staged) ? 0 : m_data->countRotZeros + 1; // Increment the zero counter if rotation data is staged
 
         m_data->lastHIDsentRep += HIDUPDATERATE_MS;
-        m_data->hasSentNewData = true; // REFACTOR - Is this used anywhere?
+        // REMOVE m_data->hasSentNewData = true;
     }
 
     context->setState(new HIDStateSendkeys());

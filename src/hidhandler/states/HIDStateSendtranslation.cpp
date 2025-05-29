@@ -27,7 +27,7 @@ void HIDStateSendtranslation::apply() {
         m_data->countTransZeros = (staged) ? 0 : m_data->countTransZeros + 1; // Increment the zero counter if translation data is staged
 
         m_data->lastHIDsentRep += HIDUPDATERATE_MS;
-        m_data->hasSentNewData = true; // REFACTOR - Is this used anywhere?
+        // REMOVE m_data->hasSentNewData = true; // REFACTOR - Is this used anywhere?
     }
 
     context->setState(new HIDStateSendrotation());

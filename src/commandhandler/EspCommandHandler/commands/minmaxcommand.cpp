@@ -5,8 +5,9 @@
 #include <sensor/sensors/Sensor.hpp>
 #include <sensor/config/SensorConfig.hpp>
 
-#include <visitors/printers/SensorConfigMinMaxPrinter.hpp>
-#include <visitors/printers/SensorNamePrinter.hpp>
+// REMOVE #include <visitors/printers/SensorConfigMinMaxPrinter.hpp>
+// REMOVE #include <visitors/printers/SensorNamePrinter.hpp>
+#include <visitors/printers/SensorMinMaxPrinter.hpp>
 
 #include <common/esp_print.h> // For ESP_PRINT
 
@@ -39,10 +40,10 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
 
     if (paramCount == 0) {
         // No params provided, show current configuration values of the sensors.
-        SensorConfigMinMaxPrinter MinMaxPrinter;
-        SensorNamePrinter NamePrinter;
+        SensorMinMaxPrinter Printer;
+        sensorCollection->accept(Printer); // Accept the Printer visitor to print the information for the sensors
 
-        // REFACTOR - Visitor should be applied to the collection, not to each sensor
+#if 0 // REMOVE - This is not needed anymore, the Printer visitor does this
         for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
             Sensor *sensor = sensorCollection->getSensor(id); // Pointer to the sensor
             if (sensor == nullptr) {
@@ -51,6 +52,7 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
             sensor->accept(NamePrinter);                // Let the sensor accept the Printer visitor to print the sensor name
             sensor->getConfig()->accept(MinMaxPrinter); // Let the sensorconfig accept the Printer visitor to print the sensor configuration values
         }
+#endif
         return;
     }
 
@@ -63,6 +65,7 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
         ESP_INFO2("MinMax calibration requested", requestedCalibration);
 
         m_SensorCalibrationManager = new SensorCalibrationManagerMinMax(sensorCollection); // Create a new instance of the sensor calibration manager
+
         if (requestedCalibration == 0) {
             ESP_INFO("Start minmax calibration");
             m_SensorCalibrationManager->activate();

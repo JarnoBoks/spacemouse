@@ -1,11 +1,12 @@
 #include "SensorMinMaxCalibration.hpp"
 
-#include "sensor/SensorCollection.hpp"
-#include "sensor/sensors/Sensor.hpp"
-#include "sensor/config/SensorConfig.hpp"
-#include "sensor/calibration/SensorCalibrationManagerMinMax.hpp"
+#include <sensor/SensorCollection.hpp>
+// #include <sensor/sensors/Sensor.hpp>
+// #include <sensor/config/SensorConfig.hpp>
+#include <sensor/calibration/SensorCalibrationManagerMinMax.hpp>
 
-#include <visitors/printers/SensorConfigMinMaxPrinter.hpp> // For MinMaxPrinter class
+#include <visitors/SensorUpdateMinMaxVisitor.hpp>
+#include <visitors/printers/SensorConfigMinMaxPrinter.hpp>
 
 #define MINMAXDURATION 15 // Duration for min/max calibration in seconds
 
@@ -27,16 +28,28 @@ void SensorMinMaxCalibration::_startCalibration() {
     Serial.println(F(" sec."));
 }
 
-void SensorMinMaxCalibration::_finishCalibration(IObservable *sensorCollection) {
+void SensorMinMaxCalibration::_finishCalibration(IObservable *Observable) {
     bool warningsOccurred = false; // Flag to track if any warnings occurred during calibration
 
-    SensorConfigMinMaxPrinter printer;
+    SensorCollection *sensorCollection = static_cast<SensorCollection *>(Observable);
+    if (!sensorCollection) {
+        ESP_ERROR("Sensor collection is null");
+        return;
+    }
 
+    // Store the minimum and maximum values in the sensor configurations of each sensor
+    SensorUpdateMinMaxVisitor visitor(m_minValue, m_maxValue, true);
+    sensorCollection->accept(visitor);
+
+    SensorConfigMinMaxPrinter printer;
+    sensorCollection->accept(printer);
+
+#if 0 // REMOVE - This is not needed anymore, the Printer visitor does this
     // REVIEW - Should this loop be moved to the sensorcollection?
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
 
         Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id);
-        if (sensor == nullptr) {
+        if (!sensor) {
             continue; // Skip if the sensor is not available
         }
 
@@ -50,7 +63,7 @@ void SensorMinMaxCalibration::_finishCalibration(IObservable *sensorCollection) 
         sensor->accept(printer);    // Accept the printer visitor to print the sensor name
         sensorcfg->accept(printer); // Accept the printer visitor to print the sensor configuration values
     }
-
+#endif
     m_CalibrationManager->deactivate(warningsOccurred); // Finish the calibration process
 }
 

@@ -24,7 +24,3 @@ void DebugParamSensorInformationRaw::apply() {
     m_SensorObserver = new DebugOutputSensorsRaw();
     m_Context->getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
 }
-
-void DebugParamSensorInformationRaw::report() {
-    ESP_PRINT(F("DebugParamSensorInformationRaw active")); // Report the active state of the class
-}

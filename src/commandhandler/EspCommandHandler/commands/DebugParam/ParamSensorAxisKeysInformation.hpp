@@ -15,5 +15,4 @@ public:
     virtual ~DebugParamSensorAxisKeysInformation(); // Destructor to clean up the observer instance
 
     void apply() override;
-    void report() override;
 };

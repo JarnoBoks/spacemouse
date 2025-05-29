@@ -12,7 +12,3 @@ void DebugParamSensorInformationCentered::apply() {
     m_SensorObserver = new DebugOutputSensorsCentered();
     m_Context->getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
 }
-
-void DebugParamSensorInformationCentered::report() {
-    ESP_PRINT(F("DebugParamSensorInformationCentered active")); // Report the active state of the class
-}

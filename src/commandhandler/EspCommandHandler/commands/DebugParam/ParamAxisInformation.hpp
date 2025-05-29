@@ -13,5 +13,4 @@ public:
     virtual ~DebugParamAxisInformation(); // Destructor to clean up the observer instance
 
     void apply() override;
-    void report() override;
 };

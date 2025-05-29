@@ -10,5 +10,4 @@ class DebugParamOff : public IDebugParam {
 public:
     DebugParamOff() = default;
     void apply() override;
-    void report() override;
 };

@@ -49,7 +49,6 @@ void DebugCommand::stop() {
 void DebugCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     if (paramCount == 0 || paramCount >= 2) {
         ESP_INFO("Mallformed command");
-        currentState->report(); // TODO - Add a correct report output for all states
         return;
     }
 

@@ -10,5 +10,4 @@ public:
     DebugParamSensorInformationRaw(DebugCommand *context) : DebugParamSensorInformation(context) {}
     ~DebugParamSensorInformationRaw();
     void apply() override;
-    void report() override;
 };

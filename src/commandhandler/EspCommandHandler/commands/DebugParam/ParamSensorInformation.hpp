@@ -11,6 +11,5 @@ public:
     DebugParamSensorInformation(DebugCommand *context) : DebugParam(context) {};
     virtual ~DebugParamSensorInformation();
 
-    virtual void apply() override = 0;  // Pure virtual function to be implemented by derived classes
-    virtual void report() override = 0; // Pure virtual function to be implemented by derived classes
+    virtual void apply() override = 0; // Pure virtual function to be implemented by derived classes
 };

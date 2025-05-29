@@ -12,7 +12,3 @@ void DebugParamSensorInformationFiltered::apply() {
     m_SensorObserver = new DebugOutputSensorsFiltered();
     m_Context->getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
 }
-
-void DebugParamSensorInformationFiltered::report() {
-    ESP_PRINT(F("DebugParamSensorInformationFiltered active")); // Report the active state of the class
-}

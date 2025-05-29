@@ -20,6 +20,3 @@ void DebugParamLoopFrequency::apply() {
     m_AxisObserver = new DebugOutputLoopFrequency();
     m_Context->getCollectionCarrier()->getKnobAxes()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
 }
-
-void DebugParamLoopFrequency::report() {
-}

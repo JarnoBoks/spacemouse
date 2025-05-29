@@ -19,6 +19,3 @@ void DebugParamAxisInformation::apply() {
     m_AxisObserver = new DebugOutputAxesSensitivity();
     m_Context->getCollectionCarrier()->getKnobAxes()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
 }
-
-void DebugParamAxisInformation::report() {
-}

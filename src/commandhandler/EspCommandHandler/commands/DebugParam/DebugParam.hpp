@@ -17,5 +17,4 @@ public:
     void set_context(DebugCommand *context) { m_Context = context; } // Set the command context
 
     void apply() override;
-    void report() override;
 };

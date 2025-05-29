@@ -13,5 +13,4 @@ public:
     virtual ~DebugParamLoopFrequency(); // Destructor to clean up the observer instance
 
     void apply() override;
-    void report() override;
 };

@@ -9,5 +9,4 @@ public:
     DebugParamSensorInformationCentered() = delete; // Delete the default constructor
     DebugParamSensorInformationCentered(DebugCommand *context) : DebugParamSensorInformation(context) {}
     void apply() override;
-    void report() override;
 };

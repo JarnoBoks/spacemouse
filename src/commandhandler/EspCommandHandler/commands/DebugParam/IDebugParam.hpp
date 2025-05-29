@@ -9,6 +9,5 @@ class IDebugParam {
 
 public:
     virtual void apply() = 0;
-    virtual void report() = 0;
     virtual ~IDebugParam() {}
 };

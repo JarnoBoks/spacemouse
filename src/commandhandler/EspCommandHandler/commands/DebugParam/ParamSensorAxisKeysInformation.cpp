@@ -35,6 +35,3 @@ void DebugParamSensorAxisKeysInformation::apply() {
     m_Context->getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
     m_Context->getCollectionCarrier()->getKnobAxes()->attachObserver(m_AxisObserver);           // Attach the axis observer to the axis collection
 }
-
-void DebugParamSensorAxisKeysInformation::report() {
-}

@@ -42,7 +42,3 @@ void DebugParamSensorAxisInformation::apply() {
     m_AxisObserver = new DebugOutputAxesModified();
     m_Context->getCollectionCarrier()->getKnobAxes()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
 }
-
-void DebugParamSensorAxisInformation::report() {
-    ESP_PRINT("Debug KnobAxis Information:");
-}

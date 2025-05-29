@@ -9,5 +9,4 @@ public:
     DebugParamSensorInformationFiltered() = delete; // Delete the default constructor
     DebugParamSensorInformationFiltered(DebugCommand *context) : DebugParamSensorInformation(context) {}
     void apply() override;
-    void report() override;
 };

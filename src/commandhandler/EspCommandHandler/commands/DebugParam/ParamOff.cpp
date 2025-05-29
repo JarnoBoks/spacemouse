@@ -5,6 +5,3 @@
 void DebugParamOff::apply() {
     ESP_PRINT("Debug Off applied");
 }
-void DebugParamOff::report() {
-    ESP_PRINT("Debug Off");
-}

@@ -23,10 +23,6 @@ public:
      * @brief Visit the Sensor and print its configuration values.
      */
     void visit(VisitableBase &visitable) override {
-        if (!&visitable) {
-            ESP_WARN("Visitable null");
-            return;
-        }
 
         // Cast the VisitableBase to Sensor
         Sensor &sensor = static_cast<Sensor &>(visitable);

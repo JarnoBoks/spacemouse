@@ -22,10 +22,6 @@ public:
      * @param config The SensorConfig object to visit.
      */
     void visit(VisitableBase &visitable) override {
-        if (&visitable == nullptr) {
-            ESP_WARN("Visitable null");
-            return; // Handle null case gracefully
-        }
 
         // Cast the VisitableBase to Sensor
         Sensor &sensor = static_cast<Sensor &>(visitable);

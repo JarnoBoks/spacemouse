@@ -17,11 +17,9 @@ public:
     ~SensorPersistConfigVisitor() = default; // Destructor
 
     void visit(VisitableBase &visitable) override {
-        RETURN_W_IF_NULL(&visitable, "Visitable null"); // Check if the visitable is null
 
         // Cast the visitable to Sensor
         Sensor &sensor = static_cast<Sensor &>(visitable);
-        RETURN_W_IF_NULL(&sensor, "Sensor null"); // Check if the sensor is null
 
         SensorConfig *sensorcfg = sensor.getConfig();     // Get the sensor configuration to update
         RETURN_W_IF_NULL(sensorcfg, "SensorConfig null"); // Check if the sensor configuration is null

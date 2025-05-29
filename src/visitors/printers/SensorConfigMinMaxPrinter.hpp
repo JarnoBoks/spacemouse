@@ -19,11 +19,6 @@ public:
      * @param config The SensorConfig object to visit.
      */
     void visit(VisitableBase &visitable) override {
-        // REFACTOR - The check has to be implented in all visitors
-        if (!&visitable) {
-            ESP_WARN("Visitable null");
-            return;
-        }
 
         // Cast the VisitableBase to SensorConfig
         SensorConfig &config = static_cast<SensorConfig &>(visitable);

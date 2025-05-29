@@ -35,3 +35,4 @@ void HIDStateSendkeys::apply() {
 
     m_data->lastHIDsentRep += HIDUPDATERATE_MS;
     // REMOVE m_data->hasSentNewData = true;
+}

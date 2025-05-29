@@ -11,10 +11,10 @@
  *          It checks if the sensor and its configuration are valid before performing the update.
  * @note The visit method retrieves the sensor ID, gets the sensor configuration, and updates the minimum and maximum values if they are lower or higher than the current values.
  */
-class SensorUpdateMinMaxVisitor : public IVisitor {
+class SensorPersistConfigVisitor : public IVisitor {
 public:
-    SensorUpdateMinMaxVisitor() = default;  // Default constructor
-    ~SensorUpdateMinMaxVisitor() = default; // Destructor
+    SensorPersistConfigVisitor() = default;  // Default constructor
+    ~SensorPersistConfigVisitor() = default; // Destructor
 
     void visit(VisitableBase &visitable) override {
         RETURN_W_IF_NULL(&visitable, "Visitable null"); // Check if the visitable is null
@@ -26,8 +26,6 @@ public:
         SensorConfig *sensorcfg = sensor.getConfig();     // Get the sensor configuration to update
         RETURN_W_IF_NULL(sensorcfg, "SensorConfig null"); // Check if the sensor configuration is null
 
-        const int centeredVal = sensor.getCntValue();
-        sensorcfg->updateMin(centeredVal); // Update the minimum value in the sensor configuration if it is lower than the current minimum
-        sensorcfg->updateMax(centeredVal); // Update the maximum value in the sensor configuration if it is higher than the current maximum
+        sensorcfg->persist(sensor.getId()); // Persist the sensor configuration to the storage
     }
 };

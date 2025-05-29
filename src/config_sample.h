@@ -252,7 +252,7 @@ magnets upside-down, the values will be inverted. Ie. when you pull the knob dow
 // HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9
 #define PINLIST \
     {A0, A1, A2, A3, A6, A7, A8, A9} // Arduino Pro Micro PCB version
-//  {GPIO1, GPIO2, GPIO3, GPIO4, GPIO5, GPIO6, GPIO8, GPIO7} // ESP32S3 Zero PCB version, // DEVNOTE - Pin 7/8 are swapped in the schematics.
+//  {GPIO1, GPIO2, GPIO3, GPIO4, GPIO5, GPIO6, GPIO8, GPIO7} // ESP32S3 Zero PCB version, // DEVNOTE - Pin 7/8 are not nicely laided out in the hardware design.
 
 // Set to 1 to invert one Hall sensor.
 // Values should decrease when the magnet is nearing the sensor, but if the magnet is positioned with
@@ -295,10 +295,10 @@ Expected outcome:
 
 /* Third calibration: Getting MIN and MAX values   (command: MINMAX | MINMAX <+|-><sensorname> <value>)
 =====================================================================================================
-Can be done automatic, semi-automatic or manual
-
 The command "MINMAX" will show the current values in the serial monitor.
-The command "MINMAX 1" will let you calibrate the values and store them in the EEPROM. The command "MINMAX 0" will not store the values in the EEPROM (ie. they will be lost at reboot).
+
+The command "MINMAX 1" will let you calibrate the values and store them in the EEPROM.
+The command "MINMAX 0" will let you calibrate the values but not store them. Ie. they will be lost at reboot.
 
 Semi-automatic (command: MINMAX 0)
 --------------------------------
@@ -307,7 +307,7 @@ Semi-automatic (command: MINMAX 0)
 3. Verify if there are any warnings for the Min, Max or Range. Check if your hardware is working correctly and/or retry the calibration.
    For the joystick sensors, the values should be approximately -400 to +400 and the maxVals around +400 to +400.
    For the HES sensors, the values should be approximately -400 to -520 and the maxVals around +400 to +520.
-4. When satisfied you can enter the values into the config.h file below or enter them one by one using the manual commands as described below. //TODO REWRITE THIS LINE
+4. When satisfied you can enter the values into the config.h file below or enter them one by one using the manual commands as described below.
 
 Automatic (command: MINMAX 1)
 -----------------------------
@@ -317,7 +317,6 @@ Automatic (command: MINMAX 1)
 3. Verify if there are any warnings for the Min, Max or Range. Check if your hardware is working correctly and/or retry the calibration.
    For the joystick sensors, the values should be approximately -400 to +400 and the maxVals around +400 to +400.
    For the HES sensors, the values should be approximately -400 to -520 and the maxVals around +400 to +520.
-4. When satisfied you can enter the values into the config.h file below or enter them one by one using the manual commands as described below. //TODO - REWRITE THIS LINE
 
 Manual min/max calibration (use DEBUG 2)
 ---------------------------------------------
@@ -354,11 +353,13 @@ Examples:
    MINMAX +AX 1000       // Set the maximum value for AX to 1000
    MINMAX -HES0 350      // Set the minimum value for HES0 to -350
 
-Insert measured Values like this:
-
-   Joystick:       { AX, AY, BX, BY, CX, CY, DX, DY}
-   Hall sensors:   { HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9}
 */
+
+/// Insert measured Values like this:
+///
+///   Joystick:       { AX, AY, BX, BY, CX, CY, DX, DY}
+///   Hall sensors:   { HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9}
+
 // #define MINVALS  {-400, -400, -400, -400, -400, -400, -400, -400}
 // #define MAXVALS  {+175, +175, +175, +175, +175, +175, +175, +175}
 

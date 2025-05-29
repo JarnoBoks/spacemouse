@@ -2,6 +2,7 @@
 #include <sensor/SensorCollection.hpp>                              // For SensorCollection class
 #include <observers/SensorCalibrations/SensorMinMaxCalibration.hpp> // For SensorMinMaxCalibration class
 #include <visitors/printers/SensorConfigMinMaxPrinter.hpp>          // For SensorConfigMinMaxPrinter class
+#include <visitors/SensorPersistConfigVisitor.hpp>                  // For SensorPersistConfigVisitor class
 #include <common/esp_print.h>                                       // For ESP_PRINT and other print macros
 
 #define CALIBRATION_MINMAX_DURATION 15 // Duration for MinMax calibration in seconds
@@ -41,13 +42,17 @@ void CalibratorStateMinMax::update() {
  * @brief Finishes the MinMax calibration process.
  */
 void CalibratorStateMinMax::finish() {
-    // Output results of the MinMax calibration to the console
+    RETURN_E_IF_NULL(context, "Calibrator context is null");                       // Check if the context is set
+    RETURN_E_IF_NULL(context->getSensorCollection(), "Sensor collection is null"); // Check if the sensor collection is set
+
+    // Write results of the MinMax calibration to the console
     SensorConfigMinMaxPrinter printer;
     context->getSensorCollection()->accept(printer);
 
-    // Persist the calibration data if required
+    // Persist the calibration data if requested
     if (m_persist) {
-        // TODO - context->getSensorCollection()->persistCalibrationData(); // Persist the calibration data
+        SensorPersistConfigVisitor persistor;
+        context->getSensorCollection()->accept(persistor);
     }
 
     // Context will destruct us, while the destructor of our Base class will take care of detaching and deleting the observer.

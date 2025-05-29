@@ -141,7 +141,7 @@ const int SensorConfig::getRange(bool *warning) const {
 /**
  * @brief Saves the sensor configuration to EEPROM.
  * @param sensorId The ID of the sensor to save the configuration for.
- * @note This function uses the EEPROMStore class to save the configuration.
+ * @note This function uses the PreferencesStore class to save the configuration to the non-volatile memory of the ESP32.
  */
 void SensorConfig::persist(const uint8_t sensorId) const {
     char buffer[8] = "\0"; // Ensure the buffer is null-terminated
@@ -168,7 +168,7 @@ bool SensorConfig::retrieve(const uint8_t sensorId) {
 /**
  * @brief Saves the sensor configuration to EEPROM.
  * @param sensorId The ID of the sensor to save the configuration for.
- * @note This function uses the EEPROMStore class to save the configuration.
+ * @note This function uses the EEPROMStore class to save the configuration to the Arduino EEPROM.
  */
 void SensorConfig::persist(const uint8_t sensorId) const {
     // Calculate the EEPROM tableId for the SensorConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)

@@ -1,4 +1,5 @@
 #include "CalibratorStateBase.hpp"     // Include the ICalibratorState interface header file
+#include <observers/IObserver.hpp>     // Include the IObserver interface header file
 #include <sensor/SensorCollection.hpp> // Include the SensorCollection class header file
 
 CalibratorStateBase::~CalibratorStateBase() {

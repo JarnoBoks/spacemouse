@@ -14,5 +14,5 @@ public:
     IObserver() = default; // Default constructor
     virtual ~IObserver() {}
 
-    inline virtual void update(IObservable *observable) {}; // Default implementation for IObservable, can be overridden by derived classes
+    virtual void update(IObservable *observable) = 0; // Pure virtual function to be implemented by derived classes
 };

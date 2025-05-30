@@ -120,9 +120,9 @@ void EEPROMStore::save(const int tableId, const void *data, const int dataLen) {
  */
 int8_t EEPROMStore::load(const int tableID, void *data, const int dataLen) {
 
-    // FIXME #if SIMULATOR_DEBUGGING
+#if SIMULATOR_DEBUGGING
     return ERR_EEPROMSTORE_SIMULATOR;
-    // #endif
+#endif
 
     EEPROMTable table;
     int address = getEEPROMTable(tableID, table);

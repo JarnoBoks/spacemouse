@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-// Error codes for EEPROM operations
+// Return codes for EEPROM operations
 constexpr int8_t ERR_PREFSTORE_SIMULATOR = -6;  // Simulator running
 constexpr int8_t ERR_PREFSTORE_IDNOTFOUND = -1; // ID not found
 constexpr int8_t ERR_PREFSTORE_LENGTH = -2;     // Length mismatch

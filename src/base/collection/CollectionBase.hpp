@@ -4,7 +4,7 @@
 #include <common/ICollectable.hpp>
 
 #include <stdint.h>
-// REFACTOR - Split to hpp and cpp file.
+
 /**
  * @brief Base class representing a collection of items for the SpaceMouse.
  * @details Implements ICollection and provides functionality for managing a collection of axes.

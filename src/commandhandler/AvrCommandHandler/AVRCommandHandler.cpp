@@ -1,4 +1,3 @@
-// TODO - Remove all ESP print and ESP_DBG from the AVR version
 #include "AVRCommandHandler.hpp"
 
 // Collections
@@ -548,7 +547,6 @@ float AVRCommandHandler::executeAxis(const char *param1, const char *param2, uin
         char directionChar = param1[0]; // The direction entered in the user command (first character of the first parameter, + or - or axisname's first character)
         if (directionChar == '+' || directionChar == '-') {
             // The first character is a direction
-            // REVIEW - Can the cast (char *)param1 be removed?
             char *reqAxisName = (char *)param1 + 1; // Pointer to the axis name (skip the first character)
             m_knobAxis = m_CollectionCarrier->getKnobAxes()->getAxis(reqAxisName);
             if (m_knobAxis == nullptr) {
@@ -651,7 +649,7 @@ void AVRCommandHandler::DebugParamOff() {
     // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
     //  Implementation for DebugParamOff command
     ESP_PRINT(F("DebugParamOff executed"));
-    // TODO - Add functionality for the DebugParamOff command
+    // DEVNOTE - Empty state, no functionality necessary
 }
 
 void AVRCommandHandler::DebugParamSensorInformationRaw() {

@@ -5,7 +5,6 @@
 #include <base/visitable/VisitableBase.hpp>
 #include <base/axis/MotionVectorType.h> // Include the header file for MotionVector_t enum
 
-// REFACTOR - Move to PROGMEM
 constexpr const char *c_AXIS_DESCRIPTORS[] = {"TX", "TY", "TZ", "RX", "RY", "RZ"}; // Axis names for serial output, ordered by the MotionVector_t.
 
 /**

@@ -35,7 +35,7 @@ public:
     KnobAxis(const MotionVector_t type, ISensorsCalculator *sensorsCalculator)
         : AxisBase(type, c_KNOB_MAX_AXIS_OBSERVERS),
           m_sensorsCalculator(sensorsCalculator),
-          m_Config(new KnobAxisConfig(type)) {}; // Create a new KnobAxisConfig object for this axis
+          m_Config(new KnobAxisConfig(this)) {}; // Create a new KnobAxisConfig object for this axis
 
     ~KnobAxis() { delete m_Config; } // Destructor (not used in normal SpaceMouse operation)
 

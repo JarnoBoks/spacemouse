@@ -1,7 +1,6 @@
 
 #include "KnobAxisConfig.hpp"
-
-#include "eeprom/eepromstore.h"      // To load and save the axis configuration to EEPROM
+#include <knob/Axis/KnobAxis.hpp>
 #include "DefaultKnobAxisConfig.hpp" // To get the default axis configuration if the EEPROM is empty or the version is changed
 
 #if defined(ARDUINO_ARCH_AVR)
@@ -11,16 +10,10 @@ constexpr uint8_t EEPROM_AXISCONFIG_VERSION = 1;     // Define the version numbe
 constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_POSCFG = 1; // Offset for the positive direction configuration ID
 constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_NEGCFG = 2; // Offset for the negative direction configuration ID
 #endif
+
 #if defined(ARDUINO_ARCH_ESP32)
 #include "eeprom/preferencesstore.h" // To load and save the sensor configuration to Preferences
 #endif
-
-/**
- * @brief Constructor with no arguments - used when called with a non-existant axistype
- */
-KnobAxisConfig::KnobAxisConfig()
-    : posConfig(KnobAxisDirectionConfig()),
-      negConfig(KnobAxisDirectionConfig()), inversion(false) {}
 
 /**
  * @brief Constructor for KnobAxisConfig class with axis vectorType.
@@ -29,12 +22,13 @@ KnobAxisConfig::KnobAxisConfig()
  * @see config.h for overriding the default values.
  * @see defaults_hall.h for the default values for the HALL Effect hardware.
  * @see defaults_joystick.h for the default values for the JOYSTICK hardware.
- * @param vectorType The vectorType of the axis being configured.
+ * @param contextAxis Pointer to the KnobAxis object that this configuration belongs to.
  */
-KnobAxisConfig::KnobAxisConfig(const MotionVector_t motionVectorType) : inversion(false) {
-    if (!retrieve(motionVectorType)) {
+KnobAxisConfig::KnobAxisConfig(const KnobAxis *contextAxis)
+    : m_contextAxis(contextAxis) {
+    if (!retrieve(contextAxis->getType())) {
         DefaultKnobAxisConfig defaultConfig;
-        *this = defaultConfig.create(motionVectorType);
+        *this = defaultConfig.create(contextAxis);
     }
 }
 
@@ -42,6 +36,7 @@ KnobAxisConfig::KnobAxisConfig(const MotionVector_t motionVectorType) : inversio
  * @brief Constructor for KnobAxisConfig class with parameterized settings.
  * @details This constructor initializes the KnobAxisConfig object with the given parameters for sensitivity, gate, and function types.
  *          This constructor is used when called from the DefaultKnobAxisConfig class.
+ * @param axis Pointer to the KnobAxis object that this configuration belongs to.
  * @param psens Sensitivity for the positive direction.
  * @param nsens Sensitivity for the negative direction.
  * @param pgate Gate for the positive direction.
@@ -51,14 +46,16 @@ KnobAxisConfig::KnobAxisConfig(const MotionVector_t motionVectorType) : inversio
  * @param invert Inversion flag for the axis.
  * @note The constructor initializes the posConfig and negConfig members with the given parameters.
  */
-KnobAxisConfig::KnobAxisConfig(const float psens,
+KnobAxisConfig::KnobAxisConfig(const KnobAxis *axis,
+                               float psens,
                                const float nsens,
                                const uint8_t pgate,
                                const uint8_t ngate,
                                const ModFunc_t pmf,
                                const ModFunc_t nmf,
                                const bool invert)
-    : posConfig(KnobAxisDirectionConfig(psens, pgate, pmf)),
+    : m_contextAxis(axis),
+      posConfig(KnobAxisDirectionConfig(psens, pgate, pmf)),
       negConfig(KnobAxisDirectionConfig(nsens, ngate, nmf)),
       inversion(invert) {}
 

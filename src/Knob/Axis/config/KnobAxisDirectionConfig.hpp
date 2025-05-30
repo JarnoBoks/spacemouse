@@ -27,6 +27,6 @@ public:
     inline uint8_t getGate() const { return data.gate; }
     inline ModFunc_t getModFuncType() const { return data.modFuncType; }
 
-    void persist(const uint8_t tableId) const;
-    int8_t retrieve(const uint8_t tableId);
+    void persist(const uint8_t idx) const;
+    int8_t retrieve(const uint8_t idx);
 };

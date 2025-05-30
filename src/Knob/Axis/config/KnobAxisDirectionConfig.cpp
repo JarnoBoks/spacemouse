@@ -16,27 +16,32 @@ KnobAxisDirectionConfig::KnobAxisDirectionConfig(float sensitivity, uint8_t gate
 }
 
 #if defined(ARDUINO_ARCH_ESP32)
-#define KEY_PREF_AXISDIRCFG "axd%d" // Key prefix for axis direction configuration in Preferences
+#define KEY_PREF_AXISDIRCFG "axd%d" // Key prefix for axis direction configuration in Preferences non-volatile memory
 #define BUF_AXISCFG_LEN 7           // 3 characters for the key + 1 for the sign + 2 for the vectorType + 1 for null terminator
+
 /**
- * @brief Persists the axis direction configuration to EEPROM.
- * @param tableId The table ID to save the configuration under.
+ * @brief Persists the axis direction configuration to non-volatile memory.
+ * @param idx The index of the Axis configuration to deduct the preferences key.
+ * @note The index will normally be the vectorType of the axis, but can also be
+ *       used to store multiple configurations for the same axis in the Preferences.
  */
-void KnobAxisDirectionConfig::persist(const uint8_t tableId) const {
+void KnobAxisDirectionConfig::persist(const uint8_t idx) const {
     char buffer[BUF_AXISCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
-    sprintf(buffer, KEY_PREF_AXISDIRCFG, tableId);
+    sprintf(buffer, KEY_PREF_AXISDIRCFG, idx);
     PreferencesStore::save(buffer, &data, sizeof(data)); // Store the data structure in the Preferences
 }
 
 /**
- * @brief Retrieves the axis direction configuration from EEPROM.
- * @param tableId The table ID to load the configuration from.
+ * @brief Retrieves the axis direction configuration from non-volatile memory.
+ * @param idx The index of the Axis configuration to deduct the preferences key.
+ * @note The index will normally be the vectorType of the axis, but can also be
+ *       used to store multiple configurations for the same axis in the Preferences.
  * @return The status of the load operation
- * @see EEPROMStore::load for possible return values.
+ * @see PreferencesStore::load for possible return values.
  */
-int8_t KnobAxisDirectionConfig::retrieve(const uint8_t tableId) {
+int8_t KnobAxisDirectionConfig::retrieve(const uint8_t idx) {
     char buffer[BUF_AXISCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
-    sprintf(buffer, KEY_PREF_AXISDIRCFG, tableId);
+    sprintf(buffer, KEY_PREF_AXISDIRCFG, idx);
     return (PreferencesStore::load(buffer, &data, sizeof(data)) == ERR_PREFSTORE_SUCCESS);
 }
 #endif

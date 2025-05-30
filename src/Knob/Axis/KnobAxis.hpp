@@ -10,7 +10,7 @@ class ISensorsCalculator;
 
 /// @brief Number of observers that can be added to knob Axis.
 /// @details This is a constant value that defines the maximum number of observers that can be added to the knob Axis.
-/// TODO @note This value is set to 1, as the knob Axis is only having the HID Event buffer as observer.
+/// @note This value is set to 1, as the knob Axis is only having the HID Event buffer as observer.
 constexpr uint8_t c_KNOB_MAX_AXIS_OBSERVERS = 1;
 
 /**
@@ -40,8 +40,6 @@ public:
     ~KnobAxis() { delete m_Config; } // Destructor (not used in normal SpaceMouse operation)
 
     void evaluate() override;
-
-    // REMOVE virtual const bool isTranslation() const = 0;
 
     inline void setRawValue(const int16_t value) { m_rawValue = value; } // Setter for raw axis value, used by SensorsCalculator
 

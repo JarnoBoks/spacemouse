@@ -27,5 +27,5 @@ void SensCommand::execute(const char *param1, const char *param2, uint8_t paramC
         }
     }
 
-    m_knobAxis->getConfig()->persist(m_knobAxis->getType()); // Store the value in the EEPROM
+    m_knobAxis->getConfig()->persist(); // Store the value in non-volatile memory
 }

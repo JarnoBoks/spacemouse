@@ -8,7 +8,7 @@ class KnobAxis;
 class KnobAxisConfig {
 private:
     const KnobAxis *m_contextAxis = nullptr; // Pointer to the KnobAxis object that this configuration belongs to
-    bool retrieve(const MotionVector_t motionVectorType);
+    bool retrieve();
 
 public:
     KnobAxisDirectionConfig posConfig; // Object for positive direction configuration
@@ -30,7 +30,7 @@ public:
                    const ModFunc_t nmf,
                    const bool invert);
 
-    void persist(const MotionVector_t motionVectorType) const;
+    void persist() const;
 
     const bool getInvert() const { return inversion; }
 };

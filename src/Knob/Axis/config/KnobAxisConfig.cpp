@@ -26,7 +26,7 @@ constexpr uint8_t EEPROM_ID_OFFSET_AXCFG_NEGCFG = 2; // Offset for the negative 
  */
 KnobAxisConfig::KnobAxisConfig(const KnobAxis *contextAxis)
     : m_contextAxis(contextAxis) {
-    if (!retrieve(contextAxis->getType())) {
+    if (!retrieve()) {
         DefaultKnobAxisConfig defaultConfig;
         *this = defaultConfig.create(contextAxis);
     }
@@ -67,14 +67,16 @@ KnobAxisConfig::KnobAxisConfig(const KnobAxis *axis,
  * @details This function saves the KnobAxisConfig object to EEPROM using the EEPROMStore class.
  * @param vectorType The type of the MotionVector being persisted, used to identify the correct location in EEPROM.
  */
-void KnobAxisConfig::persist(const MotionVector_t vectorType) const {
+void KnobAxisConfig::persist() const {
+
+    const int8_t axistype = static_cast<int8_t>(m_contextAxis->getType());
 
     char buffer[BUF_AXISCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
-    sprintf(buffer, KEY_PREF_AXISCFG, vectorType);
+    sprintf(buffer, KEY_PREF_AXISCFG, axistype);
     PreferencesStore::save(buffer, &inversion, sizeof(inversion)); // Store the data structure in the Preferences
 
-    posConfig.persist(static_cast<uint8_t>(vectorType));
-    negConfig.persist(-static_cast<uint8_t>(vectorType));
+    posConfig.persist(static_cast<uint8_t>(axistype));
+    negConfig.persist(-static_cast<uint8_t>(axistype));
 }
 
 /**
@@ -84,17 +86,19 @@ void KnobAxisConfig::persist(const MotionVector_t vectorType) const {
  * @retval True if the configuration was successfully loaded.
  * @retval False if the configuration could not be loaded.
  */
-bool KnobAxisConfig::retrieve(const MotionVector_t vectorType) {
+bool KnobAxisConfig::retrieve() {
+
+    const int8_t axistype = static_cast<int8_t>(m_contextAxis->getType()); // Convert the MotionVector_t enum to an integer for calculations
 
     char buffer[BUF_AXISCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
-    sprintf(buffer, KEY_PREF_AXISCFG, vectorType);
+    sprintf(buffer, KEY_PREF_AXISCFG, axistype);
     return (PreferencesStore::load(buffer, &inversion, sizeof(inversion)) == ERR_PREFSTORE_SUCCESS);
 
     // Retrieve the AxisDirectionConfig objects
-    if (posConfig.retrieve(static_cast<uint8_t>(vectorType)) != ERR_PREFSTORE_SUCCESS) {
+    if (posConfig.retrieve(static_cast<uint8_t>(axistype)) != ERR_PREFSTORE_SUCCESS) {
         return false;
     }
-    if (negConfig.retrieve(-static_cast<uint8_t>(vectorType)) != ERR_PREFSTORE_SUCCESS) {
+    if (negConfig.retrieve(-static_cast<uint8_t>(axistype)) != ERR_PREFSTORE_SUCCESS) {
         return false;
     }
 
@@ -108,10 +112,12 @@ bool KnobAxisConfig::retrieve(const MotionVector_t vectorType) {
  * @details This function saves the KnobAxisConfig object to EEPROM using the EEPROMStore class.
  * @param vectorType The type of the MotionVector being persisted, used to identify the correct location in EEPROM.
  */
-void KnobAxisConfig::persist(const MotionVector_t vectorType) const {
+void KnobAxisConfig::persist() const {
+
+    const int8_t axistype = static_cast<int8_t>(m_contextAxis->getType());
 
     // Calculate the EEPROM tableId for the KnobAxisConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
-    const int tableId = (static_cast<int>(vectorType) * EEPROM_KNOB_AXIS_ID_RESERVATIONS) + EEPROM_KNOB_AXIS_ID_BASE; // Calculated Id for the AxisConfiguration in EEPROM
+    const int tableId = (axistype * EEPROM_KNOB_AXIS_ID_RESERVATIONS) + EEPROM_KNOB_AXIS_ID_BASE; // Calculated Id for the AxisConfiguration in EEPROM
 
     // Persist the data stored in this class
     EEPROMStore::save(tableId, &inversion, sizeof(inversion)); // Store the inversion flag in the EEPROM
@@ -128,10 +134,12 @@ void KnobAxisConfig::persist(const MotionVector_t vectorType) const {
  * @retval True if the configuration was successfully loaded.
  * @retval False if the configuration could not be loaded.
  */
-bool KnobAxisConfig::retrieve(const MotionVector_t vectorType) {
+bool KnobAxisConfig::retrieve() {
+
+    const int8_t axistype = static_cast<int8_t>(m_contextAxis->getType());
 
     // Calculate the EEPROM tableId for the KnobAxisConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
-    const int tableId = (static_cast<int>(vectorType) * EEPROM_KNOB_AXIS_ID_RESERVATIONS) + EEPROM_KNOB_AXIS_ID_BASE; // Calculated Id for the knob AxisConfiguration in EEPROM
+    const int tableId = (axistype * EEPROM_KNOB_AXIS_ID_RESERVATIONS) + EEPROM_KNOB_AXIS_ID_BASE; // Calculated Id for the knob AxisConfiguration in EEPROM
 
     // Retrieve the data stored in the EEPROM
     if (EEPROMStore::load(tableId, &inversion, sizeof(inversion)) != ERR_EEPROMSTORE_SUCCESS) {

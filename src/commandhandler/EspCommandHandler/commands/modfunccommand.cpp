@@ -26,5 +26,5 @@ void ModFuncCommand::execute(const char *param1, const char *param2, uint8_t par
         }
     }
 
-    m_knobAxis->getConfig()->persist(m_knobAxis->getType()); // Store the value in the EEPROM
+    m_knobAxis->getConfig()->persist(); // Store the value in non-volatile memory
 }

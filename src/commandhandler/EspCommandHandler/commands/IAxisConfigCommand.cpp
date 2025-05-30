@@ -36,7 +36,7 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
 
         // Erase the m_knobAxisDirectionConfig pointers
         for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-            m_knobVectorDirectionConfig[i] = nullptr;
+            knobAxisDirectionConfigs[i] = nullptr;
         }
 
         if (!convertWordFloat(param2, &m_requestedValue)) {
@@ -50,8 +50,8 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
             // The first character is a direction
             // REVIEW - Can the cast (char *)param1 be removed?
             char *reqAxisName = (char *)param1 + 1; // Pointer to the axis name (skip the first character)
-            m_knobVector = m_CollectionCarrier->getKnobAxes()->getAxis(reqAxisName);
-            if (m_knobVector == nullptr) {
+            m_knobAxis = m_CollectionCarrier->getKnobAxes()->getAxis(reqAxisName);
+            if (m_knobAxis == nullptr) {
                 ESP_INFO("KnobAxis not found");
                 m_requestedValue = -1;
                 return;
@@ -59,25 +59,25 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
 
             if (directionChar == '+') {
                 // The positive direction config should be used
-                m_knobVectorDirectionConfig[0] = &m_knobVector->getConfig()->posConfig;
+                knobAxisDirectionConfigs[0] = &m_knobAxis->getConfig()->posConfig;
 
             } else if (directionChar == '-') {
                 // The negative direction config should be used
-                m_knobVectorDirectionConfig[0] = &m_knobVector->getConfig()->negConfig;
+                knobAxisDirectionConfigs[0] = &m_knobAxis->getConfig()->negConfig;
             }
 
         } else {
             // The first character is not a direction, test if the KnobAxis name is specified.
-            m_knobVector = m_CollectionCarrier->getKnobAxes()->getAxis(param1);
-            if (m_knobVector == nullptr) {
+            m_knobAxis = m_CollectionCarrier->getKnobAxes()->getAxis(param1);
+            if (m_knobAxis == nullptr) {
                 ESP_INFO("KnobAxis not found");
                 m_requestedValue = -1; // Update the requested value to -1, indicating no update/storage needed
                 return;
             }
 
             // There is an axis name, but no direction provided. Both directions have to be updated.
-            m_knobVectorDirectionConfig[0] = &m_knobVector->getConfig()->posConfig;
-            m_knobVectorDirectionConfig[1] = &m_knobVector->getConfig()->negConfig;
+            knobAxisDirectionConfigs[0] = &m_knobAxis->getConfig()->posConfig;
+            knobAxisDirectionConfigs[1] = &m_knobAxis->getConfig()->negConfig;
         }
     }
 }

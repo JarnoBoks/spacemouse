@@ -16,9 +16,9 @@ class KnobAxis;
 class IAxisConfigCommand : public CommandBase {
 private:
 protected:
-    KnobAxisDirectionConfig *m_knobVectorDirectionConfig[NUM_AX_DIRCFG]; // Array of pointers to AxisDirectionConfig objects
-    KnobAxis *m_knobVector = nullptr;                                    // Pointer to the knob MotionVector object that will be configured
-    float m_requestedValue = 0;                                          // Requested value for the knob MotionVector configuration (sensitivity, gate, etc.) derived from the command. -1 if no update is needed.
+    KnobAxisDirectionConfig *knobAxisDirectionConfigs[NUM_AX_DIRCFG]; // Array of pointers to AxisDirectionConfig objects
+    KnobAxis *m_knobAxis = nullptr;                                   // Pointer to the knob MotionVector object that will be configured
+    float m_requestedValue = 0;                                       // Requested value for the knob MotionVector configuration (sensitivity, gate, etc.) derived from the command. -1 if no update is needed.
 
 public:
     /**
@@ -29,7 +29,7 @@ public:
     // TODO - Make the collectionCarrier a const reference
     IAxisConfigCommand(const char *cmdName, CollectionCarrier *collectionCarrier) : CommandBase(cmdName, collectionCarrier) {
         for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-            m_knobVectorDirectionConfig[i] = nullptr;
+            knobAxisDirectionConfigs[i] = nullptr;
         }
     }
     virtual ~IAxisConfigCommand() {};

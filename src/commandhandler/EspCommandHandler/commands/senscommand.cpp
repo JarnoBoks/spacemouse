@@ -22,10 +22,10 @@ void SensCommand::execute(const char *param1, const char *param2, uint8_t paramC
     }
 
     for (uint8_t i = 0; i < NUM_AX_DIRCFG; i++) {
-        if (m_knobVectorDirectionConfig[i]) {
-            m_knobVectorDirectionConfig[i]->setSensitivity(m_requestedValue);
+        if (knobAxisDirectionConfigs[i]) {
+            knobAxisDirectionConfigs[i]->setSensitivity(m_requestedValue);
         }
     }
 
-    m_knobVector->getConfig()->persist(m_knobVector->getType()); // Store the value in the EEPROM
+    m_knobAxis->getConfig()->persist(m_knobAxis->getType()); // Store the value in the EEPROM
 }

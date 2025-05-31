@@ -62,8 +62,8 @@ Sensor *SensorCollection::getSensor(uint8_t id) const {
  * @return Pointer to the sensor with the specified name, or nullptr if not found.
  * @note The base class Collection::getItem() can be used too, but it returns a pointer to the ICollectable interface.
  */
-Sensor *SensorCollection::getSensor(const char *name) const {
-    return static_cast<Sensor *>(getItem(name)); // Return the sensor with the specified name
+Sensor *SensorCollection::getSensor(const char *descriptor) const {
+    return static_cast<Sensor *>(getItem(descriptor)); // Return the sensor with the specified descriptor
 }
 
 /**

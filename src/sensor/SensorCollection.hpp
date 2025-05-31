@@ -41,7 +41,7 @@ public:
     void setup();
 
     Sensor *getSensor(const uint8_t id) const;
-    Sensor *getSensor(const char *name) const;
+    Sensor *getSensor(const char *descriptor) const;
 
     inline Calibrator *getCalibrator() const { return m_Calibrator; }
 

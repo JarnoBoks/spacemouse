@@ -274,12 +274,12 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
             return; // Sensor not found, exit the function
         }
 
-        if (sensor != nullptr && direction == '+') {
+        if (direction == '+') {
             // Set the maximum value for the sensor
             ESP_INFO("Set max for sensor ");
             sensor->getConfig()->setMax(requestedValue);
 
-        } else if (sensor != nullptr && direction == '-') {
+        } else if (direction == '-') {
             // Set the minimum value for the sensor
             ESP_INFO("Set min for sensor ");
             sensor->getConfig()->setMin(requestedValue);

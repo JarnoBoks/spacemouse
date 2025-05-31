@@ -39,10 +39,10 @@ void KnobAxis::evaluate() {
     modifier(dconfig->getModFuncType());
 
     // Apply any gate for this axis & direction.
-    m_finValue = (abs(m_modValue) < dconfig->getGate()) ? 0 : m_modValue; // Apply the gate for this axis & direction
+    m_gateValue = (abs(m_modValue) < dconfig->getGate()) ? 0 : m_modValue; // Apply the gate for this axis & direction
 
     // Invert the motion if necessary
-    m_finValue = (m_Config->inversion) ? -m_finValue : m_finValue; // Invert the value if necessary // REFACTOR - Move to kinematics
+    m_finValue = (m_Config->inversion) ? -m_gateValue : m_gateValue; // Invert the value if necessary // REFACTOR - Move to kinematics
 
     notifyObservers();
 }

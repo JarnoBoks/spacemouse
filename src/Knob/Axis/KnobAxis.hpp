@@ -23,9 +23,10 @@ private:
     ISensorsCalculator *m_sensorsCalculator = nullptr; // Pointer to the sensor calculator
     KnobAxisConfig *m_Config = nullptr;                // Pointer to the configuration object of the Axis
 
-    int16_t m_rawValue = 0; // Raw computed value for the knob Axis, used to store the value that is calculated by the SensorsCalculator
-    int16_t m_snsValue = 0; // KnobAxis value after applying sensitivity
-    int16_t m_modValue = 0; // KnobAxis value after applying sensitivity & modifier function
+    int16_t m_rawValue = 0;  // Raw computed value for the knob Axis, used to store the value that is calculated by the SensorsCalculator
+    int16_t m_snsValue = 0;  // KnobAxis value after applying sensitivity
+    int16_t m_modValue = 0;  // KnobAxis value after applying sensitivity & modifier function
+    int16_t m_gateValue = 0; // KnobAxis value after applying sensitivity, modifier function and gate
 
     void modifier(ModFunc_t type);
 
@@ -43,9 +44,10 @@ public:
 
     inline void setRawValue(const int16_t value) { m_rawValue = value; } // Setter for raw axis value, used by SensorsCalculator
 
-    inline int16_t getRawValue() const { return m_rawValue; } // Getter for knob Axis value retrieved from the SensorsCalculator
-    inline int16_t getSnsValue() const { return m_snsValue; } // Getter for knob Axis value after applying sensitivity
-    inline int16_t getModValue() const { return m_modValue; } // Getter for knob Axis value after applying sensitivity & modifier function
+    inline int16_t getRawValue() const { return m_rawValue; }   // Getter for knob Axis value retrieved from the SensorsCalculator
+    inline int16_t getSnsValue() const { return m_snsValue; }   // Getter for knob Axis value after applying sensitivity
+    inline int16_t getModValue() const { return m_modValue; }   // Getter for knob Axis value after applying sensitivity & modifier function
+    inline int16_t getGateValue() const { return m_gateValue; } // Getter for knob Axis value after applying sensitivity, modifier function and gate
 
     inline const ISensorsCalculator *getSensorsCalculator() const { return m_sensorsCalculator; } // Getter for sensor calculator
     inline KnobAxisConfig *getConfig() const { return m_Config; }                                 // Getter for axis configuration

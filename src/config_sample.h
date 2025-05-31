@@ -371,37 +371,46 @@ Examples:
  *
  */
 
-/* Fourth calibration: Sensitivity & GATE  (command: SENS | SENS <axisname>[+|-] <value>, GATE | GATE <axisname>[+|-] <value>)
+/* Fourth calibration: Sensitivity & Gate  (command: SENS | SENS <axisname>[+|-] <value>, GATE | GATE <axisname>[+|-] <value>)
 ==========================================================================================================
 Use debug mode 4 or use for example your CAD program to verify changes.
-Note: Neither the modifier function nor the inversion are applied in debug mode 4.
+Note: Neither the modifier function nor any axis inversions are applied in the output of debug mode 4.
 
 Recommended calibration procedure for base sensitivity
 -------------------------------------------------
 1. Compile the sketch and upload it. Then open the Serial monitor, type "DEBUG 4" and hit enter.
-   You will see Values TX, TY, TZ, RX, RY, RZ and the configured keys. The values are the raw translation & rotation values (ie. the
-   modulation function and inversion are not applied).
+   You will see Values TX, TY, TZ, RX, RY, RZ and the configured keys. The values are the raw translation
+   & rotation values (ie. the modulation function and inversion are not applied).
 2. Start moving your Spacemouse. You will notice values changing.
-3. Starting with TX. Try increasing this value as much as possible by moving your Spacemouse around. If you get around +350 and -350 thats great.
-   If not change SENS_TX_POS/NEG. Repeat until it is around 350 for maximum motion.
+3. Starting with TX. Try increasing this value as much as possible by moving your Spacemouse around.
+   If you get around +350 and -350 thats great. If not change SENS_TX_POS/NEG. Repeat until it is around
+   350 for maximum motion.
 4. Repeat steps 3 for TY, TZ, RX, RY, RZ
-5. Verification: Move the Joystick in funny ways. All you should get for either TX,TX,TZ,RX,RY,RZ should be approximately between -350 to 350.
-6. You have finished sensitivity calibration. You can now test your Spacemouse with your favorite program (e.g. Cad software, Slicer)
+5. Verification: Move the Joystick in funny ways. All you should get for either TX,TX,TZ,RX,RY,RZ should
+   be approximately between -350 to 350.
+6. You have finished sensitivity calibration. You can now test your Spacemouse with your favorite program
+   (e.g. Cad software, Slicer)
 7. Aftermath: You notice the movements are hard to control. Try using Modification Functions [Suggestion: ModFunc level 3]
 
 To store the sensitivity values for a single axis in the EEPROM, you can use the command
    SENS <axisname>[+|-] <value>
       <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
-      [+|-]        - Optional indication of the direction for which the value will be set. + for positive, - for negative. If not set, the value is set for both directions.
-      <value>      - The sensitivity value to set for the axis. Should be a float (ie 2 should be 2.0)
+      [+|-]        - Optional indication of the direction for which the value will be set.
+                     + for positive, - for negative. If not set, the sensitivity value is set
+                     for both directions.
+      <value>      - The sensitivity value to set for the axis. Should be a float (ie. enter 2.0
+                     if the value is 2)
                      Use a fraction to make the axis MORE sensitive. F.e. 0.5 makes the axis twice as sensitive.
-                     Use a value larger than 1 to make it LESS sensitive. F.e. 2.0 makes the axis two times less sensitive.
+                     Use a value larger than 1 to make it LESS sensitive. F.e. 2.0 makes the axis two times
+                     less sensitive.
 
 Examples:
-   To adjust the sensitivity for positive rotation around the x axis to 0.5, you can use the command "SENS +RX 0.5"
-   To adjust the sensitivity for positive and negative translation in the y direction to 3, you can use the command "SENS TY 3.0".
+   To adjust the sensitivity for positive rotation around the X-axis to 0.5, you use the command "SENS +RX 0.5"
+   To adjust the sensitivity for positive and negative translation in the Y direction to 3, you use the
+   command "SENS TY 3.0".
 
-To suppress small movements around zero, you can add an additional gate to each axis and even each axis direction. Use the command
+To suppress small movements around zero, you can add an additional gate to each axis and even each axis direction.
+Use the command:
    GATE <axisname>[+|-] <value>
       <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
       [+|-]        - Optional indication of the direction for which the value will be set. + for positive, - for negative. If not set, the value is set for both directions.
@@ -425,7 +434,7 @@ Use the command "SENS" or "GATE" (without any parameter) to show the current set
 /* Fifth calibration: Modifier Function      (command: MODFUNC | MODFUNC <axisname>[+|-] <value>) )
 ==============================================================================================================
 Use debug mode 5 ("DEBUG 5") or use for example your CAD program to verify changes.
-In debug mode 5 the modifier function and the inversion are applied to the translation & rotation values.
+In debug mode 5 the modifier function and any axis inversion are applied to the translation & rotation values.
 Modify resulting behaviour of Spacemouse outputs to suppress small movements around zero and enforce big movements even more.
 
 Check the README.md for more details and a plot of the different functions.
@@ -530,22 +539,21 @@ Use the command "EXCL" (without any parameter) to show the current setting.
 
 /* Ninth calibration - Finetuning
 ==================================
-This section allows for fine-tuning the sensitivity and response of the Spacemouse. Adjust the parameters below to achieve the desired performance.
+This section allows for fine-tuning the sensitivity and response of the Spacemouse.
+Adjust the sensitivity & gate parameters to achieve the desired performance.
 
-After finishing the calibration, you can use the command "SHOW" in the serial monitor to see the current values of the parameters. You now can finetune the parameters to your liking.
-Try using the Spacemouse in your favorite CAD program and check the behaviour. Finetune the parameters until you are satisfied with the performance. If you notice that moving the knob
-in a certain direction, but has some (small) movement in the other direction, you can adjust sensitivity for a single axis (or even single axis direction) with the SENS command.
-
-You can also add an additional gate value to the translation and rotation values. This is useful if you want to suppress small spurious movements in a certain direction.
-This additional gate is applied to the translation or rotation axes.
-
-
+After finishing the calibration, you can use the command "SHOW" in the serial monitor to see the current values
+of the parameters. You now can finetune the parameters to your liking. Try using the Spacemouse in your favorite
+CAD program and check the behaviour. Finetune the parameters until you are satisfied with the performance.
+If you notice that moving the knob in a certain direction, but has some (small) movement in the other direction,
+you can adjust sensitivity for a single axis (or even single axis direction) with the SENS command.
 */
 
 /* Key( ie. button) Configuration
 ==================================
-If you attached keys to your Spacemouse, configure them in config.h. You cannot configure the keys from within the serial monitor.
-You can use the keys to report them via USB HID to the PC (either classically pressed or emulated with a rotary encoder) or use them as kill-keys to suppress either translation or rotation (described below).
+If you attached keys to your Spacemouse, configure them in config.h. You cannot configure the keys from within
+the serial monitor. You can use the keys to report them via USB HID to the PC (either classically pressed or
+emulated with a rotary encoder) or use them as kill-keys to suppress either translation or rotation (described below).
 
 EXAMPLES
 --------
@@ -633,7 +641,7 @@ EXAMPLES
 #endif
 
 // Time in ms which is needed to allow a new (physical) button press
-#define DEBOUNCE_KEYS_MS 200
+#define DEBOUNCE_KEYS_MS 100
 
 /* Definitions for easier key configuration, do not change this */
 #define KEY_PHYSICAL 0
@@ -716,7 +724,7 @@ You can attach:
 Which pin shall be used as LED? This pin is used either as a digital pin (for a simple LED) or as the data pin (for a fancy LED strip).
 Change from "//define" to "#define" to activate the LED feature.
 */
-// #define LEDpin 5
+// #define LEDPIN 5
 
 /* Simple LED
 -------------
@@ -727,10 +735,10 @@ Change from "//define" to "#define" to activate the LED feature.
 /* LED strip with data pin
 ---------------------------
 The connected LED is not just a simple LED, but an intelligent one, like a neopixel controlled by FASTLED library.
-The LEDpin is used as the data pin. The LEDRING is used to define the number of LEDs on the ring.
+The LEDpin is used as the data pin. The NUM_LED_LEDRING is used to define the number of LEDs on the ring.
 */
 
-// #define LEDRING 24
+#define NUM_LED_LEDRING 24
 
 // The LEDs light up, if a certain movement is reached:
 #define VELOCITYDEADZONEFORLED 15

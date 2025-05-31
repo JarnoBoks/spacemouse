@@ -1,5 +1,6 @@
-#ifndef SIMPLELED_H
-#define SIMPLELED_H
+#pragma once
+
+#if 0 // TODO
 #include <Arduino.h>
 #include "lightbehavior.h"
 #include "kinematics/axis.h"
@@ -13,4 +14,4 @@ public:
     void setPin(uint8_t pin);
 };
 
-#endif // SIMPLELED_H
+#endif

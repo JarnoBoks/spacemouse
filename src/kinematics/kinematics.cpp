@@ -53,30 +53,6 @@ void Kinematics::_applySwitchYZ() {
 #define VELOCITYDEADZONEFORLED 10 // Deadzone for the LED ring, if the velocity is below this value, it will not be displayed on the LED ring
 #endif
 
-// REFACTOR - Shoud return a pointer to the motionVector instead of the MotionVector_t enum. This will make it easier to use in the LED ring and other classes.
-const MotionVector_t Kinematics::getMainAxis(KnobAxis *motionVector) {
-    MotionVector_t idMainAxis = MotionVector_t::MV_UNINITIALIZED;
-    int16_t maximumVelocity = 0;
-
-    // Loop through all axes to find the one with the biggest velocity
-    for (int i = 0; i < MotionVector_t::MV_LENGTH; i++) {
-        // TODO int16_t absvalue = abs(m_knobMotionVectors->getAxis(i)->getFinValue()); // Get the value of the motionVector
-
-        // Is the value of this motionVector greater than deadzone and greater than any of the motionVector before?
-        /* TODO if ((absvalue > maximumVelocity) && (absvalue > VELOCITYDEADZONEFORLED)) {
-            maximumVelocity = absvalue;
-            idMainAxis = static_cast<MotionVector_t>(i);
-        } */
-    }
-    if (idMainAxis == MotionVector_t::MV_UNINITIALIZED) {
-        motionVector = nullptr; // Set the motionVector to nullptr if no motionVector is found
-    } else {
-        // TODO motionVector = static_cast<KnobMotionVector *>(m_knobMotionVectors->getItem(idMainAxis));
-        //  REVIEW - Check if the pointer assignment is correct. It should be a reference to the motionVector, not a pointer.
-    }
-    return idMainAxis;
-}
-
 #if 0 // REMOVE - Keeping for PGM string example at the moment
 Axis *Kinematics::getAxis(const char *name) {
     // TODO - Make progmem string for the motionVector names

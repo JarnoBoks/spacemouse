@@ -293,7 +293,7 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
         ESP_INFO2("to ", requestedValue);
 
         // Store the value in the EEPROM
-        sensor->getConfig()->persist(sensor->getId());
+        sensor->getConfig()->persist();
         ESP_INFO("Store minmax for sensor");
     }
 }

@@ -24,6 +24,6 @@ public:
         SensorConfig *sensorcfg = sensor.getConfig();     // Get the sensor configuration to update
         RETURN_W_IF_NULL(sensorcfg, "SensorConfig null"); // Check if the sensor configuration is null
 
-        sensorcfg->persist(sensor.getId()); // Persist the sensor configuration to the storage
+        sensorcfg->persist(); // Persist the sensor configuration to the storage
     }
 };

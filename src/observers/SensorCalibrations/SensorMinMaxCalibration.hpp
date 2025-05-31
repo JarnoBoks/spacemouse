@@ -1,5 +1,5 @@
 #pragma once
-#include "observers/IObserver.hpp"
+#include "..\IObserver.hpp"
 
 class ICalibratorState;
 

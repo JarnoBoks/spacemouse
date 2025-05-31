@@ -14,7 +14,7 @@
 Sensor::Sensor(const int8_t pin, const int8_t id)
     : pin(pin),
       id(id),
-      config(new SensorConfig(id)) {
+      config(new SensorConfig(this)) {
     // Configure this sensor's pin for ADC reading
     ArchitectureADC::connectADC(pin); // Setup the ADC for the specified pin
 }

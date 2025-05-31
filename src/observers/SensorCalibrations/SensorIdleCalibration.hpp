@@ -1,6 +1,6 @@
 #pragma once
 
-#include "observers/IObserver.hpp"
+#include "..\IObserver.hpp"
 #include "sensor/SensorCollection.hpp" // For cHW_MAX_SENSORS
 
 class ICalibratorState;

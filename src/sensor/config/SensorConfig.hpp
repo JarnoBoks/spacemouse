@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <limits.h>
 
+class Sensor;
+
 /**
  * @brief Sensor configuration class
  * @details This class is used to manage the configuration of sensors, including their minimum and
@@ -19,35 +21,20 @@ private:
         uint8_t deadzone = UINT8_MAX; // Default deadzone value, 255 means high deadzone to avoid jittering if not explicitly set
     };
 
-    SensorConfigData_t data; // Data structure to hold the configuration values
+    SensorConfigData_t data;                 // Data structure to hold the configuration values
+    const Sensor *m_contextSensor = nullptr; // Pointer to the Sensor object that this configuration belongs to
 
     void _minWarning(bool *warning) const;
     void _maxWarning(bool *warning) const;
 
-    bool retrieve(const uint8_t sensorId);
+    bool retrieve();
 
 public:
-    /**
-     * @brief Default constructor
-     * @details This constructor initializes the sensor configuration with the values that are configured
-     *          in the sourcecode. This constructor is used when the sensor configuration is not found
-     *          in the EEPROM or Preferences store nor in the defaults files. Called from the DefaultSensorConfig.
-     * @note This constructor should not be used, but is here for failsafe purposes.
-     */
-    SensorConfig() = default;
+    SensorConfig() = delete; // Default constructor is deleted to prevent instantiation without context
+    SensorConfig(const Sensor *contextSensor);
+    SensorConfig(const Sensor *contextSensor, const int min, const int max, const bool invert);
 
-    /**
-     * @brief Constructor used when called from the Sensor, will try to load defaults from the EEPROM or Preferences store.
-     * @param sensorId The ID of the sensor
-     */
-    SensorConfig(const int8_t sensorId);
-
-    /**
-     * @brief Constructor with parameters for min, max, invert and deadzone
-     * @details This constructor is used when called from DefaultSensorConfig.
-     *          It initializes the sensor configuration with the provided min, max, invert, and deadzone values.
-     */
-    SensorConfig(const int min, const int max, const bool invert);
+    ~SensorConfig() = default; // Default destructor
 
     const int getMin(bool *warning = nullptr) const;
     void updateMin(const int val);
@@ -65,5 +52,5 @@ public:
     inline uint8_t getDeadzone() const { return data.deadzone; }
     inline void setDeadzone(const uint8_t dz) { data.deadzone = dz; }
 
-    void persist(const uint8_t sensorId) const;
+    void persist() const;
 };

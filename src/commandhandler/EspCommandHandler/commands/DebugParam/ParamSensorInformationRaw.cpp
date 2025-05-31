@@ -2,7 +2,7 @@
 
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
 #include "sensor/SensorCollection.hpp"
-#include "observers/DebugOutput/DebugOutputSensorsRaw.hpp"
+#include "..\..\..\..\observers\DebugOutput\DebugOutputSensorsRaw.hpp"
 
 #include <common/esp_print.h> // For ESP_PRINT
 

@@ -1,6 +1,7 @@
 
 #include "SensorConfig.hpp"
 #include "config.h" // Include the config file to know the hardware type
+#include <sensor/sensors/Sensor.hpp>
 #include "DefaultSensorConfig.hpp"
 
 #if defined(ARDUINO_ARCH_AVR)
@@ -30,12 +31,13 @@ constexpr uint8_t EEPROM_SENSORCONFIG_VERSION = 1; // Define the version number 
  * @see defaults_joystick.h for the default values for the JOYSTICK hardware.
  * @param sensorId The ID of the sensor to load the configuration for.
  */
-SensorConfig::SensorConfig(const int8_t sensorId) {
-    if (!retrieve(sensorId)) {
+SensorConfig::SensorConfig(const Sensor *contextSensor)
+    : m_contextSensor(contextSensor) {
+    if (!retrieve()) {
         DefaultSensorConfig defaultConfig;
-        *this = defaultConfig.create(sensorId);
+        *this = defaultConfig.create(contextSensor);
     }
-};
+}
 
 /**
  * @brief Constructor for SensorConfig with parameters.
@@ -44,7 +46,7 @@ SensorConfig::SensorConfig(const int8_t sensorId) {
  * @param max The maximum value for the sensor configuration.
  * @param invert If true, inverts the sensor values.
  */
-SensorConfig::SensorConfig(const int min, const int max, const bool invert) {
+SensorConfig::SensorConfig(const Sensor *contextSensor, const int min, const int max, const bool invert) {
     data.invert = invert;
     data.minv = min;
     data.maxv = max;
@@ -143,7 +145,9 @@ const int SensorConfig::getRange(bool *warning) const {
  * @param sensorId The ID of the sensor to save the configuration for.
  * @note This function uses the PreferencesStore class to save the configuration to the non-volatile memory of the ESP32.
  */
-void SensorConfig::persist(const uint8_t sensorId) const {
+void SensorConfig::persist() const {
+    const int8_t sensorId = static_cast<int8_t>(m_contextSensor->getId());
+
     char buffer[8] = "\0"; // Ensure the buffer is null-terminated
     sprintf(buffer, KEY_PREF_SENSORCFG, sensorId);
     PreferencesStore::save(buffer, &data, sizeof(data)); // Store the data structure in the Preferences
@@ -156,7 +160,9 @@ void SensorConfig::persist(const uint8_t sensorId) const {
  * @retval True if the configuration was successfully loaded.
  * @retval False if the configuration could not be loaded.
  */
-bool SensorConfig::retrieve(const uint8_t sensorId) {
+bool SensorConfig::retrieve() {
+    const int8_t sensorId = static_cast<int8_t>(m_contextSensor->getId());
+
     char buffer[8] = "\0"; // Ensure the buffer is null-terminated
     sprintf(buffer, KEY_PREF_SENSORCFG, sensorId);
     return (PreferencesStore::load(buffer, &data, sizeof(data)) == ERR_PREFSTORE_SUCCESS);
@@ -170,7 +176,9 @@ bool SensorConfig::retrieve(const uint8_t sensorId) {
  * @param sensorId The ID of the sensor to save the configuration for.
  * @note This function uses the EEPROMStore class to save the configuration to the Arduino EEPROM.
  */
-void SensorConfig::persist(const uint8_t sensorId) const {
+void SensorConfig::persist() const {
+    const int8_t sensorId = static_cast<int8_t>(m_contextSensor->getId());
+
     // Calculate the EEPROM tableId for the SensorConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
     const int tableId = (sensorId * EEPROM_SENSOR_ID_RESERVATIONS) + EEPROM_SENSOR_ID_BASE; // Calculated Id for the SensorConfig in EEPROM
 
@@ -185,7 +193,9 @@ void SensorConfig::persist(const uint8_t sensorId) const {
  * @retval True if the configuration was successfully loaded.
  * @retval False if the configuration could not be loaded.
  */
-bool SensorConfig::retrieve(const uint8_t sensorId) {
+bool SensorConfig::retrieve() {
+    const int8_t sensorId = static_cast<int8_t>(m_contextSensor->getId());
+
     // Calculate the EEPROM tableId for the SensorConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
     const int tableId = (sensorId * EEPROM_SENSOR_ID_RESERVATIONS) + EEPROM_SENSOR_ID_BASE; // Calculated Id for the SensorConfig in EEPROM
 

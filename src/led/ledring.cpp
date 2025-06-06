@@ -1,8 +1,12 @@
 #include "LedRing.hpp"
 
 #include <FastLED.h> // Include FastLED library for LED control
-#include "config.h"
+#include "config.h"  // Default configuration for the LED ring (LEDUPDATERATE_MS, LEDPIN, NUM_LED_LEDRING)
 #include <visitors/KnobAxisCollectionGetMainAixs.hpp>
+
+#ifndef LEDUPDATERATE_MS
+#define LEDUPDATERATE_MS 150
+#endif
 
 LedRing::LedRing() {
     FastLED.addLeds<WS2811, LEDPIN, GRB>(m_Leds, NUM_LED_LEDRING);
@@ -17,11 +21,17 @@ const bool LedRing::isLedOutputDue() {
     return false;
 }
 
+/**
+ * @brief Turn on the LED ring by setting all LEDs to dark olive green.
+ */
 void LedRing::TurnOn() {
     setAllLEDs(CRGB::DarkOliveGreen);
     FastLED.show();
 }
 
+/**
+ * @brief Turn off the LED ring by setting all LEDs to black.
+ */
 void LedRing::TurnOff() {
     setAllLEDs(CRGB::Black);
     FastLED.show();

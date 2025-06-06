@@ -1,7 +1,6 @@
 #include "HIDStateSendKeys.hpp"
 #include <hidhandler/HIDHandlerController.hpp>             // For HIDHandlerController (context)
 #include <observers/HIDEventBuffer/HIDEventBufferKeys.hpp> // For HIDEventBuffer
-#include <hidhandler/sender/HIDSenderKeys.hpp>             // For HIDSenderKeys
 
 #include <usbstack/HIDReportDescriptor.h> // for ReportIDs
 #include <usbstack/USBInterface.hpp>      // For USB interface functions (AVR/ESP32 independent)

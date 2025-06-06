@@ -1,7 +1,6 @@
 #include "HIDStateSendRotation.hpp"
 #include <hidhandler/HIDHandlerController.hpp>                 // For HIDHandlerController (context)
 #include <observers/HIDEventBuffer/HIDEventBufferRotation.hpp> // For HIDEventBuffer
-#include <hidhandler/sender/HIDSenderRotation.hpp>             // For HIDSenderRotation
 
 #include <usbstack/HIDReportDescriptor.h> // for ReportIDs
 #include <usbstack/USBInterface.hpp>      // For USB interface functions (AVR/ESP32 independent)

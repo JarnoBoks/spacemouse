@@ -1,38 +1,47 @@
-#include "HIDStateSendTranslation.h"
-#include <hidhandler/HIDHandlerController.h>                      // For HIDHandlerController (context)
+#include "HIDStateSendTranslation.hpp"
+#include <hidhandler/HIDHandlerController.hpp>                    // For HIDHandlerController (context)
 #include <observers/HIDEventBuffer/HIDEventBufferTranslation.hpp> // For HIDEventBuffer
 #include <hidhandler/sender/HIDSenderTranslation.hpp>             // For HIDSenderTranslation
 
+#include <usbstack/HIDReportDescriptor.h> // for ReportIDs
+#include <usbstack/USBInterface.hpp>      // For USB interface functions (AVR/ESP32 independent)
+
+#include <common/esp_print.h> // For ESP_PRINT and other print macros
+
 // Includes for the possible target states
-#include "HIDStateSendrotation.h"
+#include "HIDStateSendrotation.hpp"
 
 void HIDStateSendtranslation::apply() {
 
+    // Failsafe check to ensure that the context and data are set
+    if (!context || !m_data || !context->getHIDEventBufferTranslation()) {
+        ESP_WARN("Context, data or eventbuffer not set");
+        return;
+    }
+
+    // If a new HID report is not due, stay in the current state.
+    // TODO - Add the 'isReady' check here to avoid sending data if the USB stack is not ready.
     if (!isNewHidReportDue()) {
         return;
     }
 
-    if (!context || !context->getHIDEventBufferTranslation()) {
-        return;
-    }
-
-    //  Send a message if new data is staged or if the zero counter is less than 3
-    const bool staged = context->getHIDEventBufferTranslation()->isStaged();
-    if (staged || m_data->countTransZeros < 3) {
-        HIDSenderTranslation hidSender(context->getHIDEventBufferTranslation()->getStaged()); // Create a new HIDSender instance with the staged translation data
-        hidSender.sendData();                                                                 // Send the translation data
-        context->getHIDEventBufferTranslation()->clearStaged();                               // Clear the staged translation data
+    // If translation data is staged for sending or we didn't send 3 zero states.
+    bool isStaged = context->getHIDEventBufferTranslation()->isStaged(); // Check if there is staged translation data
+    if (isStaged || m_data->countTransZeros < 3) {
+        USBSendReport(REPORTID_TRANS, context->getHIDEventBufferTranslation()->getStaged(), HID_MESSAGE_SIZE); // Send new translation values to the Host
+        context->getHIDEventBufferTranslation()->clearStaged();                                                // Clear the staged translation data
 
         // Increment or reset the zero counter.
-        m_data->countTransZeros = (staged) ? 0 : m_data->countTransZeros + 1; // Increment the zero counter if translation data is staged
+        m_data->countTransZeros = (isStaged) ? 0 : m_data->countTransZeros + 1; // Increment the zero counter if translation data is staged
 
         m_data->lastHIDsentRep += HIDUPDATERATE_MS;
-        // REMOVE m_data->hasSentNewData = true; // REFACTOR - Is this used anywhere?
+        // REMOVE m_data->hasSentNewData = true;
     }
 
-    context->setState(new HIDStateSendrotation());
+    context->setState(new HIDStateSendrotation()); // Set the next state to send rotation
 }
 
+// TODO - Add JIGGLE functionality for the translation state.
 #if 0
 void HIDStateSendtranslation::apply() {
 

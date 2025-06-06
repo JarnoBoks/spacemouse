@@ -1,30 +1,42 @@
-#include "HIDStateSendRotation.h"
-#include <hidhandler/HIDHandlerController.h>                   // For HIDHandlerController (context)
+#include "HIDStateSendRotation.hpp"
+#include <hidhandler/HIDHandlerController.hpp>                 // For HIDHandlerController (context)
 #include <observers/HIDEventBuffer/HIDEventBufferRotation.hpp> // For HIDEventBuffer
 #include <hidhandler/sender/HIDSenderRotation.hpp>             // For HIDSenderRotation
 
+#include <usbstack/HIDReportDescriptor.h> // for ReportIDs
+#include <usbstack/USBInterface.hpp>      // For USB interface functions (AVR/ESP32 independent)
+
+#include <common/esp_print.h> // For ESP_PRINT and other print macros
+
 // Includes for the possible target states
-#include "HIDStateSendkeys.h"
+#include "HIDStateSendkeys.hpp"
 
 void HIDStateSendrotation::apply() {
 
+    // Failsafe check to ensure that the context and data are set
+    if (!context || !m_data || !context->getHIDEventBufferRotation()) {
+        ESP_WARN("Context, data or eventbuffer not set");
+        return;
+    }
+
+    // If a new HID report is not due, stay in the current state.
+    // TODO - Add the 'isReady' check here to avoid sending data if the USB stack is not ready.
     if (!isNewHidReportDue()) {
         return;
     }
 
-    //  Send a message if new data is staged or if the zero counter is less than 3
-    const bool staged = context->getHIDEventBufferRotation()->isStaged();
-    if (staged || m_data->countRotZeros < 3) {
-        HIDSenderRotation hidSender(context->getHIDEventBufferRotation()->getStaged()); // Create a new HIDSender instance with the staged rotation data
-        hidSender.sendData();                                                           // Send the rotation data
-        context->getHIDEventBufferRotation()->clearStaged();                            // Clear the staged rotation data
+    // If rotation data is staged for sending or we didn't send 3 zero states.
+    bool isStaged = context->getHIDEventBufferRotation()->isStaged(); // Check if there is staged rotation data
+    if (isStaged || m_data->countRotZeros < 3) {
+        USBSendReport(REPORTID_ROT, context->getHIDEventBufferRotation()->getStaged(), HID_MESSAGE_SIZE); // Send new rotation values to the Host
+        context->getHIDEventBufferRotation()->clearStaged();                                              // Clear the staged rotation data
 
         // Increment or reset the zero counter.
-        m_data->countRotZeros = (staged) ? 0 : m_data->countRotZeros + 1; // Increment the zero counter if rotation data is staged
+        m_data->countRotZeros = (isStaged) ? 0 : m_data->countRotZeros + 1; // Increment the zero counter if rotation data is staged
 
         m_data->lastHIDsentRep += HIDUPDATERATE_MS;
         // REMOVE m_data->hasSentNewData = true;
     }
 
-    context->setState(new HIDStateSendkeys());
+    context->setState(new HIDStateSendkeys()); // Set the next state to send keys
 }

@@ -1,8 +1,8 @@
-#include "HIDStateStart.h"
-#include <hidhandler/HIDHandlerController.h> // For HIDHandlerController (context)
+#include "HIDStateStart.hpp"
+#include <hidhandler/HIDHandlerController.hpp> // For HIDHandlerController (context)
 
 // Includes for the possible target states
-#include "HIDStateSendtranslation.h"
+#include "HIDStateSendtranslation.hpp"
 
 void HIDStateStart::apply() {
     context->setState(new HIDStateSendtranslation());

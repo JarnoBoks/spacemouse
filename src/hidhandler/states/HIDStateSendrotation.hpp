@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HIDStateBase.h"
+#include "HIDStateBase.hpp"
 
 class HIDStateSendrotation : public HIDStateBase {
 protected:

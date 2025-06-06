@@ -1,11 +1,10 @@
-
 #pragma once
 #include "config.h" // for ADV_HID_JIGGLE
 
 // Include the state header files
-#include "states/HIDStateData.h"  // for HIDStateData
-#include "states/HIDStateBase.h"  // for HIDStateBase
-#include "states/HIDStateStart.h" // for HIDStateInit
+#include "states\HIDStateData.hpp"  // for HIDStateData
+#include "states\HIDStateBase.hpp"  // for HIDStateBase
+#include "states\HIDStateStart.hpp" // for HIDStateInit
 
 class HIDEventBufferKeys;        // forward declaration
 class HIDEventBufferRotation;    // forward declaration

@@ -1,5 +1,5 @@
-#include "HIDStateSendKeys.h"
-#include <hidhandler/HIDHandlerController.h>               // For HIDHandlerController (context)
+#include "HIDStateSendKeys.hpp"
+#include <hidhandler/HIDHandlerController.hpp>             // For HIDHandlerController (context)
 #include <observers/HIDEventBuffer/HIDEventBufferKeys.hpp> // For HIDEventBuffer
 #include <hidhandler/sender/HIDSenderKeys.hpp>             // For HIDSenderKeys
 
@@ -9,18 +9,12 @@
 #include <common/esp_print.h>
 
 // Includes for the possible target states
-#include "HIDStateSendtranslation.h"
+#include "HIDStateSendtranslation.hpp"
 
 void HIDStateSendkeys::apply() {
     // Failsafe check to ensure that the context and data are set
     if (!context || !m_data || !context->getHIDEventBufferKeys()) {
         ESP_WARN("Context, data or eventbuffer not set");
-        return;
-    }
-
-    // If no data is staged for sending, go to the next state.
-    if (!context->getHIDEventBufferKeys()->isStaged()) {
-        context->setState(new HIDStateSendtranslation());
         return;
     }
 
@@ -30,9 +24,15 @@ void HIDStateSendkeys::apply() {
         return;
     }
 
-    USBSendReport(REPORTID_KEYS, context->getHIDEventBufferKeys()->getStaged(), HIDKEYDATASIZE); // Send new keys values to the Host
-    context->getHIDEventBufferKeys()->clearStaged();                                             // Clear the staged keys data
+    // If no data is staged for sending, go to the next state.
+    if (context->getHIDEventBufferKeys()->isStaged()) {
+        USBSendReport(REPORTID_KEYS, context->getHIDEventBufferKeys()->getStaged(), HIDKEYDATASIZE); // Send new keys values to the Host
+        context->getHIDEventBufferKeys()->clearStaged();                                             // Clear the staged keys data
 
-    m_data->lastHIDsentRep += HIDUPDATERATE_MS;
-    // REMOVE m_data->hasSentNewData = true;
+        m_data->lastHIDsentRep += HIDUPDATERATE_MS;
+        // REMOVE m_data->hasSentNewData = true;
+    }
+
+    context->setState(new HIDStateSendtranslation());
+    return;
 }

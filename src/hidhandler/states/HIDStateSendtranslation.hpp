@@ -1,5 +1,5 @@
 #pragma once
-#include "HIDStateBase.h"
+#include "HIDStateBase.hpp"
 
 class HIDStateSendtranslation : public HIDStateBase {
 protected:

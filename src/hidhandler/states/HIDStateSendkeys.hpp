@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HIDStateBase.h"
+#include "HIDStateBase.hpp"
 
 class HIDStateSendkeys : public HIDStateBase {
 protected:

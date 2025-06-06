@@ -80,7 +80,7 @@ HIDEventBufferRotation myHIDEventBufferRotation;
 HIDEventBufferTranslation myHIDEventBufferTranslation;
 
 // Include the header file for the HID handler (used to handle the HID events)
-#include "hidhandler/HIDHandlerController.h"
+#include "hidhandler/HIDHandlerController.hpp"
 #include "hidhandler/SpaceMouseHID.h"
 SpaceMouseHID mySpaceMouseHID;
 

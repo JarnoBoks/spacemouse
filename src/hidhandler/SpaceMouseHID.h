@@ -1,7 +1,7 @@
 #pragma once
 
 // Include the State Controller header file
-#include "HIDHandlerController.h"
+#include "HIDHandlerController.hpp"
 
 class HIDHandlerController; // Forward declaration of HIDHandlerController class
 

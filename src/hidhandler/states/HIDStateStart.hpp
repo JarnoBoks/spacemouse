@@ -1,5 +1,5 @@
 #pragma once
-#include "HIDStateBase.h"
+#include "HIDStateBase.hpp"
 
 /**
  * @brief This class represents the starting state of the HID state machine.

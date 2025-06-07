@@ -19,26 +19,6 @@ public:
         lastHIDsentRep = now; // Set the last HID report time to now
     }
 
-#if defined(ARCH_ESP32)
-    /**
-     * @brief This function prints the current state data for debugging purposes.
-     */
-    void printHIDStateData() {
-        // Output the state data for debugging purposes
-        Serial.print(F("__data= lastHIDsentRep: "));
-        Serial.print(lastHIDsentRep);
-        Serial.print(F(", now: "));
-        Serial.print(now);
-        Serial.print(F(", hasSentNewData: "));
-        Serial.print(hasSentNewData);
-        Serial.print(F(", countTransZeros: "));
-        Serial.print(countTransZeros);
-        Serial.print(F(", countRotZeros: ")); // Updated to use F() macro for string literal
-        Serial.print(countRotZeros);
-        Serial.println();
-    }
-#endif
-
     // State variables - these are used to manage the state(or state transitions) of the HID report sending
     unsigned long lastHIDsentRep; // Last time the HID report was sent
     unsigned long now;            // The time the state sequence started in milliseconds

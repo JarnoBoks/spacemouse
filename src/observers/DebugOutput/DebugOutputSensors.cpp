@@ -13,7 +13,7 @@ void DebugOutputSensors::update(IObservable *sensorCollection) {
         return;
     }
 
-    // REVIEW - Test - static cast is not necessary, but it is more readable
+    // DEVNOTE - The Observable is a SensorCollection. Cast is necessary to access Collection functions.
     for (uint8_t id = 0; id < static_cast<SensorCollection *>(sensorCollection)->getItemCount(); id++) {
         TextHelper::printLeadingComma(id); // Print a komma if it's not the first sensor
 

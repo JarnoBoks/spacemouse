@@ -16,7 +16,7 @@ void DebugOutputAxes::update(IObservable *knobMotionVectors) {
     }
 
     // REFACTOR - Do the loop constraint(itemCount) for all collections (sensors, keys, axes) in the base class
-    // REVIEW - Test - static cast is not necessary, but it is more readable
+    // DEVNOTE - The Observable is a KnobAxisCollection. Cast is necessary to access Collection functions.
     for (uint8_t i = 0; i < static_cast<KnobAxisCollection *>(knobMotionVectors)->getItemCount(); i++) {
         TextHelper::printLeadingComma(i); // Print a komma if it's not the first axis
 

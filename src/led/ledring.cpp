@@ -4,6 +4,8 @@
 #include "config.h"  // Default configuration for the LED ring (LEDUPDATERATE_MS, LEDPIN, NUM_LED_LEDRING)
 #include <visitors/KnobAxisCollectionGetMainAixs.hpp>
 
+// Only include the LedRing class if NUM_LED_LEDRING and LEDPIN are defined
+#if defined(NUM_LED_LEDRING) && defined(LEDPIN)
 #ifndef LEDUPDATERATE_MS
 #define LEDUPDATERATE_MS 150
 #endif
@@ -177,3 +179,4 @@ void LedRing::set4LEDsOnClock(const uint16_t clock, const CRGB color) {
     m_Leds[(NUM_LED_LEDRING + pos - 1) % NUM_LED_LEDRING] = color;
     m_Leds[(NUM_LED_LEDRING + pos - 2) % NUM_LED_LEDRING] = color;
 }
+#endif // defined(NUM_LED_LEDRING) && defined(LEDPIN)

@@ -82,7 +82,8 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
         setState(new DebugParamAxisInformation(this));
         break;
     case 5:
-        // Centered values (2nd debug) and translation & rotation values side by side for direct reference. Modifier function and inversion are applied. Any configured YZ switching or Exclusivemode is not applied.
+        // Centered Sensor values (2nd debug) and Translation & Rotation values side by side for direct reference. Modifier function and inversion are applied.
+        // Any configured YZ switching or Exclusivemode is not applied.
         setState(new DebugParamSensorAxisInformation(this));
         break;
     case 6:
@@ -90,7 +91,7 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
         setState(new DebugParamSensorAxisKeysInformation(this));
         break;
     case 7:
-        // Centered values, translation & rotation, keystate (with kill switch) and exclusive mode applied
+        // Centered values, translation & rotation, keystate (with kill switch) and inversion & exclusive mode applied (the final data that is sent to the host).
         // TODO setState(new DebugParamSensorInformationCentered(this));
         break;
     case 8:

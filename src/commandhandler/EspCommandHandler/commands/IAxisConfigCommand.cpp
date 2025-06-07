@@ -21,7 +21,7 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
     if (paramCount == 0) {
         // No params provided, show current configuration values of the axes.
         AxisConfigPrinter printer;
-        m_CollectionCarrier->getKnobAxes()->accept(printer);
+        m_CollectionCarrier->getKnobAxisCollection()->accept(printer);
         return;
     }
 
@@ -50,7 +50,7 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
             // The first character is a direction
             // REVIEW - Can the cast (char *)param1 be removed?
             char *reqAxisName = (char *)param1 + 1; // Pointer to the axis name (skip the first character)
-            m_knobAxis = m_CollectionCarrier->getKnobAxes()->getAxis(reqAxisName);
+            m_knobAxis = m_CollectionCarrier->getKnobAxisCollection()->getAxis(reqAxisName);
             if (m_knobAxis == nullptr) {
                 ESP_INFO("KnobAxis not found");
                 m_requestedValue = -1;
@@ -68,7 +68,7 @@ void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t
 
         } else {
             // The first character is not a direction, test if the KnobAxis name is specified.
-            m_knobAxis = m_CollectionCarrier->getKnobAxes()->getAxis(param1);
+            m_knobAxis = m_CollectionCarrier->getKnobAxisCollection()->getAxis(param1);
             if (m_knobAxis == nullptr) {
                 ESP_INFO("KnobAxis not found");
                 m_requestedValue = -1; // Update the requested value to -1, indicating no update/storage needed

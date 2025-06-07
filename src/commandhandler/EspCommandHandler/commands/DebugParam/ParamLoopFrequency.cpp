@@ -10,13 +10,13 @@
  *          This ensures that the observer is properly cleaned up and does not cause memory leaks.
  */
 DebugParamLoopFrequency::~DebugParamLoopFrequency() {
-    m_Context->getCollectionCarrier()->getKnobAxes()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
-    delete m_AxisObserver;                                                            // Clean up the observer instance
+    m_Context->getCollectionCarrier()->getKnobAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
+    delete m_AxisObserver;                                                                      // Clean up the observer instance
     m_AxisObserver = nullptr;
 }
 
 void DebugParamLoopFrequency::apply() {
     // Instantiate the Observer for the Loop Frequency values and attach it to the hardware
     m_AxisObserver = new DebugOutputLoopFrequency();
-    m_Context->getCollectionCarrier()->getKnobAxes()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
+    m_Context->getCollectionCarrier()->getKnobAxisCollection()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
 }

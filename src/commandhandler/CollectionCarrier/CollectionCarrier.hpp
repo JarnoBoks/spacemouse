@@ -41,8 +41,8 @@ public:
           m_KeyCollection(keyCollection),
           m_Kinematics(kinematics) {}
 
-    inline SensorCollection *getSensorCollection() const { return m_SensorCollection; } // Get the sensor collection
-    inline KnobAxisCollection *getKnobAxes() const { return m_KnobAxisCollection; }     // Get the axis collection
-    inline KeyCollection *getKeyCollection() const { return m_KeyCollection; }          // Get the key collection
-    inline Kinematics *getKinematics() const { return m_Kinematics; }                   // Get the kinematics collection
+    inline SensorCollection *getSensorCollection() const { return m_SensorCollection; }       // Get the sensor collection
+    inline KnobAxisCollection *getKnobAxisCollection() const { return m_KnobAxisCollection; } // Get the axis collection
+    inline KeyCollection *getKeyCollection() const { return m_KeyCollection; }                // Get the key collection
+    inline Kinematics *getKinematics() const { return m_Kinematics; }                         // Get the kinematics collection
 };

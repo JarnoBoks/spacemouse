@@ -23,7 +23,7 @@ DebugParamSensorAxisInformation::~DebugParamSensorAxisInformation() {
     m_Context->getCollectionCarrier()->getSensorCollection()->detachObserver(m_SensorObserver); // Detach the observer from the sensor collection
     delete m_SensorObserver;
 
-    m_Context->getCollectionCarrier()->getKnobAxes()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
+    m_Context->getCollectionCarrier()->getKnobAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
     delete m_AxisObserver;
 }
 
@@ -40,5 +40,5 @@ void DebugParamSensorAxisInformation::apply() {
     m_Context->getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
 
     m_AxisObserver = new DebugOutputAxesModified();
-    m_Context->getCollectionCarrier()->getKnobAxes()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
+    m_Context->getCollectionCarrier()->getKnobAxisCollection()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
 }

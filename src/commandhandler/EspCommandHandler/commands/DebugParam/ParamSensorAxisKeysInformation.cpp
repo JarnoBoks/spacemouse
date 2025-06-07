@@ -22,10 +22,15 @@ DebugParamSensorAxisKeysInformation::~DebugParamSensorAxisKeysInformation() {
     m_Context->getCollectionCarrier()->getSensorCollection()->detachObserver(m_SensorObserver); // Detach the observer from the sensor collection
     delete m_SensorObserver;
 
-    m_Context->getCollectionCarrier()->getKnobAxes()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
+    m_Context->getCollectionCarrier()->getKnobAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
     delete m_AxisObserver;
 }
 
+/**
+ * @brief Applies the debug parameter sensor axis keys information.
+ * @details This method creates instances of the DebugOutputSensorsCenteredNoNewline and DebugOutputAxesModified observers,
+ *          and attaches them to the SensorCollection and KnobAxisCollection respectively.
+ */
 void DebugParamSensorAxisKeysInformation::apply() {
 
     // Instantiate the Observers and attach them to the hardware
@@ -33,5 +38,5 @@ void DebugParamSensorAxisKeysInformation::apply() {
     m_AxisObserver = new DebugOutputAxesModified();
 
     m_Context->getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
-    m_Context->getCollectionCarrier()->getKnobAxes()->attachObserver(m_AxisObserver);           // Attach the axis observer to the axis collection
+    m_Context->getCollectionCarrier()->getKnobAxisCollection()->attachObserver(m_AxisObserver); // Attach the axis observer to the axis collection
 }

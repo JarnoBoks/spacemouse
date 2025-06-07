@@ -10,12 +10,17 @@
  *          This ensures that the observer is properly cleaned up and does not cause memory leaks.
  */
 DebugParamAxisInformation::~DebugParamAxisInformation() {
-    m_Context->getCollectionCarrier()->getKnobAxes()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
-    delete m_AxisObserver;                                                            // Clean up the observer instance
+    m_Context->getCollectionCarrier()->getKnobAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
+    delete m_AxisObserver;                                                                      // Clean up the observer instance
 }
 
+/**
+ * @brief Applies the debug parameter axis information.
+ * @details This method creates an instance of the DebugOutputAxesSensitivity observer and attaches it to the KnobAxes collection.
+ *          The observer will then be notified of changes in the axis values and will print the sensitivity-adjusted values to the serial monitor.
+ */
 void DebugParamAxisInformation::apply() {
     // Instantiate the Observer for the RawSensor values and attach it to the hardware
     m_AxisObserver = new DebugOutputAxesSensitivity();
-    m_Context->getCollectionCarrier()->getKnobAxes()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
+    m_Context->getCollectionCarrier()->getKnobAxisCollection()->attachObserver(m_AxisObserver); // Attach the observer to the axis collection
 }

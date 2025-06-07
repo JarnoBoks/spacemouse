@@ -4,7 +4,7 @@
 
 class Sensor;
 
-#include <Arduino.h> // For Serial
+// #include <Arduino.h> // For Serial
 
 class DebugOutputSensors : public DebugOutput {
 private:

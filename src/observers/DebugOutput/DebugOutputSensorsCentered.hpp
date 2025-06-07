@@ -5,6 +5,7 @@
 #include "common/TextHelper.h"
 
 #include <Arduino.h> // For Serial
+
 /**
  * @brief Output class for centered sensor values.
  * @details This class inherits from DebugOutputSensors and overrides the getSensorValue method to return the centered value of the sensor.

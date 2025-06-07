@@ -3,6 +3,8 @@
 #include "sensor/sensors/Sensor.hpp"
 #include "common/TextHelper.h"
 
+#include <Arduino.h> // For Serial
+
 // void DebugOutputSensors::update(SensorCollection *sensorCollection) {
 void DebugOutputSensors::update(IObservable *sensorCollection) {
 

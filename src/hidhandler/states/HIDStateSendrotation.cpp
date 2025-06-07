@@ -19,8 +19,7 @@ void HIDStateSendrotation::apply() {
     }
 
     // If a new HID report is not due, stay in the current state.
-    // TODO - Add the 'isReady' check here to avoid sending data if the USB stack is not ready.
-    if (!isNewHidReportDue()) {
+    if (!(isNewHidReportDue() && USBReady)) {
         return;
     }
 

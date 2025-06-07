@@ -16,6 +16,7 @@
 
 #define USBStart HidUSBStack::getInstance()
 #define USBSendReport(x, y, z) HidUSBStack::getInstance()->SendReport(x, y, z)
+#define USBReady true // Always ready for USB communication on AVR
 #endif
 
 #if defined(ARDUINO_ARCH_ESP32)
@@ -24,10 +25,12 @@
 
 #define USBStart USBStack::getInstance()->setup_USB()
 #define USBSendReport(x, y, z) USBStack::getInstance()->SendReport(x, y, z)
+#define USBReady USBStack::getInstance()->Ready()
 #endif
 
 #if defined(ARDUINO_AVR_ATmega2560)
 // USB Not supported for ATmega2560
 #define USBStart
 #define USBSendReport(x, y, z)
+#define USBReady true // Always ready for USB communication on AVR
 #endif

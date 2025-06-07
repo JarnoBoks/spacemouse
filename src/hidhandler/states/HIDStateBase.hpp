@@ -22,7 +22,7 @@ protected:
      * @brief Checks if a new HID report should be sent based on the time elapsed since the last report.
      * @return true if a new HID report is due, false otherwise.
      */
-    inline bool isNewHidReportDue() {
+    bool isNewHidReportDue() {
         // calculate the difference between now and the last time it was sent
         // such a difference calculation is safe with regard to integer overflow after 48 days
         m_data->now = millis(); // Update the current time

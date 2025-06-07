@@ -33,7 +33,6 @@ void HIDStateSendtranslation::apply() {
         m_data->countTransZeros = (isStaged) ? 0 : m_data->countTransZeros + 1; // Increment the zero counter if translation data is staged
 
         m_data->lastHIDsentRep += HIDUPDATERATE_MS;
-        // REMOVE m_data->hasSentNewData = true;
     }
 
     context->setState(new HIDStateSendrotation()); // Set the next state to send rotation

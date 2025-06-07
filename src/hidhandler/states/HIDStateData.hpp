@@ -42,10 +42,8 @@ public:
     // State variables - these are used to manage the state(or state transitions) of the HID report sending
     unsigned long lastHIDsentRep; // Last time the HID report was sent
     unsigned long now;            // The time the state sequence started in milliseconds
-    // REMOVE bool hasSentNewData = false;  // Flag to indicate if new data has been sent
-
-    uint8_t countTransZeros = 0; // Counter for the number of Translation zero data packages sent
-    uint8_t countRotZeros = 0;   // Counter for the number of Rotation zero data packages sent
+    uint8_t countTransZeros = 0;  // Counter for the number of Translation zero data packages sent
+    uint8_t countRotZeros = 0;    // Counter for the number of Rotation zero data packages sent
 
     uint8_t prevKeyData[HIDKEYDATASIZE] = {0}; // Array to hold the previous key state
 #ifdef ADV_HID_JIGGLE

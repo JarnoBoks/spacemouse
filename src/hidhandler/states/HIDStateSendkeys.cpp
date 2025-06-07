@@ -27,7 +27,6 @@ void HIDStateSendkeys::apply() {
         context->getHIDEventBufferKeys()->clearStaged();                                             // Clear the staged keys data
 
         m_data->lastHIDsentRep += HIDUPDATERATE_MS;
-        // REMOVE m_data->hasSentNewData = true;
     }
 
     context->setState(new HIDStateSendtranslation());

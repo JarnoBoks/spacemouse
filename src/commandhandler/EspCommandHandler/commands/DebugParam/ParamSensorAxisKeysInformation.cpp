@@ -1,15 +1,16 @@
 #include "ParamSensorAxisKeysInformation.hpp"
 
-#include "ParamSensorAxisInformation.hpp"
-#include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
+#include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
 
 // Observable classes that are used in this file
-#include <sensor/SensorCollection.hpp> // For SensorCollection class
+#include <sensor/SensorCollection.hpp>
 #include <knob/KnobAxisCollection.hpp>
+#include <key/KeyCollection.hpp>
 
 // Observers that are used in this file.
-#include "observers/DebugOutput/DebugOutputAxesModified.hpp"             // Implementation of the ODebugOutputAxes class
-#include "observers/DebugOutput/DebugOutputSensorsCenteredNoNewline.hpp" // Implementation of the ODebugOutputSensors class
+#include <observers/DebugOutput/DebugOutputAxesModified.hpp>
+#include <observers/DebugOutput/DebugOutputSensorsCentered.hpp>
+#include <observers/DebugOutput/DebugOutputKeysState.hpp>
 
 /**
  * @brief Destructor to clean up the observer instance
@@ -24,6 +25,9 @@ DebugParamSensorAxisKeysInformation::~DebugParamSensorAxisKeysInformation() {
 
     m_Context->getCollectionCarrier()->getKnobAxisCollection()->detachObserver(m_AxisObserver); // Detach the observer from the axis collection
     delete m_AxisObserver;
+
+    m_Context->getCollectionCarrier()->getKeyCollection()->detachObserver(m_KeysObserver); // Detach the keys observer from the key collection
+    delete m_KeysObserver;
 }
 
 /**
@@ -33,10 +37,11 @@ DebugParamSensorAxisKeysInformation::~DebugParamSensorAxisKeysInformation() {
  */
 void DebugParamSensorAxisKeysInformation::apply() {
 
-    // Instantiate the Observers and attach them to the hardware
-    m_SensorObserver = new DebugOutputSensorsCenteredNoNewline();
-    m_AxisObserver = new DebugOutputAxesModified();
+    m_SensorObserver = new DebugOutputSensorsCentered(false); // Print separator after output, no newline
+    m_AxisObserver = new DebugOutputAxesModified(false);      // Print separator after output, no newline
+    m_KeysObserver = new DebugOutputKeysState();
 
     m_Context->getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
     m_Context->getCollectionCarrier()->getKnobAxisCollection()->attachObserver(m_AxisObserver); // Attach the axis observer to the axis collection
+    m_Context->getCollectionCarrier()->getKeyCollection()->attachObserver(m_KeysObserver);      // Attach the keys observer to the key collection
 }

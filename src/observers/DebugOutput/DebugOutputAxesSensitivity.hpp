@@ -16,9 +16,7 @@ private:
     }
 
 public:
-    inline void update(IObservable *axisCollection) override {
-        // Call the base class update method
+    inline void update(IObservable *axisCollection) override final {
         DebugOutputAxes::update(axisCollection);
-        Serial.println();
     }
 };

@@ -1,7 +1,7 @@
 #include "ParamSensorInformation.hpp"
 #include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
 #include "sensor/SensorCollection.hpp"
-#include "..\..\..\..\observers\DebugOutput\DebugOutputSensors.hpp"
+#include <observers/DebugOutput/DebugOutputSensors.hpp>
 
 DebugParamSensorInformation::~DebugParamSensorInformation() {
     if (m_SensorObserver != nullptr) {

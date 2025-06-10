@@ -7,7 +7,7 @@
 
 #include <Arduino.h> // Include Arduino library for Serial  function
 
-constexpr uint8_t cKEY_CONFIGS[cNUMBER_OF_KEYS][3] = KEYCFG; // Array to hold the key configuration
+constexpr uint8_t cKEY_CONFIGS[cNUMBER_OF_KEYS][3] = KEYCFG; // Array to hold the key configuration, as defined in config.h
 
 #define KEY_CFG_TYPE cKEY_CONFIGS[i][0] // Type of key (PHYSICAL or ROTARY)
 #define KEY_CFG_FUNC cKEY_CONFIGS[i][1] // Button type (SM_T, SM_R, etc.)
@@ -42,6 +42,7 @@ void KeyCollection::setup() {
         delete factory; // Delete the factory instance to free memory
     }
 };
+
 #undef KEY_CFG_TYPE
 #undef KEY_CFG_FUNC
 #undef KEY_CFG_PINN
@@ -52,7 +53,7 @@ Key *KeyCollection::getKey(const uint8_t id) const {
 }
 
 /**
- * @brief Attach an observer to all keys in the collection.
+ * @brief   Attach an observer to all keys in the collection.
  * @details This function iterates through all keys in the collection and attaches the provided observer to each key.
  *          This allows the observer to receive updates from all keys in the collection.
  * @param observer Pointer to the observer to be attached.

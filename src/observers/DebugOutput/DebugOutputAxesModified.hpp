@@ -16,8 +16,10 @@ private:
     }
 
 public:
-    inline void update(IObservable *axisCollection) override {
-        DebugOutputAxes::update(axisCollection); // Call the base class update method
-        Serial.println();
+    DebugOutputAxesModified(const bool outputNewline = true) : DebugOutputAxes(outputNewline) {} // Constructor, no newline after output
+    virtual ~DebugOutputAxesModified() = default;                                                // Destructor
+
+    inline void update(IObservable *axisCollection) override final {
+        DebugOutputAxes::update(axisCollection);
     }
 };

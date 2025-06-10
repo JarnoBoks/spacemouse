@@ -1,5 +1,7 @@
 #include "DebugOutput.hpp"
 
+#include <common/TextHelper.h>
+
 // Include system headers
 #include <wiring_private.h> // For millis()
 
@@ -18,5 +20,16 @@ bool DebugOutput::isDebugOutputDue() {
         return true;
     } else {
         return false;
+    }
+}
+
+/**
+ * @brief Ends the debug output by printing a new line or a text separator.
+ */
+void DebugOutput::endOutput() {
+    if (m_outputNewLine) {
+        Serial.println();
+    } else {
+        TextHelper::printSeparator();
     }
 }

@@ -17,9 +17,10 @@ private:
     }
 
 public:
-    void update(IObservable *sensorCollection) override {
-        // Call the base class update method
+    DebugOutputSensorsFiltered(const bool outputNewline = true) : DebugOutputSensors(outputNewline) {}
+    virtual ~DebugOutputSensorsFiltered() = default;
+
+    void update(IObservable *sensorCollection) override final {
         DebugOutputSensors::update(sensorCollection);
-        Serial.println();
     }
 };

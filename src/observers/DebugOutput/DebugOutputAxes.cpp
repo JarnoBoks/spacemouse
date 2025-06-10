@@ -30,4 +30,6 @@ void DebugOutputAxes::update(IObservable *knobMotionVectors) {
         TextHelper::alignValue(value, 4);
         Serial.print(value);
     }
+
+    endOutput(); // End the debug output, e.g., by printing a new line or space
 }

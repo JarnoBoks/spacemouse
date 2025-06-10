@@ -25,4 +25,6 @@ void DebugOutputSensors::update(IObservable *sensorCollection) {
         TextHelper::alignValue(value, 4);         // Align the value to the right with spaces
         Serial.print(value);
     }
+
+    endOutput(); // End the debug output, e.g., by printing a new line or space
 }

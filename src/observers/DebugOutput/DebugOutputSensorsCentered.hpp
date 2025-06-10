@@ -7,9 +7,9 @@
 #include <Arduino.h> // For Serial
 
 /**
- * @brief Output class for centered sensor values.
+ * @brief   Output class for centered sensor values.
  * @details This class inherits from DebugOutputSensors and overrides the getSensorValue method to return the centered value of the sensor.
- * It also overrides the update method to print the sensor values to the serial monitor.
+ *          It also overrides the update method to print the sensor values to the serial monitor.
  */
 class DebugOutputSensorsCentered : public DebugOutputSensors {
 private:
@@ -18,9 +18,10 @@ private:
     }
 
 public:
-    void update(IObservable *sensorCollection) override {
-        // Call the base class update method
+    DebugOutputSensorsCentered(const bool outputNewline = true) : DebugOutputSensors(outputNewline) {}
+    virtual ~DebugOutputSensorsCentered() = default;
+
+    void update(IObservable *sensorCollection) override final {
         DebugOutputSensors::update(sensorCollection);
-        Serial.println();
     }
 };

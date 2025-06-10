@@ -1,7 +1,6 @@
 #pragma once
 class IObserver; // Forward declaration of IObserver class
 
-// REFACTOR - Remove this class - takes to much memory on Arduino
 /**
  * @brief Interface for observable objects that can have observers attached.
  * @deprecated

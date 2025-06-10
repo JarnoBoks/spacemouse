@@ -19,10 +19,7 @@ private:
 public:
     DebugOutputSensorsRaw() {};
 
-    void update(IObservable *sensorCollection) override {
-        // Call the base class update method
+    void update(IObservable *sensorCollection) override final {
         DebugOutputSensors::update(sensorCollection);
-
-        Serial.println();
     }
 };

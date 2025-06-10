@@ -33,7 +33,6 @@
 // Observers
 #include "observers/DebugOutput/DebugOutputSensorsRaw.hpp"
 #include "observers/DebugOutput/DebugOutputSensorsCentered.hpp"
-#include "observers/DebugOutput/DebugOutputSensorsCenteredNoNewline.hpp" // Implementation of the ODebugOutputSensors class
 #include "observers/DebugOutput/DebugOutputSensorsFiltered.hpp"
 #include "observers/DebugOutput/DebugOutputAxesModified.hpp" // Implementation of the ODebugOutputAxes class
 #include "observers/DebugOutput/DebugOutputAxesSensitivity.hpp"
@@ -688,7 +687,7 @@ void AVRCommandHandler::DebugParamSensorAxisInformation() {
     // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
 
     // Instantiate the Observers and attach them to the hardware
-    m_SensorObserver = new DebugOutputSensorsCenteredNoNewline();
+    m_SensorObserver = new DebugOutputSensorsCentered(false); // false means no newline at the end
     m_AxisObserver = new DebugOutputAxesModified();
 
     getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
@@ -699,7 +698,7 @@ void AVRCommandHandler::DebugParamSensorAxisKeysInformation() {
     // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
 
     // Instantiate the Observers and attach them to the hardware
-    m_SensorObserver = new DebugOutputSensorsCenteredNoNewline();
+    m_SensorObserver = new DebugOutputSensorsCentered(false); // false means no newline at the end
     m_AxisObserver = new DebugOutputAxesModified();
 
     getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection

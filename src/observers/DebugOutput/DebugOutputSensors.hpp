@@ -11,8 +11,8 @@ private:
     virtual const int getSensorValue(const Sensor *sensor) const = 0;
 
 public:
-    DebugOutputSensors() = default;
-    virtual ~DebugOutputSensors() {};
+    DebugOutputSensors(const bool outputNewline = true) : DebugOutput(outputNewline) {}
+    virtual ~DebugOutputSensors() {}
 
     virtual void update(IObservable *sensorCollection) override;
 };

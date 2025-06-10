@@ -1,9 +1,10 @@
 #pragma once
 #include "observers/IObserver.hpp"
-#include "config.h" // DEBUGDELAY
+
+#include "config.h" // For DEBUGDELAY
 
 #ifndef DEBUGDELAY
-// For fail-safe: If DEBUGDELAY is not defined, set it to 250 ms (0.25 seconds).
+// Fail-safe: If DEBUGDELAY is not defined, set it to 250 ms (0.25 seconds).
 #define DEBUGDELAY 250
 #endif
 
@@ -15,11 +16,13 @@
 class DebugOutput : public IObserver {
 private:
     unsigned long m_lastDebugOutput = 0; // time from millis(), when the last debug output was written to the Serial monitor
+    const bool m_outputNewLine = true;   // Flag to control whether to output a new line (true) or separator (false) after the debug output
 
 protected:
     bool isDebugOutputDue(); // Check if a new debug output should be printed
+    void endOutput();        // End the debug output, e.g., by printing a new line or text separator
 
 public:
-    DebugOutput() = default; // Default constructor
+    DebugOutput(const bool outputNewline = true) : m_outputNewLine(outputNewline) {}
     virtual ~DebugOutput() {}
 };

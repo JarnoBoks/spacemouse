@@ -1,13 +1,13 @@
 #include "ParamSensorAxisInformation.hpp"
-#include "commandhandler/CollectionCarrier/CollectionCarrier.hpp"
+#include <commandhandler/CollectionCarrier/CollectionCarrier.hpp>
 
 // Observable classes that are used in this file
 #include <sensor/SensorCollection.hpp>
 #include <knob/KnobAxisCollection.hpp>
 
 // Observers that are used in this file.
-#include "observers/DebugOutput/DebugOutputAxesModified.hpp"             // Implementation of the ODebugOutputAxes class
-#include "observers/DebugOutput/DebugOutputSensorsCenteredNoNewline.hpp" // Implementation of the ODebugOutputSensors class
+#include <observers/DebugOutput/DebugOutputSensorsCentered.hpp>
+#include <observers/DebugOutput/DebugOutputAxesModified.hpp>
 
 #include <common/esp_print.h> // For ESP_PRINT
 #include <Arduino.h>
@@ -35,8 +35,7 @@ DebugParamSensorAxisInformation::~DebugParamSensorAxisInformation() {
  */
 void DebugParamSensorAxisInformation::apply() {
 
-    // Instantiate the Observers and attach them to the Observable classes
-    m_SensorObserver = new DebugOutputSensorsCenteredNoNewline();
+    m_SensorObserver = new DebugOutputSensorsCentered(false);                                   // Separator after output
     m_Context->getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the observer to the sensor collection
 
     m_AxisObserver = new DebugOutputAxesModified();

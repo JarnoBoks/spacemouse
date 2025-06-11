@@ -1,7 +1,7 @@
 #pragma once
 
-#include "..\IObserver.hpp"
-#include "sensor/SensorCollection.hpp" // For cHW_MAX_SENSORS
+#include <observers/IObserver.hpp>
+#include <sensor/SensorCollection.hpp> // For cHW_MAX_SENSORS
 
 class ICalibratorState;
 
@@ -13,7 +13,7 @@ class ICalibratorState;
  */
 class SensorIdleCalibration : public IObserver {
 private:
-    int m_processedIterations = 0; // Number of processed iterations for the idle calibration
+    int m_processedIterations = 0; // Number of processed iterations for the idle calibration, used to calculate the average idle position
 
     bool m_warningsOccurred = false;
     uint8_t m_maxDeadZone = 0; // Maximum dead zone value (of all sensors)
@@ -27,8 +27,7 @@ private:
 protected:
 public:
     SensorIdleCalibration(ICalibratorState *calibratorState);
-
-    virtual ~SensorIdleCalibration() {};
+    virtual ~SensorIdleCalibration() = default;
 
     void update(IObservable *sensorCollection) override;
     void _finishCalibration(IObservable *sensorCollection); // Finish the calibration process

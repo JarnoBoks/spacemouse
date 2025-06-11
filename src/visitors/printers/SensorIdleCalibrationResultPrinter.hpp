@@ -11,9 +11,9 @@
  */
 class SensorIdleCalibrationResultPrinter : public IVisitor {
 private:
-    int minValue = 0; // Minimum read value during Idle calibration
-    int maxValue = 0; // Maximum read value during Idle calibration
-    int deadzone = 0; // Deadzone value during Idle calibration
+    int minValue = 0;     // Minimum read value during Idle calibration
+    int maxValue = 0;     // Maximum read value during Idle calibration
+    uint8_t deadzone = 0; // Deadzone value during Idle calibration
 public:
     /**
      * @brief Constructor for SensorIdleCalibrationResultPrinter
@@ -24,7 +24,7 @@ public:
         Serial.println(F("\n#####  Min | Mean |  Max | Deadzone"));
     }
 
-    inline void setPrintParams(const int min, const int max, const int dz) {
+    inline void setPrintParams(const int min, const int max, const uint8_t dz) {
         minValue = min;
         maxValue = max;
         deadzone = dz;

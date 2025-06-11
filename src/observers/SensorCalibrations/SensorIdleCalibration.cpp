@@ -60,9 +60,9 @@ void SensorIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
         const int idlePosition = m_sumReads[id] / m_processedIterations;
 
         // Calculate the deadzone for the sensor
-        const int lowDZ = idlePosition - m_minIdleValue[id];          // Idle - lowest reading
-        const int highDZ = m_maxIdleValue[id] - idlePosition;         // Highest reading - Idle
-        const int sensorDZ = ((lowDZ > highDZ) ? lowDZ : highDZ) + 2; // Use the larger of the two deadzones and add failsafe value
+        const uint8_t lowDZ = idlePosition - m_minIdleValue[id];          // Idle - lowest reading (fe. 721 - 719 )
+        const uint8_t highDZ = m_maxIdleValue[id] - idlePosition;         // Highest reading - Idle (fe 726 - 721)
+        const uint8_t sensorDZ = ((lowDZ > highDZ) ? lowDZ : highDZ) + 2; // Use the larger of the two deadzones and add failsafe value
 
         // Update the maximum deadzone seen for all the sensors if necessary
         m_maxDeadZone = (sensorDZ > m_maxDeadZone) ? sensorDZ : m_maxDeadZone;

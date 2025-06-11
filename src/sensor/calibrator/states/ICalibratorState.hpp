@@ -1,5 +1,6 @@
 #pragma once
 
+// REFACTOR - This interface file and the base class should be refactored.
 class Calibrator;
 
 class ICalibratorState {

@@ -46,9 +46,6 @@ void CalibratorStateIdle::update() {
 }
 
 void CalibratorStateIdle::finish() {
-    // Output results of the MinMax calibration to the console
-    // SensorConfigMinMaxPrinter printer;
-    // context->getSensorCollection()->accept(printer);
 
     // Call the finish method of the observer, which will finalize the idle calibration and output the results to the console.
     static_cast<SensorIdleCalibration *>(sensorObserver)->_finishCalibration(context->getSensorCollection());

@@ -10,7 +10,7 @@
 #define LEDUPDATERATE_MS 150
 #endif
 
-LedRing::LedRing() {
+LedRing::LedRing() : m_lastRotatedLed(0) {
     FastLED.addLeds<WS2811, LEDPIN, GRB>(m_Leds, NUM_LED_LEDRING);
 }
 
@@ -129,12 +129,12 @@ void LedRing::update(IObservable *knobaxiscollection) {
  * @param color The CRGB color to use for the LED
  */
 void LedRing::rotateColor(const bool clockwise, const CRGB color) {
-    static int rotateLEDpos = 0;
+    // REMOVE static int rotateLEDpos = 0;
     m_Leds[m_lastRotatedLed] = color;
     if (clockwise) {
-        m_lastRotatedLed = (++m_lastRotatedLed) % NUM_LED_LEDRING;
+        m_lastRotatedLed = (m_lastRotatedLed + 1) % NUM_LED_LEDRING; // wrap around if we reach the end of the array
     } else {
-        m_lastRotatedLed = (m_lastRotatedLed + NUM_LED_LEDRING - 1) % NUM_LED_LEDRING; // avoid negativ led position
+        m_lastRotatedLed = (m_lastRotatedLed + NUM_LED_LEDRING - 1) % NUM_LED_LEDRING; // avoid negative led position
     }
 }
 

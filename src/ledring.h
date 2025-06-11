@@ -1,3 +1,4 @@
+#if 0 // REMOVE
 #ifndef LEDRING_h
 #define LEDRING_h
 // This is the public header for the ledring.cpp file
@@ -24,3 +25,4 @@ public:
 };
 
 #endif // LEDRING_h
+#endif // 0

@@ -2,7 +2,7 @@
 // Please open config_sample.h, adjust your settings and save it as config.h
 #include "config.h"
 #include <Arduino.h>
-
+#if 0
 #ifdef LEDRING
 #include "ledring.h"
 #include "kinematics\Kinematics.hpp"
@@ -160,3 +160,4 @@ void LedRing::_set4LEDsOnClock(const uint16_t clock, const CRGB color) {
 }
 
 #endif // #if LEDring
+#endif // 0

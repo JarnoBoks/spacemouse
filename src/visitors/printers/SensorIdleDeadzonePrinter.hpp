@@ -14,7 +14,7 @@ public:
     SensorIdleDeadzonePrinter() {
         // Constructor to initialize the DeadzonePrinter object
         // Print the header for the deadzone output
-        Serial.println(F("        Idle |  DZ  | Warning"));
+        Serial.println(F("      Idle |  DZ  | Warning"));
     }
 
     /**

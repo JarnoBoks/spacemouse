@@ -166,6 +166,7 @@ void loop() {
 
     // Update all the sensor values & apply the calibration to the read sensor values & notify collection observers
     mySensorCollection.evaluate();
+
     // Calculate from sensor data and apply all config- & calibration settings to the axis values & notify collection observers
     myKnobAxes.evaluate();
 

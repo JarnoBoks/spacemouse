@@ -7,10 +7,11 @@
 class SensorConfig; // Forward declaration of SensorConfig class
 
 /**
- * @brief Base class representing a sensor, implementing the ICollectable interface.
+ * @brief   Base class representing a sensor, implementing the ICollectable interface.
  * @details This class is a base class for different types of sensors. It provides common functionality for reading and processing sensor values.
- * @note The Sensor class is designed to be inherited by specific sensor types, such as HallSensor or JoystickSensor.
- *        It provides a common interface for reading and processing sensor values, as well as managing the sensor's configuration.
+ *          The idleposition and the deadzone are calculated on startup by the Idle calibration process.
+ * @note    The Sensor class is designed to be inherited by specific sensor types, such as HallSensor or JoystickSensor.
+ *          It provides a common interface for reading and processing sensor values, as well as managing the sensor's configuration.
  */
 class Sensor : public ICollectable, public VisitableBase {
 private:
@@ -20,8 +21,10 @@ private:
 
     int m_rawValue = 0; // Sensor raw value as read from the AD converter
     int m_cntValue = 0; // Sensor value after centering is applied
-    int m_finValue = 0; // Sensor value after deadzone correction and mapping is applied (final value).
-    int idleposition = 0;
+    int m_finValue = 0; // Sensor value after deadzone and mapping applied (final value).
+
+    int m_idleposition = 0;         // The sensor rawValue at which the sensor is considered idle (centered).   //TODO - Should the default value be somewhere in the middle of the range?
+    uint8_t m_deadzone = UINT8_MAX; // Default deadzone value, 255 means high deadzone to avoid jittering if the calibration has not finished.
 
     void readValue();
     void applyCalibration();
@@ -40,10 +43,13 @@ public:
     /// @brief Retrieve the configuration object of the Sensor.
     inline SensorConfig *getConfig() const { return config; };
 
-    inline int getIdlePosition() const { return idleposition; }
-
+    inline int getIdlePosition() const { return m_idleposition; }
     virtual bool setIdlePosition(int val);
-    virtual bool idlePositionWarning(const int val) const = 0; // Pure virtual function to be implemented by derived classes
+    virtual bool idlePositionOk(const int val) const = 0; // Pure virtual function to be implemented by derived sensor classes     //REFACTOR - Remove parameter, like the deadzoneWarning function
+
+    inline uint8_t getDeadzone() const { return m_deadzone; }
+    virtual bool setDeadzone(const uint8_t dz);
+    virtual bool isDeadzoneOk() const = 0; // Pure virtual function to be implemented by derived sensor classes
 
     /// @brief Retrieve the raw sensor value, the value as read from the AD converter.
     inline int getRawValue() const { return m_rawValue; }

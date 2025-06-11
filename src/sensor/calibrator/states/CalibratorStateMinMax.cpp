@@ -12,7 +12,7 @@ void CalibratorStateMinMax::start() {
     RETURN_E_IF_NULL(context->getSensorCollection(), "Sensor collection is null"); // Check if the sensor collection is set
 
     // Do nothing if the observer is already set (failsafe check, should not happen)
-    if (sensorObserver) {
+    if (m_sensorObserver) {
         ESP_PRINT("MinMax calibration already active, skipping.");
         return; // Exit if the observer is already set
     }
@@ -23,8 +23,8 @@ void CalibratorStateMinMax::start() {
     Serial.println(F(" sec."));
 
     // Attach the MinMaxCalibration observer to the SensorCollection
-    sensorObserver = new SensorMinMaxCalibration(this);
-    context->getSensorCollection()->attachObserver(sensorObserver);
+    m_sensorObserver = new SensorMinMaxCalibration(this);
+    context->getSensorCollection()->attachObserver(m_sensorObserver);
 
     m_startCalibrationTime = millis();
 }

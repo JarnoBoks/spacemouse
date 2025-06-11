@@ -275,6 +275,9 @@
 #define IDLEPOINT_LOW_WARNINGLEVEL 384  // The idlePoint should be above this level.
 #define IDLEPOINT_HIGH_WARNINGLEVEL 640 // The idlePoint should be below this level.
 
+#define DEADZONE_WARNINGLEVEL 10 // The deadzone should be below this level.
+#define DEADZONE_SURPLUS 2       // The surplus that will be added to the calibrated value of the deadzone. This is used to prevent the deadzone from being too small.
+
 #define MINIMUM_HIGH_WARNINGLEVEL -250 // The minimum value for the sensor should be below this level.
 #define MAXIMUM_LOW_WARNINGLEVEL 250   // The maximum value for the sensor should be above this level.
 

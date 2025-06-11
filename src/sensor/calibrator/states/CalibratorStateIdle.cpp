@@ -13,17 +13,17 @@ void CalibratorStateIdle::start() {
     RETURN_E_IF_NULL(context->getSensorCollection(), "Sensor collection is null"); // Check if the sensor collection is set
 
     // Do nothing if the observer is already set (failsafe check, should not happen)
-    if (sensorObserver) {
+    if (m_sensorObserver) {
         ESP_PRINT("Idle calibration already active, skipping.");
-        return; // Exit if the observer is already set
+        return;
     }
 
     // Output start of the Idle calibration to the console
     Serial.println(F("Starting Idle calibration..."));
 
     // Attach the idle calibration observer to the SensorCollection
-    sensorObserver = new SensorIdleCalibration(this);
-    context->getSensorCollection()->attachObserver(sensorObserver);
+    m_sensorObserver = new SensorIdleCalibration(this);               // The observer is deleted in the base class destructor
+    context->getSensorCollection()->attachObserver(m_sensorObserver); // TODO - Rename context to m_calibrator or similar, to avoid confusion with the SensorCollection
 
     m_startCalibrationTime = millis();
 }
@@ -37,18 +37,17 @@ void CalibratorStateIdle::start() {
 // For the Idle calibration, the apply method should check/update the number of iterations processed
 // and call the finalizer if the requested number of iterations is reached.
 void CalibratorStateIdle::update() {
-    RETURN_E_IF_NULL(sensorObserver, "Idle calibration observer is null"); // Check if the observer is set
+    RETURN_E_IF_NULL(m_sensorObserver, "Idle calibration observer is null"); // Check if the observer is set
 
-    if (++m_processedIterations >= m_iterations) {
+    if (++m_processedIterations >= m_requestedIterations) {
         finish();
-        return; // Exit if the requested number of iterations is reached
     }
 }
 
 void CalibratorStateIdle::finish() {
 
     // Call the finish method of the observer, which will finalize the idle calibration and output the results to the console.
-    static_cast<SensorIdleCalibration *>(sensorObserver)->_finishCalibration(context->getSensorCollection());
+    static_cast<SensorIdleCalibration *>(m_sensorObserver)->_finishCalibration(context->getSensorCollection());
 
     // Output results of the Idle calibration to the console
     Serial.println(F("Calibration finished!"));

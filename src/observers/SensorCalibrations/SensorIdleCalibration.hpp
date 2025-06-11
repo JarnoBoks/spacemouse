@@ -5,6 +5,8 @@
 
 class ICalibratorState;
 
+// REFACTOR - Attach this to the sensor instead of the SensorCollection, so that it can be used for all sensors.
+
 /**
  * @brief Class to calibrate the idle position of the hardware sensors of the spacemouse. This class inherits from IObserver.
  * @details The class is an observer of the SensorCollection class and is instantiated by the SensorCalibrationManager.

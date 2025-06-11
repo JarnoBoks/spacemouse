@@ -8,10 +8,6 @@
 #include <common/freeRAM.h>
 #include <common/esp_print.h>
 
-// REFACTOR - Warninglevel should be set in the SensorConfig class, not here
-#define DEADZONEWARNING 10 // Define a threshold for dead zone warning
-// NOTE - At the moment the dead zone warning threshold is non hardware type specific. This could be changed in the future.
-
 /**
  * Example:
  * The knob is in Idle position, so optimally the raw value should allways be around 512 and stable.
@@ -60,34 +56,37 @@ void SensorIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
         const int idlePosition = m_sumReads[id] / m_processedIterations;
 
         // Calculate the deadzone for the sensor
-        const uint8_t lowDZ = idlePosition - m_minIdleValue[id];          // Idle - lowest reading (fe. 721 - 719 )
-        const uint8_t highDZ = m_maxIdleValue[id] - idlePosition;         // Highest reading - Idle (fe 726 - 721)
-        const uint8_t sensorDZ = ((lowDZ > highDZ) ? lowDZ : highDZ) + 2; // Use the larger of the two deadzones and add failsafe value
+        const uint8_t lowDZ = idlePosition - m_minIdleValue[id];      // Idle - lowest reading (fe. 721 - 719 )
+        const uint8_t highDZ = m_maxIdleValue[id] - idlePosition;     // Highest reading - Idle (fe 726 - 721)
+        const uint8_t sensorDZ = ((lowDZ > highDZ) ? lowDZ : highDZ); // Use the larger of the two deadzones
 
-        // Update the maximum deadzone seen for all the sensors if necessary
+        // Update the maximum deadzone seen for all the sensors
         m_maxDeadZone = (sensorDZ > m_maxDeadZone) ? sensorDZ : m_maxDeadZone;
 
-        // Update the idlePosition for each sensor (returns true if the idle position is in the predefined normal zone)
+        // Update the idlePosition for the sensor (returns true if the idle position is in the predefined normal zone)
         Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id); // Get the sensor from the collection
+
         const bool positionWarning = !(sensor->setIdlePosition(m_sumReads[id] / m_processedIterations));
+        const bool deadzoneWarning = !sensor->setDeadzone(sensorDZ); // Set the deadzone for the sensor
 
         // Secondary check: Check if the deadzone is above the warning threshold.
-        const bool m_warningsOccurred = m_warningsOccurred || positionWarning || (sensorDZ > DEADZONEWARNING);
+        const bool m_warningsOccurred = m_warningsOccurred || positionWarning || deadzoneWarning;
 
-        printer.setPrintParams(m_minIdleValue[id], m_maxIdleValue[id], sensorDZ); // Set the print parameters for the printer visitor
-        sensor->accept(printer);                                                  // Accept the printer visitor to print the information for this sensor
+        printer.setPrintParams(m_minIdleValue[id], m_maxIdleValue[id]); // Set the print parameters for the printer visitor
+        sensor->accept(printer);                                        // Accept the printer visitor to print the information for this sensor
     }
 }
 
 /**
- * @brief Update the sensor calibration process
- * @param sensorCollection Pointer to the collection of sensors being observed
+ * @brief   Update the Sensor Idle calibration
+ * @param   sensorCollection Pointer to the collection of sensors being observed
  * @details This function reads the raw values for each sensor and updates the sum of reads, minimum and maximum values.
  *          It also checks if the requested number of iterations has been reached and calls the finalizer.
  */
 void SensorIdleCalibration::update(IObservable *sensorCollection) {
 
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
+
         // Get the sensor by ID
         Sensor *sensor = static_cast<SensorCollection *>(sensorCollection)->getSensor(id);
         if (!sensor) {
@@ -103,7 +102,7 @@ void SensorIdleCalibration::update(IObservable *sensorCollection) {
         m_maxIdleValue[id] = (_rawValue > m_maxIdleValue[id]) ? _rawValue : m_maxIdleValue[id];
     }
 
-    m_processedIterations++; // Increment the number of processed iterations
+    m_processedIterations++; // Increment the number of processed iterations        // REMOVE - This is not needed, the number of iterations is managed by the CalibratorStateIdle class
 
     // Notify the calibration manager that an update has been processed
     m_CalibratorState->update();

@@ -15,8 +15,12 @@ Sensor::Sensor(const int8_t pin, const int8_t id)
     : pin(pin),
       id(id),
       config(new SensorConfig(this)) {
+
     // Configure this sensor's pin for ADC reading
-    ArchitectureADC::connectADC(pin); // Setup the ADC for the specified pin
+    ArchitectureADC::connectADC(pin);
+
+    // Read the ADC value from the pin to stabilize the ADC reading
+    readValue();
 }
 
 Sensor::~Sensor() {
@@ -44,18 +48,32 @@ void Sensor::readValue() {
     m_rawValue = ArchitectureADC::readADC(pin);
 
     if (config) {
-        m_cntValue = m_rawValue - idleposition;
+        m_cntValue = m_rawValue - m_idleposition;
     }
 }
 
 /**
- * @brief Sets the idle position for the sensor configuration.
+ * @brief Sets the idle position for the sensor.
+ * @note This function is a placeholder and does not perform any validation.
+ *       It is intended to be overridden by derived classes to implement specific idle position logic.
  * @param val The new idle position to set.
- * @return True if the idle position was set successfully, false otherwise.
+ * @return False if any warning occurs, TSrue otherwise.
  */
 bool Sensor::setIdlePosition(int val) {
-    idleposition = val; // Set the idle position to the provided value
-    return true;        // Return true to indicate success
+    m_idleposition = val; // Set the idle position to the provided value
+    return true;          // Return true to indicate success
+}
+
+/**
+ * @brief Sets the deadzone for the sensor.
+ * @note This function is a placeholder and does not perform any validation.
+ *       It is intended to be overridden by derived classes to implement specific deadzone logic.
+ * @param val The new deadzone to set.
+ * @return False if no warning occurs, True otherwise.
+ */
+bool Sensor::setDeadzone(const uint8_t dz) {
+    m_deadzone = dz; // Set the deadzone to the provided value
+    return true;     // Return true to indicate success
 }
 
 /**
@@ -75,14 +93,12 @@ void Sensor::applyCalibration() {
         return; // If no configuration is set, exit the function
     }
 
-    uint8_t deadZone = config->getDeadzone();
-
-    if (abs(m_cntValue) <= deadZone) {
+    if (abs(m_cntValue) <= m_deadzone) {
         m_finValue = 0;
-    } else if (m_cntValue > deadZone) {
-        m_finValue = map(m_cntValue, deadZone, config->getMax(), 0, TOTALSENSITIVITY);
+    } else if (m_cntValue > m_deadzone) {
+        m_finValue = map(m_cntValue, m_deadzone, config->getMax(), 0, TOTALSENSITIVITY);
     } else {
-        m_finValue = map(m_cntValue, config->getMin(), (-1 * deadZone), -TOTALSENSITIVITY, 0);
+        m_finValue = map(m_cntValue, config->getMin(), (-1 * m_deadzone), -TOTALSENSITIVITY, 0);
     }
 
     // Invert the final value if the configuration is set to inverted

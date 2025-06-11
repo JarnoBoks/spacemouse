@@ -18,7 +18,6 @@ private:
         int minv = 0;
         int maxv = 0;
         bool invert = false;
-        uint8_t deadzone = UINT8_MAX; // Default deadzone value, 255 means high deadzone to avoid jittering if not explicitly set
     };
 
     SensorConfigData_t data;                 // Data structure to hold the configuration values
@@ -48,9 +47,6 @@ public:
 
     inline bool isInverted() const { return data.invert; }
     inline void setInverted(const bool inv) { data.invert = inv; }
-
-    inline uint8_t getDeadzone() const { return data.deadzone; }
-    inline void setDeadzone(const uint8_t dz) { data.deadzone = dz; }
 
     void persist() const;
 };

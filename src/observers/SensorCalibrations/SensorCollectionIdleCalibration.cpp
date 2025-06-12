@@ -1,4 +1,4 @@
-#include "SensorIdleCalibration.hpp"
+#include "SensorCollectionIdleCalibration.hpp"
 #include "sensor/sensors/Sensor.hpp" // For Sensor class
 
 #include <visitors/printers/SensorIdleCalibrationResultPrinter.hpp> // For IdlePositionPrinter class
@@ -27,7 +27,7 @@
  * The deadzone is 30 (530 - 500).
  */
 
-SensorIdleCalibration::SensorIdleCalibration(ICalibratorState *calibratorState) {
+SensorCollectionIdleCalibration::SensorCollectionIdleCalibration(ICalibratorState *calibratorState) {
 
     m_CalibratorState = calibratorState; // Set the calibrator state
 
@@ -45,7 +45,7 @@ SensorIdleCalibration::SensorIdleCalibration(ICalibratorState *calibratorState) 
  *          It also checks for any warnings that occurred during the calibration process.
  * @param sensorCollection Pointer to the SensorCollection
  */
-void SensorIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
+void SensorCollectionIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
 
     SensorIdleCalibrationResultPrinter printer;
 
@@ -83,7 +83,7 @@ void SensorIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
  * @details This function reads the raw values for each sensor and updates the sum of reads, minimum and maximum values.
  *          It also checks if the requested number of iterations has been reached and calls the finalizer.
  */
-void SensorIdleCalibration::update(IObservable *sensorCollection) {
+void SensorCollectionIdleCalibration::update(IObservable *sensorCollection) {
 
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
 

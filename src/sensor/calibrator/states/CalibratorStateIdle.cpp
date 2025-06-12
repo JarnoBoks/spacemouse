@@ -1,12 +1,12 @@
 #include "CalibratorStateIdle.hpp"
-#include <sensor/SensorCollection.hpp>                            // For SensorCollection class
-#include <observers/SensorCalibrations/SensorIdleCalibration.hpp> // For SensorIdleCalibration class
-#include <common/esp_print.h>                                     // For ESP_PRINT and other print macros
+#include <sensor/SensorCollection.hpp>                                      // For SensorCollection class
+#include <observers/SensorCalibrations/SensorCollectionIdleCalibration.hpp> // For SensorIdleCalibration class
+#include <common/esp_print.h>                                               // For ESP_PRINT and other print macros
 
 #include <Arduino.h> // For millis() function
 /**
  * @brief Activates the idle calibration process.
- * @details This function activates the idle calibration process by creating an instance of the SensorIdleCalibration class and attaching it to the sensor collection.
+ * @details This function activates the idle calibration process by creating an instance of the SensorCollectionIdleCalibration class and attaching it to the sensor collection.
  */
 void CalibratorStateIdle::start() {
     RETURN_E_IF_NULL(context, "Calibrator context is null");                       // Check if the context is set
@@ -22,7 +22,7 @@ void CalibratorStateIdle::start() {
     Serial.println(F("Starting Idle calibration..."));
 
     // Attach the idle calibration observer to the SensorCollection
-    m_sensorObserver = new SensorIdleCalibration(this);               // The observer is deleted in the base class destructor
+    m_sensorObserver = new SensorCollectionIdleCalibration(this);     // The observer is deleted in the base class destructor
     context->getSensorCollection()->attachObserver(m_sensorObserver); // TODO - Rename context to m_calibrator or similar, to avoid confusion with the SensorCollection
 
     m_startCalibrationTime = millis();
@@ -47,7 +47,7 @@ void CalibratorStateIdle::update() {
 void CalibratorStateIdle::finish() {
 
     // Call the finish method of the observer, which will finalize the idle calibration and output the results to the console.
-    static_cast<SensorIdleCalibration *>(m_sensorObserver)->_finishCalibration(context->getSensorCollection());
+    static_cast<SensorCollectionIdleCalibration *>(m_sensorObserver)->_finishCalibration(context->getSensorCollection());
 
     // Output results of the Idle calibration to the console
     Serial.println(F("Calibration finished!"));

@@ -13,7 +13,7 @@ class ICalibratorState;
  *          It calculates the average idle position of the sensors over a number of iterations and sets the idle position.
  *
  */
-class SensorIdleCalibration : public IObserver {
+class SensorCollectionIdleCalibration : public IObserver {
 private:
     int m_processedIterations = 0; // Number of processed iterations for the idle calibration, used to calculate the average idle position
 
@@ -28,8 +28,8 @@ private:
 
 protected:
 public:
-    SensorIdleCalibration(ICalibratorState *calibratorState);
-    virtual ~SensorIdleCalibration() = default;
+    SensorCollectionIdleCalibration(ICalibratorState *calibratorState);
+    virtual ~SensorCollectionIdleCalibration() = default;
 
     void update(IObservable *sensorCollection) override;
     void _finishCalibration(IObservable *sensorCollection); // Finish the calibration process

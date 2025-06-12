@@ -2,10 +2,10 @@
 
 #include "CommandBase.hpp"
 
-class SensorCalibrationManager; // Forward declaration of the SensorCalibrationManager class
-
 /// @brief command text for the Idle Calibration command
-static const char CMD_IDLE_P[] PROGMEM = "IDLE";
+static const char CMD_IDLE_P[] PROGMEM = "IDLE";                                                                                  // Command text for the Idle Calibration command
+static const char CMD_IDLE_HELP0_P[] PROGMEM = "IDLE: Start idle calibration for sensors";                                        // General information for this command
+static const char CMD_IDLE_HELP1_P[] PROGMEM = "IDLE <iterations>: Start idle calibration for sensors with specified iterations"; // Detailed information for this command
 
 /**
  * @brief Class to handle the IDLE command.
@@ -25,7 +25,7 @@ public:
      * @details Initializes the command with the CMD_IDLE command name.
      * @param collectionCarrier Pointer to the CollectionCarrier for accessing collections.
      */
-    IdleCommand(CollectionCarrier *collectionIdentifier) : CommandBase(CMD_IDLE_P, collectionIdentifier) {}
+    IdleCommand(CollectionCarrier *collectionCarrier) : CommandBase(CMD_IDLE_P, collectionCarrier) {}
     ~IdleCommand() = default;
 
     void execute(const char *param1, const char *param2, const uint8_t paramCount) override;

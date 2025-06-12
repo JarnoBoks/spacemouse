@@ -44,7 +44,7 @@ public:
     static void setupADC() {
         // Initialize ADC for AVR
         // Set the ADC Prescaler to 16 in order to read the ADC much faster than default.
-        // NOTE: Added this for the Joystick hardware as well, but untested.
+        // DEVNOTE: Added this for the Joystick hardware as well, but untested.
         ADCSRA = (ADCSRA & B11111000) | 4; // Set prescaler to 16 for ADC
 
         // Set the analog reference voltage for the sensors to 2.56V on the Pro Micro.

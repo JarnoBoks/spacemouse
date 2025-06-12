@@ -47,7 +47,7 @@ const bool Sensor::hasDescriptor(const char *descriptor) const {
 void Sensor::readValue() {
     m_rawValue = ArchitectureADC::readADC(pin);
 
-    if (config) {
+    if (config) { // REVIEW - Why the check for config?
         m_cntValue = m_rawValue - m_idleposition;
     }
 }

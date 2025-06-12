@@ -57,7 +57,7 @@ SensorConfig::SensorConfig(const Sensor *contextSensor, const int min, const int
  * @param val The new minimum value to set.
  * @note Used in calibration routines to update the minimum value.
  */
-void SensorConfig::updateMin(int val) {
+void SensorConfig::updateMin(const int val) {
     data.minv = (val < data.minv) ? val : data.minv;
 }
 
@@ -66,13 +66,13 @@ void SensorConfig::updateMin(int val) {
  * @param val The new maximum value requested to set.
  * @note Used in calibration routines to update the maximum value.
  */
-void SensorConfig::updateMax(int val) {
+void SensorConfig::updateMax(const int val) {
     data.maxv = (val > data.maxv) ? val : data.maxv;
 }
 
 void SensorConfig::_minWarning(bool *warning) const {
     if (warning != nullptr) {
-        *warning = (data.minv > MINIMUM_HIGH_WARNINGLEVEL); // If the minimum value is below the warning level, raise a warning
+        *warning = (data.minv > MINIMUM_HIGH_WARNINGLEVEL); // If the minimum value is above the warning level, raise a warning
     }
 }
 

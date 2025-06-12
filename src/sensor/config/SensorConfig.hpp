@@ -8,20 +8,22 @@ class Sensor;
 /**
  * @brief Sensor configuration class
  * @details This class is used to manage the configuration of sensors, including their minimum and
- *          maximum values, inversion status, and deadzone. The sensor configuration will be retrieved
- *          from the EEPROM or Preferences store based on the sensor ID. If the configuration is not found,
- *          it will use the default values defined in the defaults files.
+ *          maximum values, inversion status, and deadzone. The sensor configuration data will be
+ *          retrieved from the non volatile memory. If the non volatile memory does not contain a
+ *          valid configuration for the sensor, the sensor configuration will be setup according to
+ *          default values defined in the hardware corresponding default files if the configuration value
+ *          isn't overridden in config.h.
  */
 class SensorConfig : public VisitableBase {
 private:
     struct SensorConfigData_t {
-        int minv = 0;
-        int maxv = 0;
-        bool invert = false;
+        int minv = 0;        // The minimum centered value of the sensor.
+        int maxv = 0;        // The maximum centered value of the sensor.
+        bool invert = false; // Flag to indicate that the sensor value should be inverted (ie. magnet is mounted upside down / joystick is mounted the wrong way).
     };
 
-    SensorConfigData_t data;                 // Data structure to hold the configuration values
-    const Sensor *m_contextSensor = nullptr; // Pointer to the Sensor object that this configuration belongs to
+    SensorConfigData_t data;                 // Data structure to hold the configuration values.
+    const Sensor *m_contextSensor = nullptr; // Pointer to the Sensor object that this configuration belongs to.
 
     void _minWarning(bool *warning) const;
     void _maxWarning(bool *warning) const;

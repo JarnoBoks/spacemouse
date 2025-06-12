@@ -25,7 +25,7 @@ public:
         RETURN_W_IF_NULL(sensorcfg, "SensorConfig null"); // Check if the sensor configuration is null
 
         const int centeredVal = sensor.getCntValue();
-        sensorcfg->updateMin(centeredVal); // Update the minimum value in the sensor configuration if it is lower than the current minimum
-        sensorcfg->updateMax(centeredVal); // Update the maximum value in the sensor configuration if it is higher than the current maximum
+        sensorcfg->updateMin(centeredVal); // Update the minimum value in the sensor configuration, if it is lower than the current stored minimum
+        sensorcfg->updateMax(centeredVal); // Update the maximum value in the sensor configuration if it is higher than the current stored maximum
     }
 };

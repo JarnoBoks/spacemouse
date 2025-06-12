@@ -61,11 +61,11 @@ public:
     inline int getRawValue() const { return m_rawValue; }
 
     /// @brief Retrieve the centered sensor value.
-    /// @details This value is the raw sensor value adjusted by the idle position.
+    /// @return The sensor value after applying the idle position offset
     inline int getCntValue() const { return m_cntValue; }
 
     /// @brief Retrieve the final sensor value.
-    /// @details This value is the centered sensor value adjusted by the deadzone and mapping.
+    /// @return The sensor value after applying the idle position offset, deadzone filtering and applying the Sensor range map.
     inline int getFinValue() const { return m_finValue; }
 
     /// @brief Retrieve the descriptor of the sensor.

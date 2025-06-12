@@ -63,7 +63,7 @@ void SensorConfig::updateMin(int val) {
 
 /**
  * @brief Updates the maximum value for the sensor configuration if the new value is greater than the current value.
- * @param val The new maximum value to set.
+ * @param val The new maximum value requested to set.
  * @note Used in calibration routines to update the maximum value.
  */
 void SensorConfig::updateMax(int val) {
@@ -94,6 +94,11 @@ const int SensorConfig::getMin(bool *warning) const {
     return data.minv;
 }
 
+/**
+ * @brief Sets the minimum value of the sensor configuration and will update the warning status if necessary.
+ * @param val The new minimum value to set.
+ * @param warning Pointer to a boolean variable to store the warning status.
+ */
 void SensorConfig::setMin(const int val, bool *warning) {
     data.minv = val;      // Set the minimum value
     _minWarning(warning); // Check if the minimum value is above the warning level
@@ -111,6 +116,11 @@ const int SensorConfig::getMax(bool *warning) const {
     return data.maxv;
 }
 
+/**
+ * @brief Sets the maximum value of the sensor configuration and will update the warning status if necessary.
+ * @param val The new maximum value to set.
+ * @param warning Pointer to a boolean variable to store the warning status.
+ */
 void SensorConfig::setMax(const int val, bool *warning) {
     data.maxv = val;      // Set the maximum value
     _maxWarning(warning); // Check if the maximum value is below the warning level

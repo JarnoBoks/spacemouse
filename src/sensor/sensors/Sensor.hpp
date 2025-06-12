@@ -49,7 +49,7 @@ public:
     /// @brief Retrieve the idle position of the sensor.
     inline int getIdlePosition() const { return m_idleposition; }
     virtual bool setIdlePosition(int val);
-    virtual bool idlePositionOk(const int val) const = 0; // Pure virtual function to be implemented by derived sensor classes     //REFACTOR - Remove parameter, like the deadzoneWarning function
+    virtual bool idlePositionOk() const = 0; // Pure virtual function to be implemented by derived sensor classes
 
     /// @brief Retrieve the deadzone of the sensor.
     inline uint8_t getDeadzone() const { return m_deadzone; }

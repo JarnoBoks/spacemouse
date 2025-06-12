@@ -25,7 +25,7 @@ public:
     HallSensor(const int8_t pin, HallSensorsId_t id);
 
     bool setIdlePosition(int val) override final;
-    bool idlePositionOk(const int val) const override final;
+    bool idlePositionOk() const override final;
 
     bool isDeadzoneOk() const override final;
     bool setDeadzone(const uint8_t dz) override final;

@@ -19,7 +19,7 @@ HallSensor::HallSensor(const int8_t pin, HallSensorsId_t id) : Sensor(pin, id) {
 bool HallSensor::setIdlePosition(int val) {
 
     bool res = Sensor::setIdlePosition(val); // Call the base class method to set the idle position
-    return res && idlePositionOk(val);       // Return true if the idle position is set and in the predefined normal zone, false otherwise
+    return res && idlePositionOk();          // Return true if the idle position is set and in the predefined normal zone, false otherwise
 }
 
 /**
@@ -29,8 +29,8 @@ bool HallSensor::setIdlePosition(int val) {
  * @retval True if the idle position is in the normal zone (between IDLEPOINT_LOW_WARNINGLEVEL and IDLEPOINT_HIGH_WARNINGLEVEL) (ok).
  * @retval False if the idle position is outside the normal zone (warning).
  */
-bool HallSensor::idlePositionOk(const int val) const {
-    return val >= IDLEPOINT_LOW_WARNINGLEVEL && val <= IDLEPOINT_HIGH_WARNINGLEVEL; // Return true if in normal zone, false otherwise
+bool HallSensor::idlePositionOk() const {
+    return getIdlePosition() >= IDLEPOINT_LOW_WARNINGLEVEL && getIdlePosition() <= IDLEPOINT_HIGH_WARNINGLEVEL; // Return true if in normal zone, false otherwise
 }
 
 bool HallSensor::setDeadzone(const uint8_t dz) {

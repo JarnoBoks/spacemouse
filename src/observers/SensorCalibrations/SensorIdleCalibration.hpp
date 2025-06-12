@@ -5,15 +5,17 @@
 
 class ICalibratorState;
 
+// REFACTOR - Attach this to the sensor instead of the SensorCollection, so that it can be used for all sensors.
+
 /**
  * @brief Class to calibrate the idle position of the hardware sensors of the spacemouse. This class inherits from IObserver.
  * @details The class is an observer of the SensorCollection class and is instantiated by the SensorCalibrationManager.
  *          It calculates the average idle position of the sensors over a number of iterations and sets the idle position.
  *
  */
-class SensorCollectionIdleCalibration : public IObserver {
+class SensorIdleCalibration : public IObserver {
 private:
-    int m_processedIterations = 0; // Number of processed iterations for the idle calibration, used to calculate the average idle position
+    int m_processedIterations = 0; // Number of processed iterations for the idle calibration, used to calculate the average idle position  //REVIEW - Can this be moved to the CalibratorState?
 
     bool m_warningsOccurred = false;
     uint8_t m_maxDeadZone = 0; // Maximum dead zone value (of all sensors)
@@ -22,12 +24,12 @@ private:
     int m_minIdleValue[cHW_MAX_SENSORS];  // Array to store minimum idle values for each sensor
     int m_maxIdleValue[cHW_MAX_SENSORS];  // Array to store maximum idle values for each sensor
 
-    ICalibratorState *m_CalibratorState = nullptr; // Pointer to the CalibratorState instance that manages this calibration
+    ICalibratorState *m_CalibratorState = nullptr; // Pointer to the CalibratorState instance that manages this calibration (for retrieving the number of iterations)
 
 protected:
 public:
-    SensorCollectionIdleCalibration(ICalibratorState *calibratorState);
-    virtual ~SensorCollectionIdleCalibration() = default;
+    SensorIdleCalibration(ICalibratorState *calibratorState);
+    virtual ~SensorIdleCalibration() = default;
 
     void update(IObservable *sensorCollection) override;
     void _finishCalibration(IObservable *sensorCollection); // Finish the calibration process

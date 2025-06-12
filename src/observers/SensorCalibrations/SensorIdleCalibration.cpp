@@ -1,4 +1,4 @@
-#include "SensorCollectionIdleCalibration.hpp"
+#include "SensorIdleCalibration.hpp"
 #include "sensor/sensors/Sensor.hpp" // For Sensor class
 
 #include <visitors/printers/SensorIdleCalibrationResultPrinter.hpp> // For IdlePositionPrinter class
@@ -27,7 +27,7 @@
  * The deadzone is 30 (530 - 500).
  */
 
-SensorCollectionIdleCalibration::SensorCollectionIdleCalibration(ICalibratorState *calibratorState) {
+SensorIdleCalibration::SensorIdleCalibration(ICalibratorState *calibratorState) {
 
     m_CalibratorState = calibratorState; // Set the calibrator state
 
@@ -45,7 +45,7 @@ SensorCollectionIdleCalibration::SensorCollectionIdleCalibration(ICalibratorStat
  *          It also checks for any warnings that occurred during the calibration process.
  * @param sensorCollection Pointer to the SensorCollection
  */
-void SensorCollectionIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
+void SensorIdleCalibration::_finishCalibration(IObservable *sensorCollection) {
 
     SensorIdleCalibrationResultPrinter printer;
 
@@ -53,7 +53,7 @@ void SensorCollectionIdleCalibration::_finishCalibration(IObservable *sensorColl
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
 
         // Calculate the idle position for the sensor
-        const int idlePosition = m_sumReads[id] / m_processedIterations;
+        const int idlePosition = m_sumReads[id] / m_processedIterations; // Average value of the sensor readings
 
         // Calculate the deadzone for the sensor
         const uint8_t lowDZ = idlePosition - m_minIdleValue[id];      // Idle - lowest reading (fe. 721 - 719 )
@@ -83,7 +83,7 @@ void SensorCollectionIdleCalibration::_finishCalibration(IObservable *sensorColl
  * @details This function reads the raw values for each sensor and updates the sum of reads, minimum and maximum values.
  *          It also checks if the requested number of iterations has been reached and calls the finalizer.
  */
-void SensorCollectionIdleCalibration::update(IObservable *sensorCollection) {
+void SensorIdleCalibration::update(IObservable *sensorCollection) {
 
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
 

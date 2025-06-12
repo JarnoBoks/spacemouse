@@ -19,4 +19,7 @@ public:
     void start() override;
     void update() override;
     void finish() override;
+
+    inline uint16_t getRequestedIterations() const { return m_requestedIterations; } // Get the number of requested iterations
+    inline uint16_t getProcessedIterations() const { return m_processedIterations; } // Get the number of processed iterations
 };

@@ -13,7 +13,6 @@
 #include "commandhandler/EspCommandHandler/commands/gatecommand.h"
 #include "commandhandler/EspCommandHandler/commands/modfunccommand.h"
 #include "commandhandler/EspCommandHandler/commands/invertcommand.h"
-#include "commandhandler/EspCommandHandler/commands/showcommand.h"
 #include "commandhandler/EspCommandHandler/commands/exclusivecommand.h"
 #include "commandhandler/EspCommandHandler/commands/switchyzcommand.h"
 
@@ -45,7 +44,6 @@ public:
         commandHandler->registerCommand(new GateCommand(m_Collections));
         commandHandler->registerCommand(new ModFuncCommand(m_Collections));
         commandHandler->registerCommand(new InvertCommand(m_Collections));
-        commandHandler->registerCommand(new ShowCommand());
         commandHandler->registerCommand(new ExclusiveCommand());
         commandHandler->registerCommand(new SwitchYZCommand());
     }

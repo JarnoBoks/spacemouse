@@ -561,8 +561,7 @@ Use the command "EXCL" (without any parameter) to show the current setting.
 This section allows for fine-tuning the sensitivity and response of the Spacemouse.
 Adjust the sensitivity & gate parameters to achieve the desired performance.
 
-After finishing the calibration, you can use the command "SHOW" in the serial monitor to see the current values
-of the parameters. You now can finetune the parameters to your liking. Try using the Spacemouse in your favorite
+You now can finetune the parameters to your liking. Try using the Spacemouse in your favorite
 CAD program and check the behaviour. Finetune the parameters until you are satisfied with the performance.
 If you notice that moving the knob in a certain direction, but has some (small) movement in the other direction,
 you can adjust sensitivity for a single axis (or even single axis direction) with the SENS command.

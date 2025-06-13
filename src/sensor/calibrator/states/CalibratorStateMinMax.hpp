@@ -3,7 +3,8 @@
 
 class CalibratorStateMinMax : public CalibratorStateBase {
 private:
-    const bool m_persist = false; // Flag to indicate if the calibration should be persisted in non-volatile storage
+    const bool m_persist = false;     // Flag to indicate if the calibration should be persisted in non-volatile storage
+    unsigned int m_lastOutputSec = 0; // Last time the output was printed to the console
 public:
     CalibratorStateMinMax() = default;                                // Default constructor
     CalibratorStateMinMax(const bool persist) : m_persist(persist) {} // Parameterized constructor

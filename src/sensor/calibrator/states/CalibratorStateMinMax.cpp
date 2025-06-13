@@ -6,7 +6,7 @@
 #include <visitors/SensorResetMinMaxVisitor.hpp>                    // For SensorResetMinMaxVisitor class
 #include <common/esp_print.h>                                       // For ESP_PRINT and other print macros
 
-#define CALIBRATION_MINMAX_DURATION 15 // Duration for MinMax calibration in seconds.
+#define CAL_MINMAX_DURATION_SEC 15 // Duration for MinMax calibration in seconds.
 
 void CalibratorStateMinMax::start() {
     RETURN_E_IF_NULL(context, "Calibrator context is null");                       // Check if the context is set
@@ -19,8 +19,8 @@ void CalibratorStateMinMax::start() {
     }
 
     // Output start of the MinMax calibration to the console
-    Serial.print(F("Move the spacemouse for "));
-    Serial.print(CALIBRATION_MINMAX_DURATION);
+    Serial.print(F("Move the knob for "));
+    Serial.print(CAL_MINMAX_DURATION_SEC);
     Serial.println(F(" sec."));
 
     // Reset the current configuration settings for min and max values of all sensors
@@ -36,16 +36,21 @@ void CalibratorStateMinMax::start() {
 
 // Check if the calibration should finish
 // For the MinMax calibration, the apply method should check if the timeperiod has exceeded
+// REFACTOR - This could be programmed more memory efficiently by converting to seconds immediately
 void CalibratorStateMinMax::update() {
     // Finish calibration if the configured time has elapsed.
-    unsigned long elapsedTime = millis() - m_startCalibrationTime;
-    if (elapsedTime > (CALIBRATION_MINMAX_DURATION * 1000)) {
+    unsigned long elapsedTimeMs = millis() - m_startCalibrationTime;
+    if (elapsedTimeMs > (CAL_MINMAX_DURATION_SEC * 1000)) {
         finish();
     }
 
-    if (elapsedTime % 1000 == 0) // Every second, print a dot to indicate progress
-    {
-        Serial.println(CALIBRATION_MINMAX_DURATION - (elapsedTime / 1000));
+    if (elapsedTimeMs / 1000 > m_lastOutputSec) {
+        m_lastOutputSec = (unsigned int)elapsedTimeMs / 1000; // Update the last output time in seconds
+        if (m_lastOutputSec < CAL_MINMAX_DURATION_SEC) {
+            Serial.print(F("Remaining: "));
+            Serial.print(CAL_MINMAX_DURATION_SEC - m_lastOutputSec);
+            Serial.println(F(" sec."));
+        }
     }
 }
 

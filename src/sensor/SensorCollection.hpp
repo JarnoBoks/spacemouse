@@ -18,10 +18,11 @@ class Sensor;
 class Calibrator;
 
 /**
- * @brief Class representing a collection of sensors for the SpaceMouse.
+ * @brief   Class representing a collection of sensors for the SpaceMouse.
  * @details This class implements the ICollection interface and provides functionality for managing a collection of sensors.
  *          It allows adding, removing, and notifying observers of changes in the sensor collection.
- * @note The SensorCollection class is designed to manage a fixed number of sensors and their associated observers.
+ *          The SensorCollection class inherits from CollectionBase, Observable, and VisitableBase to provide a complete implementation of a sensor collection.
+ * @note    The SensorCollection class is designed to manage a fixed number of sensors and their associated observers.
  */
 class SensorCollection : public CollectionBase, public Observable, public VisitableBase {
 private:
@@ -58,6 +59,11 @@ public:
 
     /**
      * @brief Accept the Visitor for each Sensor in the collection.
+     * @details This function iterates through all sensors in the collection and calls their accept method,
+     *          allowing the visitor to perform operations on each sensor.
+     * @note   This method overrides the accept method from the VisitableBase class and dispatches the visitors
+     *         to the collection members. This means the SensorCollection class itself is not visitable by default.
+     * @param  visitor The visitor instance that will perform operations on each sensor.
      */
     void accept(IVisitor &visitor) override;
 };

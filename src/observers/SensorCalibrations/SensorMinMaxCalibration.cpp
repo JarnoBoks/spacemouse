@@ -10,14 +10,14 @@ SensorMinMaxCalibration::SensorMinMaxCalibration(ICalibratorState *calibratorSta
     : m_CalibratorState(calibratorState) {
 }
 
-void SensorMinMaxCalibration::update(IObservable *Observable) {
+void SensorMinMaxCalibration::update(IObservable *sensorColl) {
 
-    SensorCollection *sensorCollection = static_cast<SensorCollection *>(Observable);
+    SensorCollection *sensorCollection = static_cast<SensorCollection *>(sensorColl);
     RETURN_E_IF_NULL(sensorCollection, "Sensor collection null");
 
     // Read each Sensor and update minimum and maximum values in the SensorConfig if applicable.
-    SensorUpdateMinMaxVisitor updater;
-    sensorCollection->accept(updater); // Accept the visitor to update the min/max values
+    SensorUpdateMinMaxVisitor updaterVisitor;
+    sensorCollection->accept(updaterVisitor); // Accept the visitor to update the min/max values
 
     // Notify the calibration manager that an update has been processed
     m_CalibratorState->update();

@@ -6,16 +6,21 @@
 #include <common/esp_print.h>             // For ESP_PRINT
 
 /**
- * @brief Visitor class for updating the minimum and maximum values of a sensor.
+ * @brief   Visitor class for updating the minimum and maximum values of a sensor.
  * @details This class implements the IVisitor interface and is used to visit Sensor objects to update their minimum and maximum values based on the centered value.
- *          It checks if the sensor and its configuration are valid before performing the update.
- * @note The visit method retrieves the sensor ID, gets the sensor configuration, and updates the minimum and maximum values if they are lower or higher than the current values.
  */
 class SensorUpdateMinMaxVisitor : public IVisitor {
 public:
     SensorUpdateMinMaxVisitor() = default;  // Default constructor
     ~SensorUpdateMinMaxVisitor() = default; // Destructor
 
+    /**
+     * @brief   Visit method to update the minimum and maximum values of a Sensor.
+     * @param   visitable The VisitableBase object to be visited, which is expected to be a Sensor.
+     * @details This method retrieves the centered value from the Sensor and updates the minimum and maximum
+     *          values in the SensorConfig if they are lower or higher than the current stored values, respectively.
+     *          If the SensorConfig is null, it logs a warning and returns.
+     */
     void visit(VisitableBase &visitable) override {
 
         // Cast the visitable to Sensor

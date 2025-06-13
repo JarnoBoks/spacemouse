@@ -10,6 +10,7 @@ public:
     /**
      * @brief Visit the Sensor object and print its name.
      * @param sensor The Sensor object to visit.
+     * @deprecated Is this method still needed? Consider removing it if not used.
      */
     void visit(VisitableBase &visitable) override {
         // Cast the VisitableBase to Sensor

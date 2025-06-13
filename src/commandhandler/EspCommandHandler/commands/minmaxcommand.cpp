@@ -29,9 +29,11 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
     }
 
     if (paramCount == 0) {
-        // No params provided, show current configuration values of the sensors.
-        SensorMinMaxPrinter Printer;
-        sensorCollection->accept(Printer); // Accept the Printer visitor to print the information for the sensors
+        // No params provided, show current MinMax configuration values of the sensors.
+        // This will print the current min, max and range values of the sensors
+
+        SensorMinMaxPrinter MinMaxPrinter;
+        sensorCollection->accept(MinMaxPrinter); // Accept the Printer visitor to print the information for the sensors
 
         return;
     }
@@ -48,7 +50,7 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
 
         if (!calibrator->start(new CalibratorStateMinMax(requestedPersistence))) {
             ESP_WARN("Failed to start minmax calibration");
-            return; // Failed to start the calibration, exit the function
+            return;
         }
     }
 

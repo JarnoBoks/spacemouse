@@ -27,7 +27,7 @@
 #include <visitors/printers/SwitchYZPrinter.hpp>
 #include <visitors/printers/ExclusiveModePrinter.hpp>
 #include <visitors/printers/SensorNamePrinter.hpp>
-#include <visitors/printers/SensorConfigMinMaxPrinter.hpp>
+#include <visitors/printers/SensorMinMaxPrinter.hpp>
 #include <visitors/printers/SensorIdleDeadzonePrinter.hpp>
 
 // Observers
@@ -218,21 +218,12 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
     SensorCollection *sensorCollection = getCollectionCarrier()->getSensorCollection();
 
     if (paramCount == 0) {
-        // No params provided, show config
-        ESP_PRINT(F("MinMaxCommand::execute: Show config"));
+        // No params provided, show current MinMax configuration values of the sensors.
+        // This will print the current min, max and range values of the sensors
 
-        SensorConfigMinMaxPrinter MinMaxPrinter;
-        SensorNamePrinter NamePrinter;
+        SensorMinMaxPrinter MinMaxPrinter;
+        sensorCollection->accept(MinMaxPrinter); // Accept the Printer visitor to print the information for the sensors
 
-        for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
-            Sensor *sensor = sensorCollection->getSensor(id); // Pointer to the sensor
-            if (sensor == nullptr) {
-                continue; // Skip if the sensor is not available
-            }
-
-            sensor->accept(NamePrinter);                // Let the sensor accept the Printer visitor to print the sensor name
-            sensor->getConfig()->accept(MinMaxPrinter); // Let the sensorconfig accept the Printer visitor to print the sensor configuration values
-        }
         return;
     }
 

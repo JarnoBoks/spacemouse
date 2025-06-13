@@ -8,9 +8,8 @@ class ICalibratorState;
 /**
  * @brief Class to calibrate the minimum and maximum values of the sensors of the spacemouse.
  * @details The class is an observer of the SensorCollection class and is instantiated by the SensorCalibrationManager.
- *          It listens for updates from the SensorCollection and performs calibration by tracking the minimum and maximum values of each sensor.
- *          The calibration process starts when the activate() method of the SensorCalibrationManager is called, and it ends when the deactivate() method is called.
- *          The SensorCollection will pass the observer to the sensors, which will then call the update() method of this class.
+ *          It listens for updates from the SensorCollection and performs calibration by tracking the minimum and maximum
+ *          values of each sensor.
  */
 class SensorMinMaxCalibration : public IObserver {
 private:

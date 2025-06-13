@@ -13,19 +13,23 @@
  */
 class SensorMinMaxPrinter : public IVisitor {
 public:
+    /**
+     * @brief Construct a new SensorMinMaxPrinter object.
+     * @details This constructor initializes the printer and prints the header for the min/max output.
+     */
     SensorMinMaxPrinter() {
         // Constructor to initialize the MinMaxPrinter object
         // Print the header for the min/max output
-        Serial.println(F("        Min |  Max | Rnge | Warning"));
+        Serial.println(F("\n        Min |  Max | Rnge | Warning"));
     }
 
     /**
      * @brief Visit the Sensor and print its configuration values.
      */
-    void visit(VisitableBase &visitable) override {
+    void visit(VisitableBase &visitableSensor) override {
 
         // Cast the VisitableBase to Sensor
-        Sensor &sensor = static_cast<Sensor &>(visitable);
+        Sensor &sensor = static_cast<Sensor &>(visitableSensor);
 
         // Initialize the flags for min-, max- and workingrange warnings
         bool warningsOccurred = false, minWarning = false, maxWarning = false, rangeWarning = false;
@@ -33,7 +37,7 @@ public:
         SensorConfig *config = sensor.getConfig();
         if (!config) {
             ESP_WARN("SensorConfig null");
-            return; // Handle null case gracefully
+            return;
         }
 
         // Retrieve the sensor configuration values & warningstate
@@ -41,6 +45,7 @@ public:
         const int max = config->getMax(&maxWarning);
         const int range = config->getRange(&rangeWarning);
 
+        // Print the sensor descriptor and the min, max, and range values
         Serial.print(sensor.getDescriptor());
         Serial.print(F(": "));
         TextHelper::alignValue(min, 4);

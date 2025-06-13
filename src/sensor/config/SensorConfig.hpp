@@ -17,8 +17,8 @@ class Sensor;
 class SensorConfig : public VisitableBase {
 private:
     struct SensorConfigData_t {
-        int minv = 0;        // The minimum centered value of the sensor.
-        int maxv = 0;        // The maximum centered value of the sensor.
+        int minv = INT_MAX;  // The minimum centered value of the sensor.
+        int maxv = INT_MIN;  // The maximum centered value of the sensor.
         bool invert = false; // Flag to indicate that the sensor value should be inverted (ie. magnet is mounted upside down / joystick is mounted the wrong way).
     };
 

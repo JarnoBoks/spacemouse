@@ -106,11 +106,17 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
             return; // Invalid direction, exit the function
         }
 
-        ESP_INFO2("Set minmax for sensor ", param1);
-        ESP_INFO2("to ", requestedValue);
+        // Write results of the MinMax command to the console
+        SensorMinMaxPrinter printer;
+        sensor->accept(printer); // Accept the Printer visitor to print the information for the sensor
 
-        // Store the value in the EEPROM
-        sensor->getConfig()->persist();
-        ESP_INFO("Store minmax for sensor");
+        if (printer.hasWarningsOccurred()) {
+            ESP_WARN("MinMax command has warnings, not persisting values.");
+
+        } else {
+            ESP_INFO("Persisting value in non-volatile memory");
+            SensorPersistConfigVisitor persistor;
+            sensor->accept(persistor);
+        }
     }
 }

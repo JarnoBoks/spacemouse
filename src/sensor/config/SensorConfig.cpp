@@ -74,12 +74,20 @@ void SensorConfig::updateMax(const int val) {
     data.maxv = (val > data.maxv) ? val : data.maxv;
 }
 
+/**
+ * @brief Checks if the minimum value is above the warning level.
+ * @param warning Pointer to a boolean variable to store the warning status.
+ */
 void SensorConfig::_minWarning(bool *warning) const {
     if (warning != nullptr) {
         *warning = (data.minv > MINIMUM_HIGH_WARNINGLEVEL); // If the minimum value is above the warning level, raise a warning
     }
 }
 
+/**
+ * @brief Checks if the maximum value is below the warning level.
+ * @param warning Pointer to a boolean variable to store the warning status.
+ */
 void SensorConfig::_maxWarning(bool *warning) const {
     if (warning != nullptr) {
         *warning = (data.maxv < MAXIMUM_LOW_WARNINGLEVEL); // If the maximum value is below the warning level, raise a warning
@@ -94,7 +102,9 @@ void SensorConfig::_maxWarning(bool *warning) const {
  * @return The minimum value of the sensor configuration.
  */
 const int SensorConfig::getMin(bool *warning) const {
-    _minWarning(warning); // Check if the minimum value is above the warning level
+    if (warning != nullptr) {
+        _minWarning(warning);
+    }
     return data.minv;
 }
 
@@ -104,8 +114,10 @@ const int SensorConfig::getMin(bool *warning) const {
  * @param warning Pointer to a boolean variable to store the warning status.
  */
 void SensorConfig::setMin(const int val, bool *warning) {
-    data.minv = val;      // Set the minimum value
-    _minWarning(warning); // Check if the minimum value is above the warning level
+    data.minv = val; // Set the minimum value
+    if (warning != nullptr) {
+        _minWarning(warning);
+    }
 }
 
 /**
@@ -116,7 +128,9 @@ void SensorConfig::setMin(const int val, bool *warning) {
  * @return The maximum value of the sensor configuration.
  */
 const int SensorConfig::getMax(bool *warning) const {
-    _maxWarning(warning); // Check if the maximum value is below the warning level
+    if (warning != nullptr) {
+        _maxWarning(warning);
+    }
     return data.maxv;
 }
 
@@ -126,8 +140,10 @@ const int SensorConfig::getMax(bool *warning) const {
  * @param warning Pointer to a boolean variable to store the warning status.
  */
 void SensorConfig::setMax(const int val, bool *warning) {
-    data.maxv = val;      // Set the maximum value
-    _maxWarning(warning); // Check if the maximum value is below the warning level
+    data.maxv = val; // Set the maximum value
+    if (warning != nullptr) {
+        _maxWarning(warning);
+    }
 }
 
 /**

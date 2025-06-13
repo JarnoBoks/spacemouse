@@ -322,6 +322,13 @@ memory.
 
 Finally, if you want to execute a calibration without storing the values, you can use the command "MINMAX 0".
 
+Note: The values are stored in non-volatile memory and will be retained after a reboot or power cycle of the Spacemouse.
+      If you want to reset the values to the default values, you can change the version number in the config.h file
+      and upload the code again.
+
+Note: If you store the values in non-volatile memory, the complete sensor configuration is stored, including the
+      min and max values and the inversion setting as configured in the invertlist.
+
 Manual min/max calibration (use DEBUG 2)
 ---------------------------------------------
 1. Compile the sketch and upload it. Go to the Serial monitor type the command "DEBUG 2" and hit ENTER.
@@ -348,7 +355,8 @@ Manual min/max calibration (use DEBUG 2)
 6. Write all the positive Values starting from the top into the Array maxValues
 7. Write all the negative Values starting from the top into the Array minValues
 
-To store the values for single sensors in the EEPROM, you can use the command "MINMAX <+|-><sensorname> <value>".
+To set and store the MIN or MAX value for an individual sensor in the non-volatile storage, you can
+use the command "MINMAX <+|-><sensorname> <value>".
    <+|->        - Indication of the value to set. + for max, - for min
    <sensorname> - The name of the sensor. The name of the sensor is the same as in the chart above.
    <value>      - The value to set for the sensor.
@@ -356,6 +364,12 @@ To store the values for single sensors in the EEPROM, you can use the command "M
 Examples:
    MINMAX +AX 1000       // Set the maximum value for AX to 1000
    MINMAX -HES0 350      // Set the minimum value for HES0 to -350
+
+If the requested value is outside the range of the sensor, a warning will be printed to the console.
+The value will be set anyway, but it won't be stored in the non-volatile memory.
+
+If you nevertheless want to store the value in the non-volatile memory, you can use the command "MINMAX 2" to
+store the current set values for all sensors in the non-volatile memory.
 
 */
 

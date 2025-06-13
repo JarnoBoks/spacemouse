@@ -28,6 +28,7 @@
 #include <visitors/printers/ExclusiveModePrinter.hpp>
 #include <visitors/printers/SensorNamePrinter.hpp>
 #include <visitors/printers/SensorMinMaxPrinter.hpp>
+#include <visitors/SensorPersistConfigVisitor.hpp>
 #include <visitors/printers/SensorIdleDeadzonePrinter.hpp>
 
 // Observers
@@ -228,40 +229,52 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
     }
 
     if (paramCount == 1) {
-        bool requestedPersistence = false;
-        if (!convertWordBool(param1, &requestedPersistence)) {
-            ESP_WARN("Param not boolean");
+        long requestedValue = -1;
+        if (!convertWordNumber(param1, &requestedValue)) {
+            ESP_WARN("Param not number");
             return;
         }
 
-        Calibrator *calibrator = sensorCollection->getCalibrator(); // Get the calibrator instance from the sensor collection
-        RETURN_E_IF_NULL(calibrator, "No calibrator found in sensor collection");
+        if (requestedValue < 0 || requestedValue > 2) {
+            ESP_WARN("Param not in range 0-2");
+            return; // Invalid value, exit the function
+        }
 
+        if (requestedValue == 2) {
+            // Persist the current minmax values in EEPROM
+            SensorPersistConfigVisitor persistor;
+            sensorCollection->accept(persistor);
+            return; // Exit after persisting the values
+        }
+
+        bool requestedPersistence = (requestedValue == 1);
+        Calibrator *calibrator = sensorCollection->getCalibrator(); // Get the calibrator instance from the sensor collection
+
+        RETURN_E_IF_NULL(calibrator, "No calibrator found in sensor collection");
         if (!calibrator->start(new CalibratorStateMinMax(requestedPersistence))) {
             ESP_WARN("Failed to start minmax calibration");
-            return; // Failed to start the calibration, exit the function
+            return;
         }
     }
     if (paramCount == 2) {
         // Command received: MINMAX <+|-><sensorname> <value>
 
         // Get the value that has to be set
-        long requestedValue = 0; // Default value for the second word
+        const long requestedValue = 0; // Default value for the second word
         if (!convertWordNumber(param2, (long *)&requestedValue)) {
-            ESP_WARN("Param not float");
-            return; // Second parameter is not a number
+            ESP_WARN("Param is not a number");
+            return;
         }
 
         // Get the direction (+ is maximum, - is minimum)
-        char direction = param1[0]; // Get the first character of the first parameter
+        const char direction = param1[0]; // Get the first character of the first parameter
 
-        // Get the sensor from the sensorname (fe. HES0 = 1, HES1 = 2, etc.)
-        char *reqSensorName = (char *)param1 + 1;                    // Get the sensor name (skip the first character)
-        Sensor *sensor = sensorCollection->getSensor(reqSensorName); // Get the sensor by its name
-
-        if (sensor == nullptr) {
+        // Get the sensor from the sensor descriptor (fe. HES0 = 1, HES1 = 2, etc.)
+        const char *reqSensorDescr = (char *)param1 + 1;              // Get the sensor descriptor (skip the first character)
+        Sensor *sensor = sensorCollection->getSensor(reqSensorDescr); // Get the sensor by its descriptor
+        if (!sensor) {
             ESP_ERROR("Sensor not found");
-            return; // Sensor not found, exit the function
+            return;
         }
 
         if (direction == '+') {
@@ -279,12 +292,17 @@ void AVRCommandHandler::executeMinMax(const char *param1, const char *param2, co
             return; // Invalid direction, exit the function
         }
 
-        ESP_INFO2("Set minmax for sensor ", param1);
-        ESP_INFO2("to ", requestedValue);
+        // Write results of the MinMax command to the console
+        SensorMinMaxPrinter printer;
+        sensor->accept(printer);
 
-        // Store the value in the EEPROM
-        sensor->getConfig()->persist();
-        ESP_INFO("Store minmax for sensor");
+        if (printer.hasWarningsOccurred()) {
+            Serial.println(F("Warnings: not persisting."));
+        } else {
+            Serial.println(F("Persisting."));
+            SensorPersistConfigVisitor persistor;
+            sensor->accept(persistor);
+        }
     }
 }
 

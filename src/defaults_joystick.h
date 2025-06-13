@@ -15,12 +15,12 @@
 // --------------------- SENSOR DEFAULTS -------------------------
 
 #ifndef PINLIST
-// The pinlist should be defined in the config.h file, but if not, we define it here for failsafe purposes.
+// The pinlist should be defined in the config.h file, but if not, we define it here for failsafe purposes although the software behaviour will be undefined.
 #define PINLIST {A1, A0, A3, A2, A7, A6, A9, A8}
 #endif
 
 #ifndef INVERTLIST
-// The pinlist should be defined in the config.h file, but if not, we define it here for failsafe purposes.
+// The invertlist should be defined in the config.h file, but if not, we define it here for failsafe purposes although the software behaviour will be undefined.
 #define INVERTLIST {0, 0, 0, 0, 0, 0, 0, 0}
 #endif
 

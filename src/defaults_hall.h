@@ -15,21 +15,23 @@
 // --------------------- SENSOR DEFAULTS -------------------------
 
 #ifndef PINLIST
-// The pinlist should be defined in the config.h file, but if not, we define it here for failsafe purposes.
+// The pinlist should be defined in the config.h file, but if not, we define it here for failsafe purposes although the software behaviour will be undefined.
 #define PINLIST {A0, A1, A2, A3, A6, A7, A8, A9}
 #endif
 
 #ifndef INVERTLIST
-// The pinlist should be defined in the config.h file, but if not, we define it here for failsafe purposes.
+// The invertlist should be defined in the config.h file, but if not, we define it here for failsafe purposes although the software behaviour will be undefined.
 #define INVERTLIST {0, 0, 0, 0, 0, 0, 0, 0}
 #endif
 
 // MIN and MAX values for the HALL sensors
 #ifndef MINVALS
-#define MINVALS {-437, -385, -511, -373, -407, -321, -347, -330}
+// #define MINVALS {-437, -385, -511, -373, -407, -321, -347, -330}  // Arduino Pro Micro version
+#define MINVALS {-350, -350, -350, -350, -350, -350, -350, -350}
 #endif
 #ifndef MAXVALS
-#define MAXVALS {131, 166, 100, 168, 186, 250, 215, 235}
+// #define MAXVALS {131, 166, 100, 168, 186, 250, 215, 235}          // Arduino Pro Micro version
+#define MAXVALS {350, 350, 350, 350, 350, 350, 350, 350}
 #endif
 
 // ---------------------- AXES DEFAULTS --------------------------

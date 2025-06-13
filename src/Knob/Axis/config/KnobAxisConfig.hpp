@@ -17,7 +17,7 @@ public:
 
     KnobAxisConfig() = delete; // Default constructor is deleted to prevent instantiation without context
     KnobAxisConfig(const KnobAxis *contextAxis);
-    KnobAxisConfig(const KnobAxis *axis,
+    KnobAxisConfig(const KnobAxis *contextAxis,
                    const float psens,
                    const float nsens,
                    const uint8_t pgate,

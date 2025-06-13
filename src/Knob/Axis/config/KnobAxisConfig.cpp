@@ -46,7 +46,7 @@ KnobAxisConfig::KnobAxisConfig(const KnobAxis *contextAxis)
  * @param invert Inversion flag for the axis.
  * @note The constructor initializes the posConfig and negConfig members with the given parameters.
  */
-KnobAxisConfig::KnobAxisConfig(const KnobAxis *axis,
+KnobAxisConfig::KnobAxisConfig(const KnobAxis *contextAxis,
                                float psens,
                                const float nsens,
                                const uint8_t pgate,
@@ -54,7 +54,7 @@ KnobAxisConfig::KnobAxisConfig(const KnobAxis *axis,
                                const ModFunc_t pmf,
                                const ModFunc_t nmf,
                                const bool invert)
-    : m_contextAxis(axis),
+    : m_contextAxis(contextAxis),
       posConfig(KnobAxisDirectionConfig(psens, pgate, pmf)),
       negConfig(KnobAxisDirectionConfig(nsens, ngate, nmf)),
       inversion(invert) {}

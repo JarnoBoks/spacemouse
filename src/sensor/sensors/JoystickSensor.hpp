@@ -21,7 +21,7 @@ enum JoystickSensorsId_t : int8_t { AX = 0,
 class JoystickSensor : public Sensor {
 private:
 public:
-    JoystickSensor(const int8_t pin, JoystickSensorsId_t id);
+    JoystickSensor(const int8_t pin, const JoystickSensorsId_t id);
     ~JoystickSensor() override {}
 
     bool setIdlePosition(int val) override final;

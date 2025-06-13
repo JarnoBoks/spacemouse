@@ -26,15 +26,17 @@ SensorCollection::~SensorCollection() {
 }
 
 /**
- * @brief Setup the sensor collection according to the configuration.
+ * @brief   Setup the sensor collection according to the configuration.
  * @details This method initializes the sensors based on the configuration defined in config.h.
  *          It creates instances of the sensors and sets their context to this SensorCollection instance.
- * @note The sensor types are mutual exclusive, meaning only one type of sensor can be used.
- *       In order to save compiled code size, preprocessor macros are used to include the correct sensor type.
+ * @note    The sensor types are mutual exclusive, meaning only one type of sensor can be used.
+ *          In order to save compiled code size, preprocessor macros are used to include the correct sensor type.
+ *
  * @see config.h for sensor configuration details.
  */
 void SensorCollection::setup() {
     for (uint8_t i = 0; i < cHW_MAX_SENSORS; i++) {
+        // TODO - The cHW_MAX_SENSORS should be retrieved from HallSensor/JoystickSensor class.
 #ifdef HW_HALLEFFECT
         SensorFactoryHall factory; // Create a factory for Hall effect sensors
 #else

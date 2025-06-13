@@ -17,7 +17,7 @@ private:
     const uint8_t m_maxItems = 0; // Maximum number of items in the collection
 protected:
     ICollectable **m_items;
-    uint8_t m_itemCount = 0; // Number of items created
+    uint8_t m_itemCount = 0; // Current number of items in the collection
 public:
     /// @brief Constructor for empty CollectionBase
     CollectionBase() = delete; // Delete the default constructor to prevent instantiation without parameters

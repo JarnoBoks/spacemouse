@@ -22,6 +22,9 @@ constexpr uint8_t EEPROM_SENSORCONFIG_VERSION = 1; // Define the version number 
 #error "No hardwaretype defined"
 #endif
 
+#include <common/esp_print.h>  // For ESP_ERROR() and ESP_DEBUG() macros
+#include <common/TextHelper.h> // For TextHelper class
+
 /**
  * @brief   Constructor for SensorConfig class with sensorId.
  * @details This constructor initializes the SensorConfig object with the given sensor Id.
@@ -46,7 +49,8 @@ SensorConfig::SensorConfig(const Sensor *contextSensor)
  * @param max The maximum value for the sensor configuration.
  * @param invert If true, inverts the sensor values.
  */
-SensorConfig::SensorConfig(const Sensor *contextSensor, const int min, const int max, const bool invert) {
+SensorConfig::SensorConfig(const Sensor *contextSensor, const int min, const int max, const bool invert)
+    : m_contextSensor(contextSensor) {
     data.invert = invert;
     data.minv = min;
     data.maxv = max;
@@ -156,7 +160,11 @@ const int SensorConfig::getRange(bool *warning) const {
  * @note This function uses the PreferencesStore class to save the configuration to the non-volatile memory of the ESP32.
  */
 void SensorConfig::persist() const {
-    const int8_t sensorId = static_cast<int8_t>(m_contextSensor->getId());
+    const int8_t sensorId = m_contextSensor->getId();
+    if (sensorId < 0) {
+        ESP_ERROR(F("Invalid sensor ID"));
+        return;
+    }
 
     char buffer[8] = "\0"; // Ensure the buffer is null-terminated
     sprintf(buffer, KEY_PREF_SENSORCFG, sensorId);
@@ -171,7 +179,11 @@ void SensorConfig::persist() const {
  * @retval False if the configuration could not be loaded.
  */
 bool SensorConfig::retrieve() {
-    const int8_t sensorId = static_cast<int8_t>(m_contextSensor->getId());
+    const int8_t sensorId = m_contextSensor->getId();
+    if (sensorId < 0) {
+        ESP_ERROR(F("Invalid sensor ID"));
+        return false;
+    }
 
     char buffer[8] = "\0"; // Ensure the buffer is null-terminated
     sprintf(buffer, KEY_PREF_SENSORCFG, sensorId);
@@ -182,15 +194,18 @@ bool SensorConfig::retrieve() {
 
 #if defined(ARDUINO_ARCH_AVR)
 /**
- * @brief Saves the sensor configuration to EEPROM.
+ * @brief Saves the sensor configuration to the Arduino EEPROM.
  * @param sensorId The ID of the sensor to save the configuration for.
  * @note This function uses the EEPROMStore class to save the configuration to the Arduino EEPROM.
  */
 void SensorConfig::persist() const {
-    const int8_t sensorId = static_cast<int8_t>(m_contextSensor->getId());
+    const int8_t sensorId = m_contextSensor->getId(); // Get the sensor ID from the sensor that this configuration belongs to
+    if (sensorId < 0) {
+        return;
+    }
 
     // Calculate the EEPROM tableId for the SensorConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
-    const int tableId = (sensorId * EEPROM_SENSOR_ID_RESERVATIONS) + EEPROM_SENSOR_ID_BASE; // Calculated Id for the SensorConfig in EEPROM
+    const int tableId = (sensorId * EEPROM_SENSOR_ID_RESERVATIONS) + EEPROM_SENSOR_ID_BASE; // Calculated id for the SensorConfig in EEPROM
 
     // Persist the data stored in this class
     EEPROMStore::save(tableId, &data, sizeof(data)); // Store the data structure in the EEPROM
@@ -204,10 +219,14 @@ void SensorConfig::persist() const {
  * @retval False if the configuration could not be loaded.
  */
 bool SensorConfig::retrieve() {
-    const int8_t sensorId = static_cast<int8_t>(m_contextSensor->getId());
+    const int8_t sensorId = m_contextSensor->getId(); // Get the sensor ID from the context sensor
+
+    if (sensorId < 0) {
+        return false; // Return false if the sensor ID is invalid
+    }
 
     // Calculate the EEPROM tableId for the SensorConfig in EEPROM (@see eeprom/eepromstore.h for the ID layout)
-    const int tableId = (sensorId * EEPROM_SENSOR_ID_RESERVATIONS) + EEPROM_SENSOR_ID_BASE; // Calculated Id for the SensorConfig in EEPROM
+    const int tableId = (sensorId * EEPROM_SENSOR_ID_RESERVATIONS) + EEPROM_SENSOR_ID_BASE; // Calculated id for the SensorConfig in EEPROM
 
     // Retrieve the data stored in the EEPROM
     return (EEPROMStore::load(tableId, &data, sizeof(data)) == ERR_EEPROMSTORE_SUCCESS);

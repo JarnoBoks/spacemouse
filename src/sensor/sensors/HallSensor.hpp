@@ -22,7 +22,7 @@ enum HallSensorsId_t : int8_t { HES0 = 0,
 class HallSensor : public Sensor {
 private:
 public:
-    HallSensor(const int8_t pin, HallSensorsId_t id);
+    HallSensor(const int8_t pin, const HallSensorsId_t id);
 
     bool setIdlePosition(int val) override final;
     bool idlePositionOk() const override final;

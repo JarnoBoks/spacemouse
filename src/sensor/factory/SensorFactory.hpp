@@ -9,9 +9,6 @@
  * It provides methods to create sensors, set up their functionality, and evaluate their state.
  */
 class SensorFactory {
-protected:
-    // REMOVE void setupFunctionality(Sensor *sensor);
-
 public:
     SensorFactory() = default;
     virtual ~SensorFactory() {};

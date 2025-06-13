@@ -6,7 +6,7 @@
  * @param pin The pin number for the Hall sensor.
  * @param id The ID of the Hall sensor.
  */
-HallSensor::HallSensor(const int8_t pin, HallSensorsId_t id) : Sensor(pin, id) {
+HallSensor::HallSensor(const int8_t pin, const HallSensorsId_t id) : Sensor(pin, (int8_t)id) {
     const char *names[HallSensorsId_t::HALL_LENGTH] = HALL_SENSOR_NAMES;
     this->descriptor = names[id];
 }
@@ -17,7 +17,6 @@ HallSensor::HallSensor(const int8_t pin, HallSensorsId_t id) : Sensor(pin, id) {
  * @return True if the idle position is in the predefined normal zone, false otherwise.
  */
 bool HallSensor::setIdlePosition(int val) {
-
     bool res = Sensor::setIdlePosition(val); // Call the base class method to set the idle position
     return res && idlePositionOk();          // Return true if the idle position is set and in the predefined normal zone, false otherwise
 }

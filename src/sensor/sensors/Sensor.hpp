@@ -18,9 +18,9 @@ class SensorConfig; // Forward declaration of SensorConfig class
  */
 class Sensor : public ICollectable, public VisitableBase {
 private:
-    const int8_t pin = -1;          // Default pin value to indicate uninitialized state
-    const int8_t id = -1;           // Default id value to indicate uninitialized state
-    SensorConfig *config = nullptr; // REVIEW const?
+    const int8_t pin = -1;          // The pin number to which the sensor is connected. -1 indicates uninitialized state.
+    const int8_t id = -1;           // The internal id to identify the sensor. -1 indicates uninitialized state.
+    SensorConfig *config = nullptr; // Pointer to the SensorConfig object that holds the configuration for this sensor.
 
     int m_rawValue = 0; // Sensor raw value as read from the AD converter
     int m_cntValue = 0; // Sensor value after centering is applied
@@ -72,9 +72,9 @@ public:
     /// @details The descriptor is a string that describes the sensor, used for identification and logging.
     inline const char *getDescriptor() const { return descriptor; }
 
-    /// @brief Retrieve the pin number of the sensor.
-    /// @details The pin number is used to identify the physical pin on the microcontroller to which the sensor is connected.
-    inline const uint8_t getId() const { return static_cast<uint8_t>(id); };
+    /// @brief Retrieve the id of the sensor.
+    /// @details The id is used to identify the sensor within the system.
+    inline const int8_t getId() const { return static_cast<int8_t>(id); };
 
     virtual void setContext(ICollection *Collection) override {};
 

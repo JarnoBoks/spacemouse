@@ -2,7 +2,7 @@
 #include "JoystickSensor.hpp"
 #include "defaults_joystick.h" // For the Warning levels
 
-JoystickSensor::JoystickSensor(const int8_t pin, JoystickSensorsId_t id) : Sensor(pin, id) {
+JoystickSensor::JoystickSensor(const int8_t pin, const JoystickSensorsId_t id) : Sensor(pin, (int8_t)id) {
     const char *names[JoystickSensorsId_t::JS_LENGTH] = JOYSTICK_SENSOR_NAMES;
     this->descriptor = names[static_cast<uint8_t>(id)];
 }

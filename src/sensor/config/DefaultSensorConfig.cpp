@@ -29,7 +29,7 @@ SensorConfig DefaultSensorConfig::create(const Sensor *contextSensor) const {
     const int minVals[cHW_MAX_SENSORS] = MINVALS;
     const bool invertList[cHW_MAX_SENSORS] = INVERTLIST;
 
-    const uint8_t sensorId = contextSensor->getId();
+    const int8_t sensorId = contextSensor->getId();
 
     return SensorConfig(contextSensor, minVals[sensorId], maxVals[sensorId], invertList[sensorId]);
 }

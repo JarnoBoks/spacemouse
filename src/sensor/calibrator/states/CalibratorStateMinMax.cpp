@@ -6,7 +6,7 @@
 #include <visitors/SensorResetMinMaxVisitor.hpp>                    // For SensorResetMinMaxVisitor class
 #include <common/esp_print.h>                                       // For ESP_PRINT and other print macros
 
-#define CALIBRATION_MINMAX_DURATION 15 // Duration for MinMax calibration in seconds
+#define CALIBRATION_MINMAX_DURATION 15 // Duration for MinMax calibration in seconds.
 
 void CalibratorStateMinMax::start() {
     RETURN_E_IF_NULL(context, "Calibrator context is null");                       // Check if the context is set

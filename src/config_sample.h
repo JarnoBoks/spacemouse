@@ -66,7 +66,7 @@ values from config.h, you have to change the version number below and upload the
 */
 
 /// Change the version number to force the spacemouse to use the values from config.h
-/// @warning Changing the version number will reset all stored calibration parameters in the EEPROM.
+/// @warning Changing the version number will reset all stored calibration parameters in non-volatile memory.
 #define SM_VERSION 4
 
 /* Debugging Instructions

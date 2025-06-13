@@ -7,7 +7,7 @@
 
 /**
  * @brief   Visitor class for updating the minimum and maximum values of a sensor.
- * @details This class implements the IVisitor interface and is used to visit Sensor objects to update their minimum and maximum values based on the centered value.
+ * @details This class visits Sensor objects to update their minimum and maximum values based on the centered value.
  */
 class SensorUpdateMinMaxVisitor : public IVisitor {
 public:

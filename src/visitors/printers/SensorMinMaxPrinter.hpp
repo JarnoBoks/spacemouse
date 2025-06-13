@@ -20,7 +20,7 @@ public:
     SensorMinMaxPrinter() {
         // Constructor to initialize the MinMaxPrinter object
         // Print the header for the min/max output
-        Serial.println(F("\n        Min |  Max | Rnge | Warning"));
+        Serial.println(F("\n       Min |  Max | Rnge | Warning"));
     }
 
     /**

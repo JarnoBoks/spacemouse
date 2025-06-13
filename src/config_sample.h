@@ -308,14 +308,19 @@ Semi-automatic (command: MINMAX 0)
    For the HES sensors, the values should be approximately -400 to -520 and the maxVals around +400 to +520.
 4. When satisfied you can enter the values into the config.h file below or enter them one by one using the manual commands as described below.
 
-Automatic (command: MINMAX 1)
+Automatic (command: MINMAX 0|1|2)
 -----------------------------
 1. In the Serial monitor type the command "MINMAX 1" and hit ENTER.
 2. Move the Spacemouse around for 15s to record the minimum and maximum values for each sensor.
-3. The results are shown and the values are stored in the EEPROM.
-3. Verify if there are any warnings for the Min, Max or Range. Check if your hardware is working correctly and/or retry the calibration.
-   For the joystick sensors, the values should be approximately -400 to +400 and the maxVals around +400 to +400.
-   For the HES sensors, the values should be approximately -400 to -520 and the maxVals around +400 to +520.
+3. The results are shown and if no warnings occurred the values are stored in non-volatile memory.
+   The values will be retained after a reboot or power cycle of the Spacemouse.
+
+If warnings did occur the Spacemouse will not retain the calibrated settings, but they are still used until
+you re-calibrate or power cycle the device. You should check the hardware and/or retry the calibration. If you
+want to use the values anyway, you can use the command "MINMAX 2" to store the current values in non-volatile
+memory.
+
+Finally, if you want to execute a calibration without storing the values, you can use the command "MINMAX 0".
 
 Manual min/max calibration (use DEBUG 2)
 ---------------------------------------------

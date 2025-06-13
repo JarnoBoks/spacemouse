@@ -65,11 +65,15 @@ void CalibratorStateMinMax::finish() {
     SensorMinMaxPrinter printer;
     context->getSensorCollection()->accept(printer);
 
-    // Persist the calibration data if requested
-    if (m_persist) {
-        ESP_PRINT(F("Persisting sensor configuration..."));
+    // Persist the calibration data if requested and no warnings occurred
+    if (m_persist && !printer.hasWarningsOccurred()) {
+        Serial.print(F("Persisting minmax..."));
         SensorPersistConfigVisitor persistor;
         context->getSensorCollection()->accept(persistor);
+    } else if (m_persist && printer.hasWarningsOccurred()) {
+        Serial.println(F("Warnings: not persisting minmax."));
+    } else {
+        Serial.println(F("Not persisting minmax."));
     }
 
     // Context will destruct us, while the destructor of our Base class will take care of detaching and deleting the observer.

@@ -6,6 +6,7 @@
 
 #include <sensor/SensorCollection.hpp>
 #include <visitors/printers/SensorMinMaxPrinter.hpp>
+#include <visitors/SensorPersistConfigVisitor.hpp> // For SensorPersistConfigVisitor class
 
 #include <common/esp_print.h> // For ESP_PRINT
 
@@ -39,15 +40,30 @@ void MinMaxCommand::execute(const char *param1, const char *param2, uint8_t para
     }
 
     if (paramCount == 1) {
-        bool requestedPersistence = false;
-        if (!convertWordBool(param1, &requestedPersistence)) {
-            ESP_WARN("Param not boolean");
+
+        long requestedValue = -1;
+        if (!convertWordNumber(param1, &requestedValue)) {
+            ESP_WARN("Param not number");
             return;
         }
 
-        Calibrator *calibrator = sensorCollection->getCalibrator(); // Get the calibrator instance from the sensor collection
-        RETURN_E_IF_NULL(calibrator, "No calibrator found in sensor collection");
+        if (requestedValue < 0 || requestedValue > 2) {
+            ESP_WARN("Param not in range 0-2");
+            return; // Invalid value, exit the function
+        }
 
+        if (requestedValue == 2) {
+            // Persist the current minmax values in EEPROM
+            ESP_INFO("Persist current minmax values in EEPROM");
+            SensorPersistConfigVisitor persistor;
+            sensorCollection->accept(persistor);
+            return; // Exit after persisting the values
+        }
+
+        bool requestedPersistence = (requestedValue == 1);
+        Calibrator *calibrator = sensorCollection->getCalibrator(); // Get the calibrator instance from the sensor collection
+
+        RETURN_E_IF_NULL(calibrator, "No calibrator found in sensor collection");
         if (!calibrator->start(new CalibratorStateMinMax(requestedPersistence))) {
             ESP_WARN("Failed to start minmax calibration");
             return;

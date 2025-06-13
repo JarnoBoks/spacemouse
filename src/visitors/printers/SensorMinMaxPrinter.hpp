@@ -9,9 +9,11 @@
 
 /**
  * @brief Visitor class to print the min, max, and range values of a SensorConfig object.
- * This class implements the IVisitor interface and is used to visit SensorCollection instances.
+ * @details This class implements the IVisitor interface and is used to visit SensorCollection instances.
  */
 class SensorMinMaxPrinter : public IVisitor {
+private:
+    bool m_warningsOccurred = false; // Flag to indicate if any warnings occurred during the visit
 public:
     /**
      * @brief Construct a new SensorMinMaxPrinter object.
@@ -23,6 +25,8 @@ public:
         Serial.println(F("\n       Min |  Max | Rnge | Warning"));
     }
 
+    inline bool hasWarningsOccurred() const { return m_warningsOccurred; }
+
     /**
      * @brief Visit the Sensor and print its configuration values.
      */
@@ -32,7 +36,7 @@ public:
         Sensor &sensor = static_cast<Sensor &>(visitableSensor);
 
         // Initialize the flags for min-, max- and workingrange warnings
-        bool warningsOccurred = false, minWarning = false, maxWarning = false, rangeWarning = false;
+        bool minWarning = false, maxWarning = false, rangeWarning = false;
 
         SensorConfig *config = sensor.getConfig();
         if (!config) {
@@ -63,19 +67,19 @@ public:
         if (minWarning) {
             Serial.print(F("Min"));
         }
-        warningsOccurred = warningsOccurred || minWarning;
+        m_warningsOccurred = m_warningsOccurred || minWarning;
 
         if (maxWarning) {
-            TextHelper::printLeadingComma(warningsOccurred); // Print a comma if there where other warnings before
+            TextHelper::printLeadingComma(m_warningsOccurred); // Print a comma if there where other warnings before
             Serial.print(F("Max"));
         }
-        warningsOccurred = warningsOccurred || maxWarning;
+        m_warningsOccurred = m_warningsOccurred || maxWarning;
 
         if (rangeWarning) {
-            TextHelper::printLeadingComma(warningsOccurred);
+            TextHelper::printLeadingComma(m_warningsOccurred);
             Serial.print(F("Range"));
         }
-        warningsOccurred = warningsOccurred || rangeWarning; // Set the warning status if any of the conditions are met
+        m_warningsOccurred = m_warningsOccurred || rangeWarning; // Set the warning status if any of the conditions are met
 
         if (minWarning || maxWarning || rangeWarning) {
             Serial.print(F(" small"));

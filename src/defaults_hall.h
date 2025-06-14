@@ -214,8 +214,8 @@
 #define DEADZONE_WARNINGLEVEL 10 // The deadzone should be below this level.
 #define DEADZONE_SURPLUS 2       // The surplus that will be added to the calibrated value of the deadzone. This is used to prevent the deadzone from being too small.
 
-#define MINIMUM_HIGH_WARNINGLEVEL -300 // The minimum value for the sensor should be below this level.
-#define MAXIMUM_LOW_WARNINGLEVEL 170   // The maximum value for the sensor should be above this level.
+#define MINIMUM_HIGH_WARNINGLEVEL -275 // The minimum value for the sensor should be below this level.
+#define MAXIMUM_LOW_WARNINGLEVEL 175   // The maximum value for the sensor should be above this level.
 
 #define WORKINGRANGE_WARNINGLEVEL 500 // The working range of the sensor should be above this level (ie. distance between MIN and MAX).
 

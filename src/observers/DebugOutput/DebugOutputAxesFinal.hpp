@@ -1,0 +1,25 @@
+#pragma once
+
+#include "debugOutputAxes.hpp"
+#include <knob/axis/KnobAxis.hpp>
+
+/**
+ * @brief Output class for modified axes values.
+ * @details Writes the value of all the axes after applying the modifier function to the Serial monitor.
+ *          This class inherits from OutputAxes and overrides the getAxisValue method to return the value of the axis after applying the modifier function.
+ *          After outputting the values, it prints a newline character to the Serial monitor.
+ */
+class DebugOutputAxesFinal : public DebugOutputAxes {
+private:
+    inline const int getAxisValue(const KnobAxis *axis) const override {
+        return axis->getFinValue();
+    }
+
+public:
+    DebugOutputAxesFinal(const bool outputNewline = true) : DebugOutputAxes(outputNewline) {} // Constructor, no newline after output
+    virtual ~DebugOutputAxesFinal() = default;                                                // Destructor
+
+    inline void update(IObservable *axisCollection) override final {
+        DebugOutputAxes::update(axisCollection);
+    }
+};

@@ -8,6 +8,7 @@
 #include "DebugParam\ParamAxisInformation.hpp"
 #include "DebugParam\ParamSensorAxisInformation.hpp"
 #include "DebugParam\ParamSensorAxisKeysInformation.hpp"
+#include "DebugParam\ParamSensorAxisKeysInformationExclusive.hpp"
 #include "DebugParam\ParamLoopFrequency.hpp"
 // ...include other debug states...
 
@@ -92,7 +93,7 @@ void DebugCommand::execute(const char *param1, const char *param2, uint8_t param
         break;
     case 7:
         // Centered values, translation & rotation, keystate (with kill switch) and inversion & exclusive mode applied (the final data that is sent to the host).
-        // TODO setState(new DebugParamSensorInformationCentered(this));
+        setState(new DebugParamSensorAxisKeysInformationExclusive(this));
         break;
     case 8:
         // Report the frequency of the loop, including free RAM memory.

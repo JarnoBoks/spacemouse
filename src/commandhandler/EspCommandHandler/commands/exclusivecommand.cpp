@@ -9,6 +9,7 @@
 void ExclusiveCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     ESP_DBG(F("ExclusiveCommand executed"));
 
+    // REFACTOR - Let the visitor visit the kinematics object instead of calling the config directly
     if (paramCount == 0) {
         // No parameters provided, handle accordingly
         ExclusiveModePrinter printer;

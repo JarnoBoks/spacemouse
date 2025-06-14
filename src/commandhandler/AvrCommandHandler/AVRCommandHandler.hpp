@@ -48,6 +48,7 @@ private:
     void DebugParamAxisInformation();
     void DebugParamSensorAxisInformation();
     void DebugParamSensorAxisKeysInformation();
+    void DebugParamSensorAxisKeysInformationExclusive();
     void DebugParamLoopFrequency();
 
     void DetachCurrentObservers();

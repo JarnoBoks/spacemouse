@@ -5,6 +5,10 @@
 class DebugOutputAxes;
 class DebugOutputSensors;
 
+/**
+ * @brief Debug parameter for sensor axis information.
+ * @note DEBUG 5
+ */
 class DebugParamSensorAxisInformation : public DebugParam {
 protected:
     DebugOutputAxes *m_AxisObserver = nullptr;      // Pointer to the raw axis observer instance

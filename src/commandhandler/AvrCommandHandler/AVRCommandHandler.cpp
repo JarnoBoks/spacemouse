@@ -36,6 +36,7 @@
 #include "observers/DebugOutput/DebugOutputSensorsCentered.hpp"
 #include "observers/DebugOutput/DebugOutputSensorsFiltered.hpp"
 #include "observers/DebugOutput/DebugOutputAxesModified.hpp" // Implementation of the ODebugOutputAxes class
+#include "observers/DebugOutput/DebugOutputAxesFinal.hpp"
 #include "observers/DebugOutput/DebugOutputAxesSensitivity.hpp"
 #include "observers/DebugOutput/DebugOutputLoopFrequency.hpp"
 
@@ -352,7 +353,7 @@ void AVRCommandHandler::executeDebug(const char *param1, const char *param2, con
         break;
     case 7:
         // Centered values, translation & rotation, keystate (with kill switch) and exclusive mode applied
-        // TODO setState(new DebugParamSensorInformationCentered(this));
+        DebugParamSensorAxisKeysInformationExclusive();
         break;
     case 8:
         // Report the frequency of the loop()
@@ -709,6 +710,17 @@ void AVRCommandHandler::DebugParamSensorAxisKeysInformation() {
     // Instantiate the Observers and attach them to the hardware
     m_SensorObserver = new DebugOutputSensorsCentered(false); // false means no newline at the end
     m_AxisObserver = new DebugOutputAxesModified();
+
+    getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
+    getCollectionCarrier()->getKnobAxisCollection()->attachObserver(m_AxisObserver); // Attach the axis observer to the axis collection
+}
+
+void AVRCommandHandler::DebugParamSensorAxisKeysInformationExclusive() {
+    // REMOVE DetachCurrentObservers(); // Detach the previous observer if it exists
+
+    // Instantiate the Observers and attach them to the hardware
+    m_SensorObserver = new DebugOutputSensorsCentered(false); // false means no newline at the end
+    m_AxisObserver = new DebugOutputAxesFinal();
 
     getCollectionCarrier()->getSensorCollection()->attachObserver(m_SensorObserver); // Attach the sensor observer to the sensor collection
     getCollectionCarrier()->getKnobAxisCollection()->attachObserver(m_AxisObserver); // Attach the axis observer to the axis collection

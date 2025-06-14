@@ -22,13 +22,15 @@ Kinematics::~Kinematics() {
 }
 
 void Kinematics::_applyExclusiveMode() {
+    // If the configuration is not set or exclusive mode is not enabled, do nothing
     if (!m_config || !m_config->getExclusiveMode()) {
         return;
     }
 
-    // Create a visitor for the exclusive movement
+    // Visit all axis in the collection to determine which ones to zero out
     ExclusiveMovementVisitor EMvisitor;
-    m_knobAxisCollection->accept(EMvisitor); // Accept the visitor to apply the exclusive movement
+    m_knobAxisCollection->accept(EMvisitor);
+    // FIXME - Should be enabled! EMvisitor.finalize();
 }
 
 void Kinematics::_applySwitchYZ() {

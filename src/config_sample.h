@@ -390,6 +390,7 @@ store the current set values for all sensors in the non-volatile memory.
  *
  */
 
+// FIXME The direction +/- character should be before the axis name, not after it.
 /* Fourth calibration: Sensitivity & Gate  (command: SENS | SENS <axisname>[+|-] <value>, GATE | GATE <axisname>[+|-] <value>)
 ==========================================================================================================
 Use debug mode 4 or use for example your CAD program to verify changes.
@@ -419,9 +420,9 @@ To store the sensitivity values for a single axis in the EEPROM, you can use the
                      for both directions.
       <value>      - The sensitivity value to set for the axis. Should be a float (ie. enter 2.0
                      if the value is 2)
-                     Use a fraction to make the axis MORE sensitive. F.e. 0.5 makes the axis twice as sensitive.
-                     Use a value larger than 1 to make it LESS sensitive. F.e. 2.0 makes the axis two times
-                     less sensitive.
+                     Use a fraction to make the axis LESS sensitive. F.e. 0.5 makes the axis half as sensitive.
+                     Use a value larger than 1 to make it MORE sensitive. F.e. 2.0 makes the axis two times
+                     more sensitive.
 
 Examples:
    To adjust the sensitivity for positive rotation around the X-axis to 0.5, you use the command "SENS +RX 0.5"
@@ -497,7 +498,7 @@ Note: See below - after setting up any connected keys / rotary encoders - for fi
 
 // >>> Place your default values here. These values will be used if the EEPROM is empty or if the version number (SM_VERSION) is changed.
 
-/* Sixth Calibration: Direction           (command: INVERT | INVERT <axisname>[+|-] <value>) )
+/* Sixth Calibration: Direction           (command: INVERT | INVERT <axisname> <value>) )
 ========================================================================================================
 Modify the direction of translation/rotation depending on the CAD program you are using on your PC.
 Use debug mode 6 ("DEBUG 6") or use for example your CAD program to verify changes.
@@ -508,8 +509,7 @@ Update the inversion for a single axis by sending the command
 
       INVERT <axisname>[+|-] <value>
          <axisname>   - The name of the axis. TX, TY, TZ, RX, RY or RZ
-         [+|-]        - Optional indication of the value to set. + for positive, - for negative. If not set, the value is set for both directions.
-         <value>      - The inversion value to set for the axis (0 or 1).
+         <value>      - The inversion value to set for the axis (0 - OFF or 1 - ON).
 
 Use the command "INVERT" (without any parameter) to show the current inversion settings for all axes.
 */

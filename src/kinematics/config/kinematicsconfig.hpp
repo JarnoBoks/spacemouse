@@ -5,8 +5,8 @@
 class KinematicsConfig : public VisitableBase {
 private:
     struct KinematicsConfigData_t {
-        bool exclusiveMode; // Flag to indicate if exclusive mode is enabled
-        bool switchYZ;      // Flag to indicate if YZ switching is enabled
+        bool exclusiveMode = false; // Flag to indicate if exclusive mode is enabled
+        bool switchYZ = false;      // Flag to indicate if YZ switching is enabled
     };
 
     KinematicsConfigData_t m_data; // Data structure to hold the configuration values

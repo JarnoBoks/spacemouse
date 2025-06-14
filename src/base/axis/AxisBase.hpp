@@ -40,13 +40,12 @@ public:
     /// @brief Setter for the final value of the Axis.
     /// @details This function sets the final value of the Axis and notifies observers if the value has changed.
     /// @param value The final value to set for the Axis.
-    /// @deprecated This function is deprecated and should not be used directly.
     void setFinValue(const int16_t value) {
-        bool notify = (m_finValue != value);
+        // REVIEW bool notify = (m_finValue != value);
         m_finValue = value;
-        if (notify) {
-            notifyObservers(); // REVIEW - Do we have any issues if an observer isn't called if there is no change? (fe. in printing)
-        }
+        // REVIEW if (notify) {
+        notifyObservers(); // REVIEW - Do we have any issues if an observer isn't called if there is no change? (fe. in printing)
+        // }
     }
 
     /// @brief Getter for the final Axis value after applying all internal modifications.

@@ -36,7 +36,7 @@ public:
         Sensor &sensor = static_cast<Sensor &>(visitableSensor);
 
         // Initialize the flags for min-, max- and workingrange warnings
-        bool minWarning = false, maxWarning = false, rangeWarning = false;
+        bool warningsOccurred = false, minWarning = false, maxWarning = false, rangeWarning = false;
 
         SensorConfig *config = sensor.getConfig();
         if (!config) {
@@ -67,19 +67,19 @@ public:
         if (minWarning) {
             Serial.print(F("Min"));
         }
-        m_warningsOccurred = m_warningsOccurred || minWarning;
+        warningsOccurred = warningsOccurred || minWarning;
 
         if (maxWarning) {
-            TextHelper::printLeadingComma(m_warningsOccurred); // Print a comma if there where other warnings before
+            TextHelper::printLeadingComma(warningsOccurred); // Print a comma if there where other warnings before
             Serial.print(F("Max"));
         }
-        m_warningsOccurred = m_warningsOccurred || maxWarning;
+        warningsOccurred = warningsOccurred || maxWarning;
 
         if (rangeWarning) {
-            TextHelper::printLeadingComma(m_warningsOccurred);
+            TextHelper::printLeadingComma(warningsOccurred);
             Serial.print(F("Range"));
         }
-        m_warningsOccurred = m_warningsOccurred || rangeWarning; // Set the warning status if any of the conditions are met
+        warningsOccurred = warningsOccurred || rangeWarning; // Set the warning status if any of the conditions are met
 
         if (minWarning || maxWarning || rangeWarning) {
             Serial.print(F(" small"));
@@ -88,5 +88,7 @@ public:
         }
 
         Serial.println();
+
+        m_warningsOccurred = m_warningsOccurred || warningsOccurred; // Update the overall warning status
     }
 };

@@ -32,5 +32,7 @@ public:
         const int centeredVal = sensor.getCntValue();
         sensorcfg->updateMin(centeredVal); // Update the minimum value in the sensor configuration, if it is lower than the current stored minimum
         sensorcfg->updateMax(centeredVal); // Update the maximum value in the sensor configuration if it is higher than the current stored maximum
+
+        sensorcfg->setCenter(sensor.getIdlePosition()); // Set the center value in the sensor configuration to the idle position of the sensor
     }
 };

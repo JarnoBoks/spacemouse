@@ -147,6 +147,27 @@ void SensorConfig::setMax(const int val, bool *warning) {
 }
 
 /**
+ * @brief Adjusts the minimum and maximum values based on the new center value, if the center value is set.
+ * @details This function calculates the difference between the new center value and the current center value,
+ *          and adjusts both the minimum and maximum values accordingly. This is useful when the center value
+ *          changes, such as during calibration or when the sensor is repositioned.
+ * @param nwCenter The new center value to set.
+ */
+void SensorConfig::processCenterChange(const int nwCenter) {
+
+    if (data.center >= 0) {
+        int diff = data.center - nwCenter; // Calculate the difference between the new center and the current center
+        data.minv += diff;                 // Adjust the minimum value
+        data.maxv += diff;                 // Adjust the maximum value
+    }
+#if 0
+        int range = getRange();        // Get the current working range
+        data.minv = range - nwCenter;
+        data.maxv = data.minv + range;
+#endif
+}
+
+/**
  * @brief  Gets the working range of the sensor configuration.
  * @details This function calculates the working range (difference between min and max) and checks if it is below the warning level.
  * @param warning Pointer to a boolean variable to store the warning status.

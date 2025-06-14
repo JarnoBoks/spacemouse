@@ -46,7 +46,7 @@ public:
     /// @brief Retrieve the configuration object of the Sensor.
     inline SensorConfig *getConfig() const { return config; };
 
-    /// @brief Retrieve the idle position of the sensor.
+    /// @brief Retrieve the idle (ie. center) position of the sensor.
     inline int getIdlePosition() const { return m_idleposition; }
     virtual bool setIdlePosition(int val);
     virtual bool idlePositionOk() const = 0; // Pure virtual function to be implemented by derived sensor classes

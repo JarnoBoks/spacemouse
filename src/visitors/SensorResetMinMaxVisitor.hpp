@@ -33,5 +33,6 @@ public:
 
         sensorcfg->setMin(INT_MAX);
         sensorcfg->setMax(INT_MIN);
+        sensorcfg->setCenter(sensor.getIdlePosition());
     }
 };

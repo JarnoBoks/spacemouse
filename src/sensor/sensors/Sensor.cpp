@@ -54,14 +54,17 @@ void Sensor::readValue() {
 
 /**
  * @brief Sets the idle position for the sensor.
- * @note This function is a placeholder and does not perform any validation.
+ * @note This function should be called by descendants.
  *       It is intended to be overridden by derived classes to implement specific idle position logic.
  * @param val The new idle position to set.
- * @return False if any warning occurs, TSrue otherwise.
+ * @return False if any warning occurs, True otherwise.
  */
 bool Sensor::setIdlePosition(int val) {
     m_idleposition = val; // Set the idle position to the provided value
-    return true;          // Return true to indicate success
+    if (config) {
+        config->processCenterChange(val); // Adjust the min and max values in the configuration based on the new idle position
+    }
+    return true; // Return true to indicate success
 }
 
 /**

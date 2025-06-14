@@ -19,6 +19,7 @@ private:
     struct SensorConfigData_t {
         int minv = INT_MAX;  // The minimum centered value of the sensor.
         int maxv = INT_MIN;  // The maximum centered value of the sensor.
+        int center = -1;     // The center value of the sensor during the calibration/setting of min and max. -1 indicates that the center value is not set yet.
         bool invert = false; // Flag to indicate that the sensor value should be inverted (ie. magnet is mounted upside down / joystick is mounted the wrong way).
     };
 
@@ -44,6 +45,13 @@ public:
     const int getMax(bool *warning = nullptr) const;
     void updateMax(const int val);
     void setMax(const int val, bool *warning = nullptr);
+
+    /// @brief Sets the center value of the sensor configuration.
+    /// @details This function sets the center value of the sensor configuration to the provided value.
+    /// @param val The new center value to set.
+    inline void setCenter(const int val) { data.center = val; }
+
+    void processCenterChange(const int nwCenter);
 
     const int getRange(bool *warning = nullptr) const;
 

@@ -27,11 +27,11 @@
 // MIN and MAX values for the HALL sensors
 #ifndef MINVALS
 // #define MINVALS {-437, -385, -511, -373, -407, -321, -347, -330}  // Arduino Pro Micro version
-#define MINVALS {-350, -350, -350, -350, -350, -350, -350, -350}
+#define MINVALS {-512, -512, -512, -512, -512, -512, -512, -512}
 #endif
 #ifndef MAXVALS
 // #define MAXVALS {131, 166, 100, 168, 186, 250, 215, 235}          // Arduino Pro Micro version
-#define MAXVALS {350, 350, 350, 350, 350, 350, 350, 350}
+#define MAXVALS {512, 512, 512, 512, 512, 512, 512, 512}
 #endif
 
 // ---------------------- AXES DEFAULTS --------------------------

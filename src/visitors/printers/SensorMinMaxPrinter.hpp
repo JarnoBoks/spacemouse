@@ -9,7 +9,7 @@
 
 /**
  * @brief Visitor class to print the min, max, and range values of a SensorConfig object.
- * @details This class implements the IVisitor interface and is used to visit SensorCollection instances.
+ * @details This class implements the IVisitor interface and is used to visit SensorCollection or Sensor instances.
  */
 class SensorMinMaxPrinter : public IVisitor {
 private:

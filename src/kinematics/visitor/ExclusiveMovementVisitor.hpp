@@ -17,7 +17,9 @@ public:
     ExclusiveMovementVisitor() = default;
 
     void visit(VisitableBase &ax) {
+
         KnobAxis *axis = static_cast<KnobAxis *>(&ax);
+
         int16_t v = abs(axis->getFinValue());
         if (axis->isTranslation()) {
             if (_transCount < 3) {

@@ -1,24 +1,25 @@
 #include "Observable.hpp"
-#include "observers/IObserver.hpp"
+#include <observers/IObserver.hpp>
+#include <common/esp_print.h>
 #include <stdint.h>
 
 /**
- * @brief Attach an observer to the hardware class.
+ * @brief Attach an observer to the observable class.
  * @param observer Pointer to the observer to be attached.
  * @details This function adds the observer to the observers array and increases the observer count.
  *          If the array is full, it does not add the new observer and can be modified to handle this case.
  */
 void Observable::attachObserver(IObserver *observer) {
     if (observerCount < maxObservers && observer != nullptr) {
-        // insert the observer into the array, at position observerCount and increase the count after inserting.
+        // Insert the observer into the array, at position observerCount and increase the count after inserting.
         observers[observerCount++] = observer;
     } else {
-        // TODO - Handle the case when the observer array is full. Maybe remove the oldest observer or ignore the new one?
+        ESP_ERROR("Observer array is full or observer is null");
     }
 };
 
 void Observable::detachObserver(IObserver *observer) {
-    // remove the observer from the array by replacing it with the last observer in the array and decrease the count.
+    // Remove the observer from the array by replacing it with the last observer in the array and decrease the count.
     for (uint8_t i = 0; i < observerCount; i++) {
         if (observers[i] == observer) {
             observerCount--; // Decrease the observer count

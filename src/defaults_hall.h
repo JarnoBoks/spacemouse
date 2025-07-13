@@ -1,5 +1,4 @@
-#ifndef DEFAULTS_HALL_H
-#define DEFAULTS_HALL_H
+#pragma once
 
 /**
  * Default configuration for the HALL Effect hardware.
@@ -207,7 +206,8 @@
 
 // ------------------ PREPOCESSOR DIRECTIVES USED IN THE SOFTWARE
 // Change the sensor warning levels if your hardware requires. Normally this isn't necessary.
-
+#ifdef ARCH_ARDUINO_PRO_MICRO
+// The Arduino Pro Micro has a ADC range of 0-1023, so we need to adjust the warning levels accordingly.
 #define IDLEPOINT_LOW_WARNINGLEVEL 600  // The idlePoint should be above this level.
 #define IDLEPOINT_HIGH_WARNINGLEVEL 800 // The idlePoint should be below this level.
 
@@ -218,5 +218,19 @@
 #define MAXIMUM_LOW_WARNINGLEVEL 175   // The maximum value for the sensor should be above this level.
 
 #define WORKINGRANGE_WARNINGLEVEL 500 // The working range of the sensor should be above this level (ie. distance between MIN and MAX).
+#endif
 
-#endif // DEFAULTS_HALL_H
+#ifdef ARDUINO_ARCH_ESP32
+// The ESP32 has a ADC range of 0-4095, so we need to adjust the warning levels accordingly.
+#define IDLEPOINT_LOW_WARNINGLEVEL 3000  // The idlePoint should be above this level.
+#define IDLEPOINT_HIGH_WARNINGLEVEL 3400 // The idlePoint should be below this level.
+
+// Deadzone values are four times higher than the Arduino Pro Micro values, because the ESP32 has a ADC range of 0-4095.
+#define DEADZONE_WARNINGLEVEL 40 // The deadzone should be below this level.
+#define DEADZONE_SURPLUS 8       // The surplus that will be added to the calibrated value of the deadzone. This is used to prevent the deadzone from being too small.
+
+#define MINIMUM_HIGH_WARNINGLEVEL -1200 // The minimum value for the sensor should be below this level.
+#define MAXIMUM_LOW_WARNINGLEVEL 400    // The maximum value for the sensor should be above this level.
+
+#define WORKINGRANGE_WARNINGLEVEL 1800 // The working range of the sensor should be above this level (ie. distance between MIN and MAX).
+#endif

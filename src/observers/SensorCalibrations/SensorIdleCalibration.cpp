@@ -33,7 +33,7 @@ SensorIdleCalibration::SensorIdleCalibration(ICalibratorState *calibratorState) 
 
     for (uint8_t id = 0; id < cHW_MAX_SENSORS; id++) {
         m_sumReads[id] = 0;
-        m_minIdleValue[id] = 1023; // Initialize minimum idle value to maximum possible value
+        m_minIdleValue[id] = 4095; // Initialize minimum idle value to maximum possible value (4095 is max for ESP, 1023 is max for Arduino).
         m_maxIdleValue[id] = 0;    // Initialize maximum idle value to minimum possible value
     }
 }

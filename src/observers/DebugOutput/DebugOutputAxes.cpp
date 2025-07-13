@@ -31,5 +31,5 @@ void DebugOutputAxes::update(IObservable *knobMotionVectors) {
         Serial.print(value);
     }
 
-    endOutput(); // End the debug output, e.g., by printing a new line or space
+    endOutput(); // End the debug output, e.g., by printing a new line or separator
 }

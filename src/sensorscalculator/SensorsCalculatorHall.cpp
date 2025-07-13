@@ -38,6 +38,8 @@ void SensorsCalculatorHall::evaluate(KnobAxis *knobVector) {
 
     int16_t retval = 0;
 
+#ifdef ARDUINO_ARCH_AVR
+    // AVR architecture specific code to read the sensors
     switch (knobVector->getType()) {
     case MotionVector_t::TRANSX:
         // calculate sensors transX
@@ -66,6 +68,53 @@ void SensorsCalculatorHall::evaluate(KnobAxis *knobVector) {
         // Handle invalid knobVector type if necessary - nothing to do - retval is already 0
         break;
     }
+#endif
+
+    // John Crombee translated the TeachingTech code (using Joysticks) to the HALL effect sensors code.
+    // This code is based on the TeachingTech code and adapted to the HALL effect sensors.
+    // The Joysticks have a distinct output for each joystick axis, while the HALL effect sensors derive their values from pairs of sensors.
+    // This will work for each movement vector but the ROTZ and TRANSZ vectors. Due to the nature of the calculation and the
+    // physical properties of magnetic fields, a ROTZ will result in an unwanted TRANSZ value.
+    // We correct this by subtracting the difference in a sensor pair from the TRANSZ value, assuming a TRANSZ movement will
+    // have the same absolute effect on both sensors in the pair, while a ROTZ movement will have a different effect on the sensors in the pair.
+
+    // 4-3, 5-6, 2-1, 8-7
+    int corrRZ_TZ = abs(abs(VAL(HES3)) - abs(VAL(HES4))) +
+                    abs(abs(VAL(HES5)) - abs(VAL(HES6))) +
+                    abs(abs(VAL(HES1)) - abs(VAL(HES2))) +
+                    abs(abs(VAL(HES7)) - abs(VAL(HES8)));
+
+#ifdef ARDUINO_ARCH_ESP32
+    // AVR architecture specific code to read the sensors
+    switch (knobVector->getType()) {
+    case MotionVector_t::TRANSX:
+        // calculate sensors transX
+        retval = (VAL(HES3) - VAL(HES4) + VAL(HES2) - VAL(HES1)) / 2;
+        break;
+    case MotionVector_t::TRANSY:
+        // calculate sensors transY
+        retval = (VAL(HES6) - VAL(HES5) + VAL(HES7) - VAL(HES8)) / 2;
+        break;
+    case MotionVector_t::TRANSZ:
+        retval = (corrRZ_TZ + (HES1) + VAL(HES2) + VAL(HES3) + VAL(HES4) + VAL(HES5) + VAL(HES6) + VAL(HES7) + VAL(HES8)) / 4;
+        break;
+    case MotionVector_t::ROTX:
+        // rotX
+        retval = (VAL(HES4) + VAL(HES3) - VAL(HES2) - VAL(HES1)) / 2;
+        break;
+    case MotionVector_t::ROTY:
+        // rotY
+        retval = (VAL(HES8) + VAL(HES7) - VAL(HES6) - VAL(HES5)) / 2;
+        break;
+    case MotionVector_t::ROTZ:
+        // rotZ
+        retval = (VAL(HES2) + VAL(HES4) + VAL(HES6) + VAL(HES8) - VAL(HES1) - VAL(HES3) - VAL(HES5) - VAL(HES7)) / 4;
+        break;
+    default:
+        // Handle invalid knobVector type if necessary - nothing to do - retval is already 0
+        break;
+    }
+#endif
     knobVector->setRawValue(retval);
 }
 #undef VAL

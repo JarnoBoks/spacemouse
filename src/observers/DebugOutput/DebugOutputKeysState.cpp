@@ -22,5 +22,6 @@ void DebugOutputKeysState::update(IObservable *keyCollection) {
         Serial.print(key->getState() ? "1" : "0"); // Print the key state (pressed or released)
     }
 
-    TextHelper::printSeparator(); // Print a separator after all keys
+    endOutput(); // End the debug output, e.g., by printing a new line or separator
+    // REMOVE TextHelper::printSeparator(); // Print a separator after all keys
 }

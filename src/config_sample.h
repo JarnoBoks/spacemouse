@@ -118,7 +118,7 @@ Debug Modes:
  6:  Report centered values (2nd debug) and translation & rotation values (5th debug) and the key state after
      applying the kill-key functionality.
 
- 7: Report centered values (2nd debug) and translation & rotation values and keystatus (4th debug) after applying
+ 7:  Report centered values (2nd debug) and translation & rotation values and keystatus (4th debug) after applying
      the kill-switch and the exclusive mode. (If configured).
 
  8:  Report the frequency of the loop() and the available free RAM memory.
@@ -206,14 +206,15 @@ Default assembly when looking from above on top of the SpaceMouse.
  *
  *                        ESP32S3 ZERO PCB VERSION
  *
- * *    back(USB)     resulting axis (top view)                  Key locations
- * *      1   2              Y+
- * *        |                .                                         |
- * *   8    |    3           .                                         |
- * *     ---+---        X-...Z+...X+                            S1  ---+--- S3
- * *   7    |    4           .                                         |
- * *        |                .                                         |
- * *      6   5              Y-                                        S2
+ *   back(USB)     resulting axis (top view)                  Key locations
+ *
+ *      1   2              Y+
+ *        |                .                                         |
+ *   8    |    5           .                                         |
+ *     ---+---        X-...Z+...X+                        K2 (S1) ---+--- K1 (S3)
+ *   7    |    6           .                                         |
+ *        |                .                                         |
+ *      4   3              Y-                                        K0 (S2)
  *
 
 
@@ -251,7 +252,7 @@ magnets upside-down, the values will be inverted. Ie. when you pull the knob dow
 // HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9
 #define PINLIST \
     {A0, A1, A2, A3, A6, A7, A8, A9} // Arduino Pro Micro PCB version
-//  {GPIO1, GPIO2, GPIO3, GPIO4, GPIO5, GPIO6, GPIO8, GPIO7} // ESP32S3 Zero PCB version, // DEVNOTE - Pin 7/8 are not nicely laided out in the hardware design.
+//   {A0, A1, A2, A3, A4, A5, A6, A7} // ESP32S3 Zero PCB version,
 
 // Set to 1 to invert one Hall sensor.
 // Values should decrease when the magnet is nearing the sensor, but if the magnet is positioned with
@@ -290,7 +291,7 @@ Expected outcome:
                 Deadzone is expected to be around 7-15.
 */
 
-// #define IDLE_ITERATIONS 500 // Default number of iterations for idle calibration during startup
+// REFACTOR - Is this still working?? #define IDLE_ITERATIONS 500 // Default number of iterations for idle calibration during startup
 
 /* Third calibration: Getting MIN and MAX values   (command: MINMAX | MINMAX <+|-><sensorname> <value>)
 =====================================================================================================
@@ -390,11 +391,13 @@ store the current set values for all sensors in the non-volatile memory.
  *
  */
 
-// FIXME The direction +/- character should be before the axis name, not after it.
+// FIXME The direction +/- character should be before the axis name, not after it. To be changed here and in the SENS output.
 /* Fourth calibration: Sensitivity & Gate  (command: SENS | SENS <axisname>[+|-] <value>, GATE | GATE <axisname>[+|-] <value>)
 ==========================================================================================================
 Use debug mode 4 or use for example your CAD program to verify changes.
 Note: Neither the modifier function nor any axis inversions are applied in the output of debug mode 4.
+      That means f.e. that TZ+ sets the sensitivity when pulling the knob up, while TZ- sets the sensitivity
+      for pushing the knob down.
 
 Recommended calibration procedure for base sensitivity
 -------------------------------------------------
@@ -606,11 +609,15 @@ EXAMPLES
 */
 
 // How many classic keys are there in total ? (0 = no keys, ie.feature disabled)
+/// @deprecated - Use Key Configuration below instead
 #define NUMKEYS 3 // 0
 
-// Define the PINS for the classic keys on the Arduino
+// Define the PINS for the classic keys on the Arduino/ESP32S3.
 // The first pins from KEY_PINLIST may be reported via HID
-#define KEY_PINLIST {0, 1, 2}
+/// @deprecated - Use Key Configuration below instead
+#define KEY_PINLIST \
+    {12, 11, 13}
+// ARDUINO: {0, 1, 2}
 
 // How many keys are reported to the PC? Classic keys + ROTARY_KEYS in total.
 #define NUMHIDKEYS 3 // 0
@@ -667,15 +674,20 @@ EXAMPLES
 #define NA -1
 // End of definitions for easier key configuration
 
-#define CFG_NUMBER_OF_KEYS 3
-#define KEY1 {KEY_PHYSICAL, SM_T, 0}
-#define KEY2 {KEY_PHYSICAL, SM_R, 1}
-#define KEY3 {KEY_PHYSICAL, SM_F, 2}
-#define KEYCFG {KEY1, KEY2, KEY3}
+/**
+ * Key configuration
+ * ==================
+ * You can configure the keys here, which are used to report the buttons via USB HID.
+ * The keys are defined in the KEYCFG array, which is used to configure the keys.
+ * The keys are defined as follows:
+ *  {KEY_TYPE, KEY_MODE, KEY_PIN}
+ */
 
-#define KEY4 {KEY_PHYSICAL, SM_T, 0}
-#define KEY5 {KEY_PHYSICAL, SM_R, 1}
-#define KEY6 {KEY_PHYSICAL, SM_F, 2}
+#define CFG_NUMBER_OF_KEYS 3
+#define KEY1 {KEY_PHYSICAL, SM_T, 12}
+#define KEY2 {KEY_PHYSICAL, SM_R, 11}
+#define KEY3 {KEY_PHYSICAL, SM_F, 13}
+#define KEYCFG {KEY1, KEY2, KEY3}
 
 /* Encoder Wheel configuration
 ===============================

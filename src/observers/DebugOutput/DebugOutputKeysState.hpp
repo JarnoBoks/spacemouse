@@ -4,7 +4,7 @@
 
 class DebugOutputKeysState : public DebugOutput {
 public:
-    DebugOutputKeysState() = default;
+    DebugOutputKeysState(const bool outputNewline = true) : DebugOutput(outputNewline) {};
     virtual ~DebugOutputKeysState() {};
 
     void update(IObservable *keyCollection) override final;

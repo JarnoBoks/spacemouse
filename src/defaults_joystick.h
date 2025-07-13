@@ -1,6 +1,4 @@
-#ifndef DEFAULTS_JOYSTICK_H
-#define DEFAULTS_JOYSTICK_H
-
+#pragma once
 /**
  * Default configuration for the Joystick hardware.
  *
@@ -282,5 +280,3 @@
 #define MAXIMUM_LOW_WARNINGLEVEL 250   // The maximum value for the sensor should be above this level.
 
 #define WORKINGRANGE_WARNINGLEVEL 500 // The working range of the sensor should be above this level (ie. distance between MIN and MAX).
-
-#endif // DEFAULTS_JOYSTICK_H

@@ -16,8 +16,8 @@ private:
     }
 
 public:
-    DebugOutputAxesModified(const bool outputNewline = true) : DebugOutputAxes(outputNewline) {} // Constructor, no newline after output
-    virtual ~DebugOutputAxesModified() = default;                                                // Destructor
+    DebugOutputAxesModified(const bool outputNewline = true) : DebugOutputAxes(outputNewline) {}
+    virtual ~DebugOutputAxesModified() = default;
 
     inline void update(IObservable *axisCollection) override final {
         DebugOutputAxes::update(axisCollection);

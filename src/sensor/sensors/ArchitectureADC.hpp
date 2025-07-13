@@ -20,7 +20,8 @@ public:
 #if defined(ARDUINO_ARCH_ESP32)
     static void setupADC() {
         // ADC_ATTEN_DB_11 is used to set the attenuation for the ADC, this allows the ADC to read voltages up to 3.1V
-        analogSetAttenuation(ADC_11db);
+        // analogSetAttenuation(ADC_11db);  // FIXME - Check if the HALL sensor output never exceeds 1.75V
+        analogSetAttenuation(ADC_6db);
         analogReadResolution(12); // Set ADC resolution to 12 bits (0-4095)
     }
 

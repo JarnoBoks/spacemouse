@@ -85,7 +85,13 @@ HIDEventBufferTranslation myHIDEventBufferTranslation;
 SpaceMouseHID mySpaceMouseHID;
 
 // Include the header file for the EEPROM storage (used to store the configuration of the sensors and axes)
-#include "eeprom/eepromstore.h"
+#if defined(ARDUINO_ARCH_AVR)
+#include "eeprom/eepromstore.h"                    // To load and save the sensor configuration to EEPROM
+constexpr uint8_t EEPROM_SENSORCONFIG_VERSION = 1; // Define the version number for the SensorConfig in EEPROM.     // TODO: Add versioning
+#endif
+#if defined(ARDUINO_ARCH_ESP32)
+#include "eeprom/preferencesstore.h" // To load and save the sensor configuration to Preferences
+#endif
 
 #include "common/CustomDelay.h" // Include the custom delay header
 #include "common/FreeRAM.h"     // Include the free RAM header
@@ -106,11 +112,20 @@ void setup() {
     ArchitectureADC::setupADC(); // Initialize the ADC for the architecture (ESP32 or AVR)
 
     CustomDelay::delay(100); // Wait for the serial interface to be ready
+
     // Begin Serial for debugging or calibration
     Serial.begin(250000);
     CustomDelay::delay(100); // Wait for the serial interface to be ready
     Serial.setTimeout(2);    // The serial interface will look for new commands and it will only wait 2ms
     CustomDelay::delay(100); // Wait for CPU to start all peripherals
+
+    // Setup the EEPROM of Preferences store
+#if defined(ARDUINO_ARCH_AVR)
+// FIXME The setup function should be called for the Arduino AVR too
+#endif
+#if defined(ARDUINO_ARCH_ESP32)
+    PreferencesStore::setup(); // Setup the Preferences storage (only if ESP32)
+#endif
 
     //  Setup the Sensor collection. This will setup the sensors and load or create the sensor configuration.
     mySensorCollection.setup();

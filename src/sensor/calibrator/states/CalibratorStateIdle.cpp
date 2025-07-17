@@ -50,10 +50,10 @@ void CalibratorStateIdle::finish() {
     static_cast<SensorCollectionIdleCalibration *>(m_sensorObserver)->_finishCalibration(context->getSensorCollection());
 
     // Output results of the Idle calibration to the console
-    Serial.println(F("Calibration finished!"));
+    Serial.println(F("Idle calibration finished."));
     Serial.print(F("Took "));
     Serial.print(millis() - m_startCalibrationTime);
-    Serial.println(F(" ms for "));
+    Serial.print(F(" ms for "));
     Serial.print(m_processedIterations);
     Serial.println(F(" iterations."));
 

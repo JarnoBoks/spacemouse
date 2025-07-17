@@ -17,7 +17,7 @@ KnobAxisDirectionConfig::KnobAxisDirectionConfig(float sensitivity, uint8_t gate
 
 #if defined(ARDUINO_ARCH_ESP32)
 #define KEY_PREF_AXISDIRCFG "axd%d" // Key prefix for axis direction configuration in Preferences non-volatile memory
-#define BUF_AXISCFG_LEN 7           // 3 characters for the key + 1 for the sign + 2 for the vectorType + 1 for null terminator
+#define KEY_PREF_AXISDIRCFG_LEN 7   // 3 characters for the key + 1 for the sign + 2 for the vectorType + 1 for null terminator
 
 /**
  * @brief Persists the axis direction configuration to non-volatile memory.
@@ -26,7 +26,7 @@ KnobAxisDirectionConfig::KnobAxisDirectionConfig(float sensitivity, uint8_t gate
  *       used to store multiple configurations for the same axis in the Preferences.
  */
 void KnobAxisDirectionConfig::persist(const uint8_t idx) const {
-    char buffer[BUF_AXISCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
+    char buffer[KEY_PREF_AXISDIRCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
     sprintf(buffer, KEY_PREF_AXISDIRCFG, idx);
     PreferencesStore::save(buffer, &data, sizeof(data)); // Store the data structure in the Preferences
 }
@@ -40,7 +40,7 @@ void KnobAxisDirectionConfig::persist(const uint8_t idx) const {
  * @see PreferencesStore::load for possible return values.
  */
 int8_t KnobAxisDirectionConfig::retrieve(const uint8_t idx) {
-    char buffer[BUF_AXISCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
+    char buffer[KEY_PREF_AXISDIRCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
     sprintf(buffer, KEY_PREF_AXISDIRCFG, idx);
     return (PreferencesStore::load(buffer, &data, sizeof(data)) == ERR_PREFSTORE_SUCCESS);
 }

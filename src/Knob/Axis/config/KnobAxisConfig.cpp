@@ -2,6 +2,7 @@
 #include "KnobAxisConfig.hpp"
 #include <knob/Axis/KnobAxis.hpp>
 #include "DefaultKnobAxisConfig.hpp" // To get the default axis configuration if the EEPROM is empty or the version is changed
+#include <common/esp_print.h>        // For ESP_PRINT
 
 #if defined(ARDUINO_ARCH_AVR)
 #include "eeprom/eepromstore.h" // To load and save the sensor configuration to EEPROM
@@ -61,22 +62,23 @@ KnobAxisConfig::KnobAxisConfig(const KnobAxis *contextAxis,
 
 #if defined(ARDUINO_ARCH_ESP32)
 #define KEY_PREF_AXISCFG "axcfg%d" // Key prefix for axis configuration in Preferences
-#define BUF_AXISCFG_LEN 8          // 5 characters for the key + 2 for the vectorType + 1 for null terminator
+#define KEY_PREF_AXISCFG_LEN 8     // 5 characters for the key prefix + 2 for the vectorType + 1 for null terminator
+
 /**
  * @brief  Persist the KnobAxisConfig to EEPROM.
  * @details This function saves the KnobAxisConfig object to EEPROM using the EEPROMStore class.
- * @param vectorType The type of the MotionVector being persisted, used to identify the correct location in EEPROM.
  */
 void KnobAxisConfig::persist() const {
 
     const int8_t axistype = static_cast<int8_t>(m_contextAxis->getType());
 
-    char buffer[BUF_AXISCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
+    char buffer[KEY_PREF_AXISCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
     sprintf(buffer, KEY_PREF_AXISCFG, axistype);
+
     PreferencesStore::save(buffer, &inversion, sizeof(inversion)); // Store the data structure in the Preferences
 
-    posConfig.persist(static_cast<uint8_t>(axistype));
-    negConfig.persist(-static_cast<uint8_t>(axistype));
+    posConfig.persist(2 * static_cast<uint8_t>(axistype));
+    negConfig.persist(2 * static_cast<uint8_t>(axistype) + 1);
 }
 
 /**
@@ -89,16 +91,19 @@ void KnobAxisConfig::persist() const {
 bool KnobAxisConfig::retrieve() {
 
     const int8_t axistype = static_cast<int8_t>(m_contextAxis->getType()); // Convert the MotionVector_t enum to an integer for calculations
-
-    char buffer[BUF_AXISCFG_LEN] = "\0"; // Ensure the buffer is null-terminated
+    char buffer[KEY_PREF_AXISCFG_LEN] = "\0";                              // Ensure the buffer is null-terminated
     sprintf(buffer, KEY_PREF_AXISCFG, axistype);
-    return (PreferencesStore::load(buffer, &inversion, sizeof(inversion)) == ERR_PREFSTORE_SUCCESS);
 
-    // Retrieve the AxisDirectionConfig objects
-    if (posConfig.retrieve(static_cast<uint8_t>(axistype)) != ERR_PREFSTORE_SUCCESS) {
+    if (PreferencesStore::load(buffer, &inversion, sizeof(inversion)) != ERR_PREFSTORE_SUCCESS) {
         return false;
     }
-    if (negConfig.retrieve(-static_cast<uint8_t>(axistype)) != ERR_PREFSTORE_SUCCESS) {
+
+    // Retrieve the AxisDirectionConfig objects
+    if (posConfig.retrieve(2 * static_cast<uint8_t>(axistype)) != ERR_PREFSTORE_SUCCESS) {
+        return false;
+    }
+
+    if (negConfig.retrieve(2 * static_cast<uint8_t>(axistype) + 1) != ERR_PREFSTORE_SUCCESS) {
         return false;
     }
 

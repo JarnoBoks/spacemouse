@@ -1,6 +1,6 @@
 
 #include "SensorConfig.hpp"
-#include "config.h" // Include the config file to know the hardware type
+#include "config.h" // Include the config file to know the hardware type (ie. HW_HALLEFFECT or HW_JOYSTICK) and the default values for the sensor configuration.
 #include <sensor/sensors/Sensor.hpp>
 #include "DefaultSensorConfig.hpp"
 
@@ -29,10 +29,11 @@ constexpr uint8_t EEPROM_SENSORCONFIG_VERSION = 1; // Define the version number 
  * @brief   Constructor for SensorConfig class with sensorId.
  * @details This constructor initializes the SensorConfig object with the given sensor Id.
  *          It retrieves the configuration from EEPROM using the EEPROMStore class. If loading fails, it sets the configuration to default values.
+ * @param   contextSensor Pointer to the Sensor object that this configuration belongs to.
+ *
  * @see config.h for overriding the default values.
  * @see defaults_hall.h for the default values for the HALL Effect hardware.
  * @see defaults_joystick.h for the default values for the JOYSTICK hardware.
- * @param sensorId The ID of the sensor to load the configuration for.
  */
 SensorConfig::SensorConfig(const Sensor *contextSensor)
     : m_contextSensor(contextSensor) {
@@ -57,7 +58,7 @@ SensorConfig::SensorConfig(const Sensor *contextSensor, const int min, const int
 };
 
 /**
- * @brief Sets the minimum value for the sensor configuration if the new value is less than the current value.
+ * @brief Sets the minimum value in the sensor configuration if the new value is less than the current value.
  * @param val The new minimum value to set.
  * @note Used in calibration routines to update the minimum value.
  */

@@ -19,35 +19,40 @@
 /// @brief If the version number defined in the EEPROM is not equal to the version number defined in this file, the EEPROM will be erased and initialized with the default values.
 /// @warning Changing the version number will reset all stored calibration parameters in the EEPROM.
 constexpr uint8_t c_PREFERENCES_VERSION = SM_VERSION;
+
 #define PREFERENCES_NAMESPACE "spacemouse" // Namespace where the preferences are stored
 
-#define RO_MODE true  // Read-only mode
-#define RW_MODE false // Read-write mode
+#define RO_MODE true  // Read-only mode, used when opening the Preferences namespace
+#define RW_MODE false // Read-write mode, used when opening the Preferences namespace
 
 /**
  * @brief Starts EEPROM functionality and checks if the EEPROM version is the same as the version stored in the EEPROM.
- * @details If the version number has changed, the member _firstrun will be set to true. Other objects will use this member to determine if they can load the settings
- * from the EEPROM. The flag _setupdone is used to determine if this function ran before.
+ * @details If the version number has changed, the member _firstrun will be set to true.
+ *          Other objects will use this member to determine if they can load the settings
+ *          from the EEPROM. The flag _setupdone is used to determine if this function ran before.
  * @note This function should be called in the setup() function of the main program, after the Serial.begin() function.
  * @see config.h for the version number.
  */
 void PreferencesStore::setup() {
-    Preferences Settings;
-    Settings.begin(PREFERENCES_NAMESPACE, RW_MODE); // Initialize the Preferences with a namespace
-    uint8_t version = 0;                            // The SpaceMouse version number as stored in the Preferences
-    if (Settings.isKey("version")) {
-        version = Settings.getUChar("version", 0);
+
+    Preferences preferences;
+    preferences.begin(PREFERENCES_NAMESPACE, RW_MODE); // Open (or create) the namespace for the Preferences
+    uint8_t version = 0;                               // Will contain the SpaceMouse version number as stored in the Preferences
+
+    if (preferences.isKey("version")) {
+        version = preferences.getUChar("version", 0);
+    } else {
+        ESP_INFO("Preferences version key not found, initializing...");
     }
 
     if (version == 0 || version != c_PREFERENCES_VERSION) {
-        Serial.println(F("Initializing settings"));
+        Serial.println("Initializing preferences...");
 
-        // Update the version number in the Preferences
-        Settings.clear();                                    // Clear the Preferences
-        Settings.putUChar("version", c_PREFERENCES_VERSION); // Store the (new) version number in the Preferences
+        preferences.clear();                                    // Clear the Preferences namespace
+        preferences.putUChar("version", c_PREFERENCES_VERSION); // Store the (new) version number in the Preferences
     }
 
-    Settings.end(); // Close the Preferences
+    preferences.end(); // Close the Preferences
 }
 
 /**
@@ -58,10 +63,10 @@ void PreferencesStore::setup() {
  */
 void PreferencesStore::save(const char *key, const void *data, const int dataLen) {
 
-    Preferences Settings;
-    Settings.begin(PREFERENCES_NAMESPACE, RW_MODE);  // Initialize the Preferences with a namespace
-    int len = Settings.putBytes(key, data, dataLen); // Store the data in the Preferences
-    Settings.end();                                  // Close the Preferences
+    Preferences preferences;
+    preferences.begin(PREFERENCES_NAMESPACE, RW_MODE);  // Start the Preferences with a namespace
+    int len = preferences.putBytes(key, data, dataLen); // Store the data in the Preferences
+    preferences.end();                                  // Close the Preferences
 
     if (len != dataLen) {
         ESP_WARN("Failed to save data to Preferences");
@@ -73,16 +78,25 @@ void PreferencesStore::save(const char *key, const void *data, const int dataLen
  * @param key The key under which the data is stored.
  * @param data Pointer to the buffer where the data will be loaded.
  * @param dataLen Length of the data to load.
+ *
  * @return Status code indicating success or failure.
  * @retval ERR_PREFSTORE_SUCCESS indicates success.
  * @retval ERR_PREFSTORE_LENGTH indicates the length of the data does not match the expected length.
  */
 int8_t PreferencesStore::load(const char *key, void *data, const int dataLen) {
 
-    Preferences Prefs;
-    Prefs.begin(PREFERENCES_NAMESPACE, RW_MODE);  // Initialize the Preferences with a namespace
-    int len = Prefs.getBytes(key, data, dataLen); // Store the data in the Preferences
-    Prefs.end();                                  // Close the Preferences
+    Preferences preferences;
+    preferences.begin(PREFERENCES_NAMESPACE, RO_MODE);
+
+    if (!preferences.isKey(key)) {
+        ESP_INFO("Key not found in Preferences");
+        ESP_DBG(key); // Debug print the key that was not found
+        preferences.end();
+        return ERR_PREFSTORE_IDNOTFOUND; // Return error if the key was not found
+    }
+
+    int len = preferences.getBytes(key, data, dataLen); // Store the data in the Preferences
+    preferences.end();                                  // Close the Preferences
 
     if (len != dataLen) {
         ESP_WARN("Failed to load data from Preferences");

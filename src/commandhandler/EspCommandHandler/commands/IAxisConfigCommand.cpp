@@ -8,13 +8,14 @@
 #include <common/esp_print.h> // For ESP_PRINT
 
 /**
- * @brief Executes axis-related commands. Updates the m_knobAxisDirectionConfig array to point to the correct AxisDirectionConfig object(s) and sets m_requestedValue to -1 if no update is needed.
+ * @brief   Executes axis-related commands. Updates the m_knobAxisDirectionConfig array to point to the correct AxisDirectionConfig object(s) and sets m_requestedValue to -1 if no update is needed.
  * @details This function handles the execution of axis-related commands based on the provided parameters. It can be used to set the sensitivity, gate, or mod function type for a specific axis.
  *          If the command leads to an update of the configuration parameters, the m_requestedValue is set to the requested value.
  *          If the command does not lead to an update of the configuration parameters, the m_requestedValue is set to -1.
  * @param param1 The first parameter (axis name or [+|-]axisname ).
  * @param param2 The second parameter (value).
  * @param paramCount The number of parameters provided.
+ * @post  The m_knobAxisDirectionConfig array is updated to point to the correct AxisDirectionConfig object(s) based on the provided parameters.
  */
 void IAxisConfigCommand::execute(const char *param1, const char *param2, uint8_t paramCount) {
     m_requestedValue = -1; // Default value for the requested value

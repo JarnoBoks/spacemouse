@@ -14,7 +14,7 @@ constexpr const char *c_AXIS_DESCRIPTORS[] = {"TX", "TY", "TZ", "RX", "RY", "RZ"
  */
 class AxisBase : public ICollectable, public Observable, public VisitableBase {
 private:
-    MotionVector_t m_type = MotionVector_t::MV_UNINITIALIZED; // Type of the Axis (translation or rotation)
+    MotionVector_t m_type = MotionVector_t::MV_UNINITIALIZED; // Type of the Axis (fe. TX,TY or RZ)
     const char *m_descriptor = nullptr;                       // Descriptor of the Axis
 
 protected:

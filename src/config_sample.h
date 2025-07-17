@@ -43,7 +43,7 @@ Note: The initial upload of the code always have to be done over USB. After that
       (For some boards it is necessary to keep the BOOT button pressed while powering up the board to enable USB upload).
 */
 
-// WiFi credentials for OTA upload, uncomment to use
+// WiFi credentials for OTA upload, uncomment and set to use
 // #define WIFI_SSID "Your WiFi ssid"               // WiFi SSID
 // #define WIFI_PASSWORD "Your Wifi password"       // WiFi password
 // #define WIFI_HOSTNAME "Your Spacemouse Hostname" // WiFi hostname
@@ -249,10 +249,17 @@ magnets upside-down, the values will be inverted. Ie. when you pull the knob dow
 
 */
 
+// For the Arduino Pro Micro PCB version the (default) pins are not the same as the ESP32S3 Zero PCB version.
+#ifdef ARDUINO_ARCH_ESP32
+// HES1, HES2, HES3, HES4, HES5, HES6, HES7, HES8
+#define PINLIST \
+    {A0, A1, A2, A3, A4, A5, A6, A7} // ESP32S3 Zero PCB version
+#endif                               // ARDUINO_ARCH_ESP32
+#ifdef ARDUINO_ARCH_AVR
 // HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9
 #define PINLIST \
     {A0, A1, A2, A3, A6, A7, A8, A9} // Arduino Pro Micro PCB version
-//   {A0, A1, A2, A3, A4, A5, A6, A7} // ESP32S3 Zero PCB version,
+#endif                               // ARDUINO_ARCH_AVR
 
 // Set to 1 to invert one Hall sensor.
 // Values should decrease when the magnet is nearing the sensor, but if the magnet is positioned with
@@ -260,8 +267,7 @@ magnets upside-down, the values will be inverted. Ie. when you pull the knob dow
 // normally the inversion should be applied by HES-pair.
 #define INVERTLIST \
     {0, 0, 0, 0, 0, 0, 0, 0}
-// HES0, HES1, HES2, HES3, HES6, HES7, HES8, HES9
-#endif
+#endif // HW_HALLEFFECT
 
 /* Second calibration: Tune Sensor Idle Position & Deadzone   (command: IDLE | IDLE <iterations>)
 =================================================================================================

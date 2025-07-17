@@ -14,7 +14,8 @@
 
 #define ESP_WARN(x)      \
     Serial.print("W: "); \
-    ESP_OUT(x);
+    ESP_OUT(x);          \
+    Serial.println();
 
 #define ESP_ERROR(x)     \
     Serial.print("E: "); \

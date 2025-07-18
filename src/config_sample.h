@@ -245,8 +245,8 @@ magnets upside-down, the values will be inverted. Ie. when you pull the knob dow
 
 5. Optimally when not moving the knob, all sensors should output approximately the same value. If there are large differences
    between the sensors there may be a hardware issue. You can check if the magnets are the same strength or if the magnet
-   plate is not positioned correctly. In the next calibration steps you can finetune differences.
-
+   plate is not positioned correctly. You can rotate the magnet positions by twisting the central bolt, through the bottom plate.
+   In the next calibration steps you can finetune differences.
 */
 
 // For the Arduino Pro Micro PCB version the (default) pins are not the same as the ESP32S3 Zero PCB version.
@@ -836,3 +836,21 @@ This little extra noise is called "jiggling" and ensures that a value declared a
 
 // Add Jiggling to the value reported, if the following symbol is defined:
 // #define ADV_HID_JIGGLE
+
+/** ------------------------------------------------------------------------------------
+ Joystick drift compensation
+   Compensates drifting zero-position (drifting electronics, unprecise mechanics)
+  All values may be edited in the parameter-menu.
+
+   check the following conditions for the duration of COMP_WAIT_TIME:
+     - raw-value doesn't move more than COMP_CENTER_DIFF from the center-value
+     - raw-value doesn't move more than COMP_MIN_MAX_DIFF itself
+   if they were not violated, we consider the SpaceMouse is not touched, so we do:
+     > take the mean-value of the next COMP_NO_OF_POINTS raw-values for each joystick-axis
+     > calculate offsets for each axis to bring the axis mean-value to the axis center-value (re-center the joysticks)
+*/
+#define COMP_ENABLED 0       // enable the compensation    RJS:0     HJS:1
+#define COMP_NO_OF_POINTS 50 // number of points to build the mean-value
+#define COMP_WAIT_TIME 200   // [ms] time to wait and monitor before compensating (smaller value=>faster re-centering, but may cut off small moves)
+#define COMP_MIN_MAX_DIFF 4  // [incr] maximum range of raw-values to be considered as only drift
+#define COMP_CENTER_DIFF 50  // [incr] maximum distance from the center-value to be only drift (never compensates above this offset)

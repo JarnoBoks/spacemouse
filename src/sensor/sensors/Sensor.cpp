@@ -98,10 +98,15 @@ void Sensor::applyCalibration() {
 
     if (abs(m_cntValue) <= m_deadzone) {
         m_finValue = 0;
-    } else if (m_cntValue > m_deadzone) {
+    } else if (m_cntValue > 0) {
+        // Map the positive centered value to a range of 0 to TOTALSENSITIVITY
+        // long map(long x, long in_min, long in_max, long out_min, long out_max) {
         m_finValue = map(m_cntValue, m_deadzone, config->getMax(), 0, TOTALSENSITIVITY);
     } else {
-        m_finValue = map(m_cntValue, config->getMin(), (-1 * m_deadzone), -TOTALSENSITIVITY, 0);
+        // Map the negative centered value to a range of -TOTALSENSITIVITY to 0
+        // long map(long x, long in_min, long in_max, long out_min, long out_max) {
+        m_finValue = map(abs(m_cntValue), m_deadzone, abs(config->getMin()), 0, TOTALSENSITIVITY) * -1;
+        // m_finValue = map(m_cntValue, config->getMin(), (-1 * m_deadzone), -TOTALSENSITIVITY, 0);
     }
 
     // Invert the final value if the configuration is set to inverted

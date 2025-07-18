@@ -33,6 +33,13 @@
 #define MAXVALS {512, 512, 512, 512, 512, 512, 512, 512}
 #endif
 
+// Electric zeroes for the HALL sensors - these are the values that the sensors read when there are no magnets present.
+// TODO - Write calibration instructions and software to determine these values and store them in the EEPROM.
+// REVIEW - Is this necessary? The sensors should be calibrated to the idle position, so these values should be zero.s
+#ifndef ELECTRICZEROES
+#define ELECTRICZEROES {3643, 3653, 3555, 3647, 3540, 3497, 3658, 3657} // Default electric zeroes for the HALL sensors
+#endif
+
 // ---------------------- AXES DEFAULTS --------------------------
 
 // Default axis configuration for spacemouse with HALL sensors.
